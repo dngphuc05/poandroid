@@ -6,3 +6,8 @@ build/
 .cxx/
 local.properties
 
+# Gradle
+.gradle/
+*/build/
+
+# IDE
