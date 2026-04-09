@@ -178,3 +178,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var latestSceneMetrics by mutableStateOf<SceneMetricSnapshot?>(null)
         private set
     var latestTechnicalSceneMetrics by mutableStateOf<SceneMetricSnapshot?>(null)
+        private set
+    var latestServerPoseDebug by mutableStateOf<ServerPoseDebugSnapshot?>(null)
+        private set
+    var latestCameraIntrinsics by mutableStateOf<CameraIntrinsics?>(null)
+        private set
+    var isCaptureRecording by mutableStateOf(false)
+        private set
+    var activeCaptureFolderName by mutableStateOf<String?>(null)
