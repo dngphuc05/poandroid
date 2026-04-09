@@ -8,3 +8,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import org.json.JSONObject
 
+/**
+ * Main entry point for Pocket Mocap Client.
+ *
+ * Hosts Compose UI + optional Unity panel for VRM rendering.
+ */
+class MainActivity : ComponentActivity() {
+
