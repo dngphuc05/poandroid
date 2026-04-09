@@ -96,3 +96,10 @@ dependencies {
     // SceneView — Compose-friendly Filament 3D engine for VRM/GLB rendering
     implementation("io.github.sceneview:sceneview:2.2.1")
 
+    testImplementation("junit:junit:4.13.2")
+
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.09.03"))
+    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
+
