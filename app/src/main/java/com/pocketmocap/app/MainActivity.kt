@@ -26,3 +26,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onDestroy() {
+        viewModel.disconnect()
+        super.onDestroy()
+    }
+}
