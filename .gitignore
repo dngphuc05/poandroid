@@ -11,3 +11,8 @@ local.properties
 */build/
 
 # IDE
+.idea/
+*.iml
+*.iws
+
+# NDK third-party headers (large, bundled for device build only)
