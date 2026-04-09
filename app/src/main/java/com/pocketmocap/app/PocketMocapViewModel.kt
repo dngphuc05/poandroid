@@ -287,3 +287,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         index in intArrayOf(13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
 
     private fun serverDisplayMaxStepMeters(
+        index: Int,
+        recoveringFromStalePose: Boolean,
+        turnFastUpdateActive: Boolean,
+    ): Float {
+        if (turnFastUpdateActive) {
+            return when (index) {
+                17, 18, 19, 20, 21, 22 -> 0.140f
+                15, 16 -> 0.130f
+                13, 14 -> 0.115f
+                11, 12, 23, 24 -> 0.075f
+                25, 26, 27, 28, 29, 30, 31, 32 -> 0.095f
+                else -> 0.100f
+            }
+        }
+        val normal = when (index) {
