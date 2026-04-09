@@ -16,3 +16,9 @@ local.properties
 *.iws
 
 # NDK third-party headers (large, bundled for device build only)
+app/third_party/
+unityLibrary/
+
+# Keys / secrets
+*.jks
+*.keystore
