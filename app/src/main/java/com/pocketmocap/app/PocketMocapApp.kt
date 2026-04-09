@@ -51,3 +51,17 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
         }
     }
 
+    PocketMocapTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background),
+        ) {
+            if (!hasConnected) {
+                ConnectScreen(
+                    uiState = uiState,
+                    onConnect = { viewModel.connect(it) },
+                    onClearError = { viewModel.clearError() },
+                )
+            } else {
+                // Main content (full-bleed behind header/nav)
