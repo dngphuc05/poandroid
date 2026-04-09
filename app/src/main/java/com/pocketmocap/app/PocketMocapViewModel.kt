@@ -422,3 +422,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             externalPipelineListener?.onPose3DReceived(pose3dJson)
         }
 
+        override fun onError(message: String) {
+            Log.e(TAG, "Server error: $message")
+            _uiState.update { it.copy(errorMessage = message) }
+        }
+
+        override fun onRtcChannelReady() {
+            Log.i(TAG, "WebRTC DataChannel ready — low-latency transport active")
+        }
+    })
+
