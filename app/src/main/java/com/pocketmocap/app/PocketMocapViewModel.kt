@@ -90,3 +90,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val errorMessage: String? = null,
         val shouldNavigateToCapture: Boolean = false,
         val vrmModels: List<VrmModel> = emptyList(),
+        val activeVrmIndex: Int = -1,
+    )
+
+    enum class ConnectionState { DISCONNECTED, CONNECTING, CONNECTED }
+    enum class CalibrationStep { PENDING, INTRINSIC_CALC, EXTRINSIC_ANCHOR, BOOTSTRAP, COMPLETE }
+
+    private val _uiState = MutableStateFlow(UiState())
+    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
