@@ -327,3 +327,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val prevDy = _lastReliable2DY[index] - _smoothedY[parent]
         val candDx = candidateX - _smoothedX[parent]
         val candDy = candidateY - _smoothedY[parent]
+        val prevLen = sqrt(prevDx * prevDx + prevDy * prevDy)
+        val candLen = sqrt(candDx * candDx + candDy * candDy)
+        if (prevLen < 0.025f || candLen < 0.025f) return false
+        val cosine = (prevDx * candDx + prevDy * candDy) / (prevLen * candLen)
+        return cosine < -0.12f
+    }
+
