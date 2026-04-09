@@ -43,3 +43,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
+class PocketMocapViewModel(application: Application) : AndroidViewModel(application) {
+
+    companion object {
+        private const val TAG = "PocketMocapVM"
+        private const val DEFAULT_SERVER_URL = "http://192.168.100.146:8090"
+        // Joints moving faster than this per frame are likely MediaPipe glitches (outlier gate)
+        private const val MAX_JOINT_DELTA = 0.15f  // ~48px at 320w
+        // Below this visibility a joint is treated as fully occluded
