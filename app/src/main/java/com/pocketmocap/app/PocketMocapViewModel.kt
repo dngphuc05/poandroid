@@ -252,3 +252,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private val _serverPoseSmoothX = FloatArray(33)
     private val _serverPoseSmoothY = FloatArray(33)
     private val _serverPoseSmoothZ = FloatArray(33)
+    private val _clientTechnicalSmoothX = FloatArray(33)
+    private val _clientTechnicalSmoothY = FloatArray(33)
+    private val _clientTechnicalSmoothZ = FloatArray(33)
+    private val _clientTechnicalBoneLengthMeters = FloatArray(33) { Float.NaN }
+    private val _clientTechnicalTorsoLengthMeters = FloatArray(8) { Float.NaN }
+    private var _hasServerPose = false
+    private var _hasClientTechnicalPose = false
+    private var lastPose3DInterarrivalMs = 0L
+    private var sceneHoldFrames = 0
+    private var technicalSceneMissingFrames = 0
+    private var noPoseFrames = 0
+    private var heldCanonicalServerPoseFrames = 0
+    private var learnedHipVectorXNorm = Float.NaN
+    private var learnedHipVectorYNorm = Float.NaN
+    private val bodyTurnTransitionDetector = BodyTurnTransitionDetector()
+
