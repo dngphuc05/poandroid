@@ -65,3 +65,21 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                 )
             } else {
                 // Main content (full-bleed behind header/nav)
+                when (activeTab) {
+                    NavTab.SETUP -> SetupScreen(
+                        uiState = uiState,
+                        onStartCalibration = { viewModel.startCalibration() },
+                        onClearError = { viewModel.clearError() },
+                    )
+                    NavTab.CAPTURE -> CaptureScreen(
+                        uiState = uiState,
+                        viewModel = viewModel,
+                        activeView = captureView,
+                        onViewSelected = { captureView = it },
+                        onCameraHeightChanged = { viewModel.setManualCameraHeightMeters(it) },
+                        onSubjectHeightChanged = { viewModel.setManualSubjectHeightMeters(it) },
+                    )
+                    NavTab.LIBRARY -> {
+                        when (libraryTab) {
+                            LibraryTab.CAPTURES -> LibraryCapturesScreen(
+                                activeTab = libraryTab,
