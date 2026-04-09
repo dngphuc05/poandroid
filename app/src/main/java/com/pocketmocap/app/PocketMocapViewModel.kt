@@ -432,3 +432,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     })
 
+    // ── Pipeline ──
+    var pipeline: HybridPosePipeline? = null
+        private set
+    private var externalPipelineListener: HybridPosePipeline.Listener? = null
+
+    private fun ensurePipeline() {
+        if (pipeline != null) return
+        Log.i(TAG, "ensurePipeline: creating HybridPosePipeline")
+        try {
+            val bridge = PocketMocapBridge.getInstance()
