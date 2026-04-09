@@ -51,3 +51,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         // Joints moving faster than this per frame are likely MediaPipe glitches (outlier gate)
         private const val MAX_JOINT_DELTA = 0.15f  // ~48px at 320w
         // Below this visibility a joint is treated as fully occluded
+        private const val VIS_OCCLUDE = 0.20f
+        // Below this visibility a joint is uncertain (conservative EMA)
+        private const val VIS_UNCERTAIN = 0.50f
+        private const val MIN_STABLE_SERVER_FRAMES = 6
+        private const val MAX_AR_SCENE_HOLD_FRAMES = 18
+        private const val MAX_TECHNICAL_SCENE_MISSING_FRAMES = 15
+        private const val MAX_VISIBLE_BODY_SCENE_HOLD_FRAMES = 150
+        private const val NO_POSE_GRACE_FRAMES = 6
+        private const val MIN_VISIBLE_JOINTS_FOR_SCENE_HOLD = 24
+        private const val MIN_AR_SCENE_CONFIDENCE_FOR_SERVER = 0.35f
+        private const val MIN_TECHNICAL_SCENE_CONFIDENCE_FOR_SERVER = 0.10f
+        private const val MAX_HELD_CANONICAL_SERVER_POSE_FRAMES = 240
+        private const val ENABLE_SERVER_METRIC_CLIENT_MOTION_OVERLAY = false
+        private const val PHYSICAL_SCENE_BIAS_PREFS = "physical_scene_bias"
+        private const val PREF_MANUAL_CAMERA_HEIGHT_M = "manual_camera_height_m"
+        private const val PREF_SUBJECT_HEIGHT_ENABLED = "subject_height_enabled"
+        private const val PREF_SUBJECT_HEIGHT_M = "subject_height_m"
+    }
