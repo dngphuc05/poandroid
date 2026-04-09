@@ -98,3 +98,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    // High-frequency landmark state — standalone mutableStateOf bypasses StateFlow/coroutine
+    // dispatch overhead and avoids UiState.copy() allocation on every camera frame.
+    var poseLandmarksX by mutableStateOf<FloatArray?>(null)
+        private set
+    var poseLandmarksY by mutableStateOf<FloatArray?>(null)
+        private set
+    var poseLandmarksZ by mutableStateOf<FloatArray?>(null)
