@@ -10,3 +10,10 @@ import com.pocketmocap.app.tracking.WorldTrackingSnapshot
  * [jpegBytes] is produced lazily only when something actually needs it (e.g. recording).
  */
 data class CapturedCameraFrame(
+    val bitmap: Bitmap,
+    val width: Int,
+    val height: Int,
+    val timestampUs: Long,
+    val rotationDegrees: Int = 0,
+    val worldTracking: WorldTrackingSnapshot? = null,
+    val jpegBytes: ByteArray = ByteArray(0),  // unused in normal capture flow
