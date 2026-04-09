@@ -170,3 +170,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var technicalDistanceMeters by mutableStateOf(Float.NaN)
         private set
     var technicalHeightMeters by mutableStateOf(Float.NaN)
+        private set
+    var technicalGroundY by mutableStateOf(Float.NaN)
+        private set
+    var latestWorldTracking by mutableStateOf<WorldTrackingSnapshot?>(null)
+        private set
+    var latestSceneMetrics by mutableStateOf<SceneMetricSnapshot?>(null)
+        private set
+    var latestTechnicalSceneMetrics by mutableStateOf<SceneMetricSnapshot?>(null)
