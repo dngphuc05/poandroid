@@ -334,3 +334,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return cosine < -0.12f
     }
 
+    // ── Server Client ──
+    private val serverClient = MocapServerClient(getApplication(), object : MocapServerClient.Listener {
+        override fun onConnected(sessionId: String) {
+            Log.i(TAG, "onConnected: session=$sessionId")
+            val shouldAutoResume =
+                autoResumeServerAfterReconnect &&
+                    serverCalibrationWidth > 0 &&
+                    serverCalibrationHeight > 0 &&
+                    pipeline != null
+            autoResumeServerAfterReconnect = false
+            userInitiatedDisconnect = false
+            clearServerPoseArrays()
+            resetServerTransportDiagnostics()
+            _uiState.update { it.copy(
+                connectionState = ConnectionState.CONNECTED,
+                sessionId = sessionId,
+                errorMessage = null,
+            )}
