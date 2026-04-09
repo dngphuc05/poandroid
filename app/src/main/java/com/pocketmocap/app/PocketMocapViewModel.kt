@@ -209,3 +209,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverPoseY != null &&
             serverPoseZ != null
 
+    /**
+     * Direct-draw callback fired from the analysis thread immediately after the
+     * client-side 33-point completion pass.
+     * Bypasses Compose recomposition and Vsync coalescing — set by CaptureScreen,
+     * cleared on dispose. Signature: (xNorm, yNorm, visibility, imageWidth, imageHeight)
+     */
+    var directLandmarkCallback: ((FloatArray, FloatArray, FloatArray, Int, Int) -> Unit)? = null
