@@ -14,3 +14,14 @@ android {
         versionCode = 2
         versionName = "2.0.0"
 
+        externalNativeBuild {
+            cmake {
+                cppFlags += listOf("-std=c++17", "-O2")
+            }
+        }
+
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
+    }
+
