@@ -234,3 +234,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private val _lowConfidenceFrames = IntArray(33)
     private var _hasSmoothedLandmarks = false
     // EMA-smoothed visibility — prevents bone/joint flicker when MediaPipe vis oscillates near a threshold.
+    // A bone at vis=0.28↔0.32 would otherwise flicker on/off each frame with the raw 0.30 draw gate.
+    private val _smoothedVis = FloatArray(33) { 0.8f }
+
+    // ── Bone constraint engine ──
+    // Learns per-person bone proportions during bootstrap, then repositions
+    // low-confidence joints to satisfy those ratios each frame.
+    private val _boneConstraints = BoneConstraintEngine(minConfidence = 0.5f)
+    private val _landmarkFallback = LandmarkFallbackEngine()
+    private var serverCalibrationWidth = 1920
+    private var serverCalibrationHeight = 1080
+    private var autoResumeServerAfterReconnect = false
+    private var userInitiatedDisconnect = false
+    private var latestServerRotationDegrees = 0
+    private val _lastGoodRelativeZ = FloatArray(33)
+    private val _hasLastGoodRelativeZ = BooleanArray(33)
+    private val _serverPoseSmoothX = FloatArray(33)
+    private val _serverPoseSmoothY = FloatArray(33)
+    private val _serverPoseSmoothZ = FloatArray(33)
