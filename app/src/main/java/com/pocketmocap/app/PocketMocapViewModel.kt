@@ -162,3 +162,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var clientTechnicalPoseX by mutableStateOf<FloatArray?>(null)
         private set
     var clientTechnicalPoseY by mutableStateOf<FloatArray?>(null)
+        private set
+    var clientTechnicalPoseZ by mutableStateOf<FloatArray?>(null)
+        private set
+    var clientTechnicalPoseConf by mutableStateOf<FloatArray?>(null)
+        private set
+    var technicalDistanceMeters by mutableStateOf(Float.NaN)
+        private set
+    var technicalHeightMeters by mutableStateOf(Float.NaN)
