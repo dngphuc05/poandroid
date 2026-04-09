@@ -352,3 +352,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 sessionId = sessionId,
                 errorMessage = null,
             )}
+            if (shouldAutoResume) {
+                Log.i(TAG, "Auto-resuming server calibration after reconnect")
+                resetClientTrackingState()
+                latestCameraIntrinsics = readCameraIntrinsics(serverCalibrationWidth, serverCalibrationHeight)
+                _uiState.update { it.copy(calibrationStep = CalibrationStep.BOOTSTRAP) }
+                pipeline?.beginCalibration(serverCalibrationWidth, serverCalibrationHeight)
+            }
+        }
+
