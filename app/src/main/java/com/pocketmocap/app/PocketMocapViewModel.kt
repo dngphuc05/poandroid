@@ -122,3 +122,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var cameraImageHeight by mutableStateOf(0)
         private set
 
+    // Server 3D pose — triangulated by DLT from phone + virtual mirror, display-upright
+    // and floor-grounded to match the backend/mocap-ui viewer without normalizing body size.
+    var serverPoseX by mutableStateOf<FloatArray?>(null)
+        private set
+    var serverPoseY by mutableStateOf<FloatArray?>(null)
+        private set
+    var serverPoseZ by mutableStateOf<FloatArray?>(null)
