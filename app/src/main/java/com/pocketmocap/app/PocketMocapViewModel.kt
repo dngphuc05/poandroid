@@ -442,3 +442,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         Log.i(TAG, "ensurePipeline: creating HybridPosePipeline")
         try {
             val bridge = PocketMocapBridge.getInstance()
+            pipeline = HybridPosePipeline(
+                context = getApplication(),
+                intrinsicsJsonProvider = { bridge.getCameraIntrinsicsJson(getApplication()) },
+                serverClient = serverClient,
+                listener = object : HybridPosePipeline.Listener {
+                    override fun onStateChanged(state: HybridPosePipeline.PipelineState) {
+                        if (state == HybridPosePipeline.PipelineState.CAPTURING) {
+                            _boneConstraints.build()  // bootstrap complete — lock in bone lengths
+                        }
+                        _uiState.update { it.copy(pipelineState = state) }
+                        externalPipelineListener?.onStateChanged(state)
+                    }
+
