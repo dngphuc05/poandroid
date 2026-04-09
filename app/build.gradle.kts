@@ -88,3 +88,11 @@ dependencies {
     implementation("com.google.ar:core:1.51.0")
 
     // Socket.IO client — used for signaling + fallback pose stream
+    implementation("io.socket:socket.io-client:2.1.0")
+
+    // WebRTC DataChannel — low-latency unreliable UDP transport for pose frames
+    implementation("io.getstream:stream-webrtc-android:1.1.3")
+
+    // SceneView — Compose-friendly Filament 3D engine for VRM/GLB rendering
+    implementation("io.github.sceneview:sceneview:2.2.1")
+
