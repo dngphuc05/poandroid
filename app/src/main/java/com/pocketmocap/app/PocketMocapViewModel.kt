@@ -106,3 +106,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var poseLandmarksY by mutableStateOf<FloatArray?>(null)
         private set
     var poseLandmarksZ by mutableStateOf<FloatArray?>(null)
+        private set
+    var worldLandmarksX by mutableStateOf<FloatArray?>(null)
+        private set
+    var worldLandmarksY by mutableStateOf<FloatArray?>(null)
+        private set
+    var worldLandmarksZ by mutableStateOf<FloatArray?>(null)
+        private set
+    var poseVisibility by mutableStateOf<FloatArray?>(null)
