@@ -146,3 +146,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverPoseStableFrames > 0 ||
             serverMetricPoseDisplayReady
     var lastPose3DAgeMs by mutableStateOf<Long?>(null)
+        private set
+    var lastServerJointsCount by mutableStateOf(0)
+        private set
+    var lastServerMissingReason by mutableStateOf("no_pose3d_received")
+        private set
+    var lastServerTransport by mutableStateOf("unknown")
+        private set
+    var technicalPoseX by mutableStateOf<FloatArray?>(null)
