@@ -17,3 +17,4 @@ data class CapturedCameraFrame(
     val rotationDegrees: Int = 0,
     val worldTracking: WorldTrackingSnapshot? = null,
     val jpegBytes: ByteArray = ByteArray(0),  // unused in normal capture flow
+)
