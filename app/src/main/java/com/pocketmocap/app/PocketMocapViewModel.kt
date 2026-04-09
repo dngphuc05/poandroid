@@ -268,3 +268,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private var learnedHipVectorYNorm = Float.NaN
     private val bodyTurnTransitionDetector = BodyTurnTransitionDetector()
 
+    private fun limbParent(index: Int): Int = when (index) {
+        13 -> 11
+        15, 17, 19, 21 -> 13
+        14 -> 12
+        16, 18, 20, 22 -> 14
+        25 -> 23
+        27, 29, 31 -> 25
+        26 -> 24
+        28, 30, 32 -> 26
+        else -> -1
+    }
+
