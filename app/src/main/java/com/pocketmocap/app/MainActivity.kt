@@ -15,3 +15,14 @@ import org.json.JSONObject
  */
 class MainActivity : ComponentActivity() {
 
+    private val viewModel: PocketMocapViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+
+        setContent {
+            PocketMocapApp(viewModel = viewModel)
+        }
+    }
+
