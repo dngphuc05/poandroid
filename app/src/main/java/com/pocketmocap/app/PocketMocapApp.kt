@@ -83,3 +83,17 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                         when (libraryTab) {
                             LibraryTab.CAPTURES -> LibraryCapturesScreen(
                                 activeTab = libraryTab,
+                                onTabSelected = { libraryTab = it },
+                            )
+                            LibraryTab.MODELS -> LibraryModelsScreen(
+                                activeTab = libraryTab,
+                                onTabSelected = { libraryTab = it },
+                                vrmModels = uiState.vrmModels,
+                                activeVrmIndex = uiState.activeVrmIndex,
+                                onAddVrm = { name, uri -> viewModel.addVrm(name, uri) },
+                                onSetActiveVrm = { viewModel.setActiveVrm(it) },
+                            )
+                        }
+                    }
+                }
+
