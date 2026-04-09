@@ -216,3 +216,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
      * cleared on dispose. Signature: (xNorm, yNorm, visibility, imageWidth, imageHeight)
      */
     var directLandmarkCallback: ((FloatArray, FloatArray, FloatArray, Int, Int) -> Unit)? = null
+
+    // ── EMA + Kalman hybrid landmark stabilization ──
+    // Visible joints (vis≥0.50): outlier-gated EMA, α=0.55–0.92; Kalman tracks velocity.
+    // Uncertain joints (0.20≤vis<0.50): conservative EMA, outlier rejection.
+    // Occluded joints (vis<0.20): Kalman predicts forward, then geometric fallback
+    // rebuilds a usable 33-point pose before UI/server output.
+    private val _kalman = Array(33) { LandmarkKalman2D(fps = 60f) }
+    private val _smoothedX = FloatArray(33)
+    private val _smoothedY = FloatArray(33)
+    private val _completedX = FloatArray(33)
+    private val _completedY = FloatArray(33)
+    private val _completedVis = FloatArray(33)
+    private val _lastReliable2DX = FloatArray(33)
+    private val _lastReliable2DY = FloatArray(33)
+    private val _hasLastReliable2D = BooleanArray(33)
+    private val _lowConfidenceFrames = IntArray(33)
+    private var _hasSmoothedLandmarks = false
+    // EMA-smoothed visibility — prevents bone/joint flicker when MediaPipe vis oscillates near a threshold.
