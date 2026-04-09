@@ -320,3 +320,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun wouldFlipLimb(index: Int, candidateX: Float, candidateY: Float): Boolean {
+        val parent = limbParent(index)
+        if (parent < 0 || !_hasLastReliable2D[index]) return false
+        val prevDx = _lastReliable2DX[index] - _smoothedX[parent]
+        val prevDy = _lastReliable2DY[index] - _smoothedY[parent]
+        val candDx = candidateX - _smoothedX[parent]
+        val candDy = candidateY - _smoothedY[parent]
