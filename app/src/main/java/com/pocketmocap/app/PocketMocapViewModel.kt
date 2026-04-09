@@ -385,3 +385,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        override fun onBootstrapProgress(collected: Int, target: Int, complete: Boolean) {
+            Log.i(TAG, "onBootstrapProgress: $collected/$target complete=$complete")
+            val progress = if (target > 0) collected.toFloat() / target else 0f
+            _uiState.update { it.copy(bootstrapProgress = progress) }
+            if (complete) {
+                _uiState.update { it.copy(calibrationStep = CalibrationStep.COMPLETE) }
+                pipeline?.onBootstrapComplete()
+            }
+        }
+
