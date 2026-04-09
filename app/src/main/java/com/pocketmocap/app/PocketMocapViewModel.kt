@@ -154,3 +154,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var lastServerTransport by mutableStateOf("unknown")
         private set
     var technicalPoseX by mutableStateOf<FloatArray?>(null)
+        private set
+    var technicalPoseY by mutableStateOf<FloatArray?>(null)
+        private set
+    var technicalPoseZ by mutableStateOf<FloatArray?>(null)
+        private set
+    var clientTechnicalPoseX by mutableStateOf<FloatArray?>(null)
+        private set
+    var clientTechnicalPoseY by mutableStateOf<FloatArray?>(null)
