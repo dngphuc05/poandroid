@@ -28,3 +28,10 @@ import com.pocketmocap.app.ui.components.Header
 import com.pocketmocap.app.ui.components.NavTab
 import com.pocketmocap.app.ui.theme.PocketMocapTheme
 
+@Composable
+fun PocketMocapApp(viewModel: PocketMocapViewModel) {
+    val uiState by viewModel.uiState.collectAsState()
+    var activeTab by remember { mutableStateOf(NavTab.SETUP) }
+    var captureView by remember { mutableStateOf(CaptureView.SKELETON) }
+    var hasConnected by remember { mutableStateOf(false) }
+    var libraryTab by remember { mutableStateOf(LibraryTab.CAPTURES) }
