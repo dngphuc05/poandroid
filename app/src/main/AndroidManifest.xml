@@ -23,3 +23,8 @@
         <meta-data
             android:name="com.google.ar.core"
             android:value="optional" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
