@@ -104,3 +104,15 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                         .statusBarsPadding(),
                 )
 
+                // Bottom nav overlay
+                BottomNav(
+                    activeTab = activeTab,
+                    onTabSelected = { activeTab = it },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .navigationBarsPadding(),
+                )
+            }
+        }
+    }
+}
