@@ -280,3 +280,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         else -> -1
     }
 
+    private fun isServerRootOrBodyAnchor(index: Int): Boolean =
+        index in intArrayOf(0, 7, 8, 11, 12, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32)
+
+    private fun isServerFastLimbJoint(index: Int): Boolean =
+        index in intArrayOf(13, 14, 15, 16, 17, 18, 19, 20, 21, 22)
+
+    private fun serverDisplayMaxStepMeters(
