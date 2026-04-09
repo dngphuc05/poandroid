@@ -35,3 +35,11 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
     var captureView by remember { mutableStateOf(CaptureView.SKELETON) }
     var hasConnected by remember { mutableStateOf(false) }
     var libraryTab by remember { mutableStateOf(LibraryTab.CAPTURES) }
+
+    // Move past ConnectScreen once connected
+    LaunchedEffect(uiState.connectionState) {
+        if (uiState.connectionState == ConnectionState.CONNECTED) {
+            hasConnected = true
+        }
+    }
+
