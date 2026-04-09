@@ -76,3 +76,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // ── UI State ──
     data class UiState(
         val serverUrl: String = DEFAULT_SERVER_URL,
+        val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
+        val sessionId: String = "",
+        val pipelineState: HybridPosePipeline.PipelineState = HybridPosePipeline.PipelineState.IDLE,
+        val calibrationStep: CalibrationStep = CalibrationStep.PENDING,
+        val bootstrapProgress: Float = 0f,
+        val latestPose3D: JSONObject? = null,
+        val frameCount: Int = 0,
