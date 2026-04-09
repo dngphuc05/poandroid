@@ -43,3 +43,11 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
         }
     }
 
+    // Auto-navigate to Capture tab after calibration starts
+    LaunchedEffect(uiState.shouldNavigateToCapture) {
+        if (uiState.shouldNavigateToCapture) {
+            activeTab = NavTab.CAPTURE
+            viewModel.onNavigatedToCapture()
+        }
+    }
+
