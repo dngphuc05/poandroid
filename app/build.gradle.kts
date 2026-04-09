@@ -81,3 +81,10 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.navigation:navigation-compose:2.8.1")
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
+
+    // ARCore is optional: supported devices provide camera/floor grounding,
+    // unsupported devices keep using the ROI-only monocular fallback.
+    implementation("com.google.ar:core:1.51.0")
+
+    // Socket.IO client — used for signaling + fallback pose stream
