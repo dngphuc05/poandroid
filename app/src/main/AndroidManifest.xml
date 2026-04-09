@@ -18,3 +18,8 @@
         android:icon="@android:drawable/ic_menu_camera"
         android:label="@string/app_name"
         android:supportsRtl="true"
+        android:theme="@style/Theme.PocketMocap"
+        android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="optional" />
