@@ -302,3 +302,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
         val normal = when (index) {
+            17, 18, 19, 20, 21, 22 -> 0.070f
+            15, 16 -> 0.085f
+            13, 14 -> 0.070f
+            11, 12, 23, 24 -> 0.040f
+            25, 26, 27, 28, 29, 30, 31, 32 -> 0.055f
+            else -> 0.055f
+        }
+        if (!recoveringFromStalePose) return normal
+        return when (index) {
+            17, 18, 19, 20, 21, 22 -> 0.040f
+            15, 16 -> 0.055f
+            13, 14 -> 0.050f
+            11, 12, 23, 24 -> 0.026f
+            25, 26, 27, 28, 29, 30, 31, 32 -> 0.040f
+            else -> 0.040f
+        }
+    }
+
