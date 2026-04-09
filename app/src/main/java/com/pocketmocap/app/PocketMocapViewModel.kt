@@ -199,3 +199,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private var lastCanonicalAuthoritativeHeightMeters = Float.NaN
     private var lastCanonicalAuthoritativeDistanceMeters = Float.NaN
 
+    init {
+        loadManualMetricProfile()
+    }
+
+    val hasStableServerPose: Boolean
+        get() = serverPoseStableFrames >= MIN_STABLE_SERVER_FRAMES &&
+            serverPoseX != null &&
+            serverPoseY != null &&
+            serverPoseZ != null
+
