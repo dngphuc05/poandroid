@@ -395,3 +395,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        override fun onPose3DReceived(pose3dJson: JSONObject) {
+            val ms = pose3dJson.optDouble("pipeline_ms", 0.0).toFloat()
+            val serverDebugJson = pose3dJson.optJSONObject("server_debug")
+            val mlEvidenceJson = pose3dJson.optJSONObject("ml_evidence")
+            val nowMs = System.currentTimeMillis()
+            pose3DReceivedCount += 1
+            lastPose3DInterarrivalMs = if (lastPose3DReceivedAtMs > 0L) {
+                (nowMs - lastPose3DReceivedAtMs).coerceAtLeast(0L)
+            } else {
+                0L
+            }
+            lastPose3DReceivedAtMs = nowMs
+            lastPose3DAgeMs = 0L
+            _uiState.update { it.copy(
+                latestPose3D = pose3dJson,
+                frameCount = it.frameCount + 1,
+                lastPipelineMs = ms,
+            )}
