@@ -413,3 +413,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 frameCount = it.frameCount + 1,
                 lastPipelineMs = ms,
             )}
+            updateServerPoseDebug(
+                json = serverDebugJson,
+                mlEvidenceJson = mlEvidenceJson,
+            )
+            updateSceneMetricsFromServer(pose3dJson.optJSONObject("scene_metrics"), latestServerPoseDebug)
+            lastServerMissingReason = updateServerPoseArrays(pose3dJson)
+            externalPipelineListener?.onPose3DReceived(pose3dJson)
+        }
+
