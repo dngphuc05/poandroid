@@ -129,3 +129,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var serverPoseY by mutableStateOf<FloatArray?>(null)
         private set
     var serverPoseZ by mutableStateOf<FloatArray?>(null)
+        private set
+    var serverPoseConf by mutableStateOf<FloatArray?>(null)
+        private set
+    var serverPoseStableFrames by mutableStateOf(0)
+        private set
+    var serverMetricPoseDisplayReady by mutableStateOf(false)
+        private set
+    var framesSentToServer by mutableStateOf(0)
