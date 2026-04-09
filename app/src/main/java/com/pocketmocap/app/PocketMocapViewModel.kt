@@ -361,3 +361,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        override fun onDisconnected() {
+            Log.i(TAG, "onDisconnected")
+            autoResumeServerAfterReconnect =
+                !userInitiatedDisconnect &&
+                    (
+                        _uiState.value.pipelineState == HybridPosePipeline.PipelineState.CAPTURING ||
+                            framesSentToServer > 0 ||
+                            pose3DReceivedCount > 0
+                    )
+            clearServerPoseArrays()
+            resetServerTransportDiagnostics()
+            _uiState.update { it.copy(connectionState = ConnectionState.DISCONNECTED) }
+        }
+
