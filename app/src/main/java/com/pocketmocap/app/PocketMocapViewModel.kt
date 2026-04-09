@@ -69,3 +69,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         private const val PREF_SUBJECT_HEIGHT_ENABLED = "subject_height_enabled"
         private const val PREF_SUBJECT_HEIGHT_M = "subject_height_m"
     }
+
+    // ── VRM Model ──
+    data class VrmModel(val name: String, val uri: Uri)
+
+    // ── UI State ──
+    data class UiState(
+        val serverUrl: String = DEFAULT_SERVER_URL,
