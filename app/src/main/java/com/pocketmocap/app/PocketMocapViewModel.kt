@@ -137,3 +137,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var serverMetricPoseDisplayReady by mutableStateOf(false)
         private set
     var framesSentToServer by mutableStateOf(0)
+        private set
+    var pose3DReceivedCount by mutableStateOf(0)
+        private set
+    val serverMetricPoseExpected: Boolean
+        get() = framesSentToServer > 0 ||
+            pose3DReceivedCount > 0 ||
+            serverPoseStableFrames > 0 ||
+            serverMetricPoseDisplayReady
+    var lastPose3DAgeMs by mutableStateOf<Long?>(null)
