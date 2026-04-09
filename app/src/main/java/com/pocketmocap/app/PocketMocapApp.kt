@@ -97,3 +97,10 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                     }
                 }
 
+                // Header overlay — translucent, does not push content
+                Header(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .statusBarsPadding(),
+                )
+
