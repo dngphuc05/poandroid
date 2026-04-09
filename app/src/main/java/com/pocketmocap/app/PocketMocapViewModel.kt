@@ -375,3 +375,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(connectionState = ConnectionState.DISCONNECTED) }
         }
 
+        override fun onCalibrationAck(success: Boolean, state: String) {
+            Log.i(TAG, "onCalibrationAck: success=$success state=$state")
+            if (success) {
+                _uiState.update { it.copy(calibrationStep = CalibrationStep.BOOTSTRAP) }
+                pipeline?.onCalibrationConfirmed()
+            } else {
+                _uiState.update { it.copy(errorMessage = "Calibration failed") }
+            }
+        }
+
