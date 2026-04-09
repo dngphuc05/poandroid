@@ -186,3 +186,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     var isCaptureRecording by mutableStateOf(false)
         private set
     var activeCaptureFolderName by mutableStateOf<String?>(null)
+        private set
+
+    private val captureRecorder = CaptureSessionRecorder(getApplication())
+    private val sceneBiasPrefs by lazy {
+        getApplication<Application>().getSharedPreferences(PHYSICAL_SCENE_BIAS_PREFS, Context.MODE_PRIVATE)
+    }
+    private val physicalSceneGraph by lazy { PhysicalSceneFactorGraph(loadPhysicalSceneBias()) }
+    private var sceneBiasSaveCountdown = 0
+    private var lastPose3DReceivedAtMs = 0L
+    private var serverMetricClientMotionOverlayActive = false
+    private var lastCanonicalAuthoritativeHeightMeters = Float.NaN
+    private var lastCanonicalAuthoritativeDistanceMeters = Float.NaN
+
