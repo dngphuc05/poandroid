@@ -847,3 +847,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         lastServerTransport = "unknown"
     }
 
+    private fun updateServerPoseDebug(json: JSONObject?, mlEvidenceJson: JSONObject? = null) {
+        latestServerPoseDebug = ServerPoseDebugSnapshot.fromJson(
+            json = json,
+            fallbackScene = latestTechnicalSceneMetrics ?: latestSceneMetrics,
+            mlEvidenceJson = mlEvidenceJson,
+        )
+    }
+
