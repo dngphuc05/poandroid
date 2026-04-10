@@ -1102,3 +1102,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 0f
             }
         val holdHeight =
+            distanceJump > 0.20f &&
+                heightJump > 0.06f &&
+                cameraHeightJump < 0.05f
+
+        val smoothedDistance = smoothValue(previous.distanceMeters, raw.distanceMeters, alpha = 0.20f, maxStep = 0.30f)
+        val smoothedHeight = if (rawHeightTrusted) {
+            smoothFiniteOrNaN(
+                previous.bodyHeightMeters,
+                raw.bodyHeightMeters,
+                alpha = if (holdHeight) 0.05f else 0.12f,
+                maxStep = if (holdHeight) 0.03f else 0.09f,
+            )
+        } else {
+            raw.bodyHeightMeters
+        }
+        val smoothedCameraHeight = smoothValue(previous.cameraHeightMeters, raw.cameraHeightMeters, alpha = 0.18f, maxStep = 0.10f)
