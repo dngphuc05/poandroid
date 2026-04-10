@@ -1482,3 +1482,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 var dx = dxRaw * alpha
                 var dy = dyRaw * alpha
                 var dz = dzRaw * alpha
+                val step = sqrt(dx * dx + dy * dy + dz * dz)
+                val maxStep = clientTechnicalMaxStepMeters(i)
+                if (step > maxStep && step > 1e-5f) {
+                    val scale = maxStep / step
+                    dx *= scale
+                    dy *= scale
+                    dz *= scale
+                }
+                _clientTechnicalSmoothX[i] += dx
+                _clientTechnicalSmoothY[i] += dy
+                _clientTechnicalSmoothZ[i] += dz
+            }
+        }
+
