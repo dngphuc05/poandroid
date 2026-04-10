@@ -1549,3 +1549,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             else -> 0.25f
         }
         val params = when (index) {
+            15, 16, 17, 18, 19, 20, 21, 22 -> floatArrayOf(0.22f, 0.34f, 0.24f, 0.56f)
+            13, 14 -> floatArrayOf(0.20f, 0.30f, 0.22f, 0.50f)
+            11, 12 -> floatArrayOf(0.11f, 0.14f, 0.14f, 0.25f)
+            23, 24, 25, 26, 27, 28, 29, 30, 31, 32 -> floatArrayOf(0.13f, 0.18f, 0.16f, 0.31f)
+            else -> floatArrayOf(0.18f, 0.28f, 0.18f, 0.44f)
+        }
+        val base = params[0]
