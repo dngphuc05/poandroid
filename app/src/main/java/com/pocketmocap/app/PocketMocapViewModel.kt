@@ -502,3 +502,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             )
                         }
                         return prepared
+                    }
+
+                    override fun prepareMlImageCropLandmarks(
+                        rawXNorm: FloatArray,
+                        rawYNorm: FloatArray,
+                        rawVisibility: FloatArray,
+                    ): HybridPosePipeline.MlCropLandmarks? {
+                        if (!_hasSmoothedLandmarks ||
+                            rawXNorm.size < 33 ||
+                            rawYNorm.size < 33 ||
+                            rawVisibility.size < 33
+                        ) {
+                            return null
+                        }
+                        return HybridPosePipeline.MlCropLandmarks(
+                            xNorm = _smoothedX.copyOf(),
+                            yNorm = _smoothedY.copyOf(),
+                            visibility = _smoothedVis.copyOf(),
