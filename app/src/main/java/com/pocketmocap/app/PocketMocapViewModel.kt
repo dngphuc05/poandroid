@@ -1204,3 +1204,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         technicalSceneMissingFrames = 0
         sceneHoldFrames = 0
         val dir = captureRecorder.start()
+        isCaptureRecording = true
+        activeCaptureFolderName = dir.name
+        Log.i(TAG, "Capture recording started: ${dir.absolutePath}")
+    }
+
+    fun stopCaptureRecording() {
+        val dir = captureRecorder.stop()
