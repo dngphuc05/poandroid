@@ -1271,3 +1271,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val scaleEffective = scaleApplied != null && scaleApplied.isFinite() &&
             kotlin.math.abs(scaleApplied - 1f) > 1e-3f
         val rootShift = serverDebug?.rootTranslationMeters
+        val rootShiftEffective = rootShift != null && rootShift.isFinite() && rootShift > 0.02f
+        val serverConstraintConfidence = serverDebug?.constraintConfidence?.takeIf { it.isFinite() }
+        val serverConstraintReason = serverDebug?.correctionReason.orEmpty()
+        val serverConstraintActive = serverConstraintConfidence != null &&
+            (
+                scaleEffective ||
+                    rootShiftEffective ||
+                    serverDebug?.hasV2MetricAuthority() == true ||
+                    serverConstraintReason == "height_and_root_constrained" ||
+                    serverConstraintReason == "root_constrained"
+            )
+        captureRecorder.recordFrame(
+            uiState = _uiState.value,
+            visibleLandmarkCount = _completedVis.count { it > 0.5f },
+            sceneMetrics = technicalSceneMetrics,
+            worldTracking = latestWorldTracking,
+            skeletonX = _completedX,
+            skeletonY = _completedY,
