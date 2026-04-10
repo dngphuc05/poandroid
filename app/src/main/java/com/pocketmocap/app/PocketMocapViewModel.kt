@@ -1475,3 +1475,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 if (_completedVis.getOrNull(i) ?: 0f < 0.16f) continue
                 if (!x[i].isFinite() || !y[i].isFinite() || !z[i].isFinite()) continue
                 val dxRaw = x[i] - _clientTechnicalSmoothX[i]
+                val dyRaw = y[i] - _clientTechnicalSmoothY[i]
+                val dzRaw = z[i] - _clientTechnicalSmoothZ[i]
+                val motion = sqrt(dxRaw * dxRaw + dyRaw * dyRaw + dzRaw * dzRaw)
+                val alpha = clientTechnicalSmoothingAlpha(i, motion, _completedVis[i])
+                var dx = dxRaw * alpha
+                var dy = dyRaw * alpha
+                var dz = dzRaw * alpha
