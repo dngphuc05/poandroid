@@ -808,3 +808,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private fun holdPreviousServerPoseOrClear(reason: String): String {
         serverMetricClientMotionOverlayActive = false
         val canHoldCanonicalPose =
+            _hasServerPose &&
+            serverPoseX != null &&
+            serverPoseY != null &&
+            serverPoseZ != null &&
+            serverMetricPoseDisplayReady &&
+            heldCanonicalServerPoseFrames < MAX_HELD_CANONICAL_SERVER_POSE_FRAMES
+        return if (canHoldCanonicalPose) {
+            heldCanonicalServerPoseFrames += 1
+            serverMetricPoseDisplayReady = true
+            reason
+        } else {
+            serverMetricPoseDisplayReady = false
+            clearDisplayedServerPoseArrays()
+            reason
+        }
+    }
+
