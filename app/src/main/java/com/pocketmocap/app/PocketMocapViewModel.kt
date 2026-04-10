@@ -698,3 +698,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         _hasLastReliable2D.fill(false)
                     }
 
+                    override fun prepareServerSceneMetrics(worldTracking: WorldTrackingSnapshot?): SceneMetricSnapshot? {
+                        latestTechnicalSceneMetrics
+                            ?.takeIf {
+                                it.source == "arcore_floor" &&
+                                    it.confidence >= MIN_TECHNICAL_SCENE_CONFIDENCE_FOR_SERVER &&
+                                    (
+                                        it.distanceMeters.isFinite() ||
+                                            it.correctedDistanceMeters.isFinite() ||
+                                            it.bodyHeightMeters.isFinite() ||
+                                            it.correctedHeightMeters.isFinite()
+                                    )
+                            }
+                            ?.let { return it.withManualSubjectHeightProfile() }
+                        return worldTracking?.takeIf {
+                            it.source == "arcore_floor" &&
+                                it.confidence >= MIN_AR_SCENE_CONFIDENCE_FOR_SERVER &&
+                                (it.subjectDistanceMeters.isFinite() || it.subjectHeightMeters.isFinite())
+                        }?.let {
