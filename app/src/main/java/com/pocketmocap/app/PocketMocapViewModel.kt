@@ -1433,3 +1433,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             mlImageCropHeightPx = serverDebug?.mlImageCropHeightPx,
             mlImageJpegQuality = serverDebug?.mlImageJpegQuality,
             mlImageCropPadRatio = serverDebug?.mlImageCropPadRatio,
+            mlEvidenceSchema = serverDebug?.mlEvidenceSchema,
+            mlEvidenceOutputs = serverDebug?.mlEvidenceOutputs,
+            serverSceneMetricsReceived = serverDebug?.serverSceneMetricsReceived,
+            serverSceneMetricsAccepted = serverDebug?.serverSceneMetricsAccepted,
+            serverSceneMetricsSource = serverDebug?.serverSceneMetricsSource,
+            serverSceneMetricsFloorSource = serverDebug?.serverSceneMetricsFloorSource,
+            serverSceneMetricsFilterReason = serverDebug?.serverSceneMetricsFilterReason,
+            serverSceneMetricsConfidence = serverDebug?.serverSceneMetricsConfidence,
+        )
+    }
+
