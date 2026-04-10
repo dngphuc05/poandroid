@@ -1307,3 +1307,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverCorrectionReason = serverDebug?.correctionReason,
             rejectedServerReason = if (useServerPose) "none" else missingReason,
             serverTransport = lastServerTransport,
+            framesSentToServer = framesSentToServer,
+            pose3DReceivedCount = pose3DReceivedCount,
+            lastPose3DAgeMs = lastPose3DAgeMs,
+            lastServerJointsCount = lastServerJointsCount,
+            serverMissingReason = missingReason,
+            rawServerHeightMeters = serverDebug?.rawHeightMeters?.takeIf { serverConstraintActive },
+            rawServerDistanceMeters = serverDebug?.rawDistanceMeters?.takeIf { serverConstraintActive },
+            preSkeletonConstrainedHeightMeters = serverDebug?.preSkeletonConstrainedHeightMeters?.takeIf {
+                serverConstraintActive
+            },
+            preSkeletonConstrainedDistanceMeters = serverDebug?.preSkeletonConstrainedDistanceMeters?.takeIf {
+                serverConstraintActive
+            },
+            constrainedServerHeightMeters = serverDebug?.constrainedHeightMeters?.takeIf { serverConstraintActive },
+            constrainedServerDistanceMeters = serverDebug?.constrainedDistanceMeters?.takeIf { serverConstraintActive },
+            arTargetHeightMeters = serverDebug?.arTargetHeightMeters ?: technicalSceneMetrics?.bodyHeightMeters,
+            arTargetDistanceMeters = serverDebug?.arTargetDistanceMeters ?: technicalSceneMetrics?.distanceMeters,
+            serverScaleApplied = serverDebug?.scaleApplied,
