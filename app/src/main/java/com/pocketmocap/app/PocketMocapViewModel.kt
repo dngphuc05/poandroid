@@ -631,3 +631,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 } else {
                                     0
                                 }
+                            }
+                            // Apply constraints using smoothed vis — avoids oscillation at threshold
+                            _boneConstraints.apply(_smoothedX, _smoothedY, _smoothedVis, targetThreshold = VIS_UNCERTAIN)
+                            for (i in 0 until 33) {
+                                if (_smoothedVis[i] < VIS_OCCLUDE) {
+                                    _kalman[i].setPosition(_smoothedX[i], _smoothedY[i])
+                                }
+                            }
+                        }
+                        _landmarkFallback.complete(
+                            _smoothedX,
+                            _smoothedY,
+                            _smoothedVis,
+                            _completedX,
+                            _completedY,
+                            _completedVis,
+                        )
+                        val visible = _completedVis.count { it > 0.5f }
