@@ -1459,3 +1459,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
         val x = rawPose.first.copyOf()
         val y = rawPose.second.copyOf()
+        val z = rawPose.third.copyOf()
+        stabilizeClientTechnicalTorsoFrame(x, y, z, _completedVis, learn = true)
+        stabilizeClientTechnicalArmBones(x, y, z, _completedVis, learn = true)
+
+        if (!_hasClientTechnicalPose) {
+            for (i in 0 until 33) {
+                _clientTechnicalSmoothX[i] = x[i]
+                _clientTechnicalSmoothY[i] = y[i]
+                _clientTechnicalSmoothZ[i] = z[i]
+            }
+            _hasClientTechnicalPose = true
+        } else {
+            for (i in 0 until 33) {
+                if (_completedVis.getOrNull(i) ?: 0f < 0.16f) continue
+                if (!x[i].isFinite() || !y[i].isFinite() || !z[i].isFinite()) continue
+                val dxRaw = x[i] - _clientTechnicalSmoothX[i]
