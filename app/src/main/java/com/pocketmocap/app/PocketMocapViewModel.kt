@@ -1070,3 +1070,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             if (!prev.isFinite()) return next
             if (!next.isFinite()) return prev
             val delta = (next - prev).coerceIn(-maxStep, maxStep)
+            return prev + delta * alpha
+        }
+        fun smoothFiniteOrNaN(prev: Float, next: Float, alpha: Float, maxStep: Float): Float {
+            if (!next.isFinite()) return Float.NaN
+            if (!prev.isFinite()) return next
+            val delta = (next - prev).coerceIn(-maxStep, maxStep)
+            return prev + delta * alpha
+        }
+        val rawHeightTrusted =
