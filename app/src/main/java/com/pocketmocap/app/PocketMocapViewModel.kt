@@ -683,3 +683,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         _landmarkFallback.reset()
                         _hasLastGoodRelativeZ.fill(false)
                         poseLandmarksX = null
+                        poseLandmarksY = null
+                        poseLandmarksZ = null
+                        worldLandmarksX = null
+                        worldLandmarksY = null
+                        worldLandmarksZ = null
+                        poseVisibility = null
+                        clearClientTechnicalPoseArrays()
+                        clearServerPoseArrays()
+                        latestWorldTracking = null
+                        latestSceneMetrics = null
+                        latestTechnicalSceneMetrics = null
+                        visibleLandmarkCount = 0
+                        _hasLastReliable2D.fill(false)
+                    }
+
