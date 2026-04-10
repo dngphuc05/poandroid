@@ -1150,3 +1150,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         physicalSceneGraph.resetRuntimeState()
     }
 
+    private fun loadPhysicalSceneBias(): PhysicalSceneBias =
+        PhysicalSceneBias(
+            floorHeightBiasMeters = sceneBiasPrefs.getFloat("floor_height_bias_m", 0f),
+            depthScale = sceneBiasPrefs.getFloat("depth_scale", 1f),
+            depthOffsetMeters = sceneBiasPrefs.getFloat("depth_offset_m", 0f),
+            heightEndpointBiasMeters = sceneBiasPrefs.getFloat("height_endpoint_bias_m", 0f),
+        )
+
