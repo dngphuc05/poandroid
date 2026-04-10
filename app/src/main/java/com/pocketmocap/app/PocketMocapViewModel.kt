@@ -1444,3 +1444,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
+    private fun latestClientTechnicalPose(): Triple<FloatArray, FloatArray, FloatArray>? {
+        val x = clientTechnicalPoseX ?: return null
+        val y = clientTechnicalPoseY ?: return null
+        val z = clientTechnicalPoseZ ?: return null
+        if (x.size < 33 || y.size < 33 || z.size < 33) return null
+        return Triple(x.copyOf(), y.copyOf(), z.copyOf())
+    }
+
