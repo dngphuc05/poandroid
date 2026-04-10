@@ -1189,3 +1189,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             .apply()
     }
 
+    fun toggleCaptureRecording() {
+        if (isCaptureRecording) {
+            stopCaptureRecording()
+        } else {
+            startCaptureRecording()
+        }
+    }
+
