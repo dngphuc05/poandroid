@@ -825,3 +825,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun clearClientTechnicalPoseArrays() {
+        clientTechnicalPoseX = null
+        clientTechnicalPoseY = null
+        clientTechnicalPoseZ = null
+        clientTechnicalPoseConf = null
+        _hasClientTechnicalPose = false
+        _clientTechnicalSmoothX.fill(0f)
+        _clientTechnicalSmoothY.fill(0f)
+        _clientTechnicalSmoothZ.fill(0f)
+        _clientTechnicalTorsoLengthMeters.fill(Float.NaN)
+    }
+
