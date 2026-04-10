@@ -1556,3 +1556,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             else -> floatArrayOf(0.18f, 0.28f, 0.18f, 0.44f)
         }
         val base = params[0]
+        val boost = params[1]
+        val denom = params[2]
+        val maxAlpha = params[3]
+        val motionBoost = (motionMeters / denom).coerceIn(0f, 1f) * boost
+        return ((base + motionBoost) * confidenceScale).coerceIn(0.08f, maxAlpha)
+    }
+
