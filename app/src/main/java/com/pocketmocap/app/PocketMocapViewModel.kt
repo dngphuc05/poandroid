@@ -1533,3 +1533,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val outY = FloatArray(33)
         val outZ = FloatArray(33)
         val z = poseLandmarksZ
+        for (i in 0 until 33) {
+            outX[i] = scene.lateralOffsetMeters + (_completedX[i] - hipCenterX) * metersPerNorm
+            outY[i] = (floorNormY - _completedY[i]) * metersPerNorm
+            outZ[i] = -distanceMeters + (z?.getOrNull(i) ?: 0f) * metersPerNorm * 0.35f
+        }
+        return Triple(outX, outY, outZ)
+    }
+
