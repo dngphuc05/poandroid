@@ -1512,3 +1512,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         clientTechnicalPoseConf = _completedVis.copyOf()
     }
 
+    private fun buildRawClientTechnicalPose(): Triple<FloatArray, FloatArray, FloatArray>? {
+        val scene = latestTechnicalSceneMetrics ?: return null
+        val distanceMeters = scene.correctedDistanceMeters
+            .takeIf { it.isFinite() && it in 0.35f..12f }
+            ?: scene.distanceMeters.takeIf { it.isFinite() && it in 0.35f..12f }
+            ?: return null
+        val bodyHeightMeters = scene.correctedHeightMeters
