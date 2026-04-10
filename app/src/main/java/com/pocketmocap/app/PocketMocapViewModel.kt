@@ -1263,3 +1263,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             else -> "none"
         }
         val missingReason = classifyServerPoseMissingReason(
+            pose3DReceivedCount = pose3DReceivedCount,
+            lastServerParseReason = lastServerMissingReason,
+            serverHealth = serverHealth,
+        )
+        val scaleApplied = serverDebug?.scaleApplied
+        val scaleEffective = scaleApplied != null && scaleApplied.isFinite() &&
+            kotlin.math.abs(scaleApplied - 1f) > 1e-3f
+        val rootShift = serverDebug?.rootTranslationMeters
