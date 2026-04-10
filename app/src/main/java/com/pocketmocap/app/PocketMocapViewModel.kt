@@ -1079,3 +1079,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             return prev + delta * alpha
         }
         val rawHeightTrusted =
+            raw.heightLockState == "locked" ||
+                (raw.heightLockState.startsWith("holding") && "untrusted" !in raw.heightLockState) ||
+                raw.heightLockState == "recalibrating_untrusted"
+
+        val distanceJump =
+            if (previous.distanceMeters.isFinite() && raw.distanceMeters.isFinite()) {
+                kotlin.math.abs(raw.distanceMeters - previous.distanceMeters)
+            } else {
+                0f
+            }
+        val heightJump =
