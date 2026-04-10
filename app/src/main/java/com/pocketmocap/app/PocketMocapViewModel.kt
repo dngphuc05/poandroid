@@ -1023,3 +1023,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             activeFactors = json.optString("active_factors", ""),
         )
         if (metrics.source == "arcore_floor") {
+            val smoothed = smoothTechnicalSceneMetrics(metrics)
+            latestSceneMetrics = smoothed
+            latestTechnicalSceneMetrics = smoothed
+            technicalSceneMissingFrames = 0
+        } else if (latestTechnicalSceneMetrics == null) {
+            latestSceneMetrics = metrics
+        }
+    }
+
