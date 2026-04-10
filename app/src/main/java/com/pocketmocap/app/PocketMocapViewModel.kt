@@ -1289,3 +1289,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             worldTracking = latestWorldTracking,
             skeletonX = _completedX,
             skeletonY = _completedY,
+            skeletonZ = poseLandmarksZ,
+            skeletonVisibility = _completedVis,
+            technicalX = techX,
+            technicalY = techY,
+            technicalZ = techZ,
+            technicalConfidence = if (useServerPose) serverPoseConf else _completedVis,
+            technicalSource = technicalSource,
+            serverStableFrames = serverPoseStableFrames,
+            acceptedPoseSource = technicalSource,
+            serverPoseStatus = when {
+                useServerPose -> serverDebug?.poseStatus ?: "ok"
+                hasServerPose && !serverMetricPoseDisplayReady -> "rejected"
+                serverHealth.usable -> "ok"
+                else -> "missing_server_pose"
+            },
+            serverCorrectionReason = serverDebug?.correctionReason,
+            rejectedServerReason = if (useServerPose) "none" else missingReason,
+            serverTransport = lastServerTransport,
