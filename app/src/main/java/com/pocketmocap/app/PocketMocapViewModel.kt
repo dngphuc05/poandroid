@@ -1563,3 +1563,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return ((base + motionBoost) * confidenceScale).coerceIn(0.08f, maxAlpha)
     }
 
+    private fun clientTechnicalMaxStepMeters(index: Int): Float = when (index) {
+        17, 18, 19, 20, 21, 22 -> 0.085f
+        15, 16 -> 0.075f
+        13, 14 -> 0.060f
+        11, 12 -> 0.030f
+        23, 24 -> 0.030f
+        25, 26, 27, 28, 29, 30, 31, 32 -> 0.055f
+        else -> 0.080f
+    }
+
