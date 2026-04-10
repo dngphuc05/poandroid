@@ -863,3 +863,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         latestWorldTracking = worldTracking
         worldTracking?.intrinsics?.let { latestCameraIntrinsics = it }
         val roi = computePoseRoi(_completedX, _completedY, _completedVis)
+        val previousSceneMetrics = latestTechnicalSceneMetrics ?: latestSceneMetrics
+        val previousHeightLockState = previousSceneMetrics?.heightLockState.orEmpty()
+        val previousHeightIsConstraint =
+            previousHeightLockState == "locked" ||
+                (previousHeightLockState.startsWith("holding") && "untrusted" !in previousHeightLockState)
+        val previousPhysicalHeight = previousSceneMetrics
+            ?.correctedHeightMeters
+            ?.takeIf { previousHeightIsConstraint && it.isFinite() }
+            ?: previousSceneMetrics
+                ?.bodyHeightMeters
+                ?.takeIf { previousHeightIsConstraint && it.isFinite() }
+        val estimate = deriveOverlayPoseEstimate(
