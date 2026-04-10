@@ -1032,3 +1032,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun SceneMetricSnapshot.withManualSubjectHeightProfile(): SceneMetricSnapshot {
+        val subjectHeight = _uiState.value.manualSubjectHeightMeters
+        if (!subjectHeight.isFinite() || subjectHeight !in 1.05f..2.35f) return this
+        return copy(
+            profileSubjectHeightMeters = subjectHeight,
+            profileSubjectHeightConfidence = 0.98f,
+            profileSubjectHeightSource = "manual_profile",
+        )
+    }
+
