@@ -1128,3 +1128,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             lateralOffsetMeters = smoothValue(previous.lateralOffsetMeters, raw.lateralOffsetMeters, alpha = 0.22f, maxStep = 0.18f),
             correctedDistanceMeters = smoothedDistance,
             // correctedHeightMeters is a diagnostic value; the trust gate that
+            // controls export-as-constraint lives in heightLockState. Surface
+            // the optimizer's best estimate so the field is informative even
+            // while the lock is still acquiring.
+            correctedHeightMeters = raw.correctedHeightMeters.takeIf { it.isFinite() } ?: Float.NaN,
+            correctedCameraHeightMeters = smoothedCameraHeight,
+        )
+    }
+
