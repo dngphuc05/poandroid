@@ -1062,3 +1062,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun smoothTechnicalSceneMetrics(raw: SceneMetricSnapshot): SceneMetricSnapshot {
+        val previous = latestTechnicalSceneMetrics
+        if (previous?.source != "arcore_floor") return raw
+
+        fun smoothValue(prev: Float, next: Float, alpha: Float, maxStep: Float): Float {
+            if (!prev.isFinite()) return next
+            if (!next.isFinite()) return prev
+            val delta = (next - prev).coerceIn(-maxStep, maxStep)
