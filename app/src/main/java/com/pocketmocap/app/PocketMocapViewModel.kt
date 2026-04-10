@@ -929,3 +929,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     cameraHeightMeters = previous.cameraHeightMeters.takeIf { it.isFinite() } ?: solvedMetrics.cameraHeightMeters,
                     lateralOffsetMeters = previous.lateralOffsetMeters.takeIf { it.isFinite() } ?: solvedMetrics.lateralOffsetMeters,
                 )
+            } else {
+                sceneHoldFrames = if (solvedMetrics.source == "arcore_floor") 0 else sceneHoldFrames
+                solvedMetrics
+        }
+        latestSceneMetrics = stickyMetrics
+        latestTechnicalSceneMetrics?.let { technicalMetrics ->
+            if (technicalMetrics.distanceMeters.isFinite()) {
+                technicalDistanceMeters = technicalMetrics.distanceMeters
+            }
+            if (technicalMetrics.bodyHeightMeters.isFinite()) {
+                technicalHeightMeters = technicalMetrics.bodyHeightMeters
+            }
+        }
+    }
+
