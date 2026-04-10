@@ -1049,3 +1049,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val serverMetricUsable = latestServerPoseDebug?.hasV2MetricAuthority() == true ||
             serverPoseStableFrames >= MIN_STABLE_SERVER_FRAMES
         val canHoldVisibleScene = allowVisibleBodyHold &&
+            latestTechnicalSceneMetrics != null &&
+            visibleJoints >= MIN_VISIBLE_JOINTS_FOR_SCENE_HOLD &&
+            (arTracking || serverMetricUsable)
+        val maxMissingFrames = if (canHoldVisibleScene) {
+            MAX_VISIBLE_BODY_SCENE_HOLD_FRAMES
+        } else {
+            MAX_TECHNICAL_SCENE_MISSING_FRAMES
+        }
+        if (technicalSceneMissingFrames > maxMissingFrames) {
+            latestTechnicalSceneMetrics = null
+        }
+    }
+
