@@ -1245,3 +1245,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             latestClientTechnicalPose()
         }
         val techX = if (useServerPose) serverPoseX else clientTechnicalPose?.first
+        val techY = if (useServerPose) serverPoseY else clientTechnicalPose?.second
+        val techZ = if (useServerPose) serverPoseZ else clientTechnicalPose?.third
+        val technicalSource = when {
+            useServerPose -> if (
+                serverDebug?.metricPoseStatus == "hold_previous" ||
+                (!canonicalJointsReady && heldCanonicalServerPoseFrames > 0) ||
+                serverPoseIsStaleForRecording
+            ) {
+                "server_metric_canonical_held"
+            } else if (serverMetricClientMotionOverlayActive) {
+                "server_metric_client_motion"
+            } else {
+                "server_metric_canonical"
+            }
+            clientTechnicalPose != null -> "arcore_client_33pt"
+            else -> "none"
+        }
+        val missingReason = classifyServerPoseMissingReason(
