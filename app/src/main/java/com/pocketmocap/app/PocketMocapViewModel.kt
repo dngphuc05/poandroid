@@ -467,3 +467,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     ): List<LandmarkData>? {
                         if (!_hasSmoothedLandmarks) return rawLandmarks
 
+                        latestServerRotationDegrees = rotationDegrees
+                        val outboundWidth = if (serverCalibrationWidth > 0) serverCalibrationWidth else imageWidth
+                        val outboundHeight = if (serverCalibrationHeight > 0) serverCalibrationHeight else imageHeight
+                        val prepared = ArrayList<LandmarkData>(33)
+                        for (i in 0 until 33) {
+                            val raw = rawLandmarks.getOrNull(i) ?: LandmarkData(0f, 0f)
+                            val rawConfidence = maxOf(raw.visibility, raw.presence, raw.confidence)
