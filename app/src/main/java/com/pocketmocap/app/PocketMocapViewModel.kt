@@ -575,3 +575,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     _smoothedVis[i] = maxOf(_smoothedVis[i], rawVis)
                                 }
                                 val dx = xNorm[i] - _smoothedX[i]
+                                val dy = yNorm[i] - _smoothedY[i]
+                                val dist = sqrt(dx * dx + dy * dy)
+                                when {
+                                    effectiveVis >= VIS_UNCERTAIN -> {
+                                        // ── Clearly visible: speed-adaptive EMA with outlier gate ──────
+                                        val maxDelta = if (reappearing) 0.32f else MAX_JOINT_DELTA
+                                        val safeX = if (dist > maxDelta)
