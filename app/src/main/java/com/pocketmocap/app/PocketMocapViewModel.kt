@@ -665,3 +665,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         updateServerMetricPoseWithClientMotion()
                         recordCaptureFrameIfNeeded()
                         // Guard constant/rarely-changing values — avoids spurious Compose recompositions
+                        if (visibleLandmarkCount != visible) visibleLandmarkCount = visible
+                        if (cameraImageWidth != imageWidth) cameraImageWidth = imageWidth
+                        if (cameraImageHeight != imageHeight) cameraImageHeight = imageHeight
+                    }
+
+                    override fun onNoPoseDetected() {
+                        noPoseFrames += 1
+                        if (_hasSmoothedLandmarks && noPoseFrames <= NO_POSE_GRACE_FRAMES) {
+                            ageTechnicalSceneMetrics(allowVisibleBodyHold = true)
+                            return
+                        }
+                        _hasSmoothedLandmarks = false
+                        _smoothedVis.fill(0f)
+                        _kalman.forEach { it.reset() }
+                        _boneConstraints.reset()
+                        _landmarkFallback.reset()
+                        _hasLastGoodRelativeZ.fill(false)
+                        poseLandmarksX = null
