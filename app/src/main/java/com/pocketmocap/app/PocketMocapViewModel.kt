@@ -474,3 +474,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         for (i in 0 until 33) {
                             val raw = rawLandmarks.getOrNull(i) ?: LandmarkData(0f, 0f)
                             val rawConfidence = maxOf(raw.visibility, raw.presence, raw.confidence)
+                            if (rawConfidence >= VIS_UNCERTAIN) {
+                                _lastGoodRelativeZ[i] = raw.z
+                                _hasLastGoodRelativeZ[i] = true
+                            }
+                            val (sensorX, sensorY) = displayToSensorSpace(
+                                _completedX[i].coerceIn(0f, 1f),
+                                _completedY[i].coerceIn(0f, 1f),
+                                rotationDegrees,
+                            )
+                            val stabilizedConfidence = _completedVis[i].coerceIn(0f, 1f)
