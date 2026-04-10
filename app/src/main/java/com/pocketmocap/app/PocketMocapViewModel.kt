@@ -754,3 +754,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     /** Feed a camera frame into the pipeline (called from CaptureScreen). */
     fun onCameraFrame(frame: CapturedCameraFrame) {
+        pipeline?.onCameraFrame(frame)
+    }
+
+    private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
+        when (rotationDegrees) {
+            90  -> Pair(y, 1f - x)
+            180 -> Pair(1f - x, 1f - y)
+            270 -> Pair(1f - y, x)
+            else -> Pair(x, y)
+        }
+
