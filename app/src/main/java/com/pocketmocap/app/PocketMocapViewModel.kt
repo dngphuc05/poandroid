@@ -1219,3 +1219,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private fun recordCaptureFrameIfNeeded() {
         if (!captureRecorder.isRecording) return
         val hasServerPose = serverPoseX != null && serverPoseY != null && serverPoseZ != null
+        val serverHealth = evaluateServerPoseHealth(
+            poseX = serverPoseX,
+            poseY = serverPoseY,
+            poseZ = serverPoseZ,
+            poseVisibility = serverPoseConf,
+        )
+        val serverDebug = latestServerPoseDebug
