@@ -484,3 +484,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 rotationDegrees,
                             )
                             val stabilizedConfidence = _completedVis[i].coerceIn(0f, 1f)
+                            val stabilizedZ = when {
+                                rawConfidence >= VIS_OCCLUDE -> raw.z
+                                _hasLastGoodRelativeZ[i] -> _lastGoodRelativeZ[i]
+                                else -> raw.z
+                            }
+
+                            prepared.add(
+                                raw.copy(
+                                    x = sensorX.coerceIn(0f, 1f) * outboundWidth,
+                                    y = sensorY.coerceIn(0f, 1f) * outboundHeight,
+                                    z = stabilizedZ,
+                                    visibility = stabilizedConfidence,
+                                    presence = stabilizedConfidence,
+                                    confidence = stabilizedConfidence,
+                                )
+                            )
+                        }
+                        return prepared
