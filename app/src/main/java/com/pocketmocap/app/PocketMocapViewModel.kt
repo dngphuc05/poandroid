@@ -589,3 +589,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                         // Low floor = heavy smoothing for stationary joints (3× noise reduction),
                                         // high ceiling = near-zero lag during genuine fast movements.
                                         val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
+                                        val alpha = if (reappearing) {
+                                            (0.58f + normSpeed * 0.30f).coerceIn(0.58f, 0.88f)
+                                        } else {
+                                            (0.18f + normSpeed * 0.67f).coerceIn(0.18f, 0.85f)
+                                        }
+                                        _smoothedX[i] = alpha * safeX + (1f - alpha) * _smoothedX[i]
+                                        _smoothedY[i] = alpha * safeY + (1f - alpha) * _smoothedY[i]
+                                        _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
+                                    }
+                                    effectiveVis >= VIS_OCCLUDE -> {
+                                        // ── Uncertain (0.20–0.50): conservative EMA, reject outliers ────
