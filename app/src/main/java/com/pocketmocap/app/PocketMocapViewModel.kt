@@ -455,3 +455,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         externalPipelineListener?.onStateChanged(state)
                     }
 
+                    override fun onPose3DReceived(pose3dJson: JSONObject) {
+                        externalPipelineListener?.onPose3DReceived(pose3dJson)
+                    }
+
+                    override fun prepareServerLandmarks(
+                        rawLandmarks: List<LandmarkData>,
+                        imageWidth: Int,
+                        imageHeight: Int,
+                        rotationDegrees: Int,
+                    ): List<LandmarkData>? {
+                        if (!_hasSmoothedLandmarks) return rawLandmarks
+
