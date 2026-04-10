@@ -728,3 +728,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         }
                     }
 
+                    override fun onServerFrameQueued(frameIndex: Int, timestampUs: Long, transportHint: String) {
+                        framesSentToServer += 1
+                        lastServerTransport = transportHint
+                        lastPose3DAgeMs = if (pose3DReceivedCount > 0) {
+                            System.currentTimeMillis() - lastPose3DReceivedAtMs
+                        } else {
+                            null
+                        }
+                    }
+                },
+            )
+            pipeline?.start()
+            Log.i(TAG, "ensurePipeline: pipeline created OK")
+        } catch (e: Exception) {
+            Log.e(TAG, "ensurePipeline: FAILED", e)
+            _uiState.update { it.copy(errorMessage = "Pipeline init failed: ${e.message}") }
+        }
+    }
