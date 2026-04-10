@@ -837,3 +837,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         _clientTechnicalTorsoLengthMeters.fill(Float.NaN)
     }
 
+    private fun resetServerTransportDiagnostics() {
+        framesSentToServer = 0
+        pose3DReceivedCount = 0
+        lastPose3DReceivedAtMs = 0L
+        lastPose3DAgeMs = null
+        lastServerJointsCount = 0
+        lastServerMissingReason = "no_pose3d_received"
+        lastServerTransport = "unknown"
+    }
+
