@@ -1226,3 +1226,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             poseVisibility = serverPoseConf,
         )
         val serverDebug = latestServerPoseDebug
+        val technicalSceneMetrics = latestTechnicalSceneMetrics
+        val canonicalJointsReady = serverDebug?.let {
+            it.hasCanonicalMetricPose() &&
+                it.poseJointsFrame == "display_floor_metric_v1" &&
+                it.poseJointsNormalized.isFinite() &&
+                kotlin.math.abs(it.poseJointsNormalized - 1f) <= 1e-3f
+        } == true
+        val useServerPose = hasServerPose &&
