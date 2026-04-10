@@ -893,3 +893,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
         if (estimate.learnedHipVectorXNorm.isFinite() && estimate.learnedHipVectorYNorm.isFinite()) {
             learnedHipVectorXNorm = estimate.learnedHipVectorXNorm
+            learnedHipVectorYNorm = estimate.learnedHipVectorYNorm
+        }
+        val metrics = estimate.toSceneMetricSnapshot().withManualSubjectHeightProfile()
+        val solvedMetrics = if (metrics.source == "arcore_floor") {
+            physicalSceneGraph.solve(metrics).also { maybePersistPhysicalSceneBias() }
+        } else {
+            metrics
+        }
+        val technicalMetrics = solvedMetrics
