@@ -951,3 +951,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         json ?: return
         val jsonCorrectedDistance = json.optDouble("corrected_distance_m", Double.NaN).toFloat()
         val serverConstrainedDistance = serverDebug?.authoritativeDistanceMetersOrNull(jsonCorrectedDistance)
+        val jsonCorrectedHeight = json.optDouble("corrected_height_m", Double.NaN).toFloat()
+        val serverConstrainedHeight = serverDebug?.authoritativeHeightMetersOrNull(jsonCorrectedHeight)
+        val metrics = SceneMetricSnapshot(
+            source = json.optString("source", latestSceneMetrics?.source ?: "server"),
+            confidence = json.optDouble("confidence", latestSceneMetrics?.confidence?.toDouble() ?: 0.0).toFloat(),
+            distanceMeters = serverConstrainedDistance
+                ?: json.optDouble("distance_m", latestSceneMetrics?.distanceMeters?.toDouble() ?: Double.NaN).toFloat(),
+            bodyHeightMeters = serverConstrainedHeight
+                ?: json.optDouble("body_height_m", latestSceneMetrics?.bodyHeightMeters?.toDouble() ?: Double.NaN).toFloat(),
+            cameraHeightMeters = json.optDouble("camera_height_m", latestSceneMetrics?.cameraHeightMeters?.toDouble() ?: Double.NaN).toFloat(),
+            floorPitchDegrees = json.optDouble("floor_pitch_deg", latestSceneMetrics?.floorPitchDegrees?.toDouble() ?: Double.NaN).toFloat(),
+            lateralOffsetMeters = json.optDouble("lateral_offset_m", latestSceneMetrics?.lateralOffsetMeters?.toDouble() ?: Double.NaN).toFloat(),
+            correctedDistanceMeters = serverConstrainedDistance
+                ?: jsonCorrectedDistance,
+            correctedHeightMeters = serverConstrainedHeight
+                ?: jsonCorrectedHeight,
+            correctedCameraHeightMeters = json.optDouble("corrected_camera_height_m", Double.NaN).toFloat(),
+            localHeightCandidateMeters = json.optDouble("local_height_candidate_m", Double.NaN).toFloat(),
