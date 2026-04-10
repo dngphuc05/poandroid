@@ -875,3 +875,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 ?.bodyHeightMeters
                 ?.takeIf { previousHeightIsConstraint && it.isFinite() }
         val estimate = deriveOverlayPoseEstimate(
+            roi = roi,
+            screenX = _completedX,
+            screenY = _completedY,
+            visibility = _completedVis,
+            rawSubjectHeightMeters = previousPhysicalHeight ?: Float.NaN,
+            worldTracking = worldTracking,
+            intrinsics = worldTracking?.intrinsics ?: latestCameraIntrinsics,
+            previousHipVectorXNorm = learnedHipVectorXNorm,
+            previousHipVectorYNorm = learnedHipVectorYNorm,
+            visualTopYNorm = visualTopYNorm,
+            visualTopConfidence = visualTopConfidence,
+        )
+        if (estimate == null) {
+            ageTechnicalSceneMetrics(allowVisibleBodyHold = true)
+            return
+        }
+        if (estimate.learnedHipVectorXNorm.isFinite() && estimate.learnedHipVectorYNorm.isFinite()) {
+            learnedHipVectorXNorm = estimate.learnedHipVectorXNorm
