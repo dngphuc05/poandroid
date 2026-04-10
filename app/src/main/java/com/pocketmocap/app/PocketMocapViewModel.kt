@@ -613,3 +613,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     }
                                     else -> {
                                         val predicted = _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = false)
+                                        _smoothedX[i] = predicted.first
+                                        _smoothedY[i] = predicted.second
+                                        if (_hasLastReliable2D[i]) {
+                                            _smoothedX[i] = _lastReliable2DX[i]
+                                            _smoothedY[i] = _lastReliable2DY[i]
+                                        }
+                                    }
+                                }
+                                if (effectiveVis >= VIS_UNCERTAIN) {
+                                    _lastReliable2DX[i] = _smoothedX[i]
+                                    _lastReliable2DY[i] = _smoothedY[i]
+                                    _hasLastReliable2D[i] = true
+                                }
+                                _lowConfidenceFrames[i] = if (rawVis < VIS_UNCERTAIN) {
+                                    (_lowConfidenceFrames[i] + 1).coerceAtMost(120)
+                                } else {
+                                    0
+                                }
