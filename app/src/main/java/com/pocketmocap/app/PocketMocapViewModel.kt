@@ -1176,3 +1176,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun maybePersistPhysicalSceneBias() {
+        sceneBiasSaveCountdown += 1
+        if (sceneBiasSaveCountdown < 30) return
+        sceneBiasSaveCountdown = 0
+        val bias = physicalSceneGraph.currentBias
+        sceneBiasPrefs.edit()
+            .putFloat("floor_height_bias_m", bias.floorHeightBiasMeters)
+            .putFloat("depth_scale", bias.depthScale)
+            .putFloat("depth_offset_m", bias.depthOffsetMeters)
+            .putFloat("height_endpoint_bias_m", bias.heightEndpointBiasMeters)
+            .apply()
+    }
+
