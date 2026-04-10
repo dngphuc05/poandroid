@@ -1234,3 +1234,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 kotlin.math.abs(it.poseJointsNormalized - 1f) <= 1e-3f
         } == true
         val useServerPose = hasServerPose &&
+            serverHealth.usable &&
+            serverMetricPoseDisplayReady
+        val serverPoseIsStaleForRecording =
+            lastPose3DAgeMs?.let { it > 85L } == true
+        val allowClientTechnicalFallback = !serverMetricPoseExpected
+        val clientTechnicalPose = if (useServerPose || !allowClientTechnicalFallback) {
+            null
+        } else {
+            latestClientTechnicalPose()
+        }
+        val techX = if (useServerPose) serverPoseX else clientTechnicalPose?.first
