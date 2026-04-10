@@ -1090,3 +1090,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 0f
             }
         val heightJump =
+            if (previous.bodyHeightMeters.isFinite() && raw.bodyHeightMeters.isFinite()) {
+                kotlin.math.abs(raw.bodyHeightMeters - previous.bodyHeightMeters)
+            } else {
+                0f
+            }
+        val cameraHeightJump =
+            if (previous.cameraHeightMeters.isFinite() && raw.cameraHeightMeters.isFinite()) {
+                kotlin.math.abs(raw.cameraHeightMeters - previous.cameraHeightMeters)
+            } else {
+                0f
+            }
+        val holdHeight =
