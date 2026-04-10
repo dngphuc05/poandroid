@@ -1526,3 +1526,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val verticalRange = clientBodyVerticalRangeNorm() ?: return null
         val bodyHeightNorm = (verticalRange.second - verticalRange.first).coerceAtLeast(0.25f)
         val metersPerNorm = (bodyHeightMeters / bodyHeightNorm).coerceIn(1.2f, 5.8f)
+        val hipCenterX = (_completedX[23] + _completedX[24]) * 0.5f
+        val floorNormY = verticalRange.second
+
+        val outX = FloatArray(33)
+        val outY = FloatArray(33)
+        val outZ = FloatArray(33)
+        val z = poseLandmarksZ
