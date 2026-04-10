@@ -746,3 +746,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(errorMessage = "Pipeline init failed: ${e.message}") }
         }
     }
+
+    fun initPipeline(listener: HybridPosePipeline.Listener) {
+        externalPipelineListener = listener
+        ensurePipeline()
+    }
+
+    /** Feed a camera frame into the pipeline (called from CaptureScreen). */
+    fun onCameraFrame(frame: CapturedCameraFrame) {
