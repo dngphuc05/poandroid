@@ -765,3 +765,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             else -> Pair(x, y)
         }
 
+    private fun clearServerPoseArrays() {
+        clearDisplayedServerPoseArrays()
+        clearClientTechnicalPoseArrays()
+        technicalDistanceMeters = Float.NaN
+        technicalHeightMeters = Float.NaN
+        technicalGroundY = Float.NaN
+        latestWorldTracking = null
+        latestSceneMetrics = null
+        latestTechnicalSceneMetrics = null
+        latestServerPoseDebug = null
+        sceneHoldFrames = 0
+        technicalSceneMissingFrames = 0
+        noPoseFrames = 0
+        learnedHipVectorXNorm = Float.NaN
+        learnedHipVectorYNorm = Float.NaN
+        lastCanonicalAuthoritativeHeightMeters = Float.NaN
+        lastCanonicalAuthoritativeDistanceMeters = Float.NaN
+        bodyTurnTransitionDetector.reset()
