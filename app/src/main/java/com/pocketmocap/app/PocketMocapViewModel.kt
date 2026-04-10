@@ -600,3 +600,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     }
                                     effectiveVis >= VIS_OCCLUDE -> {
                                         // ── Uncertain (0.20–0.50): conservative EMA, reject outliers ────
+                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, xNorm[i], yNorm[i])) {
+                                            val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
+                                            val alpha = (0.12f + normSpeed * 0.28f).coerceIn(0.12f, 0.40f)
+                                            _smoothedX[i] = alpha * xNorm[i] + (1f - alpha) * _smoothedX[i]
+                                            _smoothedY[i] = alpha * yNorm[i] + (1f - alpha) * _smoothedY[i]
+                                        } else if (_hasLastReliable2D[i]) {
+                                            _smoothedX[i] = _lastReliable2DX[i]
+                                            _smoothedY[i] = _lastReliable2DY[i]
+                                        }
+                                        _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
+                                    }
+                                    else -> {
+                                        val predicted = _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = false)
