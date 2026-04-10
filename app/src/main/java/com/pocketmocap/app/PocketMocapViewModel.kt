@@ -546,3 +546,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         }
                         if (!_hasSmoothedLandmarks) {
                             // First frame: seed positions AND smoothed visibility from raw MediaPipe
+                            xNorm.copyInto(_smoothedX)
+                            yNorm.copyInto(_smoothedY)
+                            for (i in 0 until 33) {
+                                _smoothedVis[i] = visibility[i].coerceIn(0f, 1f)
+                                _lowConfidenceFrames[i] = if (_smoothedVis[i] < VIS_UNCERTAIN) 1 else 0
+                                if (_smoothedVis[i] >= VIS_UNCERTAIN) {
+                                    _lastReliable2DX[i] = _smoothedX[i]
+                                    _lastReliable2DY[i] = _smoothedY[i]
+                                    _hasLastReliable2D[i] = true
+                                }
+                                _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
+                            }
+                            _hasSmoothedLandmarks = true
+                        } else {
+                            // Smooth MediaPipe visibility — prevents rapid band-switching and bone/joint
