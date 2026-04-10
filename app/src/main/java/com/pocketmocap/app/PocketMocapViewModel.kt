@@ -1042,3 +1042,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
+    private fun ageTechnicalSceneMetrics(allowVisibleBodyHold: Boolean = false) {
+        technicalSceneMissingFrames += 1
+        val visibleJoints = _completedVis.count { it > 0.5f }
+        val arTracking = latestWorldTracking?.trackingState == "tracking"
+        val serverMetricUsable = latestServerPoseDebug?.hasV2MetricAuthority() == true ||
+            serverPoseStableFrames >= MIN_STABLE_SERVER_FRAMES
+        val canHoldVisibleScene = allowVisibleBodyHold &&
