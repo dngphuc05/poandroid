@@ -1541,3 +1541,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return Triple(outX, outY, outZ)
     }
 
+    private fun clientTechnicalSmoothingAlpha(index: Int, motionMeters: Float, visibility: Float): Float {
+        val confidenceScale = when {
+            visibility >= 0.82f -> 1.0f
+            visibility >= 0.55f -> 0.74f
+            visibility >= 0.32f -> 0.46f
+            else -> 0.25f
+        }
+        val params = when (index) {
