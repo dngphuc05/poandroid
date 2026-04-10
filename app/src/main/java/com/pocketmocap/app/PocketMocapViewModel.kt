@@ -1496,3 +1496,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        val outX = _clientTechnicalSmoothX.copyOf()
+        val outY = _clientTechnicalSmoothY.copyOf()
+        val outZ = _clientTechnicalSmoothZ.copyOf()
+        stabilizeClientTechnicalTorsoFrame(outX, outY, outZ, _completedVis, learn = false)
+        stabilizeClientTechnicalArmBones(outX, outY, outZ, _completedVis, learn = false)
+        for (i in 0 until 33) {
+            _clientTechnicalSmoothX[i] = outX[i]
+            _clientTechnicalSmoothY[i] = outY[i]
+            _clientTechnicalSmoothZ[i] = outZ[i]
+        }
+        clientTechnicalPoseX = outX
+        clientTechnicalPoseY = outY
+        clientTechnicalPoseZ = outZ
+        clientTechnicalPoseConf = _completedVis.copyOf()
+    }
+
