@@ -855,3 +855,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
+    private fun updateSceneMetrics(
+        worldTracking: WorldTrackingSnapshot?,
+        visualTopYNorm: Float = Float.NaN,
+        visualTopConfidence: Float = Float.NaN,
+    ) {
+        latestWorldTracking = worldTracking
+        worldTracking?.intrinsics?.let { latestCameraIntrinsics = it }
+        val roi = computePoseRoi(_completedX, _completedY, _completedVis)
