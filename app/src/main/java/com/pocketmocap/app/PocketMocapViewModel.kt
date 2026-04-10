@@ -561,3 +561,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _hasSmoothedLandmarks = true
                         } else {
                             // Smooth MediaPipe visibility — prevents rapid band-switching and bone/joint
+                            // flicker when vis oscillates near 0.20/0.30/0.50 threshold boundaries.
+                            // α=0.25 → time constant ~3.5 frames (58ms fade), eliminates single-frame pops.
+                            for (i in 0 until 33) {
+                                _smoothedVis[i] = 0.25f * visibility[i].coerceIn(0f, 1f) + 0.75f * _smoothedVis[i]
+                            }
+                            for (i in 0 until 33) {
+                                val vis = _smoothedVis[i]  // smoothed — avoids mid-frame band switching
