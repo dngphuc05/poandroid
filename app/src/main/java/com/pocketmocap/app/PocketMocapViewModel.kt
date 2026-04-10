@@ -568,3 +568,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             }
                             for (i in 0 until 33) {
                                 val vis = _smoothedVis[i]  // smoothed — avoids mid-frame band switching
+                                val rawVis = visibility[i].coerceIn(0f, 1f)
+                                val reappearing = _lowConfidenceFrames[i] >= 2 && rawVis >= VIS_UNCERTAIN
+                                val effectiveVis = if (reappearing) rawVis else vis
+                                if (reappearing) {
+                                    _smoothedVis[i] = maxOf(_smoothedVis[i], rawVis)
+                                }
+                                val dx = xNorm[i] - _smoothedX[i]
