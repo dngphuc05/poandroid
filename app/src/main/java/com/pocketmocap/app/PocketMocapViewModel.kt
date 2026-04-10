@@ -538,3 +538,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     ) {
                         noPoseFrames = 0
                         val state = _uiState.value.pipelineState
+                        // Collect raw MediaPipe landmarks for bone-length learning
+                        if (state == HybridPosePipeline.PipelineState.BOOTSTRAPPING ||
+                            (!_boneConstraints.isReady && state == HybridPosePipeline.PipelineState.CAPTURING)) {
+                            _boneConstraints.collectFrame(xNorm, yNorm, visibility)
+                            if (!_boneConstraints.isReady) _boneConstraints.tryBuild()
+                        }
+                        if (!_hasSmoothedLandmarks) {
+                            // First frame: seed positions AND smoothed visibility from raw MediaPipe
