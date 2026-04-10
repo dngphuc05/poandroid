@@ -902,3 +902,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             metrics
         }
         val technicalMetrics = solvedMetrics
+            .takeIf { it.source == "arcore_floor" }
+            ?.let { smoothTechnicalSceneMetrics(it) }
+        if (technicalMetrics != null) {
+            latestTechnicalSceneMetrics = technicalMetrics
+            technicalSceneMissingFrames = 0
+        } else {
+            ageTechnicalSceneMetrics(allowVisibleBodyHold = true)
+        }
+        val previous = latestSceneMetrics
