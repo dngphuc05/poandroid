@@ -1452,3 +1452,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return Triple(x.copyOf(), y.copyOf(), z.copyOf())
     }
 
+    private fun updateClientTechnicalPose() {
+        val rawPose = buildRawClientTechnicalPose() ?: run {
+            clearClientTechnicalPoseArrays()
+            return
+        }
+        val x = rawPose.first.copyOf()
+        val y = rawPose.second.copyOf()
