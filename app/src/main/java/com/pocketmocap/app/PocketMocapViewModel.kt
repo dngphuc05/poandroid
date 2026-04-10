@@ -1158,3 +1158,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             heightEndpointBiasMeters = sceneBiasPrefs.getFloat("height_endpoint_bias_m", 0f),
         )
 
+    private fun loadManualMetricProfile() {
+        val cameraHeight = sceneBiasPrefs
+            .getFloat(PREF_MANUAL_CAMERA_HEIGHT_M, _uiState.value.manualCameraHeightMeters)
+            .takeIf { it.isFinite() && it in 0.20f..2.50f }
+            ?: _uiState.value.manualCameraHeightMeters
+        val subjectEnabled = sceneBiasPrefs.getBoolean(PREF_SUBJECT_HEIGHT_ENABLED, false)
+        val subjectHeight = sceneBiasPrefs
