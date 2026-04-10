@@ -1118,3 +1118,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             raw.bodyHeightMeters
         }
         val smoothedCameraHeight = smoothValue(previous.cameraHeightMeters, raw.cameraHeightMeters, alpha = 0.18f, maxStep = 0.10f)
+
+        return raw.copy(
+            confidence = (previous.confidence * 0.62f + raw.confidence * 0.38f).coerceIn(0f, 1f),
+            distanceMeters = smoothedDistance,
+            bodyHeightMeters = smoothedHeight,
+            cameraHeightMeters = smoothedCameraHeight,
+            floorPitchDegrees = smoothValue(previous.floorPitchDegrees, raw.floorPitchDegrees, alpha = 0.16f, maxStep = 3.0f),
+            lateralOffsetMeters = smoothValue(previous.lateralOffsetMeters, raw.lateralOffsetMeters, alpha = 0.22f, maxStep = 0.18f),
+            correctedDistanceMeters = smoothedDistance,
+            // correctedHeightMeters is a diagnostic value; the trust gate that
