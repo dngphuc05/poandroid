@@ -911,3 +911,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             ageTechnicalSceneMetrics(allowVisibleBodyHold = true)
         }
         val previous = latestSceneMetrics
+        val stickyMetrics =
+            if (technicalMetrics != null) {
+                technicalMetrics
+            } else if (
+                solvedMetrics.source == "roi_fallback" &&
+                previous?.source == "arcore_floor" &&
+                sceneHoldFrames < MAX_AR_SCENE_HOLD_FRAMES &&
+                solvedMetrics.distanceMeters.isFinite() &&
+                previous.distanceMeters.isFinite() &&
+                kotlin.math.abs(solvedMetrics.distanceMeters - previous.distanceMeters) < 0.16f
+            ) {
+                sceneHoldFrames += 1
+                previous.copy(
+                    distanceMeters = previous.distanceMeters * 0.78f + solvedMetrics.distanceMeters * 0.22f,
+                    bodyHeightMeters = previous.bodyHeightMeters.takeIf { it.isFinite() } ?: solvedMetrics.bodyHeightMeters,
+                    cameraHeightMeters = previous.cameraHeightMeters.takeIf { it.isFinite() } ?: solvedMetrics.cameraHeightMeters,
+                    lateralOffsetMeters = previous.lateralOffsetMeters.takeIf { it.isFinite() } ?: solvedMetrics.lateralOffsetMeters,
+                )
