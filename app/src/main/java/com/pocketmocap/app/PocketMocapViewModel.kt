@@ -1197,3 +1197,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun startCaptureRecording() {
+        physicalSceneGraph.resetRuntimeState()
+        latestSceneMetrics = null
+        latestTechnicalSceneMetrics = null
+        technicalSceneMissingFrames = 0
+        sceneHoldFrames = 0
+        val dir = captureRecorder.start()
