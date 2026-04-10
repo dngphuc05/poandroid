@@ -783,3 +783,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         lastCanonicalAuthoritativeHeightMeters = Float.NaN
         lastCanonicalAuthoritativeDistanceMeters = Float.NaN
         bodyTurnTransitionDetector.reset()
+    }
+
+    private fun clearDisplayedServerPoseArrays() {
+        serverPoseX = null
+        serverPoseY = null
+        serverPoseZ = null
+        serverPoseConf = null
+        serverMetricPoseDisplayReady = false
+        serverMetricClientMotionOverlayActive = false
+        serverPoseStableFrames = 0
+        technicalPoseX = null
+        technicalPoseY = null
+        technicalPoseZ = null
+        technicalGroundY = Float.NaN
+        _hasServerPose = false
+        heldCanonicalServerPoseFrames = 0
+        _serverPoseSmoothX.fill(0f)
+        _serverPoseSmoothY.fill(0f)
