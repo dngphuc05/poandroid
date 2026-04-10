@@ -1211,3 +1211,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     fun stopCaptureRecording() {
         val dir = captureRecorder.stop()
+        isCaptureRecording = false
+        activeCaptureFolderName = dir?.name
+        Log.i(TAG, "Capture recording stopped: ${dir?.absolutePath}")
+    }
+
+    private fun recordCaptureFrameIfNeeded() {
+        if (!captureRecorder.isRecording) return
+        val hasServerPose = serverPoseX != null && serverPoseY != null && serverPoseZ != null
