@@ -944,3 +944,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun updateSceneMetricsFromServer(
+        json: JSONObject?,
+        serverDebug: ServerPoseDebugSnapshot? = latestServerPoseDebug,
+    ) {
+        json ?: return
+        val jsonCorrectedDistance = json.optDouble("corrected_distance_m", Double.NaN).toFloat()
+        val serverConstrainedDistance = serverDebug?.authoritativeDistanceMetersOrNull(jsonCorrectedDistance)
