@@ -716,3 +716,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 it.confidence >= MIN_AR_SCENE_CONFIDENCE_FOR_SERVER &&
                                 (it.subjectDistanceMeters.isFinite() || it.subjectHeightMeters.isFinite())
                         }?.let {
+                            SceneMetricSnapshot(
+                                source = it.source,
+                                confidence = it.confidence,
+                                distanceMeters = it.subjectDistanceMeters,
+                                bodyHeightMeters = it.subjectHeightMeters,
+                                cameraHeightMeters = it.cameraHeightMeters,
+                                floorPitchDegrees = it.floorPitchDegrees,
+                                lateralOffsetMeters = it.lateralOffsetMeters,
+                            ).withManualSubjectHeightProfile()
+                        }
+                    }
+
