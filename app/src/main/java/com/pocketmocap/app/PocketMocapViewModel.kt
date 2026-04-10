@@ -520,3 +520,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             xNorm = _smoothedX.copyOf(),
                             yNorm = _smoothedY.copyOf(),
                             visibility = _smoothedVis.copyOf(),
+                        )
+                    }
+
+                    override fun onLandmarksDetected(
+                        xNorm: FloatArray,
+                        yNorm: FloatArray,
+                        visibility: FloatArray,
+                        zWorld: FloatArray?,
+                        xWorld: FloatArray?,
+                        yWorld: FloatArray?,
+                        imageWidth: Int,
+                        imageHeight: Int,
+                        worldTracking: WorldTrackingSnapshot?,
+                        visualTopYNorm: Float,
+                        visualTopConfidence: Float,
+                    ) {
+                        noPoseFrames = 0
+                        val state = _uiState.value.pipelineState
