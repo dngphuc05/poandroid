@@ -649,3 +649,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _completedVis,
                         )
                         val visible = _completedVis.count { it > 0.5f }
+                        // Drive UI and outbound server packets from the completed 33-point set so a
+                        // whole missing limb can still be reconstructed client-side in the same frame.
+                        directLandmarkCallback?.invoke(_completedX, _completedY, _completedVis, imageWidth, imageHeight)
+                        // mutableStateOf writes for warning banner, joint count, server fallback
+                        poseLandmarksX = _completedX.copyOf()
+                        poseLandmarksY = _completedY.copyOf()
+                        poseLandmarksZ = zWorld
+                        worldLandmarksX = xWorld
+                        worldLandmarksY = yWorld
+                        worldLandmarksZ = zWorld
+                        poseVisibility = _completedVis.copyOf()
+                        updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
+                        updateClientTechnicalPose()
+                        updateServerMetricPoseWithClientMotion()
+                        recordCaptureFrameIfNeeded()
+                        // Guard constant/rarely-changing values — avoids spurious Compose recompositions
