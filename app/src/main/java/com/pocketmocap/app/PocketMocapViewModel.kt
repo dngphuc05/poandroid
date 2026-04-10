@@ -1519,3 +1519,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             ?: scene.distanceMeters.takeIf { it.isFinite() && it in 0.35f..12f }
             ?: return null
         val bodyHeightMeters = scene.correctedHeightMeters
+            .takeIf { it.isFinite() && it in 1.05f..2.35f }
+            ?: scene.bodyHeightMeters.takeIf { it.isFinite() && it in 1.05f..2.35f }
+            ?: return null
+
+        val verticalRange = clientBodyVerticalRangeNorm() ?: return null
+        val bodyHeightNorm = (verticalRange.second - verticalRange.first).coerceAtLeast(0.25f)
+        val metersPerNorm = (bodyHeightMeters / bodyHeightNorm).coerceIn(1.2f, 5.8f)
