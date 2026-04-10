@@ -1136,3 +1136,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
+    private fun resetClientTrackingState() {
+        _hasSmoothedLandmarks = false
+        _smoothedVis.fill(0f)
+        _kalman.forEach { it.reset() }
+        _boneConstraints.reset()
+        _landmarkFallback.reset()
+        _hasLastGoodRelativeZ.fill(false)
+        _hasLastReliable2D.fill(false)
+        _lowConfidenceFrames.fill(0)
+        learnedHipVectorXNorm = Float.NaN
+        learnedHipVectorYNorm = Float.NaN
+        physicalSceneGraph.resetRuntimeState()
+    }
+
