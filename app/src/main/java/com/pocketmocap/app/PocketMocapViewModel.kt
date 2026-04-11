@@ -2286,3 +2286,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             technicalGroundY = Float.NaN
         }
 
+        val outX = FloatArray(33)
+        val outY = FloatArray(33)
+        val outZ = FloatArray(33)
+        val serverMetricAuthority = canonicalMetricAuthority || latestServerPoseDebug?.hasV2MetricAuthority() == true
+        val recoveringFromStalePose =
+            lastPose3DInterarrivalMs > 115L ||
+                heldCanonicalServerPoseFrames > 0 ||
+                lastPose3DAgeMs?.let { it > 85L } == true
+        val turnTransitionState = bodyTurnTransitionDetector.update(
