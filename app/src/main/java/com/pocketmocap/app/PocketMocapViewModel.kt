@@ -1696,3 +1696,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         // canonical server joints only until a proper local 3D limb overlay exists.
         if (!ENABLE_SERVER_METRIC_CLIENT_MOTION_OVERLAY) return
         val serverDebug = latestServerPoseDebug ?: return
+        if (!serverMetricPoseDisplayReady) return
+        if (serverDebug.metricPoseStatus == "hold_previous" || heldCanonicalServerPoseFrames > 0) return
+        if (lastPose3DAgeMs?.let { it > 45L } == true) return
+        if (serverDebug.poseLifterAppliedJointCount.isFinite() && serverDebug.poseLifterAppliedJointCount > 0.5f) return
+        val currentServerX = serverPoseX ?: return
+        val currentServerY = serverPoseY ?: return
+        val currentServerZ = serverPoseZ ?: return
