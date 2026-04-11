@@ -2236,3 +2236,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             Float.NaN
         }
 
+        val authoritativeHeight = latestServerPoseDebug?.authoritativeHeightMetersOrNull(
+            latestTechnicalSceneMetrics?.correctedHeightMeters ?: Float.NaN,
+        )
+        val authoritativeDistance = latestServerPoseDebug?.authoritativeDistanceMetersOrNull(
+            latestTechnicalSceneMetrics?.correctedDistanceMeters ?: Float.NaN,
+        )
+        technicalHeightMeters = authoritativeHeight
+            ?: latestTechnicalSceneMetrics?.correctedHeightMeters?.takeIf { it.isFinite() }
+            ?: latestTechnicalSceneMetrics?.bodyHeightMeters?.takeIf { it.isFinite() }
+            ?: if (floorY.isFinite()) rawHeightMeters else Float.NaN
+        technicalDistanceMeters = authoritativeDistance
+            ?: latestTechnicalSceneMetrics?.correctedDistanceMeters?.takeIf { it.isFinite() }
+            ?: latestTechnicalSceneMetrics?.distanceMeters?.takeIf { it.isFinite() }
+            ?: if (rawDistanceMeters.isFinite()) rawDistanceMeters else Float.NaN
+
