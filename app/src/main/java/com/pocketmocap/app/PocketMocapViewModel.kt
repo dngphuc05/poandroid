@@ -1938,3 +1938,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return kotlin.math.abs(metricHeight - median) > maxOf(0.22f, median * 0.12f)
     }
 
+    private fun clientBodyVerticalRangeNorm(): Pair<Float, Float>? {
+        fun minY(indices: IntArray, minVisibility: Float): Float {
+            var value = Float.POSITIVE_INFINITY
+            for (idx in indices) {
+                if (_completedVis.getOrNull(idx) ?: 0f <= minVisibility) continue
+                val y = _completedY.getOrNull(idx) ?: continue
+                if (y.isFinite()) value = minOf(value, y)
+            }
+            return value
+        }
+
