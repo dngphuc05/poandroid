@@ -1807,3 +1807,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
             if (rawDeltaLimit > 0f && rawDelta > rawDeltaLimit && visibility < 0.92f) continue
 
+            var dx = (candidateX - outX[i]) * alpha
+            var dy = (candidateY - outY[i]) * alpha
+            var dz = (candidateZ - outZ[i]) * alpha
+            val step = sqrt(dx * dx + dy * dy + dz * dz)
+            val maxStep = overlayMaxStep(i)
+            if (maxStep <= 0f) continue
+            if (step > maxStep && step > 1e-5f) {
+                val scale = maxStep / step
