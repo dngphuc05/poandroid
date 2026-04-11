@@ -2480,3 +2480,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         ensurePipeline()
         viewModelScope.launch {
             // Step 1: Intrinsic — read from Camera2 API via bridge
+            _uiState.update { it.copy(calibrationStep = CalibrationStep.INTRINSIC_CALC) }
+            Log.i(TAG, "calibration step: INTRINSIC_CALC")
+            delay(600)
+
+            // Step 2: Extrinsic = identity (phone is origin)
+            _uiState.update { it.copy(calibrationStep = CalibrationStep.EXTRINSIC_ANCHOR) }
+            Log.i(TAG, "calibration step: EXTRINSIC_ANCHOR")
+            delay(600)
+
