@@ -2310,3 +2310,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 continue
             }
 
+            val alpha = if (_hasServerPose) {
+                val dx = sx[i] - _serverPoseSmoothX[i]
+                val dy = sy[i] - _serverPoseSmoothY[i]
+                val dz = sz[i] - _serverPoseSmoothZ[i]
+                val motion = sqrt(dx * dx + dy * dy + dz * dz)
+                val fastLimb = canonicalMetricAuthority && isServerFastLimbJoint(i)
+                val bodyAnchor = canonicalMetricAuthority && isServerRootOrBodyAnchor(i)
