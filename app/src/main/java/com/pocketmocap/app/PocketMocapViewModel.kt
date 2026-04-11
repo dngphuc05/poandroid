@@ -2317,3 +2317,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 val motion = sqrt(dx * dx + dy * dy + dz * dz)
                 val fastLimb = canonicalMetricAuthority && isServerFastLimbJoint(i)
                 val bodyAnchor = canonicalMetricAuthority && isServerRootOrBodyAnchor(i)
+                val baseAlphaRaw = when {
+                    fastLimb && conf[i] >= 0.80f -> 0.68f
+                    fastLimb && conf[i] >= 0.55f -> 0.56f
+                    fastLimb -> 0.42f
+                    bodyAnchor && conf[i] >= 0.80f -> 0.34f
+                    bodyAnchor && conf[i] >= 0.55f -> 0.28f
+                    bodyAnchor -> 0.20f
+                    canonicalMetricAuthority && conf[i] >= 0.80f -> 0.50f
+                    canonicalMetricAuthority && conf[i] >= 0.55f -> 0.40f
+                    canonicalMetricAuthority -> 0.28f
+                    conf[i] >= 0.80f -> 0.28f
+                    conf[i] >= 0.55f -> 0.22f
+                    else -> 0.16f
+                }
+                val baseAlpha = if (turnFastUpdateActive) {
