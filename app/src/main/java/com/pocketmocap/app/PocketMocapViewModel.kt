@@ -1865,3 +1865,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val dx = x[child] - x[parent]
             val dy = y[child] - y[parent]
             val dz = z[child] - z[parent]
+            val length = sqrt(dx * dx + dy * dy + dz * dz)
+            if (!length.isFinite() || length < 1e-5f) return
+            val target = targetHeightMeters * ratio
+            val scale = target / length
+            val desiredX = x[parent] + dx * scale
+            val desiredY = y[parent] + dy * scale
+            val desiredZ = z[parent] + dz * scale
