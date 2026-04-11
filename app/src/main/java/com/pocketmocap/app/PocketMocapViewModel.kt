@@ -1788,3 +1788,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         for (i in 0 until 33) {
             if (!valid[i]) continue
             val visibility = _completedVis.getOrNull(i) ?: 0f
+            val alpha = overlayAlpha(i, visibility)
+            if (alpha <= 0f) continue
+
+            val candidateX = serverRoot.first + (localX[i] - localRoot.first)
+            val candidateY = serverRoot.second + (localY[i] - localRoot.second)
+            val candidateZ = serverRoot.third + (localZ[i] - localRoot.third)
+            if (!candidateX.isFinite() || !candidateY.isFinite() || !candidateZ.isFinite()) continue
+
