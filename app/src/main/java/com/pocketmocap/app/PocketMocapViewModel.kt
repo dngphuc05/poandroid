@@ -1581,3 +1581,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         learn: Boolean,
     ) {
         fun symmetricSegment(slot: Int, a: Int, b: Int, minMeters: Float, maxMeters: Float, blend: Float) {
+            if (a !in 0 until 33 || b !in 0 until 33 || slot !in _clientTechnicalTorsoLengthMeters.indices) return
+            if (visibility.getOrNull(a) ?: 0f < 0.34f) return
+            if (visibility.getOrNull(b) ?: 0f < 0.34f) return
+            val dx = x[b] - x[a]
+            val dy = y[b] - y[a]
+            val dz = z[b] - z[a]
+            val length = sqrt(dx * dx + dy * dy + dz * dz)
