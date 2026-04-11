@@ -2251,3 +2251,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             ?: latestTechnicalSceneMetrics?.distanceMeters?.takeIf { it.isFinite() }
             ?: if (rawDistanceMeters.isFinite()) rawDistanceMeters else Float.NaN
 
+        if (floorY.isFinite()) {
+            for (i in 0 until 33) {
+                if (valid[i]) sy[i] -= floorY
+            }
+        }
+        val canonicalMetricAuthority = latestServerPoseDebug?.hasCanonicalMetricPose() == true
+        var canonicalDisplayReady =
