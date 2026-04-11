@@ -2044,3 +2044,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             ?: maxY(intArrayOf(11, 12, 23, 24)).takeIf { it.isFinite() }
             ?: return false
         val rawHeight = top - floor
+        if (!rawHeight.isFinite() || rawHeight < 0.45f) return false
+
+        val rootIndices = intArrayOf(23, 24)
+        var rootX = 0f
+        var rootY = 0f
+        var rootZ = 0f
+        var rootCount = 0
