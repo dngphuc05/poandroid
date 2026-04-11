@@ -2012,3 +2012,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         targetDistanceMeters: Float?,
     ): Boolean {
         val targetHeight = targetHeightMeters?.takeIf { it.isFinite() && it in 1.05f..2.35f } ?: return false
+
+        fun minY(indices: IntArray, minValid: Boolean = true): Float {
+            var value = Float.POSITIVE_INFINITY
+            for (idx in indices) {
+                if (idx !in 0 until 33) continue
+                if (minValid && !valid[idx]) continue
+                val yi = y[idx]
