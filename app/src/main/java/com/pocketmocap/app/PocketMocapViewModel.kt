@@ -1667,3 +1667,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
             if (!target.isFinite() || target !in minMeters..maxMeters) return
 
+            val scale = target / length
+            val desiredX = x[parent] + dx * scale
+            val desiredY = y[parent] + dy * scale
+            val desiredZ = z[parent] + dz * scale
+            x[child] += (desiredX - x[child]) * blend
+            y[child] += (desiredY - y[child]) * blend
+            z[child] += (desiredZ - z[child]) * blend
+        }
+
