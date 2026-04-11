@@ -2080,3 +2080,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 ?.let { -it }
             ?: rootZ * scale
 
+        for (i in 0 until 33) {
+            if (!valid[i]) continue
+            x[i] = targetRootX + (x[i] - rootX) * scale
+            y[i] = targetRootY + (y[i] - rootY) * scale
+            z[i] = targetRootZ + (z[i] - rootZ) * scale
+        }
+        return true
+    }
+
