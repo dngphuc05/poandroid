@@ -2096,3 +2096,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             return holdPreviousServerPoseOrClear("pose3d_without_joints")
         }
 
+        val rawX = FloatArray(33)
+        val rawY = FloatArray(33)
+        val rawZ = FloatArray(33)
+        val conf = FloatArray(33)
+        val valid = BooleanArray(33)
+        var validCount = 0
+
