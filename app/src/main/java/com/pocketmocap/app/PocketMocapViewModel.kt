@@ -2167,3 +2167,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         val sx = FloatArray(33)
+        val sy = FloatArray(33)
+        val sz = FloatArray(33)
+        var floorY = Float.POSITIVE_INFINITY
+        val serverJointsAlreadyDisplayFrame =
+            latestServerPoseDebug?.poseJointsFrame == "display_floor_metric_v1"
+
+        for (i in 0 until 33) {
+            if (!valid[i]) continue
+            if (serverJointsAlreadyDisplayFrame) {
+                sx[i] = rawX[i]
+                sy[i] = rawY[i]
+                sz[i] = rawZ[i]
+            } else {
+                val (displayX, displayY, displayZ) = cameraToDisplayWorld(
