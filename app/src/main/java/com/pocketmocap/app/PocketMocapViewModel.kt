@@ -2345,3 +2345,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     baseAlphaRaw
                 }
                 val motionDenominator = when {
+                    turnFastUpdateActive && fastLimb -> 0.070f
+                    turnFastUpdateActive && bodyAnchor -> 0.110f
+                    turnFastUpdateActive && canonicalMetricAuthority -> 0.120f
+                    fastLimb -> 0.10f
+                    canonicalMetricAuthority -> 0.18f
+                    serverMetricAuthority -> 0.30f
+                    else -> 0.18f
+                }
+                val motionBoostMax = when {
