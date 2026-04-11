@@ -1633,3 +1633,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         symmetricSegment(5, 12, 23, 0.25f, 1.10f, 0.34f)
     }
 
+    private fun stabilizeClientTechnicalArmBones(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        visibility: FloatArray,
+        learn: Boolean,
+    ) {
+        fun constrain(parent: Int, child: Int, minMeters: Float, maxMeters: Float, blend: Float) {
