@@ -1710,3 +1710,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val localY = localPose.second.copyOf()
         val localZ = localPose.third.copyOf()
         val valid = BooleanArray(33) { idx ->
+            idx < _completedVis.size &&
+                _completedVis[idx] >= 0.18f &&
+                localX[idx].isFinite() &&
+                localY[idx].isFinite() &&
+                localZ[idx].isFinite()
+        }
+        if (valid.count { it } < 18) return
+
