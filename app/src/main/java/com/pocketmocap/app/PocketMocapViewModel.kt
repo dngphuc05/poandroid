@@ -2468,3 +2468,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         pipeline?.stop()
     }
 
+    // ── Calibration ──
+    fun beginCalibration(imageWidth: Int, imageHeight: Int) {
+        Log.i(TAG, "beginCalibration: ${imageWidth}x${imageHeight}")
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        resetClientTrackingState()
+        serverCalibrationWidth = imageWidth
+        serverCalibrationHeight = imageHeight
+        latestCameraIntrinsics = readCameraIntrinsics(imageWidth, imageHeight)
+        ensurePipeline()
+        viewModelScope.launch {
+            // Step 1: Intrinsic — read from Camera2 API via bridge
