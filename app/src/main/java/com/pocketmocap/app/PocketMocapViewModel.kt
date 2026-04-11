@@ -2459,3 +2459,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         serverClient.connect(url)
     }
 
+    fun disconnect() {
+        userInitiatedDisconnect = true
+        autoResumeServerAfterReconnect = false
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        serverClient.disconnect()
+        pipeline?.stop()
+    }
+
