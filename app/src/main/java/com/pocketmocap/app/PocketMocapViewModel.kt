@@ -2160,3 +2160,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 heightAdmission in setOf("accepted", "soft_accept", "hold_previous") &&
                 (!targetHeight.isFinite() || kotlin.math.abs(constrainedHeight - targetHeight) <= 0.18f)
         val rawHeightAcceptable =
+            serverDebug?.rawHeightMeters?.takeIf { it.isFinite() }?.let { it in 1.25f..2.25f } == true &&
+                serverDebug.correctionReason !in setOf("scene_metrics_unusable", "raw_height_unusable", "no_scene_metrics")
+        if (!trustedConstrainedHeight && !rawHeightAcceptable) {
+            return holdPreviousServerPoseOrClear("server_height_target_untrusted")
+        }
+
+        val sx = FloatArray(33)
