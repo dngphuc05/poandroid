@@ -2122,3 +2122,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
         lastServerJointsCount = validCount
 
+        if (validCount < 4) {
+            return holdPreviousServerPoseOrClear("too_few_valid_server_joints")
+        }
+
+        val serverDebug = latestServerPoseDebug
+        val metricPoseStatus = serverDebug?.metricPoseStatus.orEmpty()
+        if (metricPoseStatus.isNotBlank() && metricPoseStatus !in setOf("ok", "hold_previous")) {
+            val reason = serverDebug?.metricPoseRejectReason?.takeIf { it.isNotBlank() } ?: metricPoseStatus
