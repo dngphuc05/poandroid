@@ -1573,3 +1573,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         else -> 0.080f
     }
 
+    private fun stabilizeClientTechnicalTorsoFrame(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        visibility: FloatArray,
+        learn: Boolean,
+    ) {
+        fun symmetricSegment(slot: Int, a: Int, b: Int, minMeters: Float, maxMeters: Float, blend: Float) {
