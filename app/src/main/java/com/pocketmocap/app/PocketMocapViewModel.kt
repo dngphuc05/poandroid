@@ -1796,3 +1796,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val candidateZ = serverRoot.third + (localZ[i] - localRoot.third)
             if (!candidateX.isFinite() || !candidateY.isFinite() || !candidateZ.isFinite()) continue
 
+            val rawDeltaX = candidateX - outX[i]
+            val rawDeltaY = candidateY - outY[i]
+            val rawDeltaZ = candidateZ - outZ[i]
+            val rawDelta = sqrt(rawDeltaX * rawDeltaX + rawDeltaY * rawDeltaY + rawDeltaZ * rawDeltaZ)
+            val rawDeltaLimit = when (i) {
+                15, 16 -> 0.32f
+                13, 14 -> 0.28f
+                else -> 0.0f
+            }
+            if (rawDeltaLimit > 0f && rawDelta > rawDeltaLimit && visibility < 0.92f) continue
+
