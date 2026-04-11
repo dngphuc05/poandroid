@@ -2274,3 +2274,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             )
         }
 
+        if (canonicalDisplayReady) {
+            technicalPoseX = sx.copyOf()
+            technicalPoseY = sy.copyOf()
+            technicalPoseZ = sz.copyOf()
+            technicalGroundY = 0f
+        } else {
+            technicalPoseX = null
+            technicalPoseY = null
+            technicalPoseZ = null
+            technicalGroundY = Float.NaN
+        }
+
