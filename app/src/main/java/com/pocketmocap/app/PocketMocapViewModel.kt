@@ -2063,3 +2063,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         rootY /= rootCount
         rootZ /= rootCount
 
+        val scale = (targetHeight / rawHeight).coerceIn(0.08f, 2.75f)
+        val targetRootX = latestTechnicalSceneMetrics
+            ?.lateralOffsetMeters
+            ?.takeIf { it.isFinite() && kotlin.math.abs(it) <= 2.5f }
+            ?: 0f
+        val targetRootY = latestServerPoseDebug
+            ?.metricRootYMeters
+            ?.takeIf { it.isFinite() && it in -0.10f..2.35f }
+            ?: (rootY - floor) * scale
+        val targetRootZ = latestServerPoseDebug
