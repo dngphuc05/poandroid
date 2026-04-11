@@ -2390,3 +2390,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 )
                 if (step > maxStep && step > 1e-5f) {
                     val scale = maxStep / step
+                    dx *= scale
+                    dy *= scale
+                    dz *= scale
+                }
+            }
+            _serverPoseSmoothX[i] += dx
+            _serverPoseSmoothY[i] += dy
+            _serverPoseSmoothZ[i] += dz
+            outX[i] = _serverPoseSmoothX[i]
+            outY[i] = _serverPoseSmoothY[i]
+            outZ[i] = _serverPoseSmoothZ[i]
+        }
+
