@@ -1815,3 +1815,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             if (maxStep <= 0f) continue
             if (step > maxStep && step > 1e-5f) {
                 val scale = maxStep / step
+                dx *= scale
+                dy *= scale
+                dz *= scale
+            }
+            outX[i] += dx
+            outY[i] += dy
+            outZ[i] += dz
+            _serverPoseSmoothX[i] = outX[i]
+            _serverPoseSmoothY[i] = outY[i]
+            _serverPoseSmoothZ[i] = outZ[i]
+            outConf[i] = maxOf(outConf[i], visibility.coerceIn(0f, 1f))
+            applied += 1
+        }
+
