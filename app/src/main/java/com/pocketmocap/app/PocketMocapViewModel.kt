@@ -2051,3 +2051,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         var rootY = 0f
         var rootZ = 0f
         var rootCount = 0
+        for (idx in rootIndices) {
+            if (!valid[idx]) continue
+            rootX += x[idx]
+            rootY += y[idx]
+            rootZ += z[idx]
+            rootCount += 1
+        }
+        if (rootCount <= 0) return false
+        rootX /= rootCount
+        rootY /= rootCount
+        rootZ /= rootCount
+
