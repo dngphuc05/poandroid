@@ -1718,3 +1718,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
         if (valid.count { it } < 18) return
 
+        val authoritativeHeight = serverDebug.authoritativeHeightMetersOrNull(
+            latestTechnicalSceneMetrics?.correctedHeightMeters ?: Float.NaN,
+        )
+            ?: lastCanonicalAuthoritativeHeightMeters.takeIf { it.isFinite() && it in 1.05f..2.35f }
+            ?: return
+        val authoritativeDistance = serverDebug.authoritativeDistanceMetersOrNull(
+            latestTechnicalSceneMetrics?.correctedDistanceMeters ?: Float.NaN,
+        )
+            ?: lastCanonicalAuthoritativeDistanceMeters.takeIf { it.isFinite() && it in 0.35f..12.0f }
+        normalizeCanonicalServerDisplayPose(
+            x = localX,
+            y = localY,
+            z = localZ,
+            valid = valid,
+            targetHeightMeters = authoritativeHeight,
+            targetDistanceMeters = authoritativeDistance,
+        )
+
