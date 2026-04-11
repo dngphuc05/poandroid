@@ -1676,3 +1676,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             z[child] += (desiredZ - z[child]) * blend
         }
 
+        constrain(11, 13, 0.12f, 0.58f, 0.70f)
+        constrain(13, 15, 0.12f, 0.58f, 0.76f)
+        constrain(12, 14, 0.12f, 0.58f, 0.70f)
+        constrain(14, 16, 0.12f, 0.58f, 0.76f)
+        constrain(15, 17, 0.02f, 0.24f, 0.58f)
+        constrain(15, 19, 0.02f, 0.24f, 0.58f)
+        constrain(15, 21, 0.02f, 0.24f, 0.58f)
+        constrain(16, 18, 0.02f, 0.24f, 0.58f)
+        constrain(16, 20, 0.02f, 0.24f, 0.58f)
+        constrain(16, 22, 0.02f, 0.24f, 0.58f)
+    }
+
