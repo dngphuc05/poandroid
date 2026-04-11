@@ -2354,3 +2354,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     else -> 0.18f
                 }
                 val motionBoostMax = when {
+                    turnFastUpdateActive && fastLimb -> 0.28f
+                    turnFastUpdateActive && bodyAnchor -> 0.20f
+                    turnFastUpdateActive && canonicalMetricAuthority -> 0.24f
+                    fastLimb -> 0.24f
+                    bodyAnchor -> 0.12f
+                    serverMetricAuthority -> 0.22f
+                    else -> 0.56f
+                }
+                val maxAlpha = when {
