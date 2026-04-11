@@ -2215,3 +2215,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             Float.NaN
         }
 
+        val rootIndices = intArrayOf(23, 24, 11, 12)
+        var rootX = 0f
+        var rootY = 0f
+        var rootZ = 0f
+        var rootCount = 0
+        for (idx in rootIndices) {
+            if (!valid[idx]) continue
+            rootX += sx[idx]
+            rootY += sy[idx]
+            rootZ += sz[idx]
+            rootCount += 1
+        }
+        val rawDistanceMeters = if (rootCount > 0) {
