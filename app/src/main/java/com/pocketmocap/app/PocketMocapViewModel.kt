@@ -1736,3 +1736,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             targetDistanceMeters = authoritativeDistance,
         )
 
+        fun rootOf(x: FloatArray, y: FloatArray, z: FloatArray): Triple<Float, Float, Float>? {
+            var rx = 0f
+            var ry = 0f
+            var rz = 0f
+            var count = 0
+            for (idx in intArrayOf(23, 24)) {
+                if (idx !in 0 until 33) continue
+                if (!x[idx].isFinite() || !y[idx].isFinite() || !z[idx].isFinite()) continue
+                rx += x[idx]
+                ry += y[idx]
+                rz += z[idx]
+                count += 1
+            }
+            return if (count >= 2) {
+                Triple(rx / count, ry / count, rz / count)
+            } else {
+                null
+            }
