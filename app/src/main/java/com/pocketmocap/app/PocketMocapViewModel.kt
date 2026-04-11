@@ -1981,3 +1981,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         rotationDegrees: Int,
     ): Triple<Float, Float, Float> {
         val rx: Float
+        val ryDown: Float
+        when (((rotationDegrees % 360) + 360) % 360) {
+            90 -> {
+                rx = -y
+                ryDown = x
+            }
+            180 -> {
+                rx = -x
+                ryDown = -y
+            }
+            270 -> {
+                rx = y
+                ryDown = -x
+            }
+            else -> {
+                rx = x
+                ryDown = y
+            }
