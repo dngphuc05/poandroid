@@ -2130,3 +2130,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val metricPoseStatus = serverDebug?.metricPoseStatus.orEmpty()
         if (metricPoseStatus.isNotBlank() && metricPoseStatus !in setOf("ok", "hold_previous")) {
             val reason = serverDebug?.metricPoseRejectReason?.takeIf { it.isNotBlank() } ?: metricPoseStatus
+            return holdPreviousServerPoseOrClear("metric_pose_$reason")
+        }
+        if (serverDebug?.hasCanonicalMetricPose() == true) {
+            val normalized = serverDebug.poseJointsNormalized
+            if (
+                serverDebug.poseJointsFrame == "display_floor_metric_v1" &&
+                (!normalized.isFinite() || kotlin.math.abs(normalized - 1f) > 1e-3f)
+            ) {
+                return holdPreviousServerPoseOrClear("canonical_joints_not_normalized")
+            }
+            if (canonicalServerDistanceDisagreesWithLocal(serverDebug)) {
+                return holdPreviousServerPoseOrClear("canonical_distance_local_disagreement")
+            }
+            if (canonicalServerHeightDisagreesWithLocal(serverDebug)) {
+                return holdPreviousServerPoseOrClear("canonical_height_local_disagreement")
+            }
+        }
+        val heightAdmission = serverDebug?.heightTargetAdmission.orEmpty()
