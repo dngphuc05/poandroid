@@ -1754,3 +1754,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             } else {
                 null
             }
+        }
+
+        val localRoot = rootOf(localX, localY, localZ) ?: return
+        val serverRoot = rootOf(currentServerX, currentServerY, currentServerZ) ?: localRoot
+        val outX = currentServerX.copyOf()
+        val outY = currentServerY.copyOf()
+        val outZ = currentServerZ.copyOf()
