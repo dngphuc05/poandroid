@@ -1703,3 +1703,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val currentServerX = serverPoseX ?: return
         val currentServerY = serverPoseY ?: return
         val currentServerZ = serverPoseZ ?: return
+        if (currentServerX.size < 33 || currentServerY.size < 33 || currentServerZ.size < 33) return
+
+        val localPose = latestClientTechnicalPose() ?: return
+        val localX = localPose.first.copyOf()
+        val localY = localPose.second.copyOf()
+        val localZ = localPose.third.copyOf()
+        val valid = BooleanArray(33) { idx ->
