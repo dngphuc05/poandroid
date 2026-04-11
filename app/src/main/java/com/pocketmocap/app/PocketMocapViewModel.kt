@@ -2228,3 +2228,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             rootCount += 1
         }
         val rawDistanceMeters = if (rootCount > 0) {
+            rootX /= rootCount
+            rootY /= rootCount
+            rootZ /= rootCount
+            sqrt(rootX * rootX + rootY * rootY + rootZ * rootZ)
+        } else {
+            Float.NaN
+        }
+
