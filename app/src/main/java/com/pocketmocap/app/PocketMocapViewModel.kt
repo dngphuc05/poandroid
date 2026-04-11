@@ -1614,3 +1614,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val desiredAX = centerX - dx * scale * 0.5f
             val desiredAY = centerY - dy * scale * 0.5f
             val desiredAZ = centerZ - dz * scale * 0.5f
+            val desiredBX = centerX + dx * scale * 0.5f
+            val desiredBY = centerY + dy * scale * 0.5f
+            val desiredBZ = centerZ + dz * scale * 0.5f
+            x[a] += (desiredAX - x[a]) * blend
+            y[a] += (desiredAY - y[a]) * blend
+            z[a] += (desiredAZ - z[a]) * blend
+            x[b] += (desiredBX - x[b]) * blend
+            y[b] += (desiredBY - y[b]) * blend
+            z[b] += (desiredBZ - z[b]) * blend
+        }
+
