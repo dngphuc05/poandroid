@@ -2035,3 +2035,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             return value
         }
 
+        val floor = minY(intArrayOf(27, 28, 29, 30, 31, 32))
+            .takeIf { it.isFinite() }
+            ?: minY(intArrayOf(25, 26, 23, 24)).takeIf { it.isFinite() }
+            ?: return false
+        val top = maxY(intArrayOf(0, 7, 8, 9, 10))
+            .takeIf { it.isFinite() }
+            ?: maxY(intArrayOf(11, 12, 23, 24)).takeIf { it.isFinite() }
+            ?: return false
+        val rawHeight = top - floor
