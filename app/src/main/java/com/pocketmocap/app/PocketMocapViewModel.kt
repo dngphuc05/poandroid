@@ -2428,3 +2428,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         if (canonicalDisplayReady) {
             heldCanonicalServerPoseFrames = 0
             val canonicalHeight = authoritativeHeight
+                ?: latestServerPoseDebug?.metricBodyHeightMeters?.takeIf { it.isFinite() && it in 1.05f..2.35f }
+            val canonicalDistance = authoritativeDistance
+                ?: latestServerPoseDebug?.metricRootDistanceMeters?.takeIf { it.isFinite() && it in 0.35f..12.0f }
+            if (canonicalHeight != null) {
+                lastCanonicalAuthoritativeHeightMeters = canonicalHeight
+            }
+            if (canonicalDistance != null) {
+                lastCanonicalAuthoritativeDistanceMeters = canonicalDistance
+            }
+        }
+        serverPoseX = outX
+        serverPoseY = outY
+        serverPoseZ = outZ
+        serverPoseConf = conf
+        return "ok"
+    }
+
