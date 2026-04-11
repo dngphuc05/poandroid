@@ -2103,3 +2103,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val valid = BooleanArray(33)
         var validCount = 0
 
+        for (i in 0 until 33) {
+            val joint = jointsArr.optJSONObject(i) ?: continue
+            val confidence = joint.optDouble("confidence", 0.0).toFloat()
+            val hasXYZ =
+                joint.has("x") && !joint.isNull("x") &&
+                joint.has("y") && !joint.isNull("y") &&
+                joint.has("z") && !joint.isNull("z")
+            val isValid = joint.optBoolean("valid", hasXYZ && confidence > 0f)
