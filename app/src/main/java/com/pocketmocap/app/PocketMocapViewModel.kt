@@ -1588,3 +1588,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val dy = y[b] - y[a]
             val dz = z[b] - z[a]
             val length = sqrt(dx * dx + dy * dy + dz * dz)
+            if (!length.isFinite() || length < 1e-5f) return
+
+            var target = _clientTechnicalTorsoLengthMeters[slot]
+            if (learn && length in minMeters..maxMeters) {
+                target = if (target.isFinite() && target in minMeters..maxMeters) {
+                    val low = target * 0.72f
+                    val high = target * 1.34f
