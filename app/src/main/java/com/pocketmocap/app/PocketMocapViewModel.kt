@@ -1761,3 +1761,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val outX = currentServerX.copyOf()
         val outY = currentServerY.copyOf()
         val outZ = currentServerZ.copyOf()
+        val outConf = (serverPoseConf ?: FloatArray(33)).copyOf()
+        var applied = 0
+
+        fun overlayAlpha(index: Int, visibility: Float): Float {
+            val base = when (index) {
+                13, 14 -> 0.24f
+                15, 16 -> 0.30f
+                else -> 0.0f
+            }
+            val confidenceScale = when {
