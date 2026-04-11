@@ -1625,3 +1625,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             z[b] += (desiredBZ - z[b]) * blend
         }
 
+        symmetricSegment(0, 11, 12, 0.18f, 0.70f, 0.64f)
+        symmetricSegment(1, 23, 24, 0.12f, 0.55f, 0.64f)
+        symmetricSegment(2, 11, 23, 0.22f, 0.95f, 0.46f)
+        symmetricSegment(3, 12, 24, 0.22f, 0.95f, 0.46f)
+        symmetricSegment(4, 11, 24, 0.25f, 1.10f, 0.34f)
+        symmetricSegment(5, 12, 23, 0.25f, 1.10f, 0.34f)
+    }
+
