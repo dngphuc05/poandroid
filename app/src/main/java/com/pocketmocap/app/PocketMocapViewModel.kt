@@ -1829,3 +1829,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             applied += 1
         }
 
+        if (applied <= 0) return
+        stabilizeServerOverlayArmBones(
+            x = outX,
+            y = outY,
+            z = outZ,
+            visibility = outConf,
+            targetHeightMeters = authoritativeHeight,
+        )
+
