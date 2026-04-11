@@ -1641,3 +1641,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         learn: Boolean,
     ) {
         fun constrain(parent: Int, child: Int, minMeters: Float, maxMeters: Float, blend: Float) {
+            if (parent !in 0 until 33 || child !in 0 until 33) return
+            if (visibility.getOrNull(parent) ?: 0f < 0.24f) return
+            if (visibility.getOrNull(child) ?: 0f < 0.24f) return
+            val dx = x[child] - x[parent]
+            val dy = y[child] - y[parent]
+            val dz = z[child] - z[parent]
+            val length = sqrt(dx * dx + dy * dy + dz * dz)
