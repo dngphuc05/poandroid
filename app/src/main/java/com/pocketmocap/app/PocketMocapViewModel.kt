@@ -2201,3 +2201,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        val rawHeightMeters = if (floorY.isFinite()) {
+            var maxY = Float.NEGATIVE_INFINITY
+            for (i in 0 until 33) {
+                if (valid[i]) maxY = maxOf(maxY, sy[i])
+            }
+            if (maxY.isFinite()) {
+                (maxY - floorY).coerceAtLeast(0f)
+            } else {
+                Float.NaN
+            }
+        } else {
+            Float.NaN
+        }
+
