@@ -1974,3 +1974,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun cameraToDisplayWorld(
+        x: Float,
+        y: Float,
+        z: Float,
+        rotationDegrees: Int,
+    ): Triple<Float, Float, Float> {
+        val rx: Float
