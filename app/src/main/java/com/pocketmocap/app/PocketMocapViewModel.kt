@@ -2421,3 +2421,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 }
             }
         }
+
+        _hasServerPose = true
+        serverPoseStableFrames = (serverPoseStableFrames + 1).coerceAtMost(120)
+        serverMetricPoseDisplayReady = canonicalDisplayReady
+        if (canonicalDisplayReady) {
+            heldCanonicalServerPoseFrames = 0
+            val canonicalHeight = authoritativeHeight
