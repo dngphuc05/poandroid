@@ -1688,3 +1688,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         constrain(16, 22, 0.02f, 0.24f, 0.58f)
     }
 
+    private fun updateServerMetricPoseWithClientMotion() {
+        serverMetricClientMotionOverlayActive = false
+        // The 2D-to-3D client overlay was useful as a latency experiment, but live
+        // captures show it can distort canonical server limbs and produce the
+        // "big/small/twisted" skeleton failure. Keep Technical/Avatar display on
+        // canonical server joints only until a proper local 3D limb overlay exists.
+        if (!ENABLE_SERVER_METRIC_CLIENT_MOTION_OVERLAY) return
+        val serverDebug = latestServerPoseDebug ?: return
