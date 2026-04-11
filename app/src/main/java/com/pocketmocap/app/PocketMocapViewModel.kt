@@ -2380,3 +2380,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
             var dx = (sx[i] - _serverPoseSmoothX[i]) * alpha
             var dy = (sy[i] - _serverPoseSmoothY[i]) * alpha
+            var dz = (sz[i] - _serverPoseSmoothZ[i]) * alpha
+            if (_hasServerPose && canonicalMetricAuthority) {
+                val step = sqrt(dx * dx + dy * dy + dz * dz)
+                val maxStep = serverDisplayMaxStepMeters(
+                    index = i,
+                    recoveringFromStalePose = recoveringFromStalePose,
+                    turnFastUpdateActive = turnFastUpdateActive,
+                )
+                if (step > maxStep && step > 1e-5f) {
+                    val scale = maxStep / step
