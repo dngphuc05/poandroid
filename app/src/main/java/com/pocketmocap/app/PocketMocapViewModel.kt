@@ -2073,3 +2073,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             ?.takeIf { it.isFinite() && it in -0.10f..2.35f }
             ?: (rootY - floor) * scale
         val targetRootZ = latestServerPoseDebug
+            ?.metricRootZMeters
+            ?.takeIf { it.isFinite() && kotlin.math.abs(it) <= 12f }
+            ?: targetDistanceMeters
+                ?.takeIf { it.isFinite() && it in 0.35f..12f }
+                ?.let { -it }
+            ?: rootZ * scale
+
