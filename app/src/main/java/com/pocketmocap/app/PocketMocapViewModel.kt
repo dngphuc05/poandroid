@@ -1999,3 +1999,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 rx = x
                 ryDown = y
             }
+        }
+        return Triple(rx, -ryDown, -z)
+    }
+
+    private fun normalizeCanonicalServerDisplayPose(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        valid: BooleanArray,
+        targetHeightMeters: Float?,
+        targetDistanceMeters: Float?,
+    ): Boolean {
+        val targetHeight = targetHeightMeters?.takeIf { it.isFinite() && it in 1.05f..2.35f } ?: return false
