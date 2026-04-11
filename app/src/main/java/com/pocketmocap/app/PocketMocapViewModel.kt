@@ -1771,3 +1771,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 else -> 0.0f
             }
             val confidenceScale = when {
+                visibility >= 0.80f -> 1.0f
+                visibility >= 0.55f -> 0.72f
+                visibility >= 0.35f -> 0.42f
+                else -> 0.0f
+            }
+            return (base * confidenceScale).coerceIn(0f, 0.36f)
+        }
+
