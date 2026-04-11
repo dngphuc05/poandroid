@@ -2373,3 +2373,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     else -> 0.80f
                 }
                 val motionBoost = (motion / motionDenominator).coerceIn(0f, 1f) * motionBoostMax
+                (baseAlpha + motionBoost).coerceIn(baseAlpha, maxAlpha)
+            } else {
+                1f
+            }
+
+            var dx = (sx[i] - _serverPoseSmoothX[i]) * alpha
+            var dy = (sy[i] - _serverPoseSmoothY[i]) * alpha
