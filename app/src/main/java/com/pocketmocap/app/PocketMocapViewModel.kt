@@ -2258,3 +2258,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
         val canonicalMetricAuthority = latestServerPoseDebug?.hasCanonicalMetricPose() == true
         var canonicalDisplayReady =
+            canonicalMetricAuthority &&
+                latestServerPoseDebug?.poseJointsFrame == "display_floor_metric_v1" &&
+                latestServerPoseDebug?.poseJointsNormalized?.takeIf { it.isFinite() }?.let {
+                    kotlin.math.abs(it - 1f) <= 1e-3f
+                } == true
+        if (canonicalMetricAuthority && !canonicalDisplayReady) {
+            canonicalDisplayReady = normalizeCanonicalServerDisplayPose(
+                x = sx,
+                y = sy,
+                z = sz,
+                valid = valid,
+                targetHeightMeters = authoritativeHeight,
+                targetDistanceMeters = authoritativeDistance,
+            )
+        }
+
