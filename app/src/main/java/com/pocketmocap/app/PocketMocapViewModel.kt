@@ -1913,3 +1913,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return kotlin.math.abs(metricDistance - median) > maxOf(0.75f, median * 0.30f)
     }
 
+    private fun canonicalServerHeightDisagreesWithLocal(serverDebug: ServerPoseDebugSnapshot): Boolean {
+        val metricHeight = serverDebug.metricBodyHeightMeters
+            .takeIf { it.isFinite() && it in 1.05f..2.35f }
+            ?: return false
+        val scene = latestTechnicalSceneMetrics ?: latestSceneMetrics ?: return false
+        val candidates = listOf(
+            scene.correctedHeightMeters,
+            scene.localHeightCandidateMeters,
+            scene.topRayFloorHeightMeters,
+            scene.topRayHeightMeters,
+            scene.hipGeometryHeightMeters,
+            scene.bodyHeightMeters,
+        ).filter { it.isFinite() && it in 1.05f..2.35f }
+        if (candidates.size < 2) return false
+        val sorted = candidates.sorted()
