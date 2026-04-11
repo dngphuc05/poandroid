@@ -1928,3 +1928,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         ).filter { it.isFinite() && it in 1.05f..2.35f }
         if (candidates.size < 2) return false
         val sorted = candidates.sorted()
+        val median = if (sorted.size % 2 == 0) {
+            (sorted[sorted.size / 2 - 1] + sorted[sorted.size / 2]) * 0.5f
+        } else {
+            sorted[sorted.size / 2]
+        }
+        val spread = sorted.last() - sorted.first()
+        if (spread > 0.24f) return false
+        return kotlin.math.abs(metricHeight - median) > maxOf(0.22f, median * 0.12f)
+    }
+
