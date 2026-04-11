@@ -1849,3 +1849,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         serverMetricClientMotionOverlayActive = true
     }
 
+    private fun stabilizeServerOverlayArmBones(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        visibility: FloatArray,
+        targetHeightMeters: Float,
+    ) {
+        if (!targetHeightMeters.isFinite() || targetHeightMeters !in 1.05f..2.35f) return
+
