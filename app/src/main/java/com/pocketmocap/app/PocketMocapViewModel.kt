@@ -1872,3 +1872,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val desiredX = x[parent] + dx * scale
             val desiredY = y[parent] + dy * scale
             val desiredZ = z[parent] + dz * scale
+            x[child] += (desiredX - x[child]) * blend
+            y[child] += (desiredY - y[child]) * blend
+            z[child] += (desiredZ - z[child]) * blend
+        }
+
+        constrain(11, 13, 0.185f, 0.25f, 0.92f)
+        constrain(13, 15, 0.160f, 0.22f, 0.94f)
+        constrain(12, 14, 0.185f, 0.25f, 0.92f)
+        constrain(14, 16, 0.160f, 0.22f, 0.94f)
+        for (child in intArrayOf(17, 19, 21)) {
+            constrain(15, child, 0.050f, 0.18f, 0.86f)
+        }
+        for (child in intArrayOf(18, 20, 22)) {
+            constrain(16, child, 0.050f, 0.18f, 0.86f)
+        }
+    }
+
