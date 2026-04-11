@@ -1838,3 +1838,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             targetHeightMeters = authoritativeHeight,
         )
 
+        serverPoseX = outX
+        serverPoseY = outY
+        serverPoseZ = outZ
+        serverPoseConf = outConf
+        technicalPoseX = outX.copyOf()
+        technicalPoseY = outY.copyOf()
+        technicalPoseZ = outZ.copyOf()
+        technicalGroundY = 0f
+        serverMetricClientMotionOverlayActive = true
+    }
+
