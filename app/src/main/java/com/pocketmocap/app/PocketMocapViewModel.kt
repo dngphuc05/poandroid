@@ -2295,3 +2295,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 heldCanonicalServerPoseFrames > 0 ||
                 lastPose3DAgeMs?.let { it > 85L } == true
         val turnTransitionState = bodyTurnTransitionDetector.update(
+            xNorm = _completedX,
+            yNorm = _completedY,
+            visibility = _completedVis,
+        )
+        val turnFastUpdateActive = canonicalMetricAuthority && turnTransitionState.fastUpdateActive
+        for (i in 0 until 33) {
+            if (!valid[i]) {
+                if (_hasServerPose) {
+                    outX[i] = _serverPoseSmoothX[i]
+                    outY[i] = _serverPoseSmoothY[i]
+                    outZ[i] = _serverPoseSmoothZ[i]
+                }
+                continue
+            }
+
