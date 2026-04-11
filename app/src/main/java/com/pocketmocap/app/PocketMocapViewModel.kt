@@ -1889,3 +1889,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    private fun canonicalServerDistanceDisagreesWithLocal(serverDebug: ServerPoseDebugSnapshot): Boolean {
+        val metricDistance = serverDebug.metricRootDistanceMeters
+            .takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: return false
+        val scene = latestTechnicalSceneMetrics ?: latestSceneMetrics ?: return false
+        val candidates = listOf(
+            scene.correctedDistanceMeters,
+            scene.footPlaneDistanceMeters,
+            scene.nearestFootFloorDistanceMeters,
+            scene.feetMidpointFloorDistanceMeters,
+            scene.distanceMeters,
+        ).filter { it.isFinite() && it in 0.35f..12.0f }
+        if (candidates.size < 2) return false
+        val sorted = candidates.sorted()
