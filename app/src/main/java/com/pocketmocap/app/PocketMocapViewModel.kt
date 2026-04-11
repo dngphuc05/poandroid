@@ -2192,3 +2192,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
+        for (idx in intArrayOf(27, 28, 29, 30, 31, 32)) {
+            if (valid[idx]) floorY = min(floorY, sy[idx])
+        }
+        if (!floorY.isFinite()) {
+            for (i in 0 until 33) {
+                if (valid[i]) floorY = min(floorY, sy[i])
+            }
+        }
+
