@@ -1779,3 +1779,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             return (base * confidenceScale).coerceIn(0f, 0.36f)
         }
 
+        fun overlayMaxStep(index: Int): Float = when (index) {
+            15, 16 -> 0.035f
+            13, 14 -> 0.030f
+            else -> 0.0f
+        }
+
+        for (i in 0 until 33) {
+            if (!valid[i]) continue
+            val visibility = _completedVis.getOrNull(i) ?: 0f
