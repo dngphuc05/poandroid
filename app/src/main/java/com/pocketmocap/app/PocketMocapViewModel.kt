@@ -2181,3 +2181,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 sz[i] = rawZ[i]
             } else {
                 val (displayX, displayY, displayZ) = cameraToDisplayWorld(
+                    x = rawX[i],
+                    y = rawY[i],
+                    z = rawZ[i],
+                    rotationDegrees = latestServerRotationDegrees,
+                )
+                sx[i] = displayX
+                sy[i] = displayY
+                sz[i] = displayZ
+            }
+        }
+
