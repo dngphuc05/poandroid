@@ -2445,3 +2445,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return "ok"
     }
 
+    // ── Connection ──
+    fun connect(url: String = _uiState.value.serverUrl) {
+        userInitiatedDisconnect = false
+        autoResumeServerAfterReconnect = false
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        _uiState.update { it.copy(
+            serverUrl = url,
+            connectionState = ConnectionState.CONNECTING,
+            errorMessage = null,
+        )}
+        serverClient.connect(url)
+    }
+
