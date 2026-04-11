@@ -1949,3 +1949,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             return value
         }
 
+        fun maxY(indices: IntArray, minVisibility: Float): Float {
+            var value = Float.NEGATIVE_INFINITY
+            for (idx in indices) {
+                if (_completedVis.getOrNull(idx) ?: 0f <= minVisibility) continue
+                val y = _completedY.getOrNull(idx) ?: continue
+                if (y.isFinite()) value = maxOf(value, y)
+            }
+            return value
+        }
+
