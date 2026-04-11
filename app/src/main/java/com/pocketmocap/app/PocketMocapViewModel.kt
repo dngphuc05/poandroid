@@ -2332,3 +2332,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     else -> 0.16f
                 }
                 val baseAlpha = if (turnFastUpdateActive) {
+                    when {
+                        fastLimb && conf[i] >= 0.55f -> maxOf(baseAlphaRaw, 0.78f)
+                        fastLimb -> maxOf(baseAlphaRaw, 0.62f)
+                        bodyAnchor && conf[i] >= 0.55f -> maxOf(baseAlphaRaw, 0.58f)
+                        bodyAnchor -> maxOf(baseAlphaRaw, 0.46f)
+                        canonicalMetricAuthority && conf[i] >= 0.55f -> maxOf(baseAlphaRaw, 0.66f)
+                        canonicalMetricAuthority -> maxOf(baseAlphaRaw, 0.52f)
+                        else -> baseAlphaRaw
+                    }
+                } else {
+                    baseAlphaRaw
+                }
+                val motionDenominator = when {
