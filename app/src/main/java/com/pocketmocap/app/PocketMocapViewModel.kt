@@ -1655,3 +1655,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 target = if (target.isFinite() && target in minMeters..maxMeters) {
                     val low = target * 0.68f
                     val high = target * 1.42f
+                    if (length in low..high) {
+                        target * 0.985f + length * 0.015f
+                    } else {
+                        target
+                    }
+                } else {
+                    length
+                }
+                _clientTechnicalBoneLengthMeters[child] = target
+            }
+            if (!target.isFinite() || target !in minMeters..maxMeters) return
+
