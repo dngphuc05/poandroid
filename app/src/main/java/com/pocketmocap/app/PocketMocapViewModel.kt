@@ -2111,3 +2111,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 joint.has("y") && !joint.isNull("y") &&
                 joint.has("z") && !joint.isNull("z")
             val isValid = joint.optBoolean("valid", hasXYZ && confidence > 0f)
+            if (!hasXYZ || !isValid) continue
+
+            rawX[i] = joint.optDouble("x", 0.0).toFloat()
+            rawY[i] = joint.optDouble("y", 0.0).toFloat()
+            rawZ[i] = joint.optDouble("z", 0.0).toFloat()
+            conf[i] = confidence
+            valid[i] = true
+            validCount++
+        }
+        lastServerJointsCount = validCount
+
