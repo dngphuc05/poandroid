@@ -2403,3 +2403,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             outZ[i] = _serverPoseSmoothZ[i]
         }
 
+        if (canonicalMetricAuthority) {
+            val canonicalHeight = authoritativeHeight
+                ?: latestServerPoseDebug?.metricBodyHeightMeters?.takeIf { it.isFinite() && it in 1.05f..2.35f }
+            if (canonicalHeight != null) {
+                enforceCanonicalLimbEndpoints(
+                    x = outX,
+                    y = outY,
+                    z = outZ,
+                    confidence = conf,
+                    targetHeightMeters = canonicalHeight,
+                )
+                for (idx in intArrayOf(13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 25, 26, 27, 28, 29, 30, 31, 32)) {
+                    _serverPoseSmoothX[idx] = outX[idx]
+                    _serverPoseSmoothY[idx] = outY[idx]
+                    _serverPoseSmoothZ[idx] = outZ[idx]
+                }
+            }
+        }
