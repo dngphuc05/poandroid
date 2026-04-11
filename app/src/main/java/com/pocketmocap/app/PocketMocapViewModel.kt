@@ -2089,3 +2089,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         return true
     }
 
+    private fun updateServerPoseArrays(pose3dJson: JSONObject): String {
+        val jointsArr = pose3dJson.optJSONArray("joints")
+        if (jointsArr == null || jointsArr.length() < 33) {
+            lastServerJointsCount = jointsArr?.length() ?: 0
+            return holdPreviousServerPoseOrClear("pose3d_without_joints")
+        }
+
