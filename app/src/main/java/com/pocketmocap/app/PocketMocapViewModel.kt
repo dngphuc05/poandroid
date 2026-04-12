@@ -2552,3 +2552,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         _uiState.update { it.copy(manualSubjectHeightMeters = calibrated) }
     }
 
+    fun addVrm(name: String, uri: Uri) {
+        _uiState.update { state ->
+            val updated = state.vrmModels + VrmModel(name, uri)
+            state.copy(vrmModels = updated, activeVrmIndex = updated.lastIndex)
+        }
+    }
+
