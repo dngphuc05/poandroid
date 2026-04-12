@@ -2583,3 +2583,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun updateServerUrl(url: String) {
+        _uiState.update { it.copy(serverUrl = url) }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(errorMessage = null) }
+    }
+}
