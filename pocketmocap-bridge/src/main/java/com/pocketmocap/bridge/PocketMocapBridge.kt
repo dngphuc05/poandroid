@@ -30,3 +30,13 @@ class PocketMocapBridge private constructor() {
 
     interface RuntimeStateListener {
         fun onRuntimeShellStateChanged(state: RuntimeShellState) {}
+        fun onUnityRuntimeReadyChanged(isReady: Boolean) {}
+    }
+
+    private var activityRef: WeakReference<ComponentActivity>? = null
+    private var vrmPickerLauncher: ActivityResultLauncher<Array<String>>? = null
+    private var lastPickedVrmUri: Uri? = null
+    private var runtimeShellState = RuntimeShellState()
+    private val listeners = CopyOnWriteArraySet<RuntimeStateListener>()
+    private val mainHandler = Handler(Looper.getMainLooper())
+
