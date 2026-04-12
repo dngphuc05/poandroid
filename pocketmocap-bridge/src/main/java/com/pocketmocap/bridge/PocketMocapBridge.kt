@@ -88,3 +88,10 @@ class PocketMocapBridge private constructor() {
         val sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
         val streamConfig = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
         val outputSize = streamConfig?.getOutputSizes(android.graphics.ImageFormat.YUV_420_888)?.firstOrNull()
+
+        val width = outputSize?.width ?: 1920
+        val height = outputSize?.height ?: 1080
+        val focalMm = focalLengths?.firstOrNull() ?: 4.25f
+        val sensorWidthMm = sensorSize?.width ?: 5.76f
+        val sensorHeightMm = sensorSize?.height ?: 4.29f
+        val fx = width.toDouble() * focalMm / sensorWidthMm
