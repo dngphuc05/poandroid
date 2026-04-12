@@ -2566,3 +2566,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     /** Start calibration from SetupScreen — requires already connected. */
     fun startCalibration() {
         val state = _uiState.value
+        if (state.connectionState != ConnectionState.CONNECTED) {
+            _uiState.update { it.copy(errorMessage = "Not connected to server") }
+            return
+        }
+        beginCalibration(1920, 1080)
+    }
+
