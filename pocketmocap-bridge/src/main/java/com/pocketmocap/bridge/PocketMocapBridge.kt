@@ -139,3 +139,21 @@ class PocketMocapBridge private constructor() {
         }
     }
 
+    fun updateRuntimeShellState(
+        trackingState: String,
+        setupProgress: Float,
+        setupLabel: String,
+        avatarState: String,
+        avatarLabel: String,
+        sourceLabel: String,
+        viewMode: String,
+    ) {
+        runtimeShellState = RuntimeShellState(
+            trackingState = trackingState,
+            setupProgress = setupProgress,
+            setupLabel = setupLabel,
+            avatarState = avatarState,
+            avatarLabel = avatarLabel,
+            sourceLabel = sourceLabel,
+            viewMode = viewMode,
+        )
