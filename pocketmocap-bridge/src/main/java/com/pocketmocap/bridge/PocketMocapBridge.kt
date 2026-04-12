@@ -40,3 +40,20 @@ class PocketMocapBridge private constructor() {
     private val listeners = CopyOnWriteArraySet<RuntimeStateListener>()
     private val mainHandler = Handler(Looper.getMainLooper())
 
+    @Volatile
+    private var unityRuntimeReady = false
+
+    fun attachActivity(activity: ComponentActivity) {
+        activityRef = WeakReference(activity)
+        resetRuntimeShellState()
+        vrmPickerLauncher = activity.registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null) {
+                activity.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+                lastPickedVrmUri = uri
+            }
+        }
+    }
+
