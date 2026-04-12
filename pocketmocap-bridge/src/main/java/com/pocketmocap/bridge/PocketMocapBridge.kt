@@ -16,3 +16,10 @@ import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArraySet
+
+class PocketMocapBridge private constructor() {
+    data class RuntimeShellState(
+        val trackingState: String = "inactive",
+        val setupProgress: Float = 0.0f,
+        val setupLabel: String = "",
+        val avatarState: String = "bundled",
