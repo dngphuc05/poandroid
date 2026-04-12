@@ -214,3 +214,10 @@ class PocketMocapBridge private constructor() {
             val target = File(directory, cleanName)
             if (!target.exists()) return target
             val suffix = System.currentTimeMillis()
+            val dotIndex = cleanName.lastIndexOf('.')
+            val base = if (dotIndex >= 0) cleanName.substring(0, dotIndex) else cleanName
+            val ext = if (dotIndex >= 0) cleanName.substring(dotIndex) else ""
+            return File(directory, "${base}_${suffix}${ext}")
+        }
+
+        private fun findPreferredCameraId(cameraManager: CameraManager): String? {
