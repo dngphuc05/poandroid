@@ -95,3 +95,18 @@ class PocketMocapBridge private constructor() {
         val sensorWidthMm = sensorSize?.width ?: 5.76f
         val sensorHeightMm = sensorSize?.height ?: 4.29f
         val fx = width.toDouble() * focalMm / sensorWidthMm
+        val fy = height.toDouble() * focalMm / sensorHeightMm
+        val cx = width / 2.0
+        val cy = height / 2.0
+
+        return JSONObject()
+            .put("cameraId", cameraId)
+            .put("width", width)
+            .put("height", height)
+            .put("fx", fx)
+            .put("fy", fy)
+            .put("cx", cx)
+            .put("cy", cy)
+            .toString()
+    }
+
