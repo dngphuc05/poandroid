@@ -2500,3 +2500,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             p.beginCalibration(imageWidth, imageHeight)
             Log.i(TAG, "calibration sent, navigating to capture screen")
 
+            // Navigate to CaptureScreen so camera starts feeding frames for bootstrap
+            _uiState.update { it.copy(shouldNavigateToCapture = true) }
+        }
+    }
+
+    private fun readCameraIntrinsics(imageWidth: Int, imageHeight: Int): CameraIntrinsics? {
+        val json = runCatching {
