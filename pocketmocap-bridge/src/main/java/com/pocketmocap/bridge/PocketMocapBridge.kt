@@ -117,3 +117,11 @@ class PocketMocapBridge private constructor() {
     fun getLastPickedVrmUri(): String? = lastPickedVrmUri?.toString()
 
     fun copyLastPickedVrmToCache(suggestedFileName: String): String {
+        val activity = activityRef?.get() ?: return ""
+        val uri = lastPickedVrmUri ?: return ""
+        val importDir = File(activity.filesDir, "imports").apply { mkdirs() }
+        val baseName = when {
+            suggestedFileName.isNotBlank() -> suggestedFileName
+            else -> uri.lastPathSegment ?: "picked-avatar"
+        }.replace("[^A-Za-z0-9._-]".toRegex(), "_")
+        val normalized = if (baseName.endsWith(".vrm", ignoreCase = true)) baseName else "$baseName.vrm"
