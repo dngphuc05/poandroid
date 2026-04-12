@@ -81,3 +81,10 @@ class PocketMocapBridge private constructor() {
      * Get camera intrinsics using any context (e.g. Application context from ViewModel).
      */
     fun getCameraIntrinsicsJson(context: Context): String {
+        val cameraManager = context.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        val cameraId = findPreferredCameraId(cameraManager) ?: return "{}"
+        val characteristics = cameraManager.getCameraCharacteristics(cameraId)
+        val focalLengths = characteristics.get(CameraCharacteristics.LENS_INFO_AVAILABLE_FOCAL_LENGTHS)
+        val sensorSize = characteristics.get(CameraCharacteristics.SENSOR_INFO_PHYSICAL_SIZE)
+        val streamConfig = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+        val outputSize = streamConfig?.getOutputSizes(android.graphics.ImageFormat.YUV_420_888)?.firstOrNull()
