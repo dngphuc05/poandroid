@@ -2489,3 +2489,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             Log.i(TAG, "calibration step: EXTRINSIC_ANCHOR")
             delay(600)
 
+            // Step 3: Send calibration to server → triggers bootstrap
+            Log.i(TAG, "Sending calibration to server: ${imageWidth}x${imageHeight}")
+            val p = pipeline
+            if (p == null) {
+                Log.e(TAG, "Pipeline is null after ensurePipeline — cannot calibrate")
+                _uiState.update { it.copy(errorMessage = "Pipeline not ready") }
+                return@launch
+            }
+            p.beginCalibration(imageWidth, imageHeight)
+            Log.i(TAG, "calibration sent, navigating to capture screen")
+
