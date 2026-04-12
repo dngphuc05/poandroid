@@ -191,3 +191,11 @@ class PocketMocapBridge private constructor() {
         listeners.forEach { dispatchState(it, state) }
     }
 
+    private fun dispatchReadyToAll(isReady: Boolean) {
+        listeners.forEach { dispatchReady(it, isReady) }
+    }
+
+    private fun dispatchState(listener: RuntimeStateListener, state: RuntimeShellState) {
+        mainHandler.post { listener.onRuntimeShellStateChanged(state) }
+    }
+
