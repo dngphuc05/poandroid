@@ -23,3 +23,10 @@ class PocketMocapBridge private constructor() {
         val setupProgress: Float = 0.0f,
         val setupLabel: String = "",
         val avatarState: String = "bundled",
+        val avatarLabel: String = "Default",
+        val sourceLabel: String = "",
+        val viewMode: String = "ar",
+    )
+
+    interface RuntimeStateListener {
+        fun onRuntimeShellStateChanged(state: RuntimeShellState) {}
