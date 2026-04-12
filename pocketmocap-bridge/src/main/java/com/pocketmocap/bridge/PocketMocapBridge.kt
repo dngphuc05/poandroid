@@ -157,3 +157,12 @@ class PocketMocapBridge private constructor() {
             sourceLabel = sourceLabel,
             viewMode = viewMode,
         )
+
+        val wasReady = unityRuntimeReady
+        unityRuntimeReady = true
+        if (!wasReady) {
+            dispatchReadyToAll(true)
+        }
+        dispatchStateToAll()
+    }
+
