@@ -221,3 +221,11 @@ class PocketMocapBridge private constructor() {
         }
 
         private fun findPreferredCameraId(cameraManager: CameraManager): String? {
+            val ids = cameraManager.cameraIdList
+            return ids.firstOrNull { id ->
+                cameraManager.getCameraCharacteristics(id)
+                    .get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+            } ?: ids.firstOrNull()
+        }
+    }
+}
