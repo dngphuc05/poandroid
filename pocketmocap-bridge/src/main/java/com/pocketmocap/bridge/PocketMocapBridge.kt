@@ -166,3 +166,13 @@ class PocketMocapBridge private constructor() {
         dispatchStateToAll()
     }
 
+    fun resetRuntimeShellState() {
+        runtimeShellState = RuntimeShellState()
+        val wasReady = unityRuntimeReady
+        unityRuntimeReady = false
+        if (wasReady) {
+            dispatchReadyToAll(false)
+        }
+        dispatchStateToAll()
+    }
+
