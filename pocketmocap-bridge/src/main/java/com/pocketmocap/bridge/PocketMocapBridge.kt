@@ -110,3 +110,10 @@ class PocketMocapBridge private constructor() {
             .toString()
     }
 
+    fun pickVrm() {
+        vrmPickerLauncher?.launch(arrayOf("*/*"))
+    }
+
+    fun getLastPickedVrmUri(): String? = lastPickedVrmUri?.toString()
+
+    fun copyLastPickedVrmToCache(suggestedFileName: String): String {
