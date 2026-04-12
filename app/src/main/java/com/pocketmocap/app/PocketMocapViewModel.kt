@@ -2573,3 +2573,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         beginCalibration(1920, 1080)
     }
 
+    /** One-tap: connect (if needed) → calibrate → navigate to capture. */
+    fun connectAndCalibrate() {
+        val state = _uiState.value
+        if (state.connectionState == ConnectionState.CONNECTED) {
+            beginCalibration(1920, 1080)
+        } else {
+            connect()
+        }
+    }
+
