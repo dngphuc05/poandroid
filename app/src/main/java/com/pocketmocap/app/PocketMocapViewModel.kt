@@ -2507,3 +2507,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     private fun readCameraIntrinsics(imageWidth: Int, imageHeight: Int): CameraIntrinsics? {
         val json = runCatching {
+            JSONObject(PocketMocapBridge.getInstance().getCameraIntrinsicsJson(getApplication()))
+        }.getOrNull() ?: return null
+        return CameraIntrinsics(
+            fx = json.optDouble("fx", imageWidth * 1.2).toFloat(),
+            fy = json.optDouble("fy", imageWidth * 1.2).toFloat(),
+            cx = json.optDouble("cx", imageWidth * 0.5).toFloat(),
+            cy = json.optDouble("cy", imageHeight * 0.5).toFloat(),
+            imageWidth = imageWidth,
+            imageHeight = imageHeight,
+        )
+    }
+
