@@ -199,3 +199,10 @@ class PocketMocapBridge private constructor() {
         mainHandler.post { listener.onRuntimeShellStateChanged(state) }
     }
 
+    private fun dispatchReady(listener: RuntimeStateListener, isReady: Boolean) {
+        mainHandler.post { listener.onUnityRuntimeReadyChanged(isReady) }
+    }
+
+    companion object {
+        private val instance = PocketMocapBridge()
+
