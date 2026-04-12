@@ -5,3 +5,13 @@ androidComponents {
     onVariants (selector().all(), { variant ->
         {
             // libil2cpp.usym.so is a special file produced by il2cpp, it's not an elf binary, thus ignore it
+            // if not ignored, there will be an error in log:
+            // llvm-strip.exe: error: '...libil2cpp.usym.so': The file was not recognized as a valid object file
+            packaging.jniLibs.keepDebugSymbols.add("**/libil2cpp.usym.so")
+
+            if (variant.name.toLowerCase().contains("release"))
+            {
+                println "Variant '${variant.name}', symbols will be stripped from binaries."
+                return
+            }
+
