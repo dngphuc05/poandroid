@@ -2528,3 +2528,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         super.onCleared()
     }
 
+    fun setMirrorDistance(distance: Float) {
+        _uiState.update { it.copy(mirrorDistance = distance) }
+        pipeline?.setMirrorDistance(distance)
+    }
+
+    fun setManualCameraHeightMeters(heightMeters: Float) {
+        val calibrated = heightMeters.coerceIn(0.20f, 2.50f)
