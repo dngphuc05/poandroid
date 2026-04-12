@@ -206,3 +206,11 @@ class PocketMocapBridge private constructor() {
     companion object {
         private val instance = PocketMocapBridge()
 
+        @JvmStatic
+        fun getInstance(): PocketMocapBridge = instance
+
+        private fun uniqueFile(directory: File, candidateName: String): File {
+            val cleanName = candidateName.lowercase(Locale.US)
+            val target = File(directory, cleanName)
+            if (!target.exists()) return target
+            val suffix = System.currentTimeMillis()
