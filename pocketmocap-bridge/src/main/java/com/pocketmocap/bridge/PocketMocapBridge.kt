@@ -64,3 +64,12 @@ class PocketMocapBridge private constructor() {
     }
 
     fun removeRuntimeStateListener(listener: RuntimeStateListener) {
+        listeners -= listener
+    }
+
+    fun getRuntimeShellStateSnapshot(): RuntimeShellState = runtimeShellState
+
+    /**
+     * Get camera intrinsics using attached activity context.
+     */
+    fun getCameraIntrinsicsJson(): String {
