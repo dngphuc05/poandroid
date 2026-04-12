@@ -183,3 +183,11 @@ class PocketMocapBridge private constructor() {
     fun getSetupLabel(): String = runtimeShellState.setupLabel
     fun getAvatarState(): String = runtimeShellState.avatarState
     fun getAvatarLabel(): String = runtimeShellState.avatarLabel
+    fun getSourceLabel(): String = runtimeShellState.sourceLabel
+    fun getViewMode(): String = runtimeShellState.viewMode
+
+    private fun dispatchStateToAll() {
+        val state = runtimeShellState
+        listeners.forEach { dispatchState(it, state) }
+    }
+
