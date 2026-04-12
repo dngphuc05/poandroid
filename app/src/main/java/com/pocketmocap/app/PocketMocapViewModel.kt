@@ -2535,3 +2535,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     fun setManualCameraHeightMeters(heightMeters: Float) {
         val calibrated = heightMeters.coerceIn(0.20f, 2.50f)
+        sceneBiasPrefs.edit()
+            .putFloat(PREF_MANUAL_CAMERA_HEIGHT_M, calibrated)
+            .apply()
+        _uiState.update { it.copy(manualCameraHeightMeters = calibrated) }
+    }
+
+    fun setManualSubjectHeightMeters(heightMeters: Float) {
