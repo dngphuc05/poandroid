@@ -2542,3 +2542,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun setManualSubjectHeightMeters(heightMeters: Float) {
+        val calibrated = heightMeters.takeIf { it.isFinite() && it in 1.05f..2.35f } ?: Float.NaN
+        sceneBiasPrefs.edit().apply {
+            putBoolean(PREF_SUBJECT_HEIGHT_ENABLED, calibrated.isFinite())
+            if (calibrated.isFinite()) {
+                putFloat(PREF_SUBJECT_HEIGHT_M, calibrated)
+            }
+        }.apply()
+        _uiState.update { it.copy(manualSubjectHeightMeters = calibrated) }
+    }
+
