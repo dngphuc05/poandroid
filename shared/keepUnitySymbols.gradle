@@ -1,0 +1,7 @@
+// Keeps symbols in runtime binaries, enabling stacktrace resolving at runtime.
+// Don't use it for publishing, because it increases the size of deployable package.
+
+androidComponents {
+    onVariants (selector().all(), { variant ->
+        {
+            // libil2cpp.usym.so is a special file produced by il2cpp, it's not an elf binary, thus ignore it
