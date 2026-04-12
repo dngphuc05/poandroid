@@ -14,3 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "pocket-mocap-client"
+include(":app")
+include(":pocketmocap-bridge")
+
