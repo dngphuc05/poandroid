@@ -2559,3 +2559,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun setActiveVrm(index: Int) {
+        _uiState.update { it.copy(activeVrmIndex = index) }
+    }
+
+    /** Start calibration from SetupScreen — requires already connected. */
+    fun startCalibration() {
+        val state = _uiState.value
