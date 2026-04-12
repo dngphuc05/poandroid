@@ -125,3 +125,17 @@ class PocketMocapBridge private constructor() {
             else -> uri.lastPathSegment ?: "picked-avatar"
         }.replace("[^A-Za-z0-9._-]".toRegex(), "_")
         val normalized = if (baseName.endsWith(".vrm", ignoreCase = true)) baseName else "$baseName.vrm"
+        val output = uniqueFile(importDir, normalized)
+
+        return try {
+            activity.contentResolver.openInputStream(uri)?.use { input ->
+                output.outputStream().use { outputStream ->
+                    input.copyTo(outputStream)
+                }
+            } ?: return ""
+            output.absolutePath
+        } catch (_: IOException) {
+            ""
+        }
+    }
+
