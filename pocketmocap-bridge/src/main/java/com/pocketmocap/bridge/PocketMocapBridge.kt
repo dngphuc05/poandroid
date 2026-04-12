@@ -57,3 +57,10 @@ class PocketMocapBridge private constructor() {
         }
     }
 
+    fun addRuntimeStateListener(listener: RuntimeStateListener) {
+        listeners += listener
+        dispatchState(listener, runtimeShellState)
+        dispatchReady(listener, unityRuntimeReady)
+    }
+
+    fun removeRuntimeStateListener(listener: RuntimeStateListener) {
