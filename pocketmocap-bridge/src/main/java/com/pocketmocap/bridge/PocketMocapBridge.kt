@@ -176,3 +176,10 @@ class PocketMocapBridge private constructor() {
         dispatchStateToAll()
     }
 
+    fun isUnityRuntimeReady(): Boolean = unityRuntimeReady
+
+    fun getTrackingState(): String = runtimeShellState.trackingState
+    fun getSetupProgress(): Float = runtimeShellState.setupProgress
+    fun getSetupLabel(): String = runtimeShellState.setupLabel
+    fun getAvatarState(): String = runtimeShellState.avatarState
+    fun getAvatarLabel(): String = runtimeShellState.avatarLabel
