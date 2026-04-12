@@ -2519,3 +2519,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         )
     }
 
+    fun onNavigatedToCapture() {
+        _uiState.update { it.copy(shouldNavigateToCapture = false) }
+    }
+
+    override fun onCleared() {
+        stopCaptureRecording()
+        super.onCleared()
+    }
+
