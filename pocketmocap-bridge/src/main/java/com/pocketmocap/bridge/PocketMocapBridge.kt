@@ -73,3 +73,11 @@ class PocketMocapBridge private constructor() {
      * Get camera intrinsics using attached activity context.
      */
     fun getCameraIntrinsicsJson(): String {
+        val ctx = activityRef?.get() ?: return "{}"
+        return getCameraIntrinsicsJson(ctx)
+    }
+
+    /**
+     * Get camera intrinsics using any context (e.g. Application context from ViewModel).
+     */
+    fun getCameraIntrinsicsJson(context: Context): String {
