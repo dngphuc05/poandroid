@@ -65,3 +65,10 @@ class ArCoreFrameCapture(
         renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
     }
 
+    @Volatile private var session: Session? = null
+    @Volatile private var running = false
+    @Volatile private var lastSentTimestampNs = 0L
+    @Volatile private var manualCameraHeightMeters = STARTUP_CAMERA_HEIGHT_PRIOR_M
+    @Volatile private var lockedCameraHeightMeters = Float.NaN
+    @Volatile private var pendingCameraHeightMeters = Float.NaN
+    @Volatile private var pendingCameraHeightFrames = 0
