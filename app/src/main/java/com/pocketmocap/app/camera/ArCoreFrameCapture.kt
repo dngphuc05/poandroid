@@ -669,3 +669,11 @@ private fun yuv420ToNv21(image: Image): ByteArray {
     for (row in 0 until chromaHeight) {
         for (col in 0 until chromaWidth) {
             val vuIndex = row * v.rowStride + col * v.pixelStride
+            val uuIndex = row * u.rowStride + col * u.pixelStride
+            output[offset++] = vBuffer.get(vuIndex)
+            output[offset++] = uBuffer.get(uuIndex)
+        }
+    }
+    return output
+}
+
