@@ -139,3 +139,18 @@ class ArCoreFrameCapture(
         private var textureUniform = 0
         private var sessionTextureBound = false
         @Volatile private var viewportWidth = 0
+        @Volatile private var viewportHeight = 0
+
+        private val quadVertices: FloatBuffer = floatBufferOf(
+            -1f, -1f,
+            1f, -1f,
+            -1f, 1f,
+            1f, 1f,
+        )
+        private val quadTexCoords: FloatBuffer = floatBufferOf(
+            0f, 1f,
+            1f, 1f,
+            0f, 0f,
+            1f, 0f,
+        )
+
