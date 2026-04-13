@@ -341,3 +341,16 @@ class ArCoreFrameCapture(
         )
     }
 
+    private fun acquirePortraitDepthMap(frame: Frame): DepthMapSnapshot? {
+        return try {
+            frame.acquireDepthImage16Bits().use { depthImage ->
+                extractPortraitDepthMap(depthImage)
+            }
+        } catch (_: NotYetAvailableException) {
+            null
+        } catch (e: Exception) {
+            Log.w(TAG, "Depth image unavailable: ${e.message}")
+            null
+        }
+    }
+
