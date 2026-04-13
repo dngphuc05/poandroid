@@ -487,3 +487,16 @@ class ArCoreFrameCapture(
         )
     }
 
+    private fun stabilizeFloorAnchor(cameraY: Float, candidate: FloorAnchor): FloorAnchor {
+        manualCameraHeightMeters
+            .takeIf { it.isFinite() && it in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M }
+            ?.let { manualHeight ->
+                lockedCameraHeightMeters = manualHeight
+                pendingCameraHeightMeters = Float.NaN
+                pendingCameraHeightFrames = 0
+                return candidate.copy(
+                    point = floatArrayOf(candidate.point[0], cameraY - manualHeight, candidate.point[2]),
+                    source = "${candidate.source}_manual_height",
+                )
+            }
+
