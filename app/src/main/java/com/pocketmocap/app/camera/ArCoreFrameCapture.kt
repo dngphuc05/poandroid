@@ -748,3 +748,10 @@ private fun compileShader(type: Int, source: String): Int {
 }
 
 private fun floatBufferOf(vararg values: Float): FloatBuffer =
+    ByteBuffer.allocateDirect(values.size * 4)
+        .order(ByteOrder.nativeOrder())
+        .asFloatBuffer()
+        .apply {
+            put(values)
+            position(0)
+        }
