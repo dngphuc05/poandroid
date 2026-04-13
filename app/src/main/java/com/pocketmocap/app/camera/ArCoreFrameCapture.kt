@@ -213,3 +213,11 @@ class ArCoreFrameCapture(
             GLES20.glDisableVertexAttribArray(texCoordAttrib)
         }
 
+        private fun updateCameraTextureCoordinates(frame: Frame) {
+            val ndc = floatArrayOf(
+                -1f, -1f,
+                1f, -1f,
+                -1f, 1f,
+                1f, 1f,
+            )
+            val tex = FloatArray(8)
