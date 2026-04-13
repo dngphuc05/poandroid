@@ -119,3 +119,15 @@ class ArCoreFrameCapture(
         pendingCameraHeightFrames = 0
     }
 
+    fun stop() {
+        running = false
+        val oldSession = session
+        session = null
+        runCatching { oldSession?.pause() }
+        runCatching { oldSession?.close() }
+        previewView.onPause()
+        lockedCameraHeightMeters = Float.NaN
+        pendingCameraHeightMeters = Float.NaN
+        pendingCameraHeightFrames = 0
+    }
+
