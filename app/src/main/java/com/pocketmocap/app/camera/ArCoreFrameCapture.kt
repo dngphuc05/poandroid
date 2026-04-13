@@ -500,3 +500,19 @@ class ArCoreFrameCapture(
                 )
             }
 
+        val rawHeight = cameraY - candidate.point[1]
+        val isRealPlane = candidate.source == "arcore_floor"
+        val isSoftFloor = candidate.source == "arcore_floor_hit" || candidate.source == "arcore_floor_provisional"
+        if (candidate.source == "arcore_floor_provisional") {
+            val held = currentCameraHeightPrior()
+            if (lockedCameraHeightMeters.isFinite() && abs(lockedCameraHeightMeters - STARTUP_CAMERA_HEIGHT_PRIOR_M) > 0.55f) {
+                lockedCameraHeightMeters = lockedCameraHeightMeters * 0.94f + STARTUP_CAMERA_HEIGHT_PRIOR_M * 0.06f
+            }
+            return candidate.copy(
+                point = floatArrayOf(candidate.point[0], cameraY - held, candidate.point[2]),
+                confidence = minOf(candidate.confidence, 0.42f),
+                source = "${candidate.source}_held",
+            )
+        }
+        if (!rawHeight.isFinite() || rawHeight !in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) {
+            val held = currentCameraHeightPrior()
