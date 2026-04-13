@@ -198,3 +198,18 @@ class ArCoreFrameCapture(
             }
         }
 
+        private fun drawCameraTexture() {
+            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
+            GLES20.glUseProgram(program)
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0)
+            GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureId)
+            GLES20.glUniform1i(textureUniform, 0)
+            GLES20.glEnableVertexAttribArray(positionAttrib)
+            GLES20.glVertexAttribPointer(positionAttrib, 2, GLES20.GL_FLOAT, false, 0, quadVertices)
+            GLES20.glEnableVertexAttribArray(texCoordAttrib)
+            GLES20.glVertexAttribPointer(texCoordAttrib, 2, GLES20.GL_FLOAT, false, 0, quadTexCoords)
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4)
+            GLES20.glDisableVertexAttribArray(positionAttrib)
+            GLES20.glDisableVertexAttribArray(texCoordAttrib)
+        }
+
