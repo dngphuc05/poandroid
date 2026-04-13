@@ -661,3 +661,11 @@ private fun yuv420ToNv21(image: Image): ByteArray {
 
     val u = image.planes[1]
     val v = image.planes[2]
+    var offset = width * height
+    val chromaWidth = width / 2
+    val chromaHeight = height / 2
+    val uBuffer = u.buffer
+    val vBuffer = v.buffer
+    for (row in 0 until chromaHeight) {
+        for (col in 0 until chromaWidth) {
+            val vuIndex = row * v.rowStride + col * v.pixelStride
