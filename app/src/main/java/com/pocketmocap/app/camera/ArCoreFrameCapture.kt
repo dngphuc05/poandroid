@@ -361,3 +361,10 @@ class ArCoreFrameCapture(
         if (srcWidth <= 1 || srcHeight <= 1) return null
         val dstWidth = srcHeight
         val dstHeight = srcWidth
+        val out = ShortArray(dstWidth * dstHeight)
+        val rowStride = plane.rowStride
+        val pixelStride = plane.pixelStride
+        if (rowStride <= 0 || pixelStride <= 0) return null
+        val rowBuffer = ByteArray(rowStride)
+        val buffer = plane.buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN)
+
