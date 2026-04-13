@@ -354,3 +354,10 @@ class ArCoreFrameCapture(
         }
     }
 
+    private fun extractPortraitDepthMap(depthImage: Image): DepthMapSnapshot? {
+        val plane = depthImage.planes.firstOrNull() ?: return null
+        val srcWidth = depthImage.width
+        val srcHeight = depthImage.height
+        if (srcWidth <= 1 || srcHeight <= 1) return null
+        val dstWidth = srcHeight
+        val dstHeight = srcWidth
