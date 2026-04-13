@@ -43,3 +43,16 @@ import kotlin.math.atan2
  * synchronized CPU image that we feed into MediaPipe.
  */
 class ArCoreFrameCapture(
+    private val context: Context,
+    private val onFrame: (CapturedCameraFrame) -> Unit,
+) {
+    companion object {
+        private const val TAG = "ArCoreFrameCapture"
+        private const val MIN_FRAME_INTERVAL_NS = 16_000_000L
+        private const val STARTUP_CAMERA_HEIGHT_PRIOR_M = 1.17f
+        private const val MIN_REASONABLE_CAMERA_HEIGHT_M = 0.20f
+        private const val MAX_REASONABLE_CAMERA_HEIGHT_M = 2.50f
+        private const val MAX_HIT_BOOTSTRAP_CAMERA_HEIGHT_M = 1.55f
+        private const val MAX_SOFT_FLOOR_DRIFT_FROM_PRIOR_M = 0.70f
+    }
+
