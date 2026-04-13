@@ -294,3 +294,10 @@ class ArCoreFrameCapture(
                 ?.coerceIn(MIN_REASONABLE_CAMERA_HEIGHT_M, MAX_REASONABLE_CAMERA_HEIGHT_M)
             ?: Float.NaN
         val pitch = cameraPitchDegrees(rotation)
+        val tracking = camera.trackingState
+        val cpuIntrinsics = camera.imageIntrinsics
+        val focal = cpuIntrinsics.focalLength
+        val principal = cpuIntrinsics.principalPoint
+        val dimensions = cpuIntrinsics.imageDimensions
+        // MediaPipe/display coordinates are portrait-upright (rotationDegrees=90).
+        // Rotate ARCore CPU-image intrinsics into the same coordinate frame.
