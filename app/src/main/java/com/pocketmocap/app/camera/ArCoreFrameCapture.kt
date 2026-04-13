@@ -741,3 +741,10 @@ private fun createCameraProgram(): Int {
 }
 
 private fun compileShader(type: Int, source: String): Int {
+    val shader = GLES20.glCreateShader(type)
+    GLES20.glShaderSource(shader, source)
+    GLES20.glCompileShader(shader)
+    return shader
+}
+
+private fun floatBufferOf(vararg values: Float): FloatBuffer =
