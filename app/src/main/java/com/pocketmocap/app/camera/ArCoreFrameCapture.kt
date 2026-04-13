@@ -80,3 +80,21 @@ class ArCoreFrameCapture(
         val source: String,
     )
 
+    fun start(lifecycleOwner: LifecycleOwner) {
+        if (running) return
+        running = true
+        try {
+            val arSession = Session(context)
+            val config = Config(arSession).apply {
+                planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
+                updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
+                focusMode = Config.FocusMode.AUTO
+                if (arSession.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+                    depthMode = Config.DepthMode.AUTOMATIC
+                }
+            }
+            arSession.configure(config)
+            session = arSession
+            arSession.resume()
+            previewView.onResume()
+            previewView.queueEvent {
