@@ -310,3 +310,21 @@ class ArCoreFrameCapture(
             imageHeight = dimensions[0],
         )
 
+        return WorldTrackingSnapshot(
+            timestampUs = frame.timestamp / 1000L,
+            source = if (floorAnchor != null && tracking == TrackingState.TRACKING) floorAnchor.source else "arcore",
+            trackingState = tracking.name.lowercase(),
+            cameraPosition = floatArrayOf(translation[0], translation[1], translation[2]),
+            cameraRotation = floatArrayOf(rotation[0], rotation[1], rotation[2], rotation[3]),
+            groundPoint = floorAnchor?.point,
+            groundNormal = floorAnchor?.normal,
+            cameraHeightMeters = cameraHeight,
+            subjectDistanceMeters = Float.NaN,
+            subjectHeightMeters = Float.NaN,
+            lateralOffsetMeters = Float.NaN,
+            floorPitchDegrees = pitch,
+            confidence = when {
+                floorAnchor != null && tracking == TrackingState.TRACKING -> floorAnchor.confidence
+                tracking == TrackingState.TRACKING -> 0.70f
+                else -> 0.30f
+            },
