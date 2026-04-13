@@ -587,3 +587,13 @@ class ArCoreFrameCapture(
         return candidate.copy(
             point = floatArrayOf(candidate.point[0], cameraY - locked, candidate.point[2]),
             confidence = minOf(candidate.confidence, 0.62f),
+            source = "${candidate.source}_held",
+        )
+    }
+
+    private fun currentCameraHeightPrior(): Float {
+        val manual = manualCameraHeightMeters
+        if (manual.isFinite() && manual in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) {
+            return manual
+        }
+        val locked = lockedCameraHeightMeters
