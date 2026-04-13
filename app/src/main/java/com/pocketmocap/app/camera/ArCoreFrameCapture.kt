@@ -221,3 +221,16 @@ class ArCoreFrameCapture(
                 1f, 1f,
             )
             val tex = FloatArray(8)
+            runCatching {
+                frame.transformCoordinates2d(
+                    Coordinates2d.OPENGL_NORMALIZED_DEVICE_COORDINATES,
+                    ndc,
+                    Coordinates2d.TEXTURE_NORMALIZED,
+                    tex,
+                )
+                quadTexCoords.position(0)
+                quadTexCoords.put(tex)
+                quadTexCoords.position(0)
+            }
+        }
+
