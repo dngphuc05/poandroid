@@ -252,3 +252,20 @@ class ArCoreFrameCapture(
             return
         }
 
+        image.use { cameraImage ->
+            val bitmap = yuv420ImageToBitmap(cameraImage) ?: return
+            val depthMap = acquirePortraitDepthMap(frame)
+            val snapshot = buildWorldTrackingSnapshot(arSession, frame, cameraImage, depthMap)
+            onFrame(
+                CapturedCameraFrame(
+                    bitmap = bitmap,
+                    width = bitmap.width,
+                    height = bitmap.height,
+                    timestampUs = timestampNs / 1000L,
+                    rotationDegrees = 90,
+                    worldTracking = snapshot,
+                )
+            )
+        }
+    }
+
