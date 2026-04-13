@@ -647,3 +647,10 @@ class ArCoreFrameCapture(
 private fun yuv420ImageToBitmap(image: Image): Bitmap? {
     if (image.format != ImageFormat.YUV_420_888) return null
     val nv21 = yuv420ToNv21(image)
+    val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
+    val out = ByteArrayOutputStream()
+    yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 82, out)
+    return BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size())
+}
+
+private fun yuv420ToNv21(image: Image): ByteArray {
