@@ -478,3 +478,12 @@ class ArCoreFrameCapture(
             }
         }
 
+        val point = bestPoint ?: return null
+        return FloorAnchor(
+            point = point,
+            normal = floatArrayOf(0f, 1f, 0f),
+            confidence = bestConfidence,
+            source = "arcore_floor_hit",
+        )
+    }
+
