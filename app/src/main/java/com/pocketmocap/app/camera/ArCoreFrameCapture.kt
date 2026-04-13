@@ -432,3 +432,16 @@ class ArCoreFrameCapture(
             if (plane.subsumedBy != null) continue
             if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) continue
             val dy = cameraY - plane.centerPose.ty()
+            if (dy !in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) continue
+            val area = (plane.extentX * plane.extentZ).coerceAtLeast(0f)
+            val score = abs(dy - priorHeight) * 0.70f +
+                abs(dy - STARTUP_CAMERA_HEIGHT_PRIOR_M) * if (lockedCameraHeightMeters.isFinite()) 0.04f else 0.18f -
+                area.coerceIn(0f, 1.6f) * 0.10f
+            if (score < bestScore) {
+                bestScore = score
+                best = plane
+            }
+        }
+        return best
+    }
+
