@@ -287,3 +287,10 @@ class ArCoreFrameCapture(
             Float.NaN
         }
         val manualCameraHeight = manualCameraHeightMeters
+            .takeIf { it.isFinite() && it in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M }
+        val cameraHeight = manualCameraHeight
+            ?: rawCameraHeight
+                .takeIf { it.isFinite() }
+                ?.coerceIn(MIN_REASONABLE_CAMERA_HEIGHT_M, MAX_REASONABLE_CAMERA_HEIGHT_M)
+            ?: Float.NaN
+        val pitch = cameraPitchDegrees(rotation)
