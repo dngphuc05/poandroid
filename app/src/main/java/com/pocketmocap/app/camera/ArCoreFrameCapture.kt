@@ -375,3 +375,18 @@ class ArCoreFrameCapture(
             buffer.get(rowBuffer, 0, rowStride)
             for (sx in 0 until srcWidth) {
                 val offset = sx * pixelStride
+                if (offset + 1 >= rowStride) continue
+                val depthMm = ((rowBuffer[offset + 1].toInt() and 0xFF) shl 8) or
+                    (rowBuffer[offset].toInt() and 0xFF)
+                val dx = srcHeight - 1 - sy
+                val dy = sx
+                out[dy * dstWidth + dx] = depthMm.toShort()
+            }
+        }
+        return DepthMapSnapshot(
+            width = dstWidth,
+            height = dstHeight,
+            depthMm = out,
+        )
+    }
+
