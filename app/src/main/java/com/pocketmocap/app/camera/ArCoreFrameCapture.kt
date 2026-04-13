@@ -390,3 +390,18 @@ class ArCoreFrameCapture(
         )
     }
 
+    private fun selectFloorAnchor(arSession: Session, frame: Frame, cameraPosition: FloatArray): FloorAnchor? {
+        val cameraY = cameraPosition.getOrNull(1) ?: return null
+        selectFloorPlane(arSession, cameraY)?.let { plane ->
+            return stabilizeFloorAnchor(
+                cameraY,
+                FloorAnchor(
+                point = plane.centerPose.translation,
+                normal = floatArrayOf(0f, 1f, 0f),
+                confidence = 0.90f,
+                source = "arcore_floor",
+                )
+            )
+        }
+        selectFloorHit(frame, cameraY)?.let { return stabilizeFloorAnchor(cameraY, it) }
+
