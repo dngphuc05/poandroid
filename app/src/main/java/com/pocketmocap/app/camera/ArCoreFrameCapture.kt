@@ -445,3 +445,16 @@ class ArCoreFrameCapture(
         return best
     }
 
+    private fun selectFloorHit(frame: Frame, cameraY: Float): FloorAnchor? {
+        val (width, height) = renderer.currentViewportSize()
+        if (width <= 1 || height <= 1) return null
+
+        val samples = arrayOf(
+            0.50f to 0.86f,
+            0.35f to 0.84f,
+            0.65f to 0.84f,
+            0.50f to 0.72f,
+            0.42f to 0.76f,
+            0.58f to 0.76f,
+        )
+        var bestPoint: FloatArray? = null
