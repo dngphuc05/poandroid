@@ -72,3 +72,11 @@ class ArCoreFrameCapture(
     @Volatile private var lockedCameraHeightMeters = Float.NaN
     @Volatile private var pendingCameraHeightMeters = Float.NaN
     @Volatile private var pendingCameraHeightFrames = 0
+
+    private data class FloorAnchor(
+        val point: FloatArray,
+        val normal: FloatArray,
+        val confidence: Float,
+        val source: String,
+    )
+
