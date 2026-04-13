@@ -328,3 +328,16 @@ class ArCoreFrameCapture(
                 tracking == TrackingState.TRACKING -> 0.70f
                 else -> 0.30f
             },
+            rawCameraHeightMeters = rawCameraHeight,
+            floorSource = floorAnchor?.source ?: "",
+            floorLockState = when {
+                floorAnchor == null -> "none"
+                !lockedCameraHeightMeters.isFinite() -> "acquiring"
+                floorAnchor.source.endsWith("_held") -> "holding"
+                else -> "locked"
+            },
+            intrinsics = displayIntrinsics,
+            depthMap = depthMap,
+        )
+    }
+
