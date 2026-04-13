@@ -569,3 +569,21 @@ class ArCoreFrameCapture(
             return candidate
         }
         val softFloorTooFarFromLock = isSoftFloor && jump > MAX_SOFT_FLOOR_DRIFT_FROM_PRIOR_M
+        if (!softFloorTooFarFromLock && candidate.confidence >= 0.86f) {
+            if (!pendingCameraHeightMeters.isFinite() || abs(rawHeight - pendingCameraHeightMeters) > 0.12f) {
+                pendingCameraHeightMeters = rawHeight
+                pendingCameraHeightFrames = 1
+            } else {
+                pendingCameraHeightMeters = pendingCameraHeightMeters * 0.75f + rawHeight * 0.25f
+                pendingCameraHeightFrames += 1
+            }
+            if (pendingCameraHeightFrames >= 10) {
+                lockedCameraHeightMeters = pendingCameraHeightMeters
+                pendingCameraHeightFrames = 0
+                pendingCameraHeightMeters = Float.NaN
+                return candidate
+            }
+        }
+        return candidate.copy(
+            point = floatArrayOf(candidate.point[0], cameraY - locked, candidate.point[2]),
+            confidence = minOf(candidate.confidence, 0.62f),
