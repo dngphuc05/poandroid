@@ -243,3 +243,12 @@ class ArCoreFrameCapture(
         if (timestampNs - lastSentTimestampNs < MIN_FRAME_INTERVAL_NS) return
         lastSentTimestampNs = timestampNs
 
+        val image = try {
+            frame.acquireCameraImage()
+        } catch (_: NotYetAvailableException) {
+            return
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to acquire ARCore camera image: ${e.message}")
+            return
+        }
+
