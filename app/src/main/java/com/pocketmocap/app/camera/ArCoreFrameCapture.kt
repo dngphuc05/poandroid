@@ -107,3 +107,15 @@ class ArCoreFrameCapture(
         }
     }
 
+    fun switchCamera(useFront: Boolean) {
+        Log.w(TAG, "ARCore capture uses the AR-supported back camera; front camera ignored")
+    }
+
+    fun setManualCameraHeightMeters(heightMeters: Float) {
+        val clamped = heightMeters.coerceIn(MIN_REASONABLE_CAMERA_HEIGHT_M, MAX_REASONABLE_CAMERA_HEIGHT_M)
+        manualCameraHeightMeters = clamped
+        lockedCameraHeightMeters = clamped
+        pendingCameraHeightMeters = Float.NaN
+        pendingCameraHeightFrames = 0
+    }
+
