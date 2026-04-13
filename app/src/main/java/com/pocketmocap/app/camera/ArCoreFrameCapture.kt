@@ -639,3 +639,11 @@ class ArCoreFrameCapture(
         val z = q[2]
         val w = q[3]
         val sinp = 2f * (w * x - z * y)
+        val cosp = 1f - 2f * (x * x + y * y)
+        return Math.toDegrees(atan2(sinp.toDouble(), cosp.toDouble())).toFloat()
+    }
+}
+
+private fun yuv420ImageToBitmap(image: Image): Bitmap? {
+    if (image.format != ImageFormat.YUV_420_888) return null
+    val nv21 = yuv420ToNv21(image)
