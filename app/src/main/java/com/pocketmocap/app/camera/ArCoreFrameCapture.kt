@@ -163,3 +163,10 @@ class ArCoreFrameCapture(
             session?.let(::bindSessionTexture)
         }
 
+        override fun onSurfaceChanged(gl: GL10?, width: Int, height: Int) {
+            viewportWidth = width
+            viewportHeight = height
+            GLES20.glViewport(0, 0, width, height)
+            session?.setDisplayGeometry(Surface.ROTATION_0, width, height)
+        }
+
