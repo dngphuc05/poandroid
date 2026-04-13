@@ -30,3 +30,10 @@ class BodyTurnTransitionDetector(
     private var previousHipDx = Float.NaN
     private var fastFramesRemaining = 0
 
+    fun reset() {
+        previousShoulderDx = Float.NaN
+        previousHipDx = Float.NaN
+        fastFramesRemaining = 0
+    }
+
+    fun update(
