@@ -154,3 +154,12 @@ class ArCoreFrameCapture(
             1f, 0f,
         )
 
+        override fun onSurfaceCreated(gl: GL10?, config: EGLConfig?) {
+            textureId = createExternalTexture()
+            program = createCameraProgram()
+            positionAttrib = GLES20.glGetAttribLocation(program, "a_Position")
+            texCoordAttrib = GLES20.glGetAttribLocation(program, "a_TexCoord")
+            textureUniform = GLES20.glGetUniformLocation(program, "u_Texture")
+            session?.let(::bindSessionTexture)
+        }
+
