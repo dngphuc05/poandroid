@@ -541,3 +541,17 @@ class ArCoreFrameCapture(
                     pendingCameraHeightFrames = 1
                 } else {
                     pendingCameraHeightMeters = pendingCameraHeightMeters * 0.75f + rawHeight * 0.25f
+                    pendingCameraHeightFrames += 1
+                }
+                if (pendingCameraHeightFrames >= 8) {
+                    lockedCameraHeightMeters = pendingCameraHeightMeters
+                    pendingCameraHeightFrames = 0
+                    pendingCameraHeightMeters = Float.NaN
+                    return candidate.copy(
+                        point = floatArrayOf(candidate.point[0], cameraY - lockedCameraHeightMeters, candidate.point[2]),
+                        confidence = minOf(candidate.confidence, 0.70f),
+                        source = "${candidate.source}_held",
+                    )
+                }
+            }
+            val held = currentCameraHeightPrior()
