@@ -466,3 +466,15 @@ class ArCoreFrameCapture(
             val hits = runCatching { frame.hitTest(nx * width, ny * height) }.getOrNull() ?: continue
             for (hit in hits) {
                 val candidate = floorPointFromHit(hit, cameraY) ?: continue
+                val dy = cameraY - candidate.first[1]
+                val score = abs(dy - priorHeight) * 0.78f +
+                    abs(dy - STARTUP_CAMERA_HEIGHT_PRIOR_M) * if (lockedCameraHeightMeters.isFinite()) 0.05f else 0.20f +
+                    candidate.second
+                if (score < bestScore) {
+                    bestScore = score
+                    bestPoint = candidate.first
+                    bestConfidence = candidate.third
+                }
+            }
+        }
+
