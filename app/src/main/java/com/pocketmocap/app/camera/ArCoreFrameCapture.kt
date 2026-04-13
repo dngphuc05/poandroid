@@ -423,3 +423,12 @@ class ArCoreFrameCapture(
         )
     }
 
+    private fun selectFloorPlane(arSession: Session, cameraY: Float): Plane? {
+        var best: Plane? = null
+        var bestScore = Float.POSITIVE_INFINITY
+        val priorHeight = currentCameraHeightPrior()
+        for (plane in arSession.getAllTrackables(Plane::class.java)) {
+            if (plane.trackingState != TrackingState.TRACKING) continue
+            if (plane.subsumedBy != null) continue
+            if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) continue
+            val dy = cameraY - plane.centerPose.ty()
