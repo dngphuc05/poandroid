@@ -234,3 +234,12 @@ class ArCoreFrameCapture(
             }
         }
 
+        fun currentViewportSize(): Pair<Int, Int> = viewportWidth to viewportHeight
+    }
+
+    private fun maybeEmitCameraFrame(arSession: Session, frame: Frame) {
+        val timestampNs = frame.timestamp
+        if (timestampNs <= 0L || timestampNs == lastSentTimestampNs) return
+        if (timestampNs - lastSentTimestampNs < MIN_FRAME_INTERVAL_NS) return
+        lastSentTimestampNs = timestampNs
+
