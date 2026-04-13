@@ -734,3 +734,10 @@ private fun createCameraProgram(): Int {
         """.trimIndent(),
     )
     val program = GLES20.glCreateProgram()
+    GLES20.glAttachShader(program, vertexShader)
+    GLES20.glAttachShader(program, fragmentShader)
+    GLES20.glLinkProgram(program)
+    return program
+}
+
+private fun compileShader(type: Int, source: String): Int {
