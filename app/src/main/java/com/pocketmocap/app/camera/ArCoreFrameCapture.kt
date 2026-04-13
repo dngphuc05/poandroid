@@ -523,3 +523,21 @@ class ArCoreFrameCapture(
             )
         }
         val locked = lockedCameraHeightMeters
+        if (!locked.isFinite()) {
+            val canBootstrapFromSoftFloor =
+                isSoftFloor &&
+                    rawHeight <= MAX_HIT_BOOTSTRAP_CAMERA_HEIGHT_M &&
+                    abs(rawHeight - STARTUP_CAMERA_HEIGHT_PRIOR_M) <= MAX_SOFT_FLOOR_DRIFT_FROM_PRIOR_M &&
+                    candidate.confidence >= 0.82f
+            if (isRealPlane && candidate.confidence >= 0.76f) {
+                lockedCameraHeightMeters = rawHeight
+                pendingCameraHeightFrames = 0
+                pendingCameraHeightMeters = Float.NaN
+                return candidate
+            }
+            if (canBootstrapFromSoftFloor) {
+                if (!pendingCameraHeightMeters.isFinite() || abs(rawHeight - pendingCameraHeightMeters) > 0.10f) {
+                    pendingCameraHeightMeters = rawHeight
+                    pendingCameraHeightFrames = 1
+                } else {
+                    pendingCameraHeightMeters = pendingCameraHeightMeters * 0.75f + rawHeight * 0.25f
