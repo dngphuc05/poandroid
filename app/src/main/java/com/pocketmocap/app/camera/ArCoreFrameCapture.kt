@@ -632,3 +632,10 @@ class ArCoreFrameCapture(
         return Triple(floatArrayOf(point[0], point[1], point[2]), confidencePenalty, confidence)
     }
 
+    private fun cameraPitchDegrees(q: FloatArray): Float {
+        if (q.size < 4) return Float.NaN
+        val x = q[0]
+        val y = q[1]
+        val z = q[2]
+        val w = q[3]
+        val sinp = 2f * (w * x - z * y)
