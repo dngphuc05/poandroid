@@ -708,3 +708,17 @@ private fun createExternalTexture(): Int {
     return textures[0]
 }
 
+private fun createCameraProgram(): Int {
+    val vertexShader = compileShader(
+        GLES20.GL_VERTEX_SHADER,
+        """
+        attribute vec4 a_Position;
+        attribute vec2 a_TexCoord;
+        varying vec2 v_TexCoord;
+        void main() {
+            gl_Position = a_Position;
+            v_TexCoord = a_TexCoord;
+        }
+        """.trimIndent(),
+    )
+    val fragmentShader = compileShader(
