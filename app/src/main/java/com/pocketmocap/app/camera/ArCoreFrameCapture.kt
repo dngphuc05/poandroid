@@ -405,3 +405,21 @@ class ArCoreFrameCapture(
         }
         selectFloorHit(frame, cameraY)?.let { return stabilizeFloorAnchor(cameraY, it) }
 
+        // Startup path: formal ARCore planes often need parallax before they appear.
+        // Keep this soft and handheld-height biased so it cannot masquerade as a
+        // real floor several meters below the phone.
+        return stabilizeFloorAnchor(
+            cameraY,
+            FloorAnchor(
+            point = floatArrayOf(
+                cameraPosition.getOrNull(0) ?: 0f,
+                cameraY - currentCameraHeightPrior(),
+                cameraPosition.getOrNull(2) ?: 0f,
+            ),
+            normal = floatArrayOf(0f, 1f, 0f),
+            confidence = 0.58f,
+            source = "arcore_floor_provisional",
+            )
+        )
+    }
+
