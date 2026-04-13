@@ -677,3 +677,14 @@ private fun yuv420ToNv21(image: Image): ByteArray {
     return output
 }
 
+private fun copyPlane(
+    buffer: ByteBuffer,
+    rowStride: Int,
+    pixelStride: Int,
+    width: Int,
+    height: Int,
+    output: ByteArray,
+    outputOffset: Int,
+    outputPixelStride: Int,
+) {
+    var offset = outputOffset
