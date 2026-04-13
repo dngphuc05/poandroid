@@ -458,3 +458,11 @@ class ArCoreFrameCapture(
             0.58f to 0.76f,
         )
         var bestPoint: FloatArray? = null
+        var bestConfidence = 0f
+        var bestScore = Float.POSITIVE_INFINITY
+        val priorHeight = currentCameraHeightPrior()
+
+        for ((nx, ny) in samples) {
+            val hits = runCatching { frame.hitTest(nx * width, ny * height) }.getOrNull() ?: continue
+            for (hit in hits) {
+                val candidate = floorPointFromHit(hit, cameraY) ?: continue
