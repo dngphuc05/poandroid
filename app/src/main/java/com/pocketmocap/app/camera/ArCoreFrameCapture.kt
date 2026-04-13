@@ -368,3 +368,10 @@ class ArCoreFrameCapture(
         val rowBuffer = ByteArray(rowStride)
         val buffer = plane.buffer.duplicate().order(ByteOrder.LITTLE_ENDIAN)
 
+        for (sy in 0 until srcHeight) {
+            val rowStart = sy * rowStride
+            if (rowStart + rowStride > buffer.capacity()) break
+            buffer.position(rowStart)
+            buffer.get(rowBuffer, 0, rowStride)
+            for (sx in 0 until srcWidth) {
+                val offset = sx * pixelStride
