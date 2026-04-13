@@ -47,3 +47,10 @@ class BodyTurnTransitionDetector(
             return decay("insufficient_landmarks")
         }
 
+        val shoulder = axis(xNorm, yNorm, visibility, left = 11, right = 12, minVisibility = minShoulderVisibility)
+        val hip = axis(xNorm, yNorm, visibility, left = 23, right = 24, minVisibility = minHipVisibility)
+
+        val shoulderCollapsed = shoulder.valid &&
+            abs(shoulder.dx) < shoulderCollapseDxNorm &&
+            shoulder.span in 0.030f..shoulderCollapseSpanNorm
+        val hipCollapsed = hip.valid &&
