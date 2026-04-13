@@ -170,3 +170,10 @@ class ArCoreFrameCapture(
             session?.setDisplayGeometry(Surface.ROTATION_0, width, height)
         }
 
+        override fun onDrawFrame(gl: GL10?) {
+            val arSession = session ?: return
+            if (!sessionTextureBound) {
+                bindSessionTexture(arSession)
+            }
+
+            val frame = try {
