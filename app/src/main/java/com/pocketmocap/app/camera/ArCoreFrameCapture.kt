@@ -562,3 +562,10 @@ class ArCoreFrameCapture(
             )
         }
         val jump = abs(rawHeight - locked)
+        if (jump <= 0.18f) {
+            lockedCameraHeightMeters = locked * 0.88f + rawHeight * 0.12f
+            pendingCameraHeightFrames = 0
+            pendingCameraHeightMeters = Float.NaN
+            return candidate
+        }
+        val softFloorTooFarFromLock = isSoftFloor && jump > MAX_SOFT_FLOOR_DRIFT_FROM_PRIOR_M
