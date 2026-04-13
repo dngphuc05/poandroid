@@ -131,3 +131,11 @@ class ArCoreFrameCapture(
         pendingCameraHeightFrames = 0
     }
 
+    private inner class Renderer : GLSurfaceView.Renderer {
+        private var textureId = 0
+        private var program = 0
+        private var positionAttrib = 0
+        private var texCoordAttrib = 0
+        private var textureUniform = 0
+        private var sessionTextureBound = false
+        @Volatile private var viewportWidth = 0
