@@ -688,3 +688,12 @@ private fun copyPlane(
     outputPixelStride: Int,
 ) {
     var offset = outputOffset
+    for (row in 0 until height) {
+        val rowStart = row * rowStride
+        for (col in 0 until width) {
+            output[offset] = buffer.get(rowStart + col * pixelStride)
+            offset += outputPixelStride
+        }
+    }
+}
+
