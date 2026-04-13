@@ -188,3 +188,13 @@ class ArCoreFrameCapture(
             maybeEmitCameraFrame(arSession, frame)
         }
 
+        fun bindSessionTexture(arSession: Session) {
+            if (textureId == 0) return
+            runCatching {
+                arSession.setCameraTextureName(textureId)
+                sessionTextureBound = true
+            }.onFailure {
+                Log.w(TAG, "Could not bind ARCore camera texture: ${it.message}")
+            }
+        }
+
