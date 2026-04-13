@@ -604,3 +604,20 @@ class ArCoreFrameCapture(
         }
     }
 
+    private fun floorPointFromHit(hit: HitResult, cameraY: Float): Triple<FloatArray, Float, Float>? {
+        val trackable = hit.trackable
+        val confidencePenalty = when (trackable) {
+            is Plane -> {
+                if (trackable.trackingState != TrackingState.TRACKING) return null
+                if (trackable.type != Plane.Type.HORIZONTAL_UPWARD_FACING) return null
+                if (!trackable.isPoseInPolygon(hit.hitPose)) return null
+                0.00f
+            }
+            is DepthPoint -> 0.18f
+            is Point -> {
+                if (trackable.orientationMode != Point.OrientationMode.ESTIMATED_SURFACE_NORMAL) return null
+                0.30f
+            }
+            else -> return null
+        }
+
