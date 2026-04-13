@@ -98,3 +98,12 @@ class ArCoreFrameCapture(
             arSession.resume()
             previewView.onResume()
             previewView.queueEvent {
+                renderer.bindSessionTexture(arSession)
+            }
+            Log.i(TAG, "ARCore capture started")
+        } catch (e: Exception) {
+            running = false
+            Log.e(TAG, "Failed to start ARCore capture", e)
+        }
+    }
+
