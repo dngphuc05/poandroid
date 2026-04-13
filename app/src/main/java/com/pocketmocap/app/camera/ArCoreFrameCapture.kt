@@ -276,3 +276,14 @@ class ArCoreFrameCapture(
         depthMap: DepthMapSnapshot?,
     ): WorldTrackingSnapshot {
         val camera = frame.camera
+        val pose = camera.pose
+        val translation = pose.translation
+        val rotation = pose.rotationQuaternion
+        val floorAnchor = selectFloorAnchor(arSession, frame, translation)
+        val floorY = floorAnchor?.point?.getOrNull(1)
+        val rawCameraHeight = if (floorY != null) {
+            pose.ty() - floorY
+        } else {
+            Float.NaN
+        }
+        val manualCameraHeight = manualCameraHeightMeters
