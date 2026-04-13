@@ -34,3 +34,12 @@ import java.nio.FloatBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 import kotlin.math.abs
+import kotlin.math.atan2
+
+/**
+ * ARCore-owned camera capture.
+ *
+ * ARCore provides the preview texture, camera pose, floor-plane tracking, and the
+ * synchronized CPU image that we feed into MediaPipe.
+ */
+class ArCoreFrameCapture(
