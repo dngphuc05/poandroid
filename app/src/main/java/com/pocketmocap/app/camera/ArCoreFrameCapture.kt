@@ -597,3 +597,10 @@ class ArCoreFrameCapture(
             return manual
         }
         val locked = lockedCameraHeightMeters
+        return if (locked.isFinite() && locked in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) {
+            locked
+        } else {
+            STARTUP_CAMERA_HEIGHT_PRIOR_M
+        }
+    }
+
