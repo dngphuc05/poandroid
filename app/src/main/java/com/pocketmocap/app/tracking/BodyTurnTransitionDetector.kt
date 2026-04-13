@@ -37,3 +37,13 @@ class BodyTurnTransitionDetector(
     }
 
     fun update(
+        xNorm: FloatArray?,
+        yNorm: FloatArray?,
+        visibility: FloatArray?,
+    ): BodyTurnTransitionState {
+        if (xNorm == null || yNorm == null || visibility == null ||
+            xNorm.size < 33 || yNorm.size < 33 || visibility.size < 33
+        ) {
+            return decay("insufficient_landmarks")
+        }
+
