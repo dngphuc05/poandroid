@@ -654,3 +654,10 @@ private fun yuv420ImageToBitmap(image: Image): Bitmap? {
 }
 
 private fun yuv420ToNv21(image: Image): ByteArray {
+    val width = image.width
+    val height = image.height
+    val output = ByteArray(width * height * 3 / 2)
+    copyPlane(image.planes[0].buffer, image.planes[0].rowStride, image.planes[0].pixelStride, width, height, output, 0, 1)
+
+    val u = image.planes[1]
+    val v = image.planes[2]
