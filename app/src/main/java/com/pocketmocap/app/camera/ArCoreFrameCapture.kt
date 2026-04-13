@@ -177,3 +177,14 @@ class ArCoreFrameCapture(
             }
 
             val frame = try {
+                arSession.update()
+            } catch (e: Exception) {
+                Log.w(TAG, "ARCore update skipped: ${e.message}")
+                return
+            }
+
+            updateCameraTextureCoordinates(frame)
+            drawCameraTexture()
+            maybeEmitCameraFrame(arSession, frame)
+        }
+
