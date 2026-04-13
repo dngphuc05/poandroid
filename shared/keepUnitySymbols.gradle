@@ -21,3 +21,14 @@ androidComponents {
                 'libmain.so'
             ]
             
+            // Note: even though gradle won't strip symbols from these binaries
+            //       we later will copy symbols from unityLibrary/symbols to 'extract${configName}Native${symbolType}' task output directory
+            //       that way they will end up in final symbols package 
+            println "Variant '${variant.name}', will keep symbols in binaries for:"
+            for (String symbolToKeep: files) {
+                println "  '${symbolToKeep}'"
+                packaging.jniLibs.keepDebugSymbols.add("**/${symbolToKeep}")
+            }
+        }
+    })
+}
