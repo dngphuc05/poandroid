@@ -56,3 +56,12 @@ class ArCoreFrameCapture(
         private const val MAX_SOFT_FLOOR_DRIFT_FROM_PRIOR_M = 0.70f
     }
 
+    private val renderer = Renderer()
+
+    val previewView: GLSurfaceView = GLSurfaceView(context).apply {
+        setEGLContextClientVersion(2)
+        preserveEGLContextOnPause = true
+        setRenderer(renderer)
+        renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+    }
+
