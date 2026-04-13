@@ -301,3 +301,12 @@ class ArCoreFrameCapture(
         val dimensions = cpuIntrinsics.imageDimensions
         // MediaPipe/display coordinates are portrait-upright (rotationDegrees=90).
         // Rotate ARCore CPU-image intrinsics into the same coordinate frame.
+        val displayIntrinsics = CameraIntrinsics(
+            fx = focal[1],
+            fy = focal[0],
+            cx = dimensions[1].toFloat() - principal[1],
+            cy = principal[0],
+            imageWidth = dimensions[1],
+            imageHeight = dimensions[0],
+        )
+
