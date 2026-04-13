@@ -516,3 +516,10 @@ class ArCoreFrameCapture(
         }
         if (!rawHeight.isFinite() || rawHeight !in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) {
             val held = currentCameraHeightPrior()
+            return candidate.copy(
+                point = floatArrayOf(candidate.point[0], cameraY - held, candidate.point[2]),
+                confidence = minOf(candidate.confidence, 0.42f),
+                source = "${candidate.source}_held",
+            )
+        }
+        val locked = lockedCameraHeightMeters
