@@ -621,3 +621,14 @@ class ArCoreFrameCapture(
             else -> return null
         }
 
+        val point = hit.hitPose.translation
+        val dy = cameraY - point[1]
+        if (dy !in MIN_REASONABLE_CAMERA_HEIGHT_M..MAX_REASONABLE_CAMERA_HEIGHT_M) return null
+        val confidence = when (trackable) {
+            is Plane -> 0.88f
+            is DepthPoint -> 0.78f
+            else -> 0.66f
+        }
+        return Triple(floatArrayOf(point[0], point[1], point[2]), confidencePenalty, confidence)
+    }
+
