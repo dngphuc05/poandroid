@@ -269,3 +269,10 @@ class ArCoreFrameCapture(
         }
     }
 
+    private fun buildWorldTrackingSnapshot(
+        arSession: Session,
+        frame: Frame,
+        image: Image,
+        depthMap: DepthMapSnapshot?,
+    ): WorldTrackingSnapshot {
+        val camera = frame.camera
