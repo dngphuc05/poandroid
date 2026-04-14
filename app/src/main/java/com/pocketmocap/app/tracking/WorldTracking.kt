@@ -64,3 +64,10 @@ data class DepthMapSnapshot(
 )
 
 data class WorldTrackingSnapshot(
+    val timestampUs: Long,
+    val source: String,
+    val trackingState: String,
+    val cameraPosition: FloatArray? = null,
+    val cameraRotation: FloatArray? = null,
+    val groundPoint: FloatArray? = null,
+    val groundNormal: FloatArray? = null,
