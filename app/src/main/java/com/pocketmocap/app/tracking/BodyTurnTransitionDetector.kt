@@ -98,3 +98,14 @@ class BodyTurnTransitionDetector(
         }
     }
 
+    private fun decay(reason: String): BodyTurnTransitionState {
+        if (fastFramesRemaining > 0) {
+            fastFramesRemaining -= 1
+        }
+        return BodyTurnTransitionState(
+            fastUpdateActive = fastFramesRemaining > 0,
+            reason = if (fastFramesRemaining > 0) "held_$reason" else reason,
+            framesRemaining = fastFramesRemaining,
+        )
+    }
+
