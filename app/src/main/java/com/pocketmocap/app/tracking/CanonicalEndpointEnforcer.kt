@@ -128,3 +128,10 @@ private fun enforceCanonicalSpecs(
         }
         if (length > targetLength * spec.clampHighRatio || length < targetLength * spec.clampLowRatio) {
             val scale = targetLength / length
+            x[child] = px + dx * scale
+            y[child] = py + dy * scale
+            z[child] = pz + dz * scale
+            clamped += 1
+        }
+    }
+
