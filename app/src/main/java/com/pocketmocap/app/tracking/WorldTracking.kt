@@ -195,3 +195,21 @@ data class SceneMetricSnapshot(
     val experimentalFactorSummary: String = "",
     val baselineExperimentalHeightDeltaMeters: Float = Float.NaN,
     val baselineExperimentalDistanceDeltaMeters: Float = Float.NaN,
+    val promotedSolverSource: String = "baseline",
+    val rawKeypointGeometry: Map<String, Float> = emptyMap(),
+) {
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("source", source)
+        put("confidence", confidence.toDouble())
+        putFinite("distance_m", distanceMeters)
+        putFinite("body_height_m", bodyHeightMeters)
+        putFinite("camera_height_m", cameraHeightMeters)
+        putFinite("floor_pitch_deg", floorPitchDegrees)
+        putFinite("lateral_offset_m", lateralOffsetMeters)
+        putFinite("corrected_distance_m", correctedDistanceMeters)
+        putFinite("corrected_height_m", correctedHeightMeters)
+        putFinite("corrected_camera_height_m", correctedCameraHeightMeters)
+        putFinite("local_height_candidate_m", localHeightCandidateMeters)
+        putFinite("local_height_candidate_confidence", localHeightCandidateConfidence)
+        if (localHeightCandidateSource.isNotBlank()) put("local_height_candidate_source", localHeightCandidateSource)
+        putFinite("profile_subject_height_m", profileSubjectHeightMeters)
