@@ -293,3 +293,10 @@ data class SceneMetricSnapshot(
     }
 }
 
+data class ServerPoseDebugSnapshot(
+    val poseStatus: String,
+    val correctionReason: String,
+    val constraintConfidence: Float = Float.NaN,
+    val scaleApplied: Float = Float.NaN,
+    val rootTranslationMeters: Float = Float.NaN,
+    val rawHeightMeters: Float = Float.NaN,
