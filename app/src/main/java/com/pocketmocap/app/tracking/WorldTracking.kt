@@ -78,3 +78,11 @@ data class WorldTrackingSnapshot(
     val floorPitchDegrees: Float = Float.NaN,
     val confidence: Float = 0f,
     val rawCameraHeightMeters: Float = Float.NaN,
+    val floorSource: String = "",
+    val floorLockState: String = "",
+    val intrinsics: CameraIntrinsics? = null,
+    val depthMap: DepthMapSnapshot? = null,
+) {
+    val hasGroundPlane: Boolean
+        get() = groundPoint?.size == 3 && groundNormal?.size == 3
+
