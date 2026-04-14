@@ -356,3 +356,10 @@ data class ServerPoseDebugSnapshot(
     val distanceMemoryReason: String = "",
     val distanceMemoryAgeFrames: Float = Float.NaN,
     val distanceMemoryTargetMeters: Float = Float.NaN,
+
+    val factorGraphActive: Float = Float.NaN,
+    val factorGraphStatus: String = "",
+    val factorGraphCostBefore: Float = Float.NaN,
+    val factorGraphCostAfter: Float = Float.NaN,
+    val factorGraphScaleDelta: Float = Float.NaN,
+    val factorGraphYawDegrees: Float = Float.NaN,
