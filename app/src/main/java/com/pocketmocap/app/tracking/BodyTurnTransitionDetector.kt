@@ -86,3 +86,15 @@ class BodyTurnTransitionDetector(
             previousHipDx = hip.dx
         }
 
+        return if (reason.isNotBlank()) {
+            fastFramesRemaining = max(fastFramesRemaining, fastFrames)
+            BodyTurnTransitionState(
+                fastUpdateActive = true,
+                reason = reason,
+                framesRemaining = fastFramesRemaining,
+            )
+        } else {
+            decay("stable")
+        }
+    }
+
