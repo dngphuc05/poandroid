@@ -72,3 +72,10 @@ class BodyTurnTransitionDetector(
             abs(hip.dx) >= axisFlipMinNorm &&
             shoulder.dx * hip.dx < 0f
 
+        val reason = when {
+            shoulderFlipped || hipFlipped -> "axis_flip"
+            shoulderHipDisagree -> "shoulder_hip_disagree"
+            shoulderCollapsed || hipCollapsed -> "axis_collapse"
+            else -> ""
+        }
+
