@@ -419,3 +419,14 @@ data class ServerPoseDebugSnapshot(
     val serverSceneMetricsAccepted: Boolean? = null,
     val serverSceneMetricsSource: String = "",
     val serverSceneMetricsFloorSource: String = "",
+    val serverSceneMetricsFilterReason: String = "",
+    val serverSceneMetricsConfidence: Float = Float.NaN,
+) {
+    companion object {
+        fun fromJson(
+            json: JSONObject?,
+            fallbackScene: SceneMetricSnapshot? = null,
+            mlEvidenceJson: JSONObject? = null,
+        ): ServerPoseDebugSnapshot? {
+            if (json == null && mlEvidenceJson == null) return null
+            val debugJson = json ?: JSONObject()
