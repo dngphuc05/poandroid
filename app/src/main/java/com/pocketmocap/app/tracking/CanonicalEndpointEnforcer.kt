@@ -102,3 +102,11 @@ private fun enforceCanonicalSpecs(
         val parent = spec.parent
         val child = spec.child
         val px = x[parent]
+        val py = y[parent]
+        val pz = z[parent]
+        val cx = x[child]
+        val cy = y[child]
+        val cz = z[child]
+        if (!px.isFinite() || !py.isFinite() || !pz.isFinite()) continue
+        if (!cx.isFinite() || !cy.isFinite() || !cz.isFinite()) continue
+
