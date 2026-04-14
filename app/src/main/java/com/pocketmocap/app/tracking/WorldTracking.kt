@@ -502,3 +502,11 @@ data class ServerPoseDebugSnapshot(
                 distanceVsPreviousTargetDeltaMeters = debugJson.optDouble("distance_vs_previous_target_delta_m", Double.NaN).toFloat(),
                 distanceFootRoiDisagreementMeters = debugJson.optDouble("distance_foot_roi_disagreement_m", Double.NaN).toFloat(),
                 distanceFootRelativeDisagreementMeters = debugJson.optDouble("distance_foot_relative_disagreement_m", Double.NaN).toFloat(),
+                distanceCorrectedVsFootDeltaMeters = debugJson.optDouble("distance_corrected_vs_foot_delta_m", Double.NaN).toFloat(),
+                distanceTargetBeforeGateMeters = debugJson.optDouble("distance_target_before_gate_m", Double.NaN).toFloat(),
+                distanceTargetAfterGateMeters = debugJson.optDouble("distance_target_after_gate_m", Double.NaN).toFloat(),
+                distanceMemoryUpdate = debugJson.optString("distance_memory_update", ""),
+                distanceMemoryReason = debugJson.optString("distance_memory_reason", ""),
+                distanceMemoryAgeFrames = debugJson.optDouble("distance_memory_age_frames", Double.NaN).toFloat(),
+                distanceMemoryTargetMeters = debugJson.optDouble("distance_memory_target_m", Double.NaN).toFloat(),
+
