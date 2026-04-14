@@ -12,3 +12,11 @@ private data class EndpointSpec(
     val child: Int,
     val lengthRatio: Float,
     val minLengthMeters: Float,
+    val maxLengthMeters: Float,
+    val clampLowRatio: Float = 0.78f,
+    val clampHighRatio: Float = 1.12f,
+    val trustLowRatio: Float = 0.45f,
+    val trustHighRatio: Float = 1.45f,
+    val lowTrustConfidence: Float = 0.46f,
+)
+
