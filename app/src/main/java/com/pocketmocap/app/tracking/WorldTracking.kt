@@ -39,3 +39,10 @@ val METRIC_EVIDENCE_V2_OUTPUT_NAMES = listOf(
     "distance_reliability",
 )
 
+data class CameraIntrinsics(
+    val fx: Float,
+    val fy: Float,
+    val cx: Float,
+    val cy: Float,
+    val imageWidth: Int,
+    val imageHeight: Int,
