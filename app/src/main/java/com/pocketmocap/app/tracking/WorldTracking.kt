@@ -546,3 +546,21 @@ data class ServerPoseDebugSnapshot(
                 poseLifterMeanConfidence = debugJson.optDouble("pose_lifter_mean_confidence", Double.NaN).toFloat(),
                 poseLifterAppliedJointCount = debugJson.optDouble("pose_lifter_applied_joint_count", Double.NaN).toFloat(),
                 poseLifterRejectReason = debugJson.optString("pose_lifter_reject_reason", ""),
+                stableSkeletonLearningEnabled = debugJson.optOptionalBooleanLike(
+                    "stable_skeleton_learning_enabled",
+                ),
+                stableSkeletonResetReason = debugJson.optString("stable_skeleton_reset_reason", ""),
+                mlEvidenceStatus = mlEvidenceJson?.optString("status")
+                    ?: debugJson.optString("ml_evidence_status", ""),
+                mlEvidenceHeightSigmaMeters = (
+                    mlEvidenceJson?.optDouble("height_sigma_m", Double.NaN)
+                        ?: debugJson.optDouble("ml_evidence_height_sigma_m", Double.NaN)
+                    ).toFloat(),
+                mlEvidenceDistanceSigmaMeters = (
+                    mlEvidenceJson?.optDouble("distance_sigma_m", Double.NaN)
+                        ?: debugJson.optDouble("ml_evidence_distance_sigma_m", Double.NaN)
+                    ).toFloat(),
+                mlEvidenceMaskEndpointConfidence = (
+                    mlEvidenceJson?.optDouble("mask_endpoint_confidence", Double.NaN)
+                        ?: debugJson.optDouble("ml_evidence_mask_endpoint_confidence", Double.NaN)
+                    ).toFloat(),
