@@ -95,3 +95,10 @@ private fun enforceCanonicalSpecs(
         return CanonicalEndpointEnforcementResult(clampedCount = 0, lowTrustCount = 0)
     }
 
+    var clamped = 0
+    var lowTrust = 0
+
+    for (spec in specs) {
+        val parent = spec.parent
+        val child = spec.child
+        val px = x[parent]
