@@ -448,3 +448,21 @@ data class ServerPoseDebugSnapshot(
                 ).toFloat(),
                 constrainedHeightMeters = debugJson.optDouble("constrained_height_m", Double.NaN).toFloat(),
                 constrainedDistanceMeters = debugJson.optDouble("constrained_distance_m", Double.NaN).toFloat(),
+                arTargetHeightMeters = debugJson.optDouble(
+                    "ar_target_height_m",
+                    fallbackScene?.correctedHeightMeters?.takeIf { it.isFinite() }?.toDouble()
+                        ?: fallbackScene?.bodyHeightMeters?.toDouble()
+                        ?: Double.NaN,
+                ).toFloat(),
+                arTargetDistanceMeters = debugJson.optDouble(
+                    "ar_target_distance_m",
+                    fallbackScene?.correctedDistanceMeters?.takeIf { it.isFinite() }?.toDouble()
+                        ?: fallbackScene?.distanceMeters?.toDouble()
+                        ?: Double.NaN,
+                ).toFloat(),
+                mlVisualUsable = debugJson.optOptionalBooleanLike("ml_visual_usable"),
+                mlDltMetricBad = debugJson.optOptionalBooleanLike("ml_dlt_metric_bad"),
+                mlHeightTargetSource = debugJson.optString("ml_height_target_source", ""),
+                mlDistanceTargetSource = debugJson.optString("ml_distance_target_source", ""),
+                mlDistanceHoldActive = debugJson.optOptionalBooleanLike("ml_distance_hold_active"),
+                mlDltWeightScale = debugJson.optDouble("ml_dlt_weight_scale", Double.NaN).toFloat(),
