@@ -63,3 +63,20 @@ fun enforceCanonicalLimbEndpoints(
     z = z,
     confidence = confidence,
     targetHeightMeters = targetHeightMeters,
+)
+
+fun enforceCanonicalHandEndpoints(
+    x: FloatArray,
+    y: FloatArray,
+    z: FloatArray,
+    confidence: FloatArray?,
+    targetHeightMeters: Float,
+): CanonicalEndpointEnforcementResult = enforceCanonicalSpecs(
+    specs = HAND_ENDPOINT_SPECS,
+    x = x,
+    y = y,
+    z = z,
+    confidence = confidence,
+    targetHeightMeters = targetHeightMeters,
+)
+
