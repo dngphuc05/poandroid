@@ -117,3 +117,14 @@ private fun enforceCanonicalSpecs(
         if (!length.isFinite() || length < 1e-5f) continue
 
         val targetLength = (targetHeightMeters * spec.lengthRatio).coerceIn(
+            spec.minLengthMeters,
+            spec.maxLengthMeters,
+        )
+        val anomalous = length > targetLength * spec.trustHighRatio ||
+            length < targetLength * spec.trustLowRatio
+        if (anomalous && confidence != null && child < confidence.size) {
+            confidence[child] = confidence[child].coerceAtMost(spec.lowTrustConfidence)
+            lowTrust += 1
+        }
+        if (length > targetLength * spec.clampHighRatio || length < targetLength * spec.clampLowRatio) {
+            val scale = targetLength / length
