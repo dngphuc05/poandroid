@@ -564,3 +564,21 @@ data class ServerPoseDebugSnapshot(
                     mlEvidenceJson?.optDouble("mask_endpoint_confidence", Double.NaN)
                         ?: debugJson.optDouble("ml_evidence_mask_endpoint_confidence", Double.NaN)
                     ).toFloat(),
+                mlEvidenceVisibleBodyFraction = (
+                    mlEvidenceJson?.optDouble("visible_body_fraction", Double.NaN)
+                        ?: debugJson.optDouble("ml_evidence_visible_body_fraction", Double.NaN)
+                    ).toFloat(),
+                mlEvidenceFootContactProbability = (
+                    mlEvidenceJson?.optDouble("foot_contact_probability", Double.NaN)
+                        ?: debugJson.optDouble("ml_evidence_foot_contact_probability", Double.NaN)
+                    ).toFloat(),
+                mlEvidenceDebug = mlEvidenceJson?.optString("debug")
+                    ?: debugJson.optString("ml_evidence_debug", ""),
+                mlEvidenceImageStatus = debugJson.optString("ml_evidence_image_status", ""),
+                mlImageWidthPx = debugJson.optOptionalInt("ml_image_width_px"),
+                mlImageHeightPx = debugJson.optOptionalInt("ml_image_height_px"),
+                mlImageSourceWidthPx = debugJson.optOptionalInt("ml_image_source_width_px"),
+                mlImageSourceHeightPx = debugJson.optOptionalInt("ml_image_source_height_px"),
+                mlImageCropLeftPx = debugJson.optOptionalInt("ml_image_crop_left_px"),
+                mlImageCropTopPx = debugJson.optOptionalInt("ml_image_crop_top_px"),
+                mlImageCropWidthPx = debugJson.optOptionalInt("ml_image_crop_width_px"),
