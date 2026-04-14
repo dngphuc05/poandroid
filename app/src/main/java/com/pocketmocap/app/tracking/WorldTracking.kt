@@ -430,3 +430,21 @@ data class ServerPoseDebugSnapshot(
         ): ServerPoseDebugSnapshot? {
             if (json == null && mlEvidenceJson == null) return null
             val debugJson = json ?: JSONObject()
+            return ServerPoseDebugSnapshot(
+                poseStatus = debugJson.optString("pose_status", "unknown"),
+                correctionReason = debugJson.optString("correction_reason", "unknown"),
+                constraintConfidence = debugJson.optDouble("constraint_confidence", Double.NaN).toFloat(),
+                scaleApplied = debugJson.optDouble("scale_applied", Double.NaN).toFloat(),
+                rootTranslationMeters = debugJson.optDouble("root_translation_m", Double.NaN).toFloat(),
+                rawHeightMeters = debugJson.optDouble("raw_height_m", Double.NaN).toFloat(),
+                rawDistanceMeters = debugJson.optDouble("raw_distance_m", Double.NaN).toFloat(),
+                preSkeletonConstrainedHeightMeters = debugJson.optDouble(
+                    "pre_skeleton_constrained_height_m",
+                    Double.NaN,
+                ).toFloat(),
+                preSkeletonConstrainedDistanceMeters = debugJson.optDouble(
+                    "pre_skeleton_constrained_distance_m",
+                    Double.NaN,
+                ).toFloat(),
+                constrainedHeightMeters = debugJson.optDouble("constrained_height_m", Double.NaN).toFloat(),
+                constrainedDistanceMeters = debugJson.optDouble("constrained_distance_m", Double.NaN).toFloat(),
