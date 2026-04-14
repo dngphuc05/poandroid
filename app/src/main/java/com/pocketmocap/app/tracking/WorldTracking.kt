@@ -86,3 +86,21 @@ data class WorldTrackingSnapshot(
     val hasGroundPlane: Boolean
         get() = groundPoint?.size == 3 && groundNormal?.size == 3
 
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("timestamp_us", timestampUs)
+        put("source", source)
+        put("tracking_state", trackingState)
+        put("confidence", confidence.toDouble())
+        putFinite("camera_height_m", cameraHeightMeters)
+        putFinite("subject_distance_m", subjectDistanceMeters)
+        putFinite("subject_height_m", subjectHeightMeters)
+        putFinite("lateral_offset_m", lateralOffsetMeters)
+        putFinite("floor_pitch_deg", floorPitchDegrees)
+        putFinite("raw_camera_height_m", rawCameraHeightMeters)
+        if (floorSource.isNotBlank()) put("floor_source", floorSource)
+        if (floorLockState.isNotBlank()) put("floor_lock_state", floorLockState)
+        cameraPosition?.takeIf { it.size >= 3 }?.let { put("camera_position_m", it.toJsonArray(3)) }
+        cameraRotation?.takeIf { it.size >= 4 }?.let { put("camera_rotation_xyzw", it.toJsonArray(4)) }
+        groundPoint?.takeIf { it.size >= 3 }?.let { put("ground_point_m", it.toJsonArray(3)) }
+        groundNormal?.takeIf { it.size >= 3 }?.let { put("ground_normal", it.toJsonArray(3)) }
+        intrinsics?.let { put("intrinsics", it.toJson()) }
