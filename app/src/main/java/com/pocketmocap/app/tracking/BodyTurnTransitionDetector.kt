@@ -124,3 +124,15 @@ class BodyTurnTransitionDetector(
         minVisibility: Float,
     ): Axis {
         val lx = xNorm[left]
+        val ly = yNorm[left]
+        val rx = xNorm[right]
+        val ry = yNorm[right]
+        if (
+            visibility[left] < minVisibility ||
+            visibility[right] < minVisibility ||
+            !lx.isFinite() || !ly.isFinite() ||
+            !rx.isFinite() || !ry.isFinite()
+        ) {
+            return Axis(dx = 0f, span = 0f, valid = false)
+        }
+        val dx = rx - lx
