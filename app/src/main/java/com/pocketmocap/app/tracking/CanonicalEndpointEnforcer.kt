@@ -135,3 +135,5 @@ private fun enforceCanonicalSpecs(
         }
     }
 
+    return CanonicalEndpointEnforcementResult(clampedCount = clamped, lowTrustCount = lowTrust)
+}
