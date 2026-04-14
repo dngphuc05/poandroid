@@ -104,3 +104,10 @@ data class WorldTrackingSnapshot(
         groundPoint?.takeIf { it.size >= 3 }?.let { put("ground_point_m", it.toJsonArray(3)) }
         groundNormal?.takeIf { it.size >= 3 }?.let { put("ground_normal", it.toJsonArray(3)) }
         intrinsics?.let { put("intrinsics", it.toJson()) }
+    }
+}
+
+data class SceneMetricSnapshot(
+    val source: String,
+    val confidence: Float,
+    val distanceMeters: Float,
