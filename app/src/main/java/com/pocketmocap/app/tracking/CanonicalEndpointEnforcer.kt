@@ -38,3 +38,10 @@ private val CANONICAL_LIMB_SPECS = arrayOf(
     EndpointSpec(parent = 15, child = 21, lengthRatio = 0.050f, minLengthMeters = 0.060f, maxLengthMeters = 0.118f),
     EndpointSpec(parent = 16, child = 18, lengthRatio = 0.050f, minLengthMeters = 0.060f, maxLengthMeters = 0.118f),
     EndpointSpec(parent = 16, child = 20, lengthRatio = 0.050f, minLengthMeters = 0.060f, maxLengthMeters = 0.118f),
+    EndpointSpec(parent = 16, child = 22, lengthRatio = 0.050f, minLengthMeters = 0.060f, maxLengthMeters = 0.118f),
+)
+
+private val HAND_ENDPOINT_SPECS = CANONICAL_LIMB_SPECS.filter {
+    it.parent == 15 || it.parent == 16
+}.toTypedArray()
+
