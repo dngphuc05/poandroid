@@ -45,3 +45,21 @@ private val HAND_ENDPOINT_SPECS = CANONICAL_LIMB_SPECS.filter {
     it.parent == 15 || it.parent == 16
 }.toTypedArray()
 
+/**
+ * Keeps canonical display limb and endpoint bones from stretching after per-joint
+ * smoothing. This does not estimate metric scale; it only enforces endpoint
+ * lengths from the already-authoritative canonical body height.
+ */
+fun enforceCanonicalLimbEndpoints(
+    x: FloatArray,
+    y: FloatArray,
+    z: FloatArray,
+    confidence: FloatArray?,
+    targetHeightMeters: Float,
+): CanonicalEndpointEnforcementResult = enforceCanonicalSpecs(
+    specs = CANONICAL_LIMB_SPECS,
+    x = x,
+    y = y,
+    z = z,
+    confidence = confidence,
+    targetHeightMeters = targetHeightMeters,
