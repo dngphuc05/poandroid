@@ -116,3 +116,11 @@ class BodyTurnTransitionDetector(
     )
 
     private fun axis(
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+        left: Int,
+        right: Int,
+        minVisibility: Float,
+    ): Axis {
+        val lx = xNorm[left]
