@@ -30,3 +30,12 @@ val METRIC_EVIDENCE_V2_OUTPUT_NAMES = listOf(
     "hip_geometry_error_m",
     "pixel_span_error_m",
     "torso_error_m",
+    "foot_plane_distance_error_m",
+    "dlt_height_error_m",
+    "dlt_distance_error_m",
+    "height_correction_delta_m",
+    "distance_correction_delta_m",
+    "height_reliability",
+    "distance_reliability",
+)
+
