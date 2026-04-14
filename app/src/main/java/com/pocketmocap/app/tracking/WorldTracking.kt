@@ -46,3 +46,14 @@ data class CameraIntrinsics(
     val cy: Float,
     val imageWidth: Int,
     val imageHeight: Int,
+) {
+    fun toJson(): JSONObject = JSONObject().apply {
+        put("fx", fx.toDouble())
+        put("fy", fy.toDouble())
+        put("cx", cx.toDouble())
+        put("cy", cy.toDouble())
+        put("image_width", imageWidth)
+        put("image_height", imageHeight)
+    }
+}
+
