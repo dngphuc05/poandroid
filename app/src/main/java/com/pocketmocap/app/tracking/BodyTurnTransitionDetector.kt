@@ -79,3 +79,10 @@ class BodyTurnTransitionDetector(
             else -> ""
         }
 
+        if (shoulder.valid && abs(shoulder.dx) >= axisFlipMinNorm) {
+            previousShoulderDx = shoulder.dx
+        }
+        if (hip.valid && abs(hip.dx) >= axisFlipMinNorm) {
+            previousHipDx = hip.dx
+        }
+
