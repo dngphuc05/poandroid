@@ -285,3 +285,11 @@ data class SceneMetricSnapshot(
         if (experimentalSolverStatus.isNotBlank()) put("experimental_solver_status", experimentalSolverStatus)
         if (experimentalFactorSummary.isNotBlank()) put("experimental_factor_summary", experimentalFactorSummary)
         putFinite("baseline_experimental_height_delta_m", baselineExperimentalHeightDeltaMeters)
+        putFinite("baseline_experimental_distance_delta_m", baselineExperimentalDistanceDeltaMeters)
+        put("promoted_solver_source", promotedSolverSource)
+        for ((key, value) in rawKeypointGeometry) {
+            putFinite(key, value)
+        }
+    }
+}
+
