@@ -80,3 +80,18 @@ fun enforceCanonicalHandEndpoints(
     targetHeightMeters = targetHeightMeters,
 )
 
+private fun enforceCanonicalSpecs(
+    specs: Array<EndpointSpec>,
+    x: FloatArray,
+    y: FloatArray,
+    z: FloatArray,
+    confidence: FloatArray?,
+    targetHeightMeters: Float,
+): CanonicalEndpointEnforcementResult {
+    if (!targetHeightMeters.isFinite() || targetHeightMeters !in 1.05f..2.35f) {
+        return CanonicalEndpointEnforcementResult(clampedCount = 0, lowTrustCount = 0)
+    }
+    if (x.size < 33 || y.size < 33 || z.size < 33) {
+        return CanonicalEndpointEnforcementResult(clampedCount = 0, lowTrustCount = 0)
+    }
+
