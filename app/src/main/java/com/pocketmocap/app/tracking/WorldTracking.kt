@@ -57,3 +57,10 @@ data class CameraIntrinsics(
     }
 }
 
+data class DepthMapSnapshot(
+    val width: Int,
+    val height: Int,
+    val depthMm: ShortArray,
+)
+
+data class WorldTrackingSnapshot(
