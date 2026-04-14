@@ -62,3 +62,13 @@ class BodyTurnTransitionDetector(
             abs(shoulder.dx) >= axisFlipMinNorm &&
             previousShoulderDx * shoulder.dx < 0f
         val hipFlipped = hip.valid &&
+            previousHipDx.isFinite() &&
+            abs(previousHipDx) >= axisFlipMinNorm &&
+            abs(hip.dx) >= axisFlipMinNorm &&
+            previousHipDx * hip.dx < 0f
+        val shoulderHipDisagree = shoulder.valid &&
+            hip.valid &&
+            abs(shoulder.dx) >= axisFlipMinNorm &&
+            abs(hip.dx) >= axisFlipMinNorm &&
+            shoulder.dx * hip.dx < 0f
+
