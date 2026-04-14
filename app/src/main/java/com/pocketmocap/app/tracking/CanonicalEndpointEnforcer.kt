@@ -110,3 +110,10 @@ private fun enforceCanonicalSpecs(
         if (!px.isFinite() || !py.isFinite() || !pz.isFinite()) continue
         if (!cx.isFinite() || !cy.isFinite() || !cz.isFinite()) continue
 
+        val dx = cx - px
+        val dy = cy - py
+        val dz = cz - pz
+        val length = sqrt(dx * dx + dy * dy + dz * dz)
+        if (!length.isFinite() || length < 1e-5f) continue
+
+        val targetLength = (targetHeightMeters * spec.lengthRatio).coerceIn(
