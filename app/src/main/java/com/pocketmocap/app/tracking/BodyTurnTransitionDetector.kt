@@ -109,3 +109,10 @@ class BodyTurnTransitionDetector(
         )
     }
 
+    private data class Axis(
+        val dx: Float,
+        val span: Float,
+        val valid: Boolean,
+    )
+
+    private fun axis(
