@@ -136,3 +136,11 @@ class BodyTurnTransitionDetector(
             return Axis(dx = 0f, span = 0f, valid = false)
         }
         val dx = rx - lx
+        val dy = ry - ly
+        return Axis(
+            dx = dx,
+            span = sqrt(dx * dx + dy * dy),
+            valid = true,
+        )
+    }
+}
