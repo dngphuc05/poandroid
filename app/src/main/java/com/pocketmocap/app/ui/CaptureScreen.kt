@@ -194,3 +194,10 @@ fun CaptureScreen(
         }
     }
 
+    var cameraHeightMeters by remember { mutableFloatStateOf(uiState.manualCameraHeightMeters) }
+    var subjectHeightMeters by remember {
+        mutableFloatStateOf(uiState.manualSubjectHeightMeters.takeIf { it.isFinite() } ?: 1.70f)
+    }
+    var subjectHeightEnabled by remember { mutableStateOf(uiState.manualSubjectHeightMeters.isFinite()) }
+    var cameraHeightExpanded by remember { mutableStateOf(false) }
+    var facingFront by remember { mutableStateOf(false) }
