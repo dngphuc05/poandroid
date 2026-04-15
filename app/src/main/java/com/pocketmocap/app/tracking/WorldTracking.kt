@@ -616,3 +616,10 @@ data class ServerPoseDebugSnapshot(
     }
 }
 
+fun ServerPoseDebugSnapshot.hasCanonicalMetricPose(): Boolean =
+    metricPoseStatus in setOf("ok", "hold_previous") &&
+        metricPoseFrame == "camera_floor_metric_v1" &&
+        metricBodyHeightMeters.validAuthoritativeHeightOrNull() != null &&
+        metricRootDistanceMeters.validAuthoritativeDistanceOrNull() != null
+
+fun ServerPoseDebugSnapshot.hasV2MetricAuthority(): Boolean {
