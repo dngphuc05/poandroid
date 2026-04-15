@@ -683,3 +683,10 @@ private fun FullSkeleton33Overlay(
         label = "skeletonPhase",
     )
 
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = if (liveLandmarksX != null) 0.dp else 32.dp,
+                     vertical = if (liveLandmarksX != null) 0.dp else 80.dp),
+    ) {
+        val sway = kotlin.math.sin(phase * Math.PI * 2.0).toFloat()
