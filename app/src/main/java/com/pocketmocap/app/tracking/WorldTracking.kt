@@ -664,3 +664,13 @@ fun ServerPoseDebugSnapshot.authoritativeHeightMetersOrNull(sceneCorrectedHeight
     val targetHeight = arTargetHeightMeters.validAuthoritativeHeightOrNull()
         ?: sceneCorrectedHeightMeters.validAuthoritativeHeightOrNull()
     val constrainedHeight = constrainedHeightMeters.validAuthoritativeHeightOrNull()
+    if (targetHeight != null && constrainedHeight != null) {
+        return if (abs(constrainedHeight - targetHeight) <= MAX_CONSTRAINED_HEIGHT_TARGET_DELTA_METERS) {
+            constrainedHeight
+        } else {
+            targetHeight
+        }
+    }
+    return targetHeight ?: constrainedHeight
+}
+
