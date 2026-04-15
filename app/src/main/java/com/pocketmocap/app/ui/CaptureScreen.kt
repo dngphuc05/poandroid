@@ -339,3 +339,12 @@ fun CaptureScreen(
                                 ((fallbackTechnicalPoseY ?: metricServerPoseY)?.size == 33) &&
                                 ((fallbackTechnicalPoseZ ?: metricServerPoseZ)?.size == 33)
 
+                            if (hasServerAvatarPose) {
+                                val avatarPoseX = metricServerPoseX ?: fallbackTechnicalPoseX
+                                val avatarPoseY = metricServerPoseY ?: fallbackTechnicalPoseY
+                                val avatarPoseZ = metricServerPoseZ ?: fallbackTechnicalPoseZ
+                                val useMetricServerAvatarPose =
+                                    metricServerPoseX != null &&
+                                        metricServerPoseY != null &&
+                                        metricServerPoseZ != null
+                                val avatarGroundY =
