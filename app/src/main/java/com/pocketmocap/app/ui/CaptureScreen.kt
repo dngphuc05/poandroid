@@ -858,3 +858,10 @@ private fun AvatarBodyOverlay(
     modelName: String? = null,
 ) {
     // Avatar has the same animated demo skeleton as FullSkeleton33Overlay
+    val transition = rememberInfiniteTransition(label = "avatar33")
+    val phase by transition.animateFloat(
+        initialValue = 0f, targetValue = 1f,
+        animationSpec = infiniteRepeatable(tween(3600, easing = LinearEasing), RepeatMode.Restart),
+        label = "avatarPhase",
+    )
+
