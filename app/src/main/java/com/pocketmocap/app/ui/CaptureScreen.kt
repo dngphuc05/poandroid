@@ -645,3 +645,11 @@ fun CaptureScreen(
                         HybridPosePipeline.PipelineState.BOOTSTRAPPING ->
                             "Bootstrap ${(uiState.bootstrapProgress * 100).toInt()}%"
                         HybridPosePipeline.PipelineState.CAPTURING -> ""
+                        HybridPosePipeline.PipelineState.ERROR -> "Error"
+                    },
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Color.White,
+                )
+            }
+        }
+
