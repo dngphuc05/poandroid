@@ -681,3 +681,20 @@ private fun Float.validAuthoritativeDistanceOrNull(): Float? =
     takeIf { it.isFinite() && it in MIN_AUTHORITATIVE_DISTANCE_METERS..MAX_AUTHORITATIVE_DISTANCE_METERS }
 
 private fun JSONObject.optOptionalInt(key: String): Int? =
+    if (has(key) && !isNull(key)) optInt(key) else null
+
+private fun JSONObject.optOptionalBooleanLike(key: String): Boolean? {
+    if (!has(key) || isNull(key)) return null
+    val value = opt(key)
+    return when (value) {
+        is Boolean -> value
+        is Number -> value.toDouble().isFinite() && value.toDouble() > 0.5
+        is String -> when (value.lowercase()) {
+            "1", "true", "yes" -> true
+            "0", "false", "no" -> false
+            else -> null
+        }
+        else -> null
+    }
+}
+
