@@ -780,3 +780,11 @@ private fun FullSkeleton33Overlay(
             drawLine(brush = faceBrush, start = px(a), end = px(b), strokeWidth = 2.5f, cap = StrokeCap.Round)
         }
 
+        // ── Draw all 33 joint dots ──
+        //  Major joints (indices 0, 11-16, 23-28): big dots
+        //  Minor joints (face/hand/foot details): small dots
+        val majorJoints = setOf(0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28)
+        for (i in 0 until 33) {
+            val center = px(i)
+            if (i in majorJoints) {
+                // Glow ring
