@@ -632,3 +632,11 @@ fun ServerPoseDebugSnapshot.hasV2MetricAuthority(): Boolean {
         (mlDltMetricBad == true || scaleEffective || rootEffective)
 }
 
+fun ServerPoseDebugSnapshot.authoritativeDistanceMetersOrNull(sceneCorrectedDistanceMeters: Float = Float.NaN): Float? {
+    if (hasCanonicalMetricPose()) {
+        metricRootDistanceMeters.validAuthoritativeDistanceOrNull()?.let { return it }
+    }
+    if (!hasV2MetricAuthority()) return null
+    val targetDistance = arTargetDistanceMeters.validAuthoritativeDistanceOrNull()
+        ?: sceneCorrectedDistanceMeters.validAuthoritativeDistanceOrNull()
+    val constrainedDistance = constrainedDistanceMeters.validAuthoritativeDistanceOrNull()
