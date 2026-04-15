@@ -810,3 +810,11 @@ private fun FullSkeleton33Overlay(
             }
         }
 
+        // ── ROI bounding box (dashed rect around ALL detected landmarks) ──
+        if (liveLandmarksX != null && liveLandmarksX.size == 33) {
+            val pad = 28f
+            // Use FILL_CENTER-compensated positions to compute ROI bounds
+            var minX = Float.MAX_VALUE; var maxX = Float.MIN_VALUE
+            var minY = Float.MAX_VALUE; var maxY = Float.MIN_VALUE
+            for (i in 0 until 33) {
+                val pos = px(i)
