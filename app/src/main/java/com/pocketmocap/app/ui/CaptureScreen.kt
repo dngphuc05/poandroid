@@ -825,3 +825,21 @@ private fun FullSkeleton33Overlay(
             }
             val rcLeft  = (minX - pad).coerceAtLeast(0f)
             val rcTop   = (minY - pad).coerceAtLeast(0f)
+            val rcRight = (maxX + pad).coerceAtMost(size.width)
+            val rcBot   = (maxY + pad).coerceAtMost(size.height)
+            if (rcRight > rcLeft && rcBot > rcTop) {
+                drawRoundRect(
+                    color = SkeletonMint.copy(alpha = 0.75f),
+                    topLeft = Offset(rcLeft, rcTop),
+                    size = Size(rcRight - rcLeft, rcBot - rcTop),
+                    cornerRadius = CornerRadius(18f, 18f),
+                    style = Stroke(
+                        width = 2.5f,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 10f)),
+                    ),
+                )
+            }
+        }
+    }
+}
+
