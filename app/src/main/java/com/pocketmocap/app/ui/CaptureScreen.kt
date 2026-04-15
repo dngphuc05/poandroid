@@ -735,3 +735,10 @@ private fun FullSkeleton33Overlay(
             /* 32 right_foot_idx  */ Offset(0.575f - sway * 0.012f, 0.900f),
         ) // end demo fallback
         } // end live/demo branch
+
+        fun px(idx: Int): Offset {
+            val lx = j[idx].x
+            val ly = j[idx].y
+            return if (imageWidth > 0 && imageHeight > 0) {
+                // Compensate for FILL_CENTER scaling: the PreviewView crops the image to fill
+                val scale = kotlin.math.max(size.width / imageWidth, size.height / imageHeight)
