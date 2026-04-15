@@ -88,3 +88,19 @@ import com.pocketmocap.app.tracking.WorldTrackingSnapshot
 import com.pocketmocap.app.tracking.authoritativeDistanceMetersOrNull
 import com.pocketmocap.app.tracking.authoritativeHeightMetersOrNull
 import com.pocketmocap.app.tracking.hasCanonicalMetricPose
+import com.pocketmocap.app.ui.components.CaptureView
+import com.pocketmocap.app.ui.components.ViewToggle
+import com.pocketmocap.app.ui.theme.CloudWarm
+import com.pocketmocap.app.ui.theme.Glass
+import com.pocketmocap.app.ui.theme.Ink
+import com.pocketmocap.app.ui.theme.Mint
+import com.pocketmocap.app.ui.theme.MintBright
+import com.pocketmocap.app.ui.theme.MintDeep
+import kotlin.math.sqrt
+import com.pocketmocap.app.ui.theme.Slate
+import com.pocketmocap.app.ui.theme.SkeletonBlue
+import com.pocketmocap.app.ui.theme.SkeletonMint
+import com.pocketmocap.app.ui.theme.SkeletonPink
+import com.pocketmocap.app.ui.theme.TechnicalGrid
+import kotlin.math.roundToInt
+
