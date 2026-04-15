@@ -706,3 +706,6 @@ private fun FloatArray.toJsonArray(count: Int): JSONArray {
     return arr
 }
 
+private fun JSONObject.putFinite(key: String, value: Float) {
+    if (value.isFinite()) put(key, value.toDouble())
+}
