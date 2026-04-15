@@ -312,3 +312,14 @@ fun CaptureScreen(
                                 },
                                 modifier = Modifier.fillMaxSize(),
                             )
+                            // Compose composable for demo animation when no live data
+                            if (viewModel.poseLandmarksX == null) {
+                                FullSkeleton33Overlay(
+                                    accented = false,
+                                    liveLandmarksX = null,
+                                    liveLandmarksY = null,
+                                )
+                            }
+                        }
+                        CaptureView.AVATAR -> {
+                            val serverMetricPoseReady = viewModel.serverMetricPoseDisplayReady
