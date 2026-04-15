@@ -640,3 +640,19 @@ fun ServerPoseDebugSnapshot.authoritativeDistanceMetersOrNull(sceneCorrectedDist
     val targetDistance = arTargetDistanceMeters.validAuthoritativeDistanceOrNull()
         ?: sceneCorrectedDistanceMeters.validAuthoritativeDistanceOrNull()
     val constrainedDistance = constrainedDistanceMeters.validAuthoritativeDistanceOrNull()
+    if (mlDistanceHoldActive == true && targetDistance != null) return targetDistance
+    if (targetDistance != null && constrainedDistance != null) {
+        val delta = abs(constrainedDistance - targetDistance)
+        val ratio = delta / maxOf(constrainedDistance, targetDistance, 1e-4f)
+        return if (
+            delta <= MAX_CONSTRAINED_DISTANCE_TARGET_DELTA_METERS ||
+            ratio <= MAX_CONSTRAINED_DISTANCE_TARGET_RATIO
+        ) {
+            constrainedDistance
+        } else {
+            targetDistance
+        }
+    }
+    return targetDistance ?: constrainedDistance
+}
+
