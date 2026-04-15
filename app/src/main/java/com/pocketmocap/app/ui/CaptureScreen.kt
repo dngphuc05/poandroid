@@ -409,3 +409,19 @@ fun CaptureScreen(
                 }
                 if (viewModel.visibleLandmarkCount == 0 &&
                     uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 58.dp)
+                            .clip(RoundedCornerShape(99.dp))
+                            .background(Color(0xFFFF6B6B).copy(alpha = 0.92f))
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                    ) {
+                        Text(
+                            "No person detected",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.White,
+                        )
+                    }
+                }
+
