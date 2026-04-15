@@ -515,3 +515,21 @@ fun CaptureScreen(
                                     },
                                     colors = SliderDefaults.colors(
                                         thumbColor = Color.White,
+                                        activeTrackColor = SkeletonBlue,
+                                        inactiveTrackColor = Color(0xFFE5E9EB),
+                                    ),
+                                )
+                                if (!subjectHeightEnabled) {
+                                    Text(
+                                        "Metric body height calibration is off",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color(0xFFFF4D4D).copy(alpha = 0.82f),
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(99.dp))
+                                .background(Color(0xFFD9DDE0).copy(alpha = 0.85f))
