@@ -558,3 +558,21 @@ fun CaptureScreen(
         }
 
         // ── Top controls: keep the mode toggle truly centered, independent of camera actions ──
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(horizontal = 20.dp)
+                .padding(top = 72.dp),
+        ) {
+            ViewToggle(
+                activeView = activeView,
+                onViewSelected = onViewSelected,
+                modifier = Modifier.align(Alignment.TopCenter),
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(
