@@ -425,3 +425,21 @@ fun CaptureScreen(
                     }
                 }
 
+                // ── Camera Height overlay — collapsible, inside camera frame ──
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(horizontal = 12.dp, vertical = 12.dp),
+                ) {
+                    if (cameraHeightExpanded) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color(0xFFD9DDE0).copy(alpha = 0.92f),
+                            shadowElevation = 8.dp,
+                        ) {
+                            Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
