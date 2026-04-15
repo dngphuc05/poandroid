@@ -788,3 +788,10 @@ private fun FullSkeleton33Overlay(
             val center = px(i)
             if (i in majorJoints) {
                 // Glow ring
+                drawCircle(
+                    color = Mint.copy(alpha = 0.45f),
+                    radius = 16f,
+                    center = center,
+                    style = Stroke(width = 3f),
+                )
+                // Core dot
