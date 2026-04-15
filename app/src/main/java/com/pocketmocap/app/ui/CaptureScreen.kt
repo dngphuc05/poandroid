@@ -576,3 +576,21 @@ fun CaptureScreen(
                     .align(Alignment.TopStart)
                     .clip(RoundedCornerShape(999.dp))
                     .background(
+                        if (viewModel.isCaptureRecording) {
+                            Color(0xFFFF4D4D).copy(alpha = 0.92f)
+                        } else {
+                            Color.White.copy(alpha = 0.90f)
+                        }
+                    )
+                    .clickable { viewModel.toggleCaptureRecording() }
+                    .padding(horizontal = 12.dp, vertical = 9.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(9.dp)
+                            .clip(CircleShape)
