@@ -281,3 +281,16 @@ fun CaptureScreen(
                     }
                 }
                 // Camera flip button is now in the outer control row (see below)
+            }
+
+            // ── Animated overlays (inside camera frame) ──
+            if (hasCameraPermission) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(18.dp)),
+                ) {
+                    when (activeView) {
+                        CaptureView.SKELETON -> {
+                            // SurfaceView renders on the analysis thread directly —
