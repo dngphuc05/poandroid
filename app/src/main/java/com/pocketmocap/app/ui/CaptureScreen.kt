@@ -294,3 +294,21 @@ fun CaptureScreen(
                     when (activeView) {
                         CaptureView.SKELETON -> {
                             // SurfaceView renders on the analysis thread directly —
+                            // bypasses Compose recomposition + Vsync coalescing (~8ms saved)
+                            val currentActiveView by rememberUpdatedState(activeView)
+                            DisposableEffect(Unit) {
+                                onDispose { viewModel.directLandmarkCallback = null }
+                            }
+                            AndroidView(
+                                factory = { ctx ->
+                                    SkeletonSurfaceView(ctx).also { sv ->
+                                        viewModel.directLandmarkCallback = { x, y, vis, iw, ih ->
+                                            when (currentActiveView) {
+                                                CaptureView.SKELETON -> sv.renderSkeleton(x, y, vis, iw, ih)
+                                                else -> {}
+                                            }
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                            )
