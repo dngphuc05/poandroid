@@ -623,3 +623,12 @@ fun ServerPoseDebugSnapshot.hasCanonicalMetricPose(): Boolean =
         metricRootDistanceMeters.validAuthoritativeDistanceOrNull() != null
 
 fun ServerPoseDebugSnapshot.hasV2MetricAuthority(): Boolean {
+    val scaleEffective = scaleApplied.isFinite() && abs(scaleApplied - 1f) > 1e-3f
+    val rootEffective = rootTranslationMeters.isFinite() && rootTranslationMeters > 0.02f
+    return poseStatus == "ok" &&
+        mlVisualUsable == true &&
+        constraintConfidence.isFinite() &&
+        constraintConfidence >= 0.45f &&
+        (mlDltMetricBad == true || scaleEffective || rootEffective)
+}
+
