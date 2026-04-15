@@ -627,3 +627,21 @@ fun CaptureScreen(
             }
         }
 
+        // ── Pipeline status badge ──
+        if (uiState.pipelineState != HybridPosePipeline.PipelineState.CAPTURING) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .statusBarsPadding()
+                    .padding(top = 128.dp)
+                    .background(Color.Black.copy(alpha = 0.48f), RoundedCornerShape(9999.dp))
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+            ) {
+                Text(
+                    text = when (uiState.pipelineState) {
+                        HybridPosePipeline.PipelineState.IDLE -> "Initializing..."
+                        HybridPosePipeline.PipelineState.CONNECTING -> "Connecting..."
+                        HybridPosePipeline.PipelineState.CALIBRATING -> "Calibrating..."
+                        HybridPosePipeline.PipelineState.BOOTSTRAPPING ->
+                            "Bootstrap ${(uiState.bootstrapProgress * 100).toInt()}%"
+                        HybridPosePipeline.PipelineState.CAPTURING -> ""
