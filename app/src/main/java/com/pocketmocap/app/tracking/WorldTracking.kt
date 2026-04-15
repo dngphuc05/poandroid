@@ -597,3 +597,11 @@ data class ServerPoseDebugSnapshot(
             )
         }
 
+        private fun parseMetricEvidenceOutputs(
+            json: JSONObject?,
+            mlEvidenceJson: JSONObject?,
+        ): Map<String, Float> {
+            val outputJson = mlEvidenceJson?.optJSONObject("outputs")
+            val values = linkedMapOf<String, Float>()
+            for (name in METRIC_EVIDENCE_V2_OUTPUT_NAMES) {
+                val value = outputJson?.optDouble(name, Double.NaN)
