@@ -266,3 +266,18 @@ fun CaptureScreen(
                             clientMetricPoseX = viewModel.clientTechnicalPoseX.takeIf { allowClientTechnicalFallback },
                             clientMetricPoseY = viewModel.clientTechnicalPoseY.takeIf { allowClientTechnicalFallback },
                             clientMetricPoseZ = viewModel.clientTechnicalPoseZ.takeIf { allowClientTechnicalFallback },
+                            clientMetricPoseVisibility = viewModel.clientTechnicalPoseConf.takeIf { allowClientTechnicalFallback },
+                            subjectDistanceMeters = viewModel.technicalDistanceMeters,
+                            subjectHeightMeters = viewModel.technicalHeightMeters,
+                            worldTracking = viewModel.latestWorldTracking,
+                            sceneMetrics = viewModel.latestTechnicalSceneMetrics,
+                            screenX     = viewModel.poseLandmarksX,
+                            screenY     = viewModel.poseLandmarksY,
+                            screenZ     = viewModel.poseLandmarksZ,
+                            poseVisibility       = viewModel.poseVisibility,
+                            visibleLandmarkCount = viewModel.visibleLandmarkCount,
+                            uiState              = uiState,
+                        )
+                    }
+                }
+                // Camera flip button is now in the outer control row (see below)
