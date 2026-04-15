@@ -582,3 +582,18 @@ data class ServerPoseDebugSnapshot(
                 mlImageCropLeftPx = debugJson.optOptionalInt("ml_image_crop_left_px"),
                 mlImageCropTopPx = debugJson.optOptionalInt("ml_image_crop_top_px"),
                 mlImageCropWidthPx = debugJson.optOptionalInt("ml_image_crop_width_px"),
+                mlImageCropHeightPx = debugJson.optOptionalInt("ml_image_crop_height_px"),
+                mlImageJpegQuality = debugJson.optOptionalInt("ml_image_jpeg_quality"),
+                mlImageCropPadRatio = debugJson.optDouble("ml_image_crop_pad_ratio", Double.NaN).toFloat(),
+                mlEvidenceSchema = mlEvidenceJson?.optString("schema")
+                    ?: debugJson.optString("ml_evidence_schema", ""),
+                mlEvidenceOutputs = parseMetricEvidenceOutputs(debugJson, mlEvidenceJson),
+                serverSceneMetricsReceived = debugJson.optOptionalBooleanLike("scene_metrics_received"),
+                serverSceneMetricsAccepted = debugJson.optOptionalBooleanLike("scene_metrics_accepted"),
+                serverSceneMetricsSource = debugJson.optString("scene_metrics_source", ""),
+                serverSceneMetricsFloorSource = debugJson.optString("scene_metrics_floor_source", ""),
+                serverSceneMetricsFilterReason = debugJson.optString("scene_metrics_filter_reason", ""),
+                serverSceneMetricsConfidence = debugJson.optDouble("scene_metrics_confidence", Double.NaN).toFloat(),
+            )
+        }
+
