@@ -795,3 +795,10 @@ private fun FullSkeleton33Overlay(
                     style = Stroke(width = 3f),
                 )
                 // Core dot
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.92f),
+                    radius = 8f,
+                    center = center,
+                )
+            } else {
+                // Small dot for minor landmarks
