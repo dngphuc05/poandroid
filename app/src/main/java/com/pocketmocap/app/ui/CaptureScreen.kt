@@ -366,3 +366,21 @@ fun CaptureScreen(
                                     worldTracking = viewModel.latestWorldTracking,
                                     screenX = viewModel.poseLandmarksX,
                                     screenY = viewModel.poseLandmarksY,
+                                    poseVisibility = metricServerPoseConf
+                                        ?: viewModel.clientTechnicalPoseConf.takeIf { allowClientTechnicalFallback }
+                                        ?: viewModel.poseVisibility,
+                                    imageWidth = viewModel.cameraImageWidth,
+                                    imageHeight = viewModel.cameraImageHeight,
+                                    preferMetricPose = useMetricServerAvatarPose,
+                                    modifier = Modifier.fillMaxSize(),
+                                )
+                            } else if (viewModel.poseLandmarksX != null && viewModel.poseLandmarksY != null) {
+                                AvatarBodyOverlay(
+                                    liveLandmarksX = viewModel.poseLandmarksX,
+                                    liveLandmarksY = viewModel.poseLandmarksY,
+                                    poseVisibility = viewModel.poseVisibility,
+                                    imageWidth = viewModel.cameraImageWidth,
+                                    imageHeight = viewModel.cameraImageHeight,
+                                )
+                            } else {
+                                AvatarGhostOverlay()
