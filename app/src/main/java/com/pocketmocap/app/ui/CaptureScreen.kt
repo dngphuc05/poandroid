@@ -594,3 +594,21 @@ fun CaptureScreen(
                         modifier = Modifier
                             .size(9.dp)
                             .clip(CircleShape)
+                            .background(if (viewModel.isCaptureRecording) Color.White else Color(0xFFFF4D4D)),
+                    )
+                    Text(
+                        if (viewModel.isCaptureRecording) "STOP" else "REC",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = if (viewModel.isCaptureRecording) Color.White else Ink,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+            if (activeView != CaptureView.TECHNICAL) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.45f))
+                        .clickable {
