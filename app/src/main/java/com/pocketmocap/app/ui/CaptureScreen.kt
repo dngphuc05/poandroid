@@ -248,3 +248,21 @@ fun CaptureScreen(
                         .alpha(if (activeView == CaptureView.TECHNICAL) 0f else 1f),
                 )
                 // Technical mode: always show true 3D scene with DLT-triangulated server pose
+                if (activeView == CaptureView.TECHNICAL) {
+                    val serverMetricPoseReady = viewModel.serverMetricPoseDisplayReady
+                    val allowClientTechnicalFallback = !viewModel.serverMetricPoseExpected
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(6.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                    ) {
+                        Technical3DSceneView(
+                            serverPoseX = viewModel.serverPoseX.takeIf { serverMetricPoseReady },
+                            serverPoseY = viewModel.serverPoseY.takeIf { serverMetricPoseReady },
+                            serverPoseZ = viewModel.serverPoseZ.takeIf { serverMetricPoseReady },
+                            serverGroundY = 0f,
+                            serverPoseVisibility = viewModel.serverPoseConf.takeIf { serverMetricPoseReady },
+                            clientMetricPoseX = viewModel.clientTechnicalPoseX.takeIf { allowClientTechnicalFallback },
+                            clientMetricPoseY = viewModel.clientTechnicalPoseY.takeIf { allowClientTechnicalFallback },
+                            clientMetricPoseZ = viewModel.clientTechnicalPoseZ.takeIf { allowClientTechnicalFallback },
