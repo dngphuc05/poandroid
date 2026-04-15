@@ -147,3 +147,13 @@ private val FootConnections = listOf(
     28 to 30, 28 to 32, 30 to 32, // right foot
 )
 
+@Composable
+fun CaptureScreen(
+    uiState: PocketMocapViewModel.UiState,
+    viewModel: PocketMocapViewModel,
+    activeView: CaptureView,
+    onViewSelected: (CaptureView) -> Unit,
+    onCameraHeightChanged: (Float) -> Unit,
+    onSubjectHeightChanged: (Float) -> Unit,
+) {
+    val context = LocalContext.current
