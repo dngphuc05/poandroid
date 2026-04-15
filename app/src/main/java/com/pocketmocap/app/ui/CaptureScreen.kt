@@ -183,3 +183,14 @@ fun CaptureScreen(
         cameraCapture.setManualCameraHeightMeters(uiState.manualCameraHeightMeters)
     }
 
+    DisposableEffect(hasCameraPermission) {
+        if (hasCameraPermission) {
+            Log.i("CaptureScreen", "Starting ARCore capture")
+            cameraCapture.start(lifecycleOwner)
+        }
+        onDispose {
+            Log.i("CaptureScreen", "Stopping ARCore capture")
+            cameraCapture.stop()
+        }
+    }
+
