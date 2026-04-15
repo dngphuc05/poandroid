@@ -348,3 +348,21 @@ fun CaptureScreen(
                                         metricServerPoseY != null &&
                                         metricServerPoseZ != null
                                 val avatarGroundY =
+                                    if (
+                                        metricServerPoseX != null &&
+                                        metricServerPoseY != null &&
+                                        metricServerPoseZ != null
+                                    ) {
+                                        0f
+                                    } else {
+                                        viewModel.technicalGroundY
+                                    }
+                                AvatarVrmOverlay(
+                                    poseX = avatarPoseX,
+                                    poseY = avatarPoseY,
+                                    poseZ = avatarPoseZ,
+                                    groundY = avatarGroundY,
+                                    subjectHeightMeters = viewModel.technicalHeightMeters,
+                                    worldTracking = viewModel.latestWorldTracking,
+                                    screenX = viewModel.poseLandmarksX,
+                                    screenY = viewModel.poseLandmarksY,
