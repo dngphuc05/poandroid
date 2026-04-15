@@ -660,3 +660,15 @@ fun CaptureScreen(
 // ─────────────────────────────────────────────────────────────────────────────
 // Full 33-joint skeleton overlay (MediaPipe COCO+ format)
 // Ported from legacy android-studio/app NativePosePipeline + PreviewScenography
+// ─────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun FullSkeleton33Overlay(
+    accented: Boolean,
+    liveLandmarksX: FloatArray? = null,
+    liveLandmarksY: FloatArray? = null,
+    poseVisibility: FloatArray? = null,
+    imageWidth: Int = 0,
+    imageHeight: Int = 0,
+) {
+    // Always animate — used as a demo when no live data
