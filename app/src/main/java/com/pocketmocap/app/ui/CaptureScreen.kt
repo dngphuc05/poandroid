@@ -330,3 +330,12 @@ fun CaptureScreen(
                             val metricServerPoseConf = viewModel.serverPoseConf.takeIf { serverMetricPoseReady }
                             val fallbackTechnicalPoseX = viewModel.technicalPoseX ?: viewModel.clientTechnicalPoseX.takeIf { allowClientTechnicalFallback }
                             val fallbackTechnicalPoseY = viewModel.technicalPoseY ?: viewModel.clientTechnicalPoseY.takeIf { allowClientTechnicalFallback }
+                            val fallbackTechnicalPoseZ = viewModel.technicalPoseZ ?: viewModel.clientTechnicalPoseZ.takeIf { allowClientTechnicalFallback }
+                            val hasServerAvatarPose =
+                                (fallbackTechnicalPoseX != null || metricServerPoseX != null) &&
+                                (fallbackTechnicalPoseY != null || metricServerPoseY != null) &&
+                                (fallbackTechnicalPoseZ != null || metricServerPoseZ != null) &&
+                                ((fallbackTechnicalPoseX ?: metricServerPoseX)?.size == 33) &&
+                                ((fallbackTechnicalPoseY ?: metricServerPoseY)?.size == 33) &&
+                                ((fallbackTechnicalPoseZ ?: metricServerPoseZ)?.size == 33)
+
