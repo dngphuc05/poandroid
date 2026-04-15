@@ -761,3 +761,12 @@ private fun FullSkeleton33Overlay(
             drawLine(brush = coreBrush, start = px(a), end = px(b), strokeWidth = 6f, cap = StrokeCap.Round)
         }
 
+        // ── Draw face connections (thin, subtle) ──
+        val faceBrush = Brush.linearGradient(
+            if (accented) listOf(SkeletonPink.copy(alpha = 0.5f), SkeletonBlue.copy(alpha = 0.5f))
+            else listOf(SkeletonMint.copy(alpha = 0.4f), SkeletonBlue.copy(alpha = 0.4f))
+        )
+        FaceConnections.forEach { (a, b) ->
+            drawLine(brush = faceBrush, start = px(a), end = px(b), strokeWidth = 2f, cap = StrokeCap.Round)
+        }
+
