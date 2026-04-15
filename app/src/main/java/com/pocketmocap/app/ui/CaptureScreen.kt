@@ -391,3 +391,21 @@ fun CaptureScreen(
                 }
 
                 // Low bone count warning banner — pushed below the control row
+                if (viewModel.visibleLandmarkCount in 1..14) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 58.dp)
+                            .clip(RoundedCornerShape(99.dp))
+                            .background(Color(0xFFFFD066).copy(alpha = 0.92f))
+                            .padding(horizontal = 16.dp, vertical = 6.dp),
+                    ) {
+                        Text(
+                            "Position clearly \u2014 ${viewModel.visibleLandmarkCount}/33 joints visible",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color(0xFF3D2A00),
+                        )
+                    }
+                }
+                if (viewModel.visibleLandmarkCount == 0 &&
+                    uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING) {
