@@ -384,3 +384,10 @@ fun CaptureScreen(
                                 )
                             } else {
                                 AvatarGhostOverlay()
+                            }
+                        }
+                        CaptureView.TECHNICAL -> { /* rendered in Technical3DSceneView above */ }
+                    }
+                }
+
+                // Low bone count warning banner — pushed below the control row
