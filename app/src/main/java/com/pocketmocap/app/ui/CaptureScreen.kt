@@ -220,3 +220,21 @@ fun CaptureScreen(
             .background(viewportBg),
     ) {
         // Slight darkening overlay (Figma: rgba(0,0,0,0.1))
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.10f)))
+
+        // ── Camera frame container (rounded-24, frosted glass, taller) ──
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(horizontal = 24.dp)
+                .padding(top = 68.dp, bottom = 100.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color.White.copy(alpha = 0.8f)),
+        ) {
+            if (!hasCameraPermission) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) { Text("Camera permission required", color = Slate) }
+            } else {
