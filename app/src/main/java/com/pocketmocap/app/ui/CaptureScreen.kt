@@ -497,3 +497,21 @@ fun CaptureScreen(
                                         )
                                         Spacer(Modifier.width(8.dp))
                                         Switch(
+                                            checked = subjectHeightEnabled,
+                                            onCheckedChange = { enabled ->
+                                                subjectHeightEnabled = enabled
+                                                onSubjectHeightChanged(if (enabled) subjectHeightMeters else Float.NaN)
+                                            },
+                                        )
+                                    }
+                                }
+                                Slider(
+                                    value = subjectHeightMeters,
+                                    enabled = subjectHeightEnabled,
+                                    onValueChange = { subjectHeightMeters = it },
+                                    valueRange = 1.05f..2.35f,
+                                    onValueChangeFinished = {
+                                        if (subjectHeightEnabled) onSubjectHeightChanged(subjectHeightMeters)
+                                    },
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
