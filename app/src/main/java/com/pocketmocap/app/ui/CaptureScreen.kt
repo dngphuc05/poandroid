@@ -111,3 +111,20 @@ import kotlin.math.roundToInt
 // 11:left_shoulder 12:right_shoulder 13:left_elbow 14:right_elbow
 // 15:left_wrist 16:right_wrist 17:left_pinky 18:right_pinky
 // 19:left_index 20:right_index 21:left_thumb 22:right_thumb
+// 23:left_hip 24:right_hip 25:left_knee 26:right_knee
+// 27:left_ankle 28:right_ankle 29:left_heel 30:right_heel
+// 31:left_foot_index 32:right_foot_index
+
+/** 14 bone connections matching the legacy android-studio NativePosePipeline. */
+private val BoneConnections = listOf(
+    11 to 12, // shoulders
+    11 to 23, // L shoulder -> L hip
+    12 to 24, // R shoulder -> R hip
+    23 to 24, // hips
+    11 to 13, 13 to 15, // L arm
+    12 to 14, 14 to 16, // R arm
+    23 to 25, 25 to 27, // L leg
+    24 to 26, 26 to 28, // R leg
+    0 to 11,  0 to 12,  // head -> shoulders
+)
+
