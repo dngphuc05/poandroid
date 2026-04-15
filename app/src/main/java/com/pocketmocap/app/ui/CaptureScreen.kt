@@ -672,3 +672,14 @@ private fun FullSkeleton33Overlay(
     imageHeight: Int = 0,
 ) {
     // Always animate — used as a demo when no live data
+    val transition = rememberInfiniteTransition(label = "skeleton33")
+    val phase by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 3600, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart,
+        ),
+        label = "skeletonPhase",
+    )
+
