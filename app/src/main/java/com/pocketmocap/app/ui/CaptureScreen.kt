@@ -238,3 +238,13 @@ fun CaptureScreen(
                     contentAlignment = Alignment.Center,
                 ) { Text("Camera permission required", color = Slate) }
             } else {
+                // Camera preview — hidden in Technical mode (still running for MediaPipe)
+                AndroidView(
+                    factory = { cameraCapture.previewView },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(6.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .alpha(if (activeView == CaptureView.TECHNICAL) 0f else 1f),
+                )
+                // Technical mode: always show true 3D scene with DLT-triangulated server pose
