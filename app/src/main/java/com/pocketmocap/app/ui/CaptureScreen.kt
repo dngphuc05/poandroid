@@ -802,3 +802,11 @@ private fun FullSkeleton33Overlay(
                 )
             } else {
                 // Small dot for minor landmarks
+                drawCircle(
+                    color = Color.White.copy(alpha = 0.70f),
+                    radius = 4f,
+                    center = center,
+                )
+            }
+        }
+
