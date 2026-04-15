@@ -843,3 +843,10 @@ private fun FullSkeleton33Overlay(
     }
 }
 
+// ─── Avatar Body Overlay — silhouette fill driven by live landmarks ─────────
+// Draws a stylised avatar body: head, torso, limb capsules, plus the full
+// 33-joint accented skeleton on top.  Uses the same FILL_CENTER landmark
+// compensation as FullSkeleton33Overlay.
+
+@Composable
+private fun AvatarBodyOverlay(
