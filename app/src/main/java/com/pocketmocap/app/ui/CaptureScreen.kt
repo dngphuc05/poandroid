@@ -752,3 +752,12 @@ private fun FullSkeleton33Overlay(
             }
         }
 
+        // ── Draw major bone connections (14 core bones) ──
+        val coreBrush = Brush.linearGradient(
+            if (accented) listOf(SkeletonPink, SkeletonBlue, SkeletonMint)
+            else listOf(SkeletonMint, SkeletonBlue)
+        )
+        BoneConnections.forEach { (a, b) ->
+            drawLine(brush = coreBrush, start = px(a), end = px(b), strokeWidth = 6f, cap = StrokeCap.Round)
+        }
+
