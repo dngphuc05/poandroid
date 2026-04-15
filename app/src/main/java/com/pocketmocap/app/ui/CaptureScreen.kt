@@ -173,3 +173,13 @@ fun CaptureScreen(
         if (!hasCameraPermission) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
+    val cameraCapture = remember {
+        ArCoreFrameCapture(
+            context = context,
+            onFrame = { frame -> viewModel.onCameraFrame(frame) },
+        )
+    }
+    LaunchedEffect(uiState.manualCameraHeightMeters) {
+        cameraCapture.setManualCameraHeightMeters(uiState.manualCameraHeightMeters)
+    }
+
