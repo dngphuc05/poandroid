@@ -323,3 +323,10 @@ fun CaptureScreen(
                         }
                         CaptureView.AVATAR -> {
                             val serverMetricPoseReady = viewModel.serverMetricPoseDisplayReady
+                            val allowClientTechnicalFallback = !viewModel.serverMetricPoseExpected
+                            val metricServerPoseX = viewModel.serverPoseX.takeIf { serverMetricPoseReady }
+                            val metricServerPoseY = viewModel.serverPoseY.takeIf { serverMetricPoseReady }
+                            val metricServerPoseZ = viewModel.serverPoseZ.takeIf { serverMetricPoseReady }
+                            val metricServerPoseConf = viewModel.serverPoseConf.takeIf { serverMetricPoseReady }
+                            val fallbackTechnicalPoseX = viewModel.technicalPoseX ?: viewModel.clientTechnicalPoseX.takeIf { allowClientTechnicalFallback }
+                            val fallbackTechnicalPoseY = viewModel.technicalPoseY ?: viewModel.clientTechnicalPoseY.takeIf { allowClientTechnicalFallback }
