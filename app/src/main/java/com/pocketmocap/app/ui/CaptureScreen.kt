@@ -461,3 +461,21 @@ fun CaptureScreen(
                                                 .clip(CircleShape)
                                                 .background(Ink.copy(alpha = 0.14f))
                                                 .clickable { cameraHeightExpanded = false },
+                                            contentAlignment = Alignment.Center,
+                                        ) {
+                                            Text("×", style = MaterialTheme.typography.labelLarge, color = Ink)
+                                        }
+                                    }
+                                }
+                                Slider(
+                                    value = cameraHeightMeters,
+                                    onValueChange = { cameraHeightMeters = it },
+                                    valueRange = 0.20f..2.50f,
+                                    onValueChangeFinished = { onCameraHeightChanged(cameraHeightMeters) },
+                                    colors = SliderDefaults.colors(
+                                        thumbColor = Color.White,
+                                        activeTrackColor = Mint,
+                                        inactiveTrackColor = Color(0xFFE5E9EB),
+                                    ),
+                                )
+                                HorizontalDivider(color = Color.Black.copy(alpha = 0.08f))
