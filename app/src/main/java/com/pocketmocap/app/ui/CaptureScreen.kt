@@ -479,3 +479,21 @@ fun CaptureScreen(
                                     ),
                                 )
                                 HorizontalDivider(color = Color.Black.copy(alpha = 0.08f))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        "Subject Height",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = Ink,
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            if (subjectHeightEnabled) "${"%.2f".format(subjectHeightMeters)}m" else "Off",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Slate,
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Switch(
