@@ -850,3 +850,11 @@ private fun FullSkeleton33Overlay(
 
 @Composable
 private fun AvatarBodyOverlay(
+    liveLandmarksX: FloatArray? = null,
+    liveLandmarksY: FloatArray? = null,
+    poseVisibility: FloatArray? = null,
+    imageWidth: Int = 0,
+    imageHeight: Int = 0,
+    modelName: String? = null,
+) {
+    // Avatar has the same animated demo skeleton as FullSkeleton33Overlay
