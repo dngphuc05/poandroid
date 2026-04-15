@@ -653,3 +653,10 @@ fun CaptureScreen(
             }
         }
 
+        // (Camera Height is now inside the camera frame as a collapsible overlay)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Full 33-joint skeleton overlay (MediaPipe COCO+ format)
+// Ported from legacy android-studio/app NativePosePipeline + PreviewScenography
