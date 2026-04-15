@@ -742,3 +742,13 @@ private fun FullSkeleton33Overlay(
             return if (imageWidth > 0 && imageHeight > 0) {
                 // Compensate for FILL_CENTER scaling: the PreviewView crops the image to fill
                 val scale = kotlin.math.max(size.width / imageWidth, size.height / imageHeight)
+                val dispW = imageWidth * scale
+                val dispH = imageHeight * scale
+                val offX = (dispW - size.width) / 2f
+                val offY = (dispH - size.height) / 2f
+                Offset(lx * dispW - offX, ly * dispH - offY)
+            } else {
+                Offset(lx * size.width, ly * size.height)
+            }
+        }
+
