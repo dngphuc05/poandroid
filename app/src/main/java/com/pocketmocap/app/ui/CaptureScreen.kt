@@ -770,3 +770,13 @@ private fun FullSkeleton33Overlay(
             drawLine(brush = faceBrush, start = px(a), end = px(b), strokeWidth = 2f, cap = StrokeCap.Round)
         }
 
+        // ── Draw hand connections ──
+        HandConnections.forEach { (a, b) ->
+            drawLine(brush = faceBrush, start = px(a), end = px(b), strokeWidth = 2.5f, cap = StrokeCap.Round)
+        }
+
+        // ── Draw foot connections ──
+        FootConnections.forEach { (a, b) ->
+            drawLine(brush = faceBrush, start = px(a), end = px(b), strokeWidth = 2.5f, cap = StrokeCap.Round)
+        }
+
