@@ -674,3 +674,10 @@ fun ServerPoseDebugSnapshot.authoritativeHeightMetersOrNull(sceneCorrectedHeight
     return targetHeight ?: constrainedHeight
 }
 
+private fun Float.validAuthoritativeHeightOrNull(): Float? =
+    takeIf { it.isFinite() && it in MIN_AUTHORITATIVE_HEIGHT_METERS..MAX_AUTHORITATIVE_HEIGHT_METERS }
+
+private fun Float.validAuthoritativeDistanceOrNull(): Float? =
+    takeIf { it.isFinite() && it in MIN_AUTHORITATIVE_DISTANCE_METERS..MAX_AUTHORITATIVE_DISTANCE_METERS }
+
+private fun JSONObject.optOptionalInt(key: String): Int? =
