@@ -818,3 +818,10 @@ private fun FullSkeleton33Overlay(
             var minY = Float.MAX_VALUE; var maxY = Float.MIN_VALUE
             for (i in 0 until 33) {
                 val pos = px(i)
+                if (pos.x < minX) minX = pos.x
+                if (pos.x > maxX) maxX = pos.x
+                if (pos.y < minY) minY = pos.y
+                if (pos.y > maxY) maxY = pos.y
+            }
+            val rcLeft  = (minX - pad).coerceAtLeast(0f)
+            val rcTop   = (minY - pad).coerceAtLeast(0f)
