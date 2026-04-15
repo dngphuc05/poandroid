@@ -690,3 +690,12 @@ private fun FullSkeleton33Overlay(
                      vertical = if (liveLandmarksX != null) 0.dp else 80.dp),
     ) {
         val sway = kotlin.math.sin(phase * Math.PI * 2.0).toFloat()
+        val lift = kotlin.math.cos(phase * Math.PI * 2.0).toFloat() * 0.008f
+        val breathe = kotlin.math.sin(phase * Math.PI * 4.0).toFloat() * 0.003f
+
+        // Use live landmark data when available, fall back to demo animation
+        val j: Array<Offset> = if (liveLandmarksX != null && liveLandmarksY != null &&
+            liveLandmarksX.size == 33 && liveLandmarksY.size == 33) {
+            Array(33) { i -> Offset(liveLandmarksX[i], liveLandmarksY[i]) }
+        } else {
+            // ── Demo 33 joints in normalized [0..1] coordinates ──
