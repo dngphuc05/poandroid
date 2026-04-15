@@ -698,3 +698,11 @@ private fun JSONObject.optOptionalBooleanLike(key: String): Boolean? {
     }
 }
 
+private fun FloatArray.toJsonArray(count: Int): JSONArray {
+    val arr = JSONArray()
+    for (i in 0 until count.coerceAtMost(size)) {
+        arr.put(this[i].toDouble())
+    }
+    return arr
+}
+
