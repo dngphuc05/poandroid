@@ -201,3 +201,13 @@ fun CaptureScreen(
     var subjectHeightEnabled by remember { mutableStateOf(uiState.manualSubjectHeightMeters.isFinite()) }
     var cameraHeightExpanded by remember { mutableStateOf(false) }
     var facingFront by remember { mutableStateOf(false) }
+    LaunchedEffect(uiState.manualCameraHeightMeters) {
+        cameraHeightMeters = uiState.manualCameraHeightMeters
+    }
+    LaunchedEffect(uiState.manualSubjectHeightMeters) {
+        subjectHeightEnabled = uiState.manualSubjectHeightMeters.isFinite()
+        if (uiState.manualSubjectHeightMeters.isFinite()) {
+            subjectHeightMeters = uiState.manualSubjectHeightMeters
+        }
+    }
+
