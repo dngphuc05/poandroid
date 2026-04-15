@@ -612,3 +612,18 @@ fun CaptureScreen(
                         .clip(CircleShape)
                         .background(Color.Black.copy(alpha = 0.45f))
                         .clickable {
+                            facingFront = !facingFront
+                            cameraCapture.switchCamera(facingFront)
+                        },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FlipCameraAndroid,
+                        contentDescription = "Flip camera",
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp),
+                    )
+                }
+            }
+        }
+
