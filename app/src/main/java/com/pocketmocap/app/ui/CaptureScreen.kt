@@ -699,3 +699,21 @@ private fun FullSkeleton33Overlay(
             Array(33) { i -> Offset(liveLandmarksX[i], liveLandmarksY[i]) }
         } else {
             // ── Demo 33 joints in normalized [0..1] coordinates ──
+            arrayOf(
+            /* 0  nose            */ Offset(0.500f, 0.120f + lift),
+            /* 1  left_eye_inner  */ Offset(0.478f, 0.105f + lift),
+            /* 2  left_eye        */ Offset(0.470f, 0.103f + lift),
+            /* 3  left_eye_outer  */ Offset(0.462f, 0.105f + lift),
+            /* 4  right_eye_inner */ Offset(0.522f, 0.105f + lift),
+            /* 5  right_eye       */ Offset(0.530f, 0.103f + lift),
+            /* 6  right_eye_outer */ Offset(0.538f, 0.105f + lift),
+            /* 7  left_ear        */ Offset(0.445f, 0.115f + lift),
+            /* 8  right_ear       */ Offset(0.555f, 0.115f + lift),
+            /* 9  mouth_left      */ Offset(0.485f, 0.138f + lift),
+            /* 10 mouth_right     */ Offset(0.515f, 0.138f + lift),
+            /* 11 left_shoulder   */ Offset(0.380f - sway * 0.012f, 0.225f + breathe),
+            /* 12 right_shoulder  */ Offset(0.620f + sway * 0.012f, 0.225f + breathe),
+            /* 13 left_elbow      */ Offset(0.320f - sway * 0.025f, 0.360f),
+            /* 14 right_elbow     */ Offset(0.680f + sway * 0.025f, 0.360f),
+            /* 15 left_wrist      */ Offset(0.340f - sway * 0.035f, 0.480f),
+            /* 16 right_wrist     */ Offset(0.660f + sway * 0.035f, 0.480f),
