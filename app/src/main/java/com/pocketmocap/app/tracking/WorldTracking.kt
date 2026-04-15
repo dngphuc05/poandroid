@@ -656,3 +656,11 @@ fun ServerPoseDebugSnapshot.authoritativeDistanceMetersOrNull(sceneCorrectedDist
     return targetDistance ?: constrainedDistance
 }
 
+fun ServerPoseDebugSnapshot.authoritativeHeightMetersOrNull(sceneCorrectedHeightMeters: Float = Float.NaN): Float? {
+    if (hasCanonicalMetricPose()) {
+        metricBodyHeightMeters.validAuthoritativeHeightOrNull()?.let { return it }
+    }
+    if (!hasV2MetricAuthority()) return null
+    val targetHeight = arTargetHeightMeters.validAuthoritativeHeightOrNull()
+        ?: sceneCorrectedHeightMeters.validAuthoritativeHeightOrNull()
+    val constrainedHeight = constrainedHeightMeters.validAuthoritativeHeightOrNull()
