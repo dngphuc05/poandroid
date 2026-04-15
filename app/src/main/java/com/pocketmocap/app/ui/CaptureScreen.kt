@@ -443,3 +443,21 @@ fun CaptureScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
+                                    Text(
+                                        "Camera Height",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = Ink,
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            "${"%.2f".format(cameraHeightMeters)}m",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = Slate,
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Box(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                                .clip(CircleShape)
+                                                .background(Ink.copy(alpha = 0.14f))
+                                                .clickable { cameraHeightExpanded = false },
