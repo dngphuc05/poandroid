@@ -211,3 +211,12 @@ fun CaptureScreen(
         }
     }
 
+    // Figma viewport background: #f5f4eb + rgba(0,0,0,0.1) overlay
+    val viewportBg = Color(0xFFF5F4EB)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(viewportBg),
+    ) {
+        // Slight darkening overlay (Figma: rgba(0,0,0,0.1))
