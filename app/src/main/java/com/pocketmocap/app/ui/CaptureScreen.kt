@@ -135,3 +135,15 @@ private val FaceConnections = listOf(
     9 to 10,                           // mouth
 )
 
+/** Hand connections. */
+private val HandConnections = listOf(
+    15 to 17, 15 to 19, 15 to 21, // left hand
+    16 to 18, 16 to 20, 16 to 22, // right hand
+)
+
+/** Foot connections. */
+private val FootConnections = listOf(
+    27 to 29, 27 to 31, 29 to 31, // left foot
+    28 to 30, 28 to 32, 30 to 32, // right foot
+)
+
