@@ -128,3 +128,10 @@ private val BoneConnections = listOf(
     0 to 11,  0 to 12,  // head -> shoulders
 )
 
+/** Extra face connections for detail rendering. */
+private val FaceConnections = listOf(
+    0 to 1, 1 to 2, 2 to 3, 3 to 7,  // left face
+    0 to 4, 4 to 5, 5 to 6, 6 to 8,  // right face
+    9 to 10,                           // mouth
+)
+
