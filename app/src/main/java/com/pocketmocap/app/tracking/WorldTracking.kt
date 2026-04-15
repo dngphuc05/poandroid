@@ -605,3 +605,14 @@ data class ServerPoseDebugSnapshot(
             val values = linkedMapOf<String, Float>()
             for (name in METRIC_EVIDENCE_V2_OUTPUT_NAMES) {
                 val value = outputJson?.optDouble(name, Double.NaN)
+                    ?: json?.optDouble("ml_$name", Double.NaN)
+                    ?: Double.NaN
+                if (value.isFinite()) {
+                    values[name] = value.toFloat()
+                }
+            }
+            return values
+        }
+    }
+}
+
