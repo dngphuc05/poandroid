@@ -533,3 +533,21 @@ fun CaptureScreen(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(99.dp))
                                 .background(Color(0xFFD9DDE0).copy(alpha = 0.85f))
+                                .clickable { cameraHeightExpanded = true }
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Text(
+                                    if (subjectHeightEnabled) {
+                                        "Camera: ${"%.2f".format(cameraHeightMeters)}m  Subject: ${"%.2f".format(subjectHeightMeters)}m"
+                                    } else {
+                                        "Camera: ${"%.2f".format(cameraHeightMeters)}m  Subject: OFF"
+                                    },
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Ink,
+                                )
+                                Text("▲", style = MaterialTheme.typography.labelSmall, color = Ink.copy(alpha = 0.5f))
+                            }
