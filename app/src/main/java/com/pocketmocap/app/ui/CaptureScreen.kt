@@ -1075,3 +1075,14 @@ private fun AvatarBodyOverlay(
     }
 }
 
+// ─── Avatar Ghost Overlay (Polished — pulsing radial gradient + glass info) ──
+
+@Composable
+private fun AvatarGhostOverlay() {
+    val transition = rememberInfiniteTransition(label = "avatar")
+    val pulse by transition.animateFloat(
+        initialValue = 0.88f, targetValue = 1.08f,
+        animationSpec = infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Reverse),
+        label = "pulse",
+    )
+
