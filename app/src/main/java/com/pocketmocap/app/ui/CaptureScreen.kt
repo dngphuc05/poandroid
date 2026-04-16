@@ -1508,3 +1508,13 @@ private fun Technical3DSceneView(
             return@LaunchedEffect
         }
 
+        if (hasCanonicalMetricPose) {
+            stableDistanceMeters = stableDistanceMeters * 0.82f + nextDistance * 0.18f
+            stableBodyHeightMeters = stableBodyHeightMeters * 0.90f + nextHeight * 0.10f
+            stableCameraHeightMeters = stableCameraHeightMeters * 0.86f + nextCameraHeight * 0.14f
+            stableFloorPitchDegrees = stableFloorPitchDegrees * 0.88f + nextFloorPitch * 0.12f
+            stableLateralOffsetMeters = stableLateralOffsetMeters * 0.82f + nextLateralOffset * 0.18f
+            pendingCameraMoveFrames = 0
+            return@LaunchedEffect
+        }
+
