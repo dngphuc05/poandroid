@@ -1311,3 +1311,19 @@ private fun AvatarOcclusionMask(
                     (pb.y - pa.y) * (pb.y - pa.y)
             )
             val width = (length * widthFactor).coerceIn(minPx, maxPx)
+            drawLine(
+                color = matteSoft,
+                start = pa,
+                end = pb,
+                strokeWidth = width * 1.45f,
+                cap = StrokeCap.Round,
+            )
+            drawLine(
+                color = matteFill,
+                start = pa,
+                end = pb,
+                strokeWidth = width,
+                cap = StrokeCap.Round,
+            )
+        }
+
