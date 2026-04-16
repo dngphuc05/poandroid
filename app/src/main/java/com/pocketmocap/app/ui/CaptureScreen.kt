@@ -1429,3 +1429,16 @@ private fun Technical3DSceneView(
             serverPoseY.size == 33 &&
             serverPoseZ.size == 33
     val serverHealth = evaluateServerPoseHealth(
+        poseX = serverPoseX,
+        poseY = serverPoseY,
+        poseZ = serverPoseZ,
+        poseVisibility = serverPoseVisibility,
+    )
+    val serverDebug = remember(uiState.latestPose3D, arSceneMetrics) {
+        ServerPoseDebugSnapshot.fromJson(
+            json = uiState.latestPose3D?.optJSONObject("server_debug"),
+            fallbackScene = arSceneMetrics,
+            mlEvidenceJson = uiState.latestPose3D?.optJSONObject("ml_evidence"),
+        )
+    }
+    val hasCanonicalMetricPose = serverDebug?.hasCanonicalMetricPose() == true
