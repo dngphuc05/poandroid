@@ -1055,3 +1055,14 @@ private fun AvatarBodyOverlay(
             }
         }
 
+        // Model name badge (bottom-left)
+        if (modelName != null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(12.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.Black.copy(0.55f))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+            ) {
+                androidx.compose.material3.Text(
