@@ -1518,3 +1518,15 @@ private fun Technical3DSceneView(
             return@LaunchedEffect
         }
 
+        val distanceDelta = kotlin.math.abs(nextDistance - stableDistanceMeters)
+        val heightDelta = kotlin.math.abs(nextHeight - stableBodyHeightMeters)
+        val cameraHeightDelta = kotlin.math.abs(nextCameraHeight - stableCameraHeightMeters)
+        val pitchDelta = kotlin.math.abs(nextFloorPitch - stableFloorPitchDegrees)
+        val lateralDelta = kotlin.math.abs(nextLateralOffset - stableLateralOffsetMeters)
+        val meaningfulChange =
+            distanceDelta >= 0.18f ||
+                heightDelta >= 0.08f ||
+                cameraHeightDelta >= 0.08f ||
+                pitchDelta >= 1.5f ||
+                lateralDelta >= 0.08f
+
