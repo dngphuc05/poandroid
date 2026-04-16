@@ -1827,3 +1827,13 @@ private fun Technical3DSceneView(
                 }
             }
 
+            drawLine(Color(0xFFCFD8DC).copy(alpha = 0.55f), Offset(0f, cy), Offset(W, cy), 1f)
+        }
+
+        if (!hasArFloorScene) {
+            val waitingTitle = if (hasCurrentArFloor) {
+                "Waiting for AR pose scale"
+            } else {
+                "Waiting for AR floor"
+            }
+            val waitingHelp = if (hasCurrentArFloor) {
