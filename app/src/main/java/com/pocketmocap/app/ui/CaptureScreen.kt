@@ -1248,3 +1248,21 @@ private fun AvatarVrmOverlay(
                     drawRoundRect(
                         color = SkeletonMint.copy(alpha = 0.78f),
                         topLeft = Offset(roiRect.left, roiRect.top),
+                        size = Size(roiRect.width, roiRect.height),
+                        cornerRadius = CornerRadius(18.dp.toPx(), 18.dp.toPx()),
+                        style = Stroke(
+                            width = 2.5f,
+                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 10f)),
+                        ),
+                    )
+                }
+            } else {
+                VrmSceneView(
+                    poseX = poseX,
+                    poseY = poseY,
+                    poseZ = poseZ,
+                    groundY = groundY,
+                    subjectHeightMeters = subjectHeightMeters,
+                    worldTracking = worldTracking,
+                    screenX = screenX,
+                    screenY = screenY,
