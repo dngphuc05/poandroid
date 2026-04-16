@@ -964,3 +964,13 @@ private fun AvatarBodyOverlay(
             limbStroke(13, 15, avSkin, 0.18f, 7f, 26f)
             limbStroke(14, 16, avSkin, 0.18f, 7f, 26f)
 
+            // ── 6. Hands ──
+            for (wi in listOf(15, 16)) {
+                val wv = poseVisibility?.get(wi) ?: 0.8f
+                if (wv > 0.2f) {
+                    val wp = px(wi)
+                    drawCircle(avSkin, size.width / 100f, wp)
+                    drawCircle(avOutline, size.width / 100f, wp, style = Stroke(ow))
+                }
+            }
+
