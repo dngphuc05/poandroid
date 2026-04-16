@@ -1688,3 +1688,12 @@ private fun Technical3DSceneView(
                     val scale = (stableBodyHeightMeters / rawHeight.coerceAtLeast(0.60f)).coerceIn(0.88f, 1.12f)
                     val anchorX = stableLateralOffsetMeters
                     val anchorZ = -stableDistanceMeters
+                    for (i in 0 until 33) {
+                        jointX[i] = anchorX + (sx[i] - rawRootX) * scale
+                        jointY[i] = (sy[i] - floorY) * scale
+                        jointZ[i] = anchorZ + (sz[i] - rawRootZ) * scale
+                    }
+                    hasLandmarks = true
+                }
+                !hasUsableServerTechnicalPose && hasArFloorScene && hasClientTechnicalPose -> {
+                    val px = screenX ?: return@Canvas
