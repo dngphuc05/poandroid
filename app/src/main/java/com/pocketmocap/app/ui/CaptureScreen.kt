@@ -1230,3 +1230,21 @@ private fun AvatarVrmOverlay(
                         modifier = Modifier.fillMaxSize(),
                     )
                     VrmSceneView(
+                        poseX = poseX,
+                        poseY = poseY,
+                        poseZ = poseZ,
+                        groundY = groundY,
+                        subjectHeightMeters = subjectHeightMeters,
+                        worldTracking = worldTracking,
+                        screenX = screenX,
+                        screenY = screenY,
+                        visibility = poseVisibility,
+                        useLateralOffset = false,
+                        preferMetricPose = preferMetricPose,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    drawRoundRect(
+                        color = SkeletonMint.copy(alpha = 0.78f),
+                        topLeft = Offset(roiRect.left, roiRect.top),
