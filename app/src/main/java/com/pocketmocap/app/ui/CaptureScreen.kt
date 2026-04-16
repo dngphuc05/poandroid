@@ -907,3 +907,10 @@ private fun AvatarBodyOverlay(
                     val dispW = imageWidth * scale; val dispH = imageHeight * scale
                     val offX = (dispW - size.width) / 2f
                     val offY = (dispH - size.height) / 2f - size.height * 0.03f
+                    Offset(lx * dispW - offX, ly * dispH - offY)
+                } else Offset(lx * size.width, ly * size.height)
+            }
+
+            // ── Puppet character colors ──
+            val avOutfit  = Color(0xFF3C37AF)   // deep blue trousers/jacket
+            val avShirt   = Color(0xFF5A46C3)   // slightly lighter shirt
