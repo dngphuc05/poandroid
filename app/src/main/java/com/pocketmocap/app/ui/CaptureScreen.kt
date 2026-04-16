@@ -1173,3 +1173,10 @@ private fun TechnicalGridOverlay() {
         }
         for (j in 0..rows) {
             val y = j * yStep
+            drawLine(TechnicalGrid, Offset(0f, y), Offset(size.width, y), strokeWidth = 2f, pathEffect = dash)
+        }
+    }
+}
+
+@Composable
+private fun AvatarVrmOverlay(
