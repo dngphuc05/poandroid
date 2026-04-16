@@ -1372,3 +1372,21 @@ private fun AvatarOcclusionMask(
 }
 
 // ─── Technical 3D Scene View (full mocap-studio perspective) ─────────────────
+
+@Composable
+private fun Technical3DSceneView(
+    // Priority 1: DLT-triangulated server 3D pose in the display-upright client frame.
+    serverPoseX: FloatArray?,
+    serverPoseY: FloatArray?,
+    serverPoseZ: FloatArray?,
+    serverGroundY: Float,
+    serverPoseVisibility: FloatArray?,
+    clientMetricPoseX: FloatArray?,
+    clientMetricPoseY: FloatArray?,
+    clientMetricPoseZ: FloatArray?,
+    clientMetricPoseVisibility: FloatArray?,
+    subjectDistanceMeters: Float,
+    subjectHeightMeters: Float,
+    worldTracking: WorldTrackingSnapshot?,
+    sceneMetrics: SceneMetricSnapshot?,
+    // Raw screen landmarks are intentionally not used for physical Technical view.
