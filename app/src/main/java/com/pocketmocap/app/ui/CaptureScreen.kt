@@ -1743,3 +1743,12 @@ private fun Technical3DSceneView(
             val floorY3 = 0f
             val gridExtent = maxOf(10.0f, (stableDistanceMeters + 2.5f).coerceAtMost(16f))
             val gridStep = 0.5f
+            for (i in -20..20) {
+                val t = i * gridStep
+                val isMajor = i % 2 == 0
+                val lineColor = if (isMajor) {
+                    Color(0xFFB8C2CC).copy(alpha = 0.92f)
+                } else {
+                    Color(0xFFE2E8EE).copy(alpha = 0.90f)
+                }
+                val lineWidth = if (isMajor) 1.4f else 0.8f
