@@ -900,3 +900,10 @@ private fun AvatarBodyOverlay(
                 )
             }
 
+            fun px(idx: Int): Offset {
+                val lx = j[idx].x; val ly = j[idx].y
+                return if (imageWidth > 0 && imageHeight > 0) {
+                    val scale = kotlin.math.max(size.width / imageWidth, size.height / imageHeight) * 0.86f
+                    val dispW = imageWidth * scale; val dispH = imageHeight * scale
+                    val offX = (dispW - size.width) / 2f
+                    val offY = (dispH - size.height) / 2f - size.height * 0.03f
