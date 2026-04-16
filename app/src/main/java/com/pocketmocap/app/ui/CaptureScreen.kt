@@ -1129,3 +1129,21 @@ private fun AvatarGhostOverlay() {
         }
 
         // Glass info card at bottom
+        Surface(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 40.dp, vertical = 200.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = Glass,
+            shadowElevation = 12.dp,
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(
+                    text = "Avatar View",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Ink,
+                )
+                Text(
