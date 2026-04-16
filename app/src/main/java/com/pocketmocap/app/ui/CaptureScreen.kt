@@ -1302,3 +1302,12 @@ private fun AvatarOcclusionMask(
 
         fun limb(a: Int, b: Int, widthFactor: Float, minPx: Float, maxPx: Float) {
             val va = poseVisibility?.getOrNull(a) ?: 0.8f
+            val vb = poseVisibility?.getOrNull(b) ?: 0.8f
+            if (va <= 0.2f || vb <= 0.2f) return
+            val pa = lp(a)
+            val pb = lp(b)
+            val length = kotlin.math.sqrt(
+                (pb.x - pa.x) * (pb.x - pa.x) +
+                    (pb.y - pa.y) * (pb.y - pa.y)
+            )
+            val width = (length * widthFactor).coerceIn(minPx, maxPx)
