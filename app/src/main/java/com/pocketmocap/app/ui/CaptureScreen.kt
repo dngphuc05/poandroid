@@ -1656,3 +1656,11 @@ private fun Technical3DSceneView(
                 }
                 hasClientMetricTechnicalPose -> {
                     val sx = clientMetricPoseX ?: return@Canvas
+                    val sy = clientMetricPoseY ?: return@Canvas
+                    val sz = clientMetricPoseZ ?: return@Canvas
+                    val drawVisibility = clientMetricPoseVisibility ?: poseVisibility
+                    var floorY = technicalSkeletonFloorY(sy, drawVisibility, 0f)
+                    if (!floorY.isFinite()) {
+                        floorY = 0f
+                    }
+                    var rawRootX = 0f
