@@ -1476,3 +1476,11 @@ private fun Technical3DSceneView(
             clientMetricPoseY.size == 33 &&
             clientMetricPoseZ.size == 33
 
+    val serverAuthoritativeDistance = serverDebug?.authoritativeDistanceMetersOrNull(
+        arSceneMetrics?.correctedDistanceMeters ?: Float.NaN,
+    )
+    val subjectDistanceForView = serverAuthoritativeDistance
+        ?: arSceneMetrics?.correctedDistanceMeters?.takeIf { it.isFinite() }
+        ?: arSceneMetrics?.distanceMeters?.takeIf { it.isFinite() }
+        ?: subjectDistanceMeters.takeIf { it.isFinite() }
+    val serverAuthoritativeHeight = serverDebug?.authoritativeHeightMetersOrNull(
