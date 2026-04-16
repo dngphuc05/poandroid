@@ -1664,3 +1664,20 @@ private fun Technical3DSceneView(
                         floorY = 0f
                     }
                     var rawRootX = 0f
+                    var rawRootY = 0f
+                    var rawRootZ = 0f
+                    var rootCount = 0
+                    for (idx in intArrayOf(23, 24)) {
+                        val visible = drawVisibility?.getOrNull(idx) ?: 1f
+                        if (visible <= 0.2f) continue
+                        rawRootX += sx[idx]
+                        rawRootY += sy[idx]
+                        rawRootZ += sz[idx]
+                        rootCount += 1
+                    }
+                    if (rootCount > 0) {
+                        rawRootX /= rootCount
+                        rawRootY /= rootCount
+                        rawRootZ /= rootCount
+                    }
+                    val bodyTopY = technicalSkeletonTopY(sy, drawVisibility)
