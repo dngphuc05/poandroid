@@ -1491,3 +1491,20 @@ private fun Technical3DSceneView(
         ?: arSceneMetrics?.bodyHeightMeters?.takeIf { it.isFinite() }
         ?: subjectHeightMeters.takeIf { it.isFinite() }
 
+    LaunchedEffect(arSceneMetrics, subjectDistanceForView, subjectHeightForView, hasCanonicalMetricPose) {
+        val nextDistance = subjectDistanceForView ?: return@LaunchedEffect
+        val nextHeight = subjectHeightForView ?: return@LaunchedEffect
+        val nextCameraHeight = arSceneMetrics?.cameraHeightMeters?.takeIf { it.isFinite() } ?: stableCameraHeightMeters
+        val nextFloorPitch = arSceneMetrics?.floorPitchDegrees?.takeIf { it.isFinite() } ?: stableFloorPitchDegrees
+        val nextLateralOffset = arSceneMetrics?.lateralOffsetMeters?.takeIf { it.isFinite() } ?: stableLateralOffsetMeters
+        if (!hasCommittedAnchor) {
+            stableDistanceMeters = nextDistance
+            stableBodyHeightMeters = nextHeight
+            stableCameraHeightMeters = nextCameraHeight
+            stableFloorPitchDegrees = nextFloorPitch
+            stableLateralOffsetMeters = nextLateralOffset
+            hasCommittedAnchor = true
+            pendingCameraMoveFrames = 0
+            return@LaunchedEffect
+        }
+
