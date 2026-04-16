@@ -1212,3 +1212,21 @@ private fun AvatarVrmOverlay(
             )
         }
 
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (roiRect != null) {
+                val widthDp = with(density) { roiRect.width.toDp() }
+                val heightDp = with(density) { roiRect.height.toDp() }
+                Box(
+                    modifier = Modifier
+                        .offset { IntOffset(roiRect.left.roundToInt(), roiRect.top.roundToInt()) }
+                        .size(widthDp, heightDp)
+                        .clip(RoundedCornerShape(18.dp)),
+                ) {
+                    AvatarOcclusionMask(
+                        screenX = screenX,
+                        screenY = screenY,
+                        poseVisibility = poseVisibility,
+                        roi = roi,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    VrmSceneView(
