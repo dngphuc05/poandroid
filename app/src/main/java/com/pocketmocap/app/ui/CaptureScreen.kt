@@ -1722,3 +1722,10 @@ private fun Technical3DSceneView(
                 poseVisibility
             }
 
+            fun project(xi: Float, yi: Float, zi: Float): Offset {
+                val viewX = xi - cameraEyeX
+                val viewY = yi - cameraEyeY
+                val viewZ = zi - cameraEyeZ
+                val camX = dot3(viewX, viewY, viewZ, rightX, rightY, rightZ)
+                val camY = dot3(viewX, viewY, viewZ, upX, upY, upZ)
+                val camZ = maxOf(0.08f, dot3(viewX, viewY, viewZ, forwardX, forwardY, forwardZ))
