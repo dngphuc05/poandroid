@@ -890,3 +890,13 @@ private fun AvatarBodyOverlay(
                     Offset(0.340f - sway * 0.035f, 0.480f),
                     Offset(0.660f + sway * 0.035f, 0.480f),
                     Offset(0.330f - sway * 0.038f, 0.505f), Offset(0.670f + sway * 0.038f, 0.505f),
+                    Offset(0.345f - sway * 0.038f, 0.500f), Offset(0.655f + sway * 0.038f, 0.500f),
+                    Offset(0.358f - sway * 0.032f, 0.492f), Offset(0.642f + sway * 0.032f, 0.492f),
+                    Offset(0.430f - sway * 0.005f, 0.520f), Offset(0.570f + sway * 0.005f, 0.520f),
+                    Offset(0.420f - sway * 0.008f, 0.700f), Offset(0.580f + sway * 0.008f, 0.700f),
+                    Offset(0.415f + sway * 0.010f, 0.870f), Offset(0.585f - sway * 0.010f, 0.870f),
+                    Offset(0.405f + sway * 0.010f, 0.890f), Offset(0.595f - sway * 0.010f, 0.890f),
+                    Offset(0.425f + sway * 0.012f, 0.900f), Offset(0.575f - sway * 0.012f, 0.900f),
+                )
+            }
+
