@@ -1616,3 +1616,12 @@ private fun Technical3DSceneView(
                 }
             }
 
+            fun cross3(
+                ax: Float, ay: Float, az: Float,
+                bx: Float, by: Float, bz: Float,
+            ): Triple<Float, Float, Float> = Triple(
+                ay * bz - az * by,
+                az * bx - ax * bz,
+                ax * by - ay * bx,
+            )
+
