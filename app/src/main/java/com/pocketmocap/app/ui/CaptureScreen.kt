@@ -1715,3 +1715,10 @@ private fun Technical3DSceneView(
                 }
             }
             val selectedVisibility = if (hasUsableServerTechnicalPose) {
+                serverRenderVisibility ?: serverPoseVisibility
+            } else if (hasClientMetricTechnicalPose) {
+                clientMetricPoseVisibility ?: poseVisibility
+            } else {
+                poseVisibility
+            }
+
