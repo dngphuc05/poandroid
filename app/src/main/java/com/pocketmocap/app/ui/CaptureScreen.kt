@@ -1736,3 +1736,10 @@ private fun Technical3DSceneView(
             if (hasLandmarks) {
                 for (i in 0 until 33) {
                     val p = project(jointX[i], jointY[i], jointZ[i])
+                    projPx[i] = p.x; projPy[i] = p.y
+                }
+            }
+
+            val floorY3 = 0f
+            val gridExtent = maxOf(10.0f, (stableDistanceMeters + 2.5f).coerceAtMost(16f))
+            val gridStep = 0.5f
