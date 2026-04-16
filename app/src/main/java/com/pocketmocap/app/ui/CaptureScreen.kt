@@ -872,3 +872,21 @@ private fun AvatarBodyOverlay(
             val lift  = kotlin.math.cos(phase * Math.PI * 2.0).toFloat() * 0.008f
             val breathe = kotlin.math.sin(phase * Math.PI * 4.0).toFloat() * 0.003f
 
+            val j: Array<Offset> = if (liveLandmarksX != null && liveLandmarksY != null &&
+                liveLandmarksX.size == 33 && liveLandmarksY.size == 33) {
+                Array(33) { i -> Offset(liveLandmarksX[i], liveLandmarksY[i]) }
+            } else {
+                arrayOf(
+                    Offset(0.500f, 0.120f + lift), Offset(0.478f, 0.105f + lift),
+                    Offset(0.470f, 0.103f + lift), Offset(0.462f, 0.105f + lift),
+                    Offset(0.522f, 0.105f + lift), Offset(0.530f, 0.103f + lift),
+                    Offset(0.538f, 0.105f + lift), Offset(0.445f, 0.115f + lift),
+                    Offset(0.555f, 0.115f + lift), Offset(0.485f, 0.138f + lift),
+                    Offset(0.515f, 0.138f + lift),
+                    Offset(0.380f - sway * 0.012f, 0.225f + breathe),
+                    Offset(0.620f + sway * 0.012f, 0.225f + breathe),
+                    Offset(0.320f - sway * 0.025f, 0.360f),
+                    Offset(0.680f + sway * 0.025f, 0.360f),
+                    Offset(0.340f - sway * 0.035f, 0.480f),
+                    Offset(0.660f + sway * 0.035f, 0.480f),
+                    Offset(0.330f - sway * 0.038f, 0.505f), Offset(0.670f + sway * 0.038f, 0.505f),
