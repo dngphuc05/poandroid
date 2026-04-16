@@ -914,3 +914,10 @@ private fun AvatarBodyOverlay(
             // ── Puppet character colors ──
             val avOutfit  = Color(0xFF3C37AF)   // deep blue trousers/jacket
             val avShirt   = Color(0xFF5A46C3)   // slightly lighter shirt
+            val avSkin    = Color(0xFFD2B48C)   // warm skin
+            val avHair    = Color(0xFF231C12)   // near-black hair
+            val avShoe    = Color(0xFF1A1A1A)   // black shoes
+            val avOutline = Color(0xFF0C0A08)   // near-black outline
+            val avEye     = Color(0xFF0C0A08)
+            val ow = 3f                         // outline stroke width
+
