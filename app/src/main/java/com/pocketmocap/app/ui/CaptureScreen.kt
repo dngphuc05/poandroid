@@ -1780,3 +1780,10 @@ private fun Technical3DSceneView(
                     val vb = selectedVisibility?.getOrNull(b) ?: 1f
                     if (va > 0.3f && vb > 0.3f) {
                         val alpha = ((va + vb) * 0.5f).coerceIn(0.3f, 1.0f)
+                        drawLine(accentColor.copy(alpha = alpha),
+                            Offset(projPx[a], projPy[a]), Offset(projPx[b], projPy[b]),
+                            strokeWidth = 4.5f, cap = StrokeCap.Round)
+                    }
+                }
+                FaceConnections.forEach { (a, b) ->
+                    val va = selectedVisibility?.getOrNull(a) ?: 1f
