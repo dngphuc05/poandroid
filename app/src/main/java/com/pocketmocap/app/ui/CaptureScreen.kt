@@ -1295,3 +1295,10 @@ private fun AvatarOcclusionMask(
         val matteFill = Color(0xFF081218).copy(alpha = 0.86f)
 
         fun lp(idx: Int): Offset {
+            val nx = ((screenX[idx] - roi.minX) / roiWidth).coerceIn(0f, 1f)
+            val ny = ((screenY[idx] - roi.minY) / roiHeight).coerceIn(0f, 1f)
+            return Offset(nx * size.width, ny * size.height)
+        }
+
+        fun limb(a: Int, b: Int, widthFactor: Float, minPx: Float, maxPx: Float) {
+            val va = poseVisibility?.getOrNull(a) ?: 0.8f
