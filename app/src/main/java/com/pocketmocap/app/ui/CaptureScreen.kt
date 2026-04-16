@@ -1028,3 +1028,13 @@ private fun AvatarBodyOverlay(
                 // Eyes
                 val eyeY  = headCy - headR * 0.08f
                 val eyeOff = headR * 0.34f
+                val eyeRx  = (headR * 0.14f).coerceAtLeast(3f)
+                val eyeRy  = (headR * 0.18f).coerceAtLeast(4f)
+                for (ex in listOf(headCx - eyeOff, headCx + eyeOff)) {
+                    drawOval(Color.White,
+                        topLeft = Offset(ex - eyeRx, eyeY - eyeRy),
+                        size = Size(eyeRx * 2, eyeRy * 2))
+                    drawOval(avOutline, style = Stroke(ow - 1f),
+                        topLeft = Offset(ex - eyeRx, eyeY - eyeRy),
+                        size = Size(eyeRx * 2, eyeRy * 2))
+                    // Pupil
