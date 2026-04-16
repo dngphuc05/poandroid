@@ -1530,3 +1530,16 @@ private fun Technical3DSceneView(
                 pitchDelta >= 1.5f ||
                 lateralDelta >= 0.08f
 
+        pendingCameraMoveFrames = if (meaningfulChange) pendingCameraMoveFrames + 1 else 0
+        if (pendingCameraMoveFrames < 3) {
+            return@LaunchedEffect
+        }
+
+        stableDistanceMeters = stableDistanceMeters * 0.72f + nextDistance * 0.28f
+        stableBodyHeightMeters = stableBodyHeightMeters * 0.88f + nextHeight * 0.12f
+        stableCameraHeightMeters = stableCameraHeightMeters * 0.72f + nextCameraHeight * 0.28f
+        stableFloorPitchDegrees = stableFloorPitchDegrees * 0.72f + nextFloorPitch * 0.28f
+        stableLateralOffsetMeters = stableLateralOffsetMeters * 0.68f + nextLateralOffset * 0.32f
+        pendingCameraMoveFrames = 0
+    }
+
