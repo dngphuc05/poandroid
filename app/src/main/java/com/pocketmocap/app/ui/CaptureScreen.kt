@@ -1421,3 +1421,11 @@ private fun Technical3DSceneView(
             it.distanceMeters.isFinite()
     }
     val hasArFloorScene = arSceneMetrics != null
+    val hasServerTechnicalPose =
+        serverPoseX != null &&
+            serverPoseY != null &&
+            serverPoseZ != null &&
+            serverPoseX.size == 33 &&
+            serverPoseY.size == 33 &&
+            serverPoseZ.size == 33
+    val serverHealth = evaluateServerPoseHealth(
