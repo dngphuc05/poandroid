@@ -1104,3 +1104,21 @@ private fun AvatarGhostOverlay() {
                 style = Stroke(width = size.minDimension * 0.03f),
             )
         }
+
+        // Central icon circle
+        Box(
+            modifier = Modifier
+                .size(164.dp)
+                .clip(CircleShape)
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            MintDeep.copy(alpha = 0.52f),
+                            Mint.copy(alpha = 0.68f),
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.AutoAwesome,
