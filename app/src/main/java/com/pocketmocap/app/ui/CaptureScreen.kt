@@ -1398,3 +1398,10 @@ private fun Technical3DSceneView(
     uiState: PocketMocapViewModel.UiState,
 ) {
     val jointX = remember { FloatArray(33) }
+    val jointY = remember { FloatArray(33) }
+    val jointZ = remember { FloatArray(33) }
+    val projPx = remember { FloatArray(33) }
+    val projPy = remember { FloatArray(33) }
+    var orbitYawRadians by remember { mutableFloatStateOf(0f) }
+    var orbitPitchOffsetRadians by remember { mutableFloatStateOf(0f) }
+    var orbitZoomFactor by remember { mutableFloatStateOf(1f) }
