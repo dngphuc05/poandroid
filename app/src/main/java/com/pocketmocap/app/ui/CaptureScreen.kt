@@ -1348,3 +1348,12 @@ private fun AvatarOcclusionMask(
         val torsoPad = (shoulderRight.x - shoulderLeft.x).coerceAtLeast(size.width * 0.04f) * 0.10f
         val minCanvasDim = minOf(size.width, size.height)
         val torsoPath = Path().apply {
+            moveTo(shoulderLeft.x - torsoPad, shoulderLeft.y)
+            lineTo(shoulderRight.x + torsoPad, shoulderRight.y)
+            lineTo(hipRight.x + torsoPad, hipRight.y)
+            lineTo(hipLeft.x - torsoPad, hipLeft.y)
+            close()
+        }
+        drawPath(torsoPath, color = matteSoft)
+        drawPath(torsoPath, color = matteFill)
+
