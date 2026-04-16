@@ -921,3 +921,12 @@ private fun AvatarBodyOverlay(
             val avEye     = Color(0xFF0C0A08)
             val ow = 3f                         // outline stroke width
 
+            fun limbStroke(a: Int, b: Int, col: Color, ratioW: Float, lo: Float = 10f, hi: Float = 44f) {
+                val va = poseVisibility?.get(a) ?: 0.8f
+                val vb = poseVisibility?.get(b) ?: 0.8f
+                if (va > 0.2f && vb > 0.2f) {
+                    val pa = px(a); val pb = px(b)
+                    val len = kotlin.math.sqrt(
+                        ((pb.x - pa.x).let { it * it } + (pb.y - pa.y).let { it * it }).toDouble()
+                    ).toFloat()
+                    val thick = (len * ratioW).coerceIn(lo, hi)
