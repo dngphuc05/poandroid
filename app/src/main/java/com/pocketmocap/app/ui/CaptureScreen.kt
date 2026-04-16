@@ -1575,3 +1575,10 @@ private fun Technical3DSceneView(
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val W = size.width
+            val H = size.height
+            val cx = W * 0.5f
+            val cy = H * 0.5f
+
+            // Keep the Technical view in phone/world coordinates.  The old
+            // camera target followed the subject distance, which made distance
+            // changes look like zoom/framing changes instead of the body moving
