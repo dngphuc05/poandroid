@@ -1752,3 +1752,12 @@ private fun Technical3DSceneView(
                     Color(0xFFE2E8EE).copy(alpha = 0.90f)
                 }
                 val lineWidth = if (isMajor) 1.4f else 0.8f
+                drawLine(lineColor, project(t, floorY3, -gridExtent), project(t, floorY3, gridExtent), lineWidth)
+                drawLine(lineColor, project(-gridExtent, floorY3, t), project(gridExtent, floorY3, t), lineWidth)
+            }
+
+            val cameraGround = project(0f, floorY3 + 0.012f, 0f)
+            val subjectGround = project(stableLateralOffsetMeters, floorY3 + 0.012f, -stableDistanceMeters)
+            drawLine(Color(0xFFFF8A00).copy(alpha = 0.72f), cameraGround, subjectGround, 3f)
+            drawCircle(Color(0xFFFF8A00).copy(alpha = 0.95f), radius = 6f, center = subjectGround)
+
