@@ -1007,3 +1007,17 @@ private fun AvatarBodyOverlay(
                     ((rEar.x - lEar.x).let { it * it } + (rEar.y - lEar.y).let { it * it }).toDouble()
                 ).toFloat()
                 val headR = (earD * 0.60f).coerceIn(18f, 80f)
+                val headCx = px(0).x.toFloat()
+                val headCy = px(0).y - headR * 0.18f
+
+                // Hair cap (semi-oval behind head)
+                val hairPath = Path().apply {
+                    addOval(androidx.compose.ui.geometry.Rect(
+                        left  = headCx - headR - 3f,
+                        top   = headCy - headR * 1.05f,
+                        right = headCx + headR + 3f,
+                        bottom = headCy + headR * 0.1f
+                    ))
+                }
+                drawPath(hairPath, avHair)
+
