@@ -1816,3 +1816,14 @@ private fun Technical3DSceneView(
                     }
                 }
 
+                for (idx in listOf(27, 28)) {
+                    val v = selectedVisibility?.getOrNull(idx) ?: 1f
+                    if (v > 0.3f) {
+                        val shadow = project(jointX[idx], floorY3 + 0.01f, jointZ[idx])
+                        drawOval(Color(0xFF90A4AE).copy(alpha = 0.18f),
+                            topLeft = Offset(shadow.x - 18f, shadow.y - 5f),
+                            size = Size(36f, 10f))
+                    }
+                }
+            }
+
