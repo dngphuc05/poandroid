@@ -989,3 +989,14 @@ private fun AvatarBodyOverlay(
                 }
             }
 
+            // ── 8. Neck ──
+            run {
+                val neckCx = (px(11).x + px(12).x) / 2f
+                val neckCy = (px(11).y + px(12).y) / 2f
+                val noseY  = px(0).y
+                val nw = size.width / 70f
+                drawRect(avSkin,
+                    topLeft = Offset(neckCx - nw, noseY),
+                    size = Size(nw * 2, neckCy - noseY))
+            }
+
