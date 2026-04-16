@@ -1000,3 +1000,10 @@ private fun AvatarBodyOverlay(
                     size = Size(nw * 2, neckCy - noseY))
             }
 
+            // ── 9. Head: hair cap + face circle + eyes + mouth ──
+            run {
+                val nose = px(0); val lEar = px(7); val rEar = px(8)
+                val earD = kotlin.math.sqrt(
+                    ((rEar.x - lEar.x).let { it * it } + (rEar.y - lEar.y).let { it * it }).toDouble()
+                ).toFloat()
+                val headR = (earD * 0.60f).coerceIn(18f, 80f)
