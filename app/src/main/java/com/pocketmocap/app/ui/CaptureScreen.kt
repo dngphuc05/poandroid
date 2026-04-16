@@ -1729,3 +1729,10 @@ private fun Technical3DSceneView(
                 val camX = dot3(viewX, viewY, viewZ, rightX, rightY, rightZ)
                 val camY = dot3(viewX, viewY, viewZ, upX, upY, upZ)
                 val camZ = maxOf(0.08f, dot3(viewX, viewY, viewZ, forwardX, forwardY, forwardZ))
+                val scale = focalPx / camZ
+                return Offset(cx + camX * scale, cy - camY * scale)
+            }
+
+            if (hasLandmarks) {
+                for (i in 0 until 33) {
+                    val p = project(jointX[i], jointY[i], jointZ[i])
