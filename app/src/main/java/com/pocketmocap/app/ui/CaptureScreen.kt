@@ -1582,3 +1582,10 @@ private fun Technical3DSceneView(
             // Keep the Technical view in phone/world coordinates.  The old
             // camera target followed the subject distance, which made distance
             // changes look like zoom/framing changes instead of the body moving
+            // away from the phone origin.
+            val cameraTargetX = 0f
+            val cameraTargetY = maxOf(
+                stableCameraHeightMeters.coerceIn(0.75f, 1.90f),
+                (stableBodyHeightMeters * 0.50f).coerceIn(0.70f, 1.20f),
+            )
+            val hasInspectablePose =
