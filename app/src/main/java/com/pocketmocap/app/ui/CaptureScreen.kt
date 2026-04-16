@@ -1543,3 +1543,21 @@ private fun Technical3DSceneView(
         pendingCameraMoveFrames = 0
     }
 
+    val displayDistanceMeters = subjectDistanceForView ?: Float.NaN
+    val displayBodyHeightMeters = subjectHeightForView ?: Float.NaN
+    val displayCameraHeightMeters = arSceneMetrics?.cameraHeightMeters?.takeIf { it.isFinite() } ?: Float.NaN
+    val displayFloorPitchDegrees = arSceneMetrics?.floorPitchDegrees?.takeIf { it.isFinite() } ?: Float.NaN
+    val displayLateralOffsetMeters = arSceneMetrics?.lateralOffsetMeters?.takeIf { it.isFinite() } ?: Float.NaN
+    val bodyScaleMetrics = if (hasUsableServerTechnicalPose) {
+        computeTechnicalBodyScaleMetrics(
+            poseX = serverPoseX,
+            poseY = serverPoseY,
+            poseZ = serverPoseZ,
+            groundY = serverGroundY,
+            poseVisibility = serverRenderVisibility ?: serverPoseVisibility,
+            targetHeightMeters = displayBodyHeightMeters,
+        )
+    } else {
+        null
+    }
+
