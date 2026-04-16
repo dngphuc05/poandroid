@@ -1196,3 +1196,19 @@ private fun AvatarVrmOverlay(
 ) {
     BoxWithConstraints(modifier = modifier) {
         val density = LocalDensity.current
+        val viewportWidthPx = with(density) { maxWidth.toPx() }
+        val viewportHeightPx = with(density) { maxHeight.toPx() }
+        val roi = remember(screenX, screenY, poseVisibility) {
+            computePoseRoi(screenX, screenY, poseVisibility)
+        }
+        val roiRect = remember(roi, imageWidth, imageHeight, viewportWidthPx, viewportHeightPx) {
+            computePoseOverlayRectPx(
+                roi = roi,
+                imageWidth = imageWidth,
+                imageHeight = imageHeight,
+                viewportWidthPx = viewportWidthPx,
+                viewportHeightPx = viewportHeightPx,
+                paddingPx = 22f,
+            )
+        }
+
