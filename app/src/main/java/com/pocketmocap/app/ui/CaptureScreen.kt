@@ -1772,3 +1772,11 @@ private fun Technical3DSceneView(
             drawCircle(Color(0xFFFFD54F), radius = 9f, center = oProj)
             drawCircle(Color(0xFFF57F17), radius = 12f, center = oProj, style = Stroke(width = 2.5f))
 
+            val accentColor = Color(0xFF0E8A61)
+            val jointFillColor = Color(0xFF102027)
+            if (hasLandmarks) {
+                BoneConnections.forEach { (a, b) ->
+                    val va = selectedVisibility?.getOrNull(a) ?: 1f
+                    val vb = selectedVisibility?.getOrNull(b) ?: 1f
+                    if (va > 0.3f && vb > 0.3f) {
+                        val alpha = ((va + vb) * 0.5f).coerceIn(0.3f, 1.0f)
