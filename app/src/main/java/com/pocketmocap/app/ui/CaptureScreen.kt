@@ -1341,3 +1341,10 @@ private fun AvatarOcclusionMask(
         limb(12, 14, 0.20f, 8f, 22f)
         limb(14, 16, 0.15f, 7f, 18f)
 
+        val shoulderLeft = lp(11)
+        val shoulderRight = lp(12)
+        val hipLeft = lp(23)
+        val hipRight = lp(24)
+        val torsoPad = (shoulderRight.x - shoulderLeft.x).coerceAtLeast(size.width * 0.04f) * 0.10f
+        val minCanvasDim = minOf(size.width, size.height)
+        val torsoPath = Path().apply {
