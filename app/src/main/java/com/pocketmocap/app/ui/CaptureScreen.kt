@@ -1598,3 +1598,10 @@ private fun Technical3DSceneView(
                 0f
             }
 
+            val effectiveOrbitDistance = (7.6f * orbitZoomFactor).coerceIn(4.2f, 14f)
+            val yawR = orbitYawRadians
+            val pitchR = (
+                Math.toRadians(24.0).toFloat() + orbitPitchOffsetRadians
+            ).coerceIn(-1.18f, 1.18f)
+            val cameraEyeX = cameraTargetX + effectiveOrbitDistance * kotlin.math.sin(yawR) * kotlin.math.cos(pitchR)
+            val cameraEyeY = cameraTargetY + effectiveOrbitDistance * kotlin.math.sin(pitchR)
