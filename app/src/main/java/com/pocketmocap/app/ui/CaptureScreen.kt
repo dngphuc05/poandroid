@@ -930,3 +930,10 @@ private fun AvatarBodyOverlay(
                         ((pb.x - pa.x).let { it * it } + (pb.y - pa.y).let { it * it }).toDouble()
                     ).toFloat()
                     val thick = (len * ratioW).coerceIn(lo, hi)
+                    drawLine(col, pa, pb, strokeWidth = thick, cap = StrokeCap.Round)
+                    drawLine(avOutline, pa, pb, strokeWidth = thick + ow * 2, cap = StrokeCap.Round,
+                        blendMode = BlendMode.Darken)
+                }
+            }
+
+            // ── 1. Lower legs (drawn first) ──
