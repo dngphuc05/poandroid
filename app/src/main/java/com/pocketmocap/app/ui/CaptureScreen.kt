@@ -1837,3 +1837,21 @@ private fun Technical3DSceneView(
                 "Waiting for AR floor"
             }
             val waitingHelp = if (hasCurrentArFloor) {
+                "Keep the person visible so the feet and ROI can anchor to the AR floor."
+            } else {
+                "Point at a textured floor and move the phone slowly."
+            }
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(horizontal = 28.dp)
+                    .background(Color.White.copy(alpha = 0.94f), RoundedCornerShape(22.dp))
+                    .padding(horizontal = 18.dp, vertical = 16.dp),
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text(
+                        waitingTitle,
+                        style = MaterialTheme.typography.labelLarge,
