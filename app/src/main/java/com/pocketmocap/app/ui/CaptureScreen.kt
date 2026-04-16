@@ -1412,3 +1412,12 @@ private fun Technical3DSceneView(
     var stableLateralOffsetMeters by remember { mutableFloatStateOf(0f) }
     var pendingCameraMoveFrames by remember { mutableIntStateOf(0) }
     var hasCommittedAnchor by remember { mutableStateOf(false) }
+    var metricsExpanded by remember { mutableStateOf(false) }
+
+    val hasCurrentArFloor =
+        worldTracking?.hasGroundPlane == true || worldTracking?.source == "arcore_floor"
+    val arSceneMetrics = sceneMetrics?.takeIf {
+        it.source == "arcore_floor" &&
+            it.distanceMeters.isFinite()
+    }
+    val hasArFloorScene = arSceneMetrics != null
