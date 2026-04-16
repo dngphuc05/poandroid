@@ -1761,3 +1761,14 @@ private fun Technical3DSceneView(
             drawLine(Color(0xFFFF8A00).copy(alpha = 0.72f), cameraGround, subjectGround, 3f)
             drawCircle(Color(0xFFFF8A00).copy(alpha = 0.95f), radius = 6f, center = subjectGround)
 
+            val axisLen = 0.75f
+            val axisOriginX = 0f
+            val axisOriginY = stableCameraHeightMeters
+            val axisOriginZ = 0f
+            val oProj = project(axisOriginX, axisOriginY, axisOriginZ)
+            drawLine(Color(0xFFFF4444), oProj, project(axisOriginX + axisLen, axisOriginY, axisOriginZ), 3f)
+            drawLine(Color(0xFF44FF88), oProj, project(axisOriginX, axisOriginY + axisLen, axisOriginZ), 3f)
+            drawLine(Color(0xFF00E5FF), oProj, project(axisOriginX, axisOriginY, axisOriginZ - axisLen), 3f)
+            drawCircle(Color(0xFFFFD54F), radius = 9f, center = oProj)
+            drawCircle(Color(0xFFF57F17), radius = 12f, center = oProj, style = Stroke(width = 2.5f))
+
