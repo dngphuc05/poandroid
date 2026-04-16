@@ -1122,3 +1122,10 @@ private fun AvatarGhostOverlay() {
         ) {
             Icon(
                 imageVector = Icons.Rounded.AutoAwesome,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(54.dp),
+            )
+        }
+
+        // Glass info card at bottom
