@@ -1163,3 +1163,13 @@ private fun TechnicalGridOverlay() {
     Canvas(modifier = Modifier.fillMaxSize()) {
         val cols = 10
         val rows = 16
+        val xStep = size.width / cols
+        val yStep = size.height / rows
+        val dash = PathEffect.dashPathEffect(floatArrayOf(12f, 10f))
+
+        for (i in 0..cols) {
+            val x = i * xStep
+            drawLine(TechnicalGrid, Offset(x, 0f), Offset(x, size.height), strokeWidth = 2f, pathEffect = dash)
+        }
+        for (j in 0..rows) {
+            val y = j * yStep
