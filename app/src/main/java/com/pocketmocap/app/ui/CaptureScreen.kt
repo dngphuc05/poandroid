@@ -1266,3 +1266,13 @@ private fun AvatarVrmOverlay(
                     worldTracking = worldTracking,
                     screenX = screenX,
                     screenY = screenY,
+                    visibility = poseVisibility,
+                    useLateralOffset = false,
+                    preferMetricPose = preferMetricPose,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
+    }
+}
+
