@@ -1086,3 +1086,21 @@ private fun AvatarGhostOverlay() {
         label = "pulse",
     )
 
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        // Pulsing radial gradient circle (background glow)
+        Canvas(modifier = Modifier.size(280.dp)) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Mint.copy(alpha = 0.16f), Color.Transparent)
+                ),
+                radius = size.minDimension * 0.5f * pulse,
+            )
+            drawCircle(
+                color = MintBright.copy(alpha = 0.3f),
+                radius = size.minDimension * 0.38f * pulse,
+                style = Stroke(width = size.minDimension * 0.03f),
+            )
+        }
