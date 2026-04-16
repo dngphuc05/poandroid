@@ -1288,3 +1288,10 @@ private fun AvatarOcclusionMask(
         return
     }
 
+    Canvas(modifier = modifier) {
+        val roiWidth = roi.width.coerceAtLeast(0.05f)
+        val roiHeight = roi.height.coerceAtLeast(0.05f)
+        val matteSoft = Color(0xFF20404E).copy(alpha = 0.22f)
+        val matteFill = Color(0xFF081218).copy(alpha = 0.86f)
+
+        fun lp(idx: Int): Offset {
