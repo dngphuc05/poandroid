@@ -1038,3 +1038,10 @@ private fun AvatarBodyOverlay(
                         topLeft = Offset(ex - eyeRx, eyeY - eyeRy),
                         size = Size(eyeRx * 2, eyeRy * 2))
                     // Pupil
+                    drawCircle(avEye, (eyeRx / 2f).coerceAtLeast(2f),
+                        Offset(ex, eyeY + eyeRy / 5f))
+                }
+
+                // Mouth arc
+                val mouthY = headCy + headR * 0.38f
+                val mw = headR * 0.28f; val mh = headR * 0.12f
