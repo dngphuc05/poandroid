@@ -1045,3 +1045,13 @@ private fun AvatarBodyOverlay(
                 // Mouth arc
                 val mouthY = headCy + headR * 0.38f
                 val mw = headR * 0.28f; val mh = headR * 0.12f
+                val mouthPath = Path().apply {
+                    moveTo(headCx - mw, mouthY)
+                    cubicTo(headCx - mw, mouthY + mh,
+                            headCx + mw, mouthY + mh,
+                            headCx + mw, mouthY)
+                }
+                drawPath(mouthPath, avOutline, style = Stroke((ow - 1f).coerceAtLeast(1f)))
+            }
+        }
+
