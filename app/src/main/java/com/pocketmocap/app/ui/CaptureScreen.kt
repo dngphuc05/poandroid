@@ -1276,3 +1276,15 @@ private fun AvatarVrmOverlay(
     }
 }
 
+@Composable
+private fun AvatarOcclusionMask(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    poseVisibility: FloatArray?,
+    roi: PoseRoi?,
+    modifier: Modifier = Modifier,
+) {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33 || roi == null) {
+        return
+    }
+
