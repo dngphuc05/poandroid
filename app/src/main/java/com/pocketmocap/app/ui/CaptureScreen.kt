@@ -1464,3 +1464,15 @@ private fun Technical3DSceneView(
         null
     }
     val hasClientTechnicalPose =
+        screenX != null &&
+            screenY != null &&
+            screenX.size == 33 &&
+            screenY.size == 33
+    val hasClientMetricTechnicalPose =
+        clientMetricPoseX != null &&
+            clientMetricPoseY != null &&
+            clientMetricPoseZ != null &&
+            clientMetricPoseX.size == 33 &&
+            clientMetricPoseY.size == 33 &&
+            clientMetricPoseZ.size == 33
+
