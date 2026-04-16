@@ -1327,3 +1327,17 @@ private fun AvatarOcclusionMask(
             )
         }
 
+        drawRoundRect(
+            color = Color(0x11081118),
+            cornerRadius = CornerRadius(18.dp.toPx(), 18.dp.toPx()),
+        )
+
+        limb(23, 25, 0.24f, 10f, 28f)
+        limb(25, 27, 0.18f, 8f, 22f)
+        limb(24, 26, 0.24f, 10f, 28f)
+        limb(26, 28, 0.18f, 8f, 22f)
+        limb(11, 13, 0.20f, 8f, 22f)
+        limb(13, 15, 0.15f, 7f, 18f)
+        limb(12, 14, 0.20f, 8f, 22f)
+        limb(14, 16, 0.15f, 7f, 18f)
+
