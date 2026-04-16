@@ -865,3 +865,10 @@ private fun AvatarBodyOverlay(
         label = "avatarPhase",
     )
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        // ── Skeleton + body silhouette canvas ──
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val sway  = kotlin.math.sin(phase * Math.PI * 2.0).toFloat()
+            val lift  = kotlin.math.cos(phase * Math.PI * 2.0).toFloat() * 0.008f
+            val breathe = kotlin.math.sin(phase * Math.PI * 4.0).toFloat() * 0.003f
+
