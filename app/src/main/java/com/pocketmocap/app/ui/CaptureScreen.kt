@@ -1066,3 +1066,12 @@ private fun AvatarBodyOverlay(
                     .padding(horizontal = 12.dp, vertical = 6.dp),
             ) {
                 androidx.compose.material3.Text(
+                    text = "Avatar \u00b7 $modelName",
+                    style = androidx.compose.material3.MaterialTheme.typography.labelSmall,
+                    color = MintBright,
+                )
+            }
+        }
+    }
+}
+
