@@ -1681,3 +1681,10 @@ private fun Technical3DSceneView(
                         rawRootZ /= rootCount
                     }
                     val bodyTopY = technicalSkeletonTopY(sy, drawVisibility)
+                    val rawHeight = when {
+                        bodyTopY.isFinite() -> (bodyTopY - floorY).coerceAtLeast(0.60f)
+                        else -> stableBodyHeightMeters
+                    }
+                    val scale = (stableBodyHeightMeters / rawHeight.coerceAtLeast(0.60f)).coerceIn(0.88f, 1.12f)
+                    val anchorX = stableLateralOffsetMeters
+                    val anchorZ = -stableDistanceMeters
