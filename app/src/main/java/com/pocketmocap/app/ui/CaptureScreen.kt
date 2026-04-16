@@ -1147,3 +1147,12 @@ private fun AvatarGhostOverlay() {
                     color = Ink,
                 )
                 Text(
+                    text = "Active model \u00b7 VIPE Hero",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Slate,
+                )
+            }
+        }
+    }
+}
+
