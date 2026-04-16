@@ -944,3 +944,15 @@ private fun AvatarBodyOverlay(
             limbStroke(23, 25, avOutfit, 0.26f, 12f, 40f)
             limbStroke(24, 26, avOutfit, 0.26f, 12f, 40f)
 
+            // ── 3. Torso ──
+            run {
+                val ls = px(11); val rs = px(12); val lh = px(23); val rh = px(24)
+                val pad = (rs.x - ls.x) * 0.06f
+                val torsoPath = Path().apply {
+                    moveTo(ls.x - pad, ls.y); lineTo(rs.x + pad, rs.y)
+                    lineTo(rh.x + pad, rh.y); lineTo(lh.x - pad, lh.y); close()
+                }
+                drawPath(torsoPath, color = avShirt)
+                drawPath(torsoPath, color = avOutline, style = Stroke(ow))
+            }
+
