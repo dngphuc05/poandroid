@@ -1390,3 +1390,11 @@ private fun Technical3DSceneView(
     worldTracking: WorldTrackingSnapshot?,
     sceneMetrics: SceneMetricSnapshot?,
     // Raw screen landmarks are intentionally not used for physical Technical view.
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    screenZ: FloatArray?,
+    poseVisibility: FloatArray?,
+    visibleLandmarkCount: Int,
+    uiState: PocketMocapViewModel.UiState,
+) {
+    val jointX = remember { FloatArray(33) }
