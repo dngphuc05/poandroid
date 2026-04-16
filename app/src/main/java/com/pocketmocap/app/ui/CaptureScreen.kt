@@ -1561,3 +1561,17 @@ private fun Technical3DSceneView(
         null
     }
 
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .pointerInput(Unit) {
+                detectTransformGestures { _, pan, zoom, _ ->
+                    orbitYawRadians = (orbitYawRadians - pan.x * 0.0065f).coerceIn(-3.14159f, 3.14159f)
+                    orbitPitchOffsetRadians = (orbitPitchOffsetRadians + pan.y * 0.0050f).coerceIn(-0.95f, 0.95f)
+                    orbitZoomFactor = (orbitZoomFactor / zoom).coerceIn(0.60f, 1.80f)
+                }
+            },
+    ) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val W = size.width
