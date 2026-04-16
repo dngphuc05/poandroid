@@ -1589,3 +1589,12 @@ private fun Technical3DSceneView(
                 (stableBodyHeightMeters * 0.50f).coerceIn(0.70f, 1.20f),
             )
             val hasInspectablePose =
+                hasUsableServerTechnicalPose ||
+                    hasClientMetricTechnicalPose ||
+                    (hasArFloorScene && hasClientTechnicalPose)
+            val cameraTargetZ = if (hasInspectablePose) {
+                (-stableDistanceMeters * 0.42f).coerceIn(-5.0f, -0.65f)
+            } else {
+                0f
+            }
+
