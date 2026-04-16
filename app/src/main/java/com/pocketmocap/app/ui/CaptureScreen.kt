@@ -1636,3 +1636,12 @@ private fun Technical3DSceneView(
                 cameraTargetZ - cameraEyeZ,
             )
             val (rightRawX, rightRawY, rightRawZ) = cross3(forwardX, forwardY, forwardZ, 0f, 1f, 0f)
+            val (rightX, rightY, rightZ) = normalize3(rightRawX, rightRawY, rightRawZ)
+            val (upRawX, upRawY, upRawZ) = cross3(rightX, rightY, rightZ, forwardX, forwardY, forwardZ)
+            val (upX, upY, upZ) = normalize3(upRawX, upRawY, upRawZ)
+            val focalPx = (H * 0.5f) / kotlin.math.tan(Math.toRadians(34.0)).toFloat()
+
+            val hasLandmarks: Boolean
+            when {
+                hasUsableServerTechnicalPose -> {
+                    val sx = serverPoseX ?: return@Canvas
