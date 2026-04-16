@@ -1625,3 +1625,14 @@ private fun Technical3DSceneView(
                 ax * by - ay * bx,
             )
 
+            fun dot3(
+                ax: Float, ay: Float, az: Float,
+                bx: Float, by: Float, bz: Float,
+            ): Float = ax * bx + ay * by + az * bz
+
+            val (forwardX, forwardY, forwardZ) = normalize3(
+                cameraTargetX - cameraEyeX,
+                cameraTargetY - cameraEyeY,
+                cameraTargetZ - cameraEyeZ,
+            )
+            val (rightRawX, rightRawY, rightRawZ) = cross3(forwardX, forwardY, forwardZ, 0f, 1f, 0f)
