@@ -1605,3 +1605,14 @@ private fun Technical3DSceneView(
             ).coerceIn(-1.18f, 1.18f)
             val cameraEyeX = cameraTargetX + effectiveOrbitDistance * kotlin.math.sin(yawR) * kotlin.math.cos(pitchR)
             val cameraEyeY = cameraTargetY + effectiveOrbitDistance * kotlin.math.sin(pitchR)
+            val cameraEyeZ = cameraTargetZ + effectiveOrbitDistance * kotlin.math.cos(yawR) * kotlin.math.cos(pitchR)
+
+            fun normalize3(x: Float, y: Float, z: Float): Triple<Float, Float, Float> {
+                val length = kotlin.math.sqrt(x * x + y * y + z * z)
+                return if (length > 1e-4f) {
+                    Triple(x / length, y / length, z / length)
+                } else {
+                    Triple(0f, 0f, 0f)
+                }
+            }
+
