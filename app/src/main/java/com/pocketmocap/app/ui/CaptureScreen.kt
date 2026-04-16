@@ -974,3 +974,18 @@ private fun AvatarBodyOverlay(
                 }
             }
 
+            // ── 7. Shoes ──
+            for (ai in listOf(27, 28)) {
+                val av = poseVisibility?.get(ai) ?: 0.8f
+                if (av > 0.2f) {
+                    val ap = px(ai)
+                    val sw = size.width / 55f; val sh = size.width / 80f
+                    drawOval(avShoe,
+                        topLeft = Offset(ap.x - sw + sw * 0.3f, ap.y - sh + sh),
+                        size = Size(sw * 2, sh * 2))
+                    drawOval(avOutline, style = Stroke(ow),
+                        topLeft = Offset(ap.x - sw + sw * 0.3f, ap.y - sh + sh),
+                        size = Size(sw * 2, sh * 2))
+                }
+            }
+
