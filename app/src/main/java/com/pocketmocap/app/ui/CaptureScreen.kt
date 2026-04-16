@@ -1357,3 +1357,11 @@ private fun AvatarOcclusionMask(
         drawPath(torsoPath, color = matteSoft)
         drawPath(torsoPath, color = matteFill)
 
+        val leftEar = lp(7)
+        val rightEar = lp(8)
+        val nose = lp(0)
+        val earSpan = kotlin.math.sqrt(
+            (rightEar.x - leftEar.x) * (rightEar.x - leftEar.x) +
+                (rightEar.y - leftEar.y) * (rightEar.y - leftEar.y)
+        ).coerceAtLeast(minCanvasDim * 0.10f)
+        val headRadius = (earSpan * 0.58f).coerceIn(16f, minCanvasDim * 0.18f)
