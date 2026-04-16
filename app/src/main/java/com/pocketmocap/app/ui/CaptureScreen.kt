@@ -1802,3 +1802,17 @@ private fun Technical3DSceneView(
                             strokeWidth = 2f, cap = StrokeCap.Round)
                 }
 
+                val majorJoints = setOf(0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28)
+                for (i in 0 until 33) {
+                    val v = selectedVisibility?.getOrNull(i) ?: 1f
+                    if (v > 0.2f) {
+                        val px = Offset(projPx[i], projPy[i])
+                        if (i in majorJoints) {
+                            drawCircle(accentColor.copy(alpha = v * 0.35f), 14f, px, style = Stroke(2f))
+                            drawCircle(jointFillColor.copy(alpha = v * 0.92f), 6f, px)
+                        } else {
+                            drawCircle(jointFillColor.copy(alpha = v * 0.68f), 3.5f, px)
+                        }
+                    }
+                }
+
