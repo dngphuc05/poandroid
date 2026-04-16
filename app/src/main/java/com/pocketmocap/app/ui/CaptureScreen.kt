@@ -956,3 +956,11 @@ private fun AvatarBodyOverlay(
                 drawPath(torsoPath, color = avOutline, style = Stroke(ow))
             }
 
+            // ── 4. Upper arms ──
+            limbStroke(11, 13, avShirt, 0.22f, 8f, 34f)
+            limbStroke(12, 14, avShirt, 0.22f, 8f, 34f)
+
+            // ── 5. Forearms ──
+            limbStroke(13, 15, avSkin, 0.18f, 7f, 26f)
+            limbStroke(14, 16, avSkin, 0.18f, 7f, 26f)
+
