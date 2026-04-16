@@ -1156,3 +1156,10 @@ private fun AvatarGhostOverlay() {
     }
 }
 
+// ─── Technical Grid Overlay ──────────────────────────────────────────────────
+
+@Composable
+private fun TechnicalGridOverlay() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val cols = 10
+        val rows = 16
