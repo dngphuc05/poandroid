@@ -1787,3 +1787,11 @@ private fun Technical3DSceneView(
                 }
                 FaceConnections.forEach { (a, b) ->
                     val va = selectedVisibility?.getOrNull(a) ?: 1f
+                    val vb = selectedVisibility?.getOrNull(b) ?: 1f
+                    if (va > 0.25f && vb > 0.25f)
+                        drawLine(accentColor.copy(alpha = 0.40f),
+                            Offset(projPx[a], projPy[a]), Offset(projPx[b], projPy[b]),
+                            strokeWidth = 1.5f, cap = StrokeCap.Round)
+                }
+                HandConnections.forEach { (a, b) ->
+                    val va = selectedVisibility?.getOrNull(a) ?: 1f
