@@ -1365,3 +1365,10 @@ private fun AvatarOcclusionMask(
                 (rightEar.y - leftEar.y) * (rightEar.y - leftEar.y)
         ).coerceAtLeast(minCanvasDim * 0.10f)
         val headRadius = (earSpan * 0.58f).coerceIn(16f, minCanvasDim * 0.18f)
+        val headCenter = Offset(nose.x, nose.y - headRadius * 0.18f)
+        drawCircle(color = matteSoft, radius = headRadius * 1.08f, center = headCenter)
+        drawCircle(color = matteFill, radius = headRadius, center = headCenter)
+    }
+}
+
+// ─── Technical 3D Scene View (full mocap-studio perspective) ─────────────────
