@@ -1405,3 +1405,10 @@ private fun Technical3DSceneView(
     var orbitYawRadians by remember { mutableFloatStateOf(0f) }
     var orbitPitchOffsetRadians by remember { mutableFloatStateOf(0f) }
     var orbitZoomFactor by remember { mutableFloatStateOf(1f) }
+    var stableDistanceMeters by remember { mutableFloatStateOf(2.4f) }
+    var stableBodyHeightMeters by remember { mutableFloatStateOf(1.68f) }
+    var stableCameraHeightMeters by remember { mutableFloatStateOf(1.35f) }
+    var stableFloorPitchDegrees by remember { mutableFloatStateOf(12f) }
+    var stableLateralOffsetMeters by remember { mutableFloatStateOf(0f) }
+    var pendingCameraMoveFrames by remember { mutableIntStateOf(0) }
+    var hasCommittedAnchor by remember { mutableStateOf(false) }
