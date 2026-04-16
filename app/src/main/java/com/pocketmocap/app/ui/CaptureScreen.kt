@@ -1645,3 +1645,14 @@ private fun Technical3DSceneView(
             when {
                 hasUsableServerTechnicalPose -> {
                     val sx = serverPoseX ?: return@Canvas
+                    val sy = serverPoseY ?: return@Canvas
+                    val sz = serverPoseZ ?: return@Canvas
+                    for (i in 0 until 33) {
+                        jointX[i] = sx[i]
+                        jointY[i] = sy[i]
+                        jointZ[i] = sz[i]
+                    }
+                    hasLandmarks = true
+                }
+                hasClientMetricTechnicalPose -> {
+                    val sx = clientMetricPoseX ?: return@Canvas
