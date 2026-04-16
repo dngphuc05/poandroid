@@ -1442,3 +1442,10 @@ private fun Technical3DSceneView(
         )
     }
     val hasCanonicalMetricPose = serverDebug?.hasCanonicalMetricPose() == true
+    val canonicalStatus = serverDebug?.metricPoseStatus.orEmpty()
+    val canonicalJointsReady = serverDebug?.let {
+        it.poseJointsFrame == "display_floor_metric_v1" &&
+            it.poseJointsNormalized.isFinite() &&
+            kotlin.math.abs(it.poseJointsNormalized - 1f) <= 1e-3f
+    } == true
+    val canonicalAllowsServerPose =
