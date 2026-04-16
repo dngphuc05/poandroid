@@ -937,3 +937,10 @@ private fun AvatarBodyOverlay(
             }
 
             // ── 1. Lower legs (drawn first) ──
+            limbStroke(25, 27, avOutfit, 0.20f, 8f, 30f)
+            limbStroke(26, 28, avOutfit, 0.20f, 8f, 30f)
+
+            // ── 2. Upper legs ──
+            limbStroke(23, 25, avOutfit, 0.26f, 12f, 40f)
+            limbStroke(24, 26, avOutfit, 0.26f, 12f, 40f)
+
