@@ -1180,3 +1180,19 @@ private fun TechnicalGridOverlay() {
 
 @Composable
 private fun AvatarVrmOverlay(
+    poseX: FloatArray?,
+    poseY: FloatArray?,
+    poseZ: FloatArray?,
+    groundY: Float,
+    subjectHeightMeters: Float,
+    worldTracking: WorldTrackingSnapshot?,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    poseVisibility: FloatArray?,
+    imageWidth: Int,
+    imageHeight: Int,
+    preferMetricPose: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val density = LocalDensity.current
