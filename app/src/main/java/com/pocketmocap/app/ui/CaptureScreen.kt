@@ -1449,3 +1449,18 @@ private fun Technical3DSceneView(
             kotlin.math.abs(it.poseJointsNormalized - 1f) <= 1e-3f
     } == true
     val canonicalAllowsServerPose =
+        hasCanonicalMetricPose &&
+            canonicalStatus in setOf("ok", "hold_previous") &&
+            canonicalJointsReady
+    val hasUsableServerTechnicalPose = hasServerTechnicalPose && serverHealth.usable && canonicalAllowsServerPose
+    val serverRenderVisibility = if (hasUsableServerTechnicalPose) {
+        technicalServerRenderVisibility(
+            poseX = serverPoseX,
+            poseY = serverPoseY,
+            poseZ = serverPoseZ,
+            poseVisibility = serverPoseVisibility,
+        )
+    } else {
+        null
+    }
+    val hasClientTechnicalPose =
