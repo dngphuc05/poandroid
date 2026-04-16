@@ -1021,3 +1021,10 @@ private fun AvatarBodyOverlay(
                 }
                 drawPath(hairPath, avHair)
 
+                // Skin face
+                drawCircle(avSkin, headR, Offset(headCx, headCy))
+                drawCircle(avOutline, headR, Offset(headCx, headCy), style = Stroke(ow))
+
+                // Eyes
+                val eyeY  = headCy - headR * 0.08f
+                val eyeOff = headR * 0.34f
