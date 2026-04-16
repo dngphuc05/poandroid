@@ -1697,3 +1697,21 @@ private fun Technical3DSceneView(
                 }
                 !hasUsableServerTechnicalPose && hasArFloorScene && hasClientTechnicalPose -> {
                     val px = screenX ?: return@Canvas
+                    val py = screenY ?: return@Canvas
+                    val bodyRange = technicalScreenBodyVerticalRange(py, poseVisibility) ?: return@Canvas
+                    val bodyHeightNorm = (bodyRange.second - bodyRange.first).coerceAtLeast(0.25f)
+                    val metersPerNorm = (stableBodyHeightMeters / bodyHeightNorm).coerceIn(1.2f, 5.8f)
+                    val hipCenterX = ((px[23] + px[24]) * 0.5f)
+                    val floorNormY = bodyRange.second
+                    for (i in 0 until 33) {
+                        jointX[i] = stableLateralOffsetMeters + (px[i] - hipCenterX) * metersPerNorm
+                        jointY[i] = (floorNormY - py[i]) * metersPerNorm
+                        jointZ[i] = -stableDistanceMeters + (screenZ?.getOrNull(i) ?: 0f) * metersPerNorm * 0.35f
+                    }
+                    hasLandmarks = true
+                }
+                else -> {
+                    hasLandmarks = false
+                }
+            }
+            val selectedVisibility = if (hasUsableServerTechnicalPose) {
