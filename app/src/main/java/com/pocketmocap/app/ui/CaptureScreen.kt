@@ -1868,3 +1868,21 @@ private fun Technical3DSceneView(
             }
         }
 
+        val sourceLabel = when {
+            hasArFloorScene && hasUsableServerTechnicalPose -> "ARCore floor \u00b7 constrained DLT server 3D"
+            hasUsableServerTechnicalPose -> "DLT server 3D"
+            hasArFloorScene && hasServerTechnicalPose && hasClientTechnicalPose ->
+                "ARCore floor \u00b7 client 33pt (server fallback: ${serverHealth.reason})"
+            hasArFloorScene && hasClientTechnicalPose -> "ARCore floor \u00b7 client 33pt"
+            hasArFloorScene -> "ARCore floor \u00b7 waiting for server"
+            hasCurrentArFloor -> "ARCore floor \u00b7 waiting for pose"
+            else -> "Waiting for AR floor"
+        }
+        TechnicalMetricsOverlay(
+            sourceLabel = sourceLabel,
+            uiState = uiState,
+            visibleLandmarkCount = visibleLandmarkCount,
+            subjectDistanceMeters = displayDistanceMeters,
+            subjectHeightMeters = displayBodyHeightMeters,
+            cameraHeightMeters = displayCameraHeightMeters,
+            floorPitchDegrees = displayFloorPitchDegrees,
