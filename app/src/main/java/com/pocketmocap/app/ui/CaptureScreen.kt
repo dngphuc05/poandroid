@@ -1990,3 +1990,10 @@ private fun technicalScreenBodyVerticalRange(
         ?: maxY(intArrayOf(25, 26, 23, 24), 0.22f).takeIf { it.isFinite() }
         ?: return null
 
+    return if (floorY > topY + 0.12f) {
+        Pair(topY, floorY)
+    } else {
+        null
+    }
+}
+
