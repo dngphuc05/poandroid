@@ -81,3 +81,19 @@ fun ConnectScreen(
             .background(CloudWarm),
     ) {
         // Ambient blur circles
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(468.dp)
+                .blur(56.dp)
+                .background(Mint.copy(alpha = 0.12f), CircleShape)
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 100.dp)
+                .size(260.dp)
+                .blur(44.dp)
+                .background(RoseMist.copy(alpha = 0.10f), CircleShape)
+        )
+
