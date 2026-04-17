@@ -271,3 +271,14 @@ private fun ConnectButton(
             }
             Text(
                 text = when {
+                    isConnected -> "Connected"
+                    isConnecting -> "Connecting..."
+                    else -> "Connect to Server"
+                },
+                style = MaterialTheme.typography.titleSmall,
+                color = if (isConnected) MintDeep else Color.White,
+            )
+        }
+    }
+}
+
