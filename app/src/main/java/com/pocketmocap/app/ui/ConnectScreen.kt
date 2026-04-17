@@ -67,3 +67,10 @@ import com.pocketmocap.app.ui.theme.MintDeep
 import com.pocketmocap.app.ui.theme.RoseMist
 import com.pocketmocap.app.ui.theme.Slate
 
+@Composable
+fun ConnectScreen(
+    uiState: UiState,
+    onConnect: (String) -> Unit,
+    onClearError: () -> Unit,
+) {
+    var serverUrl by remember { mutableStateOf(uiState.serverUrl) }
