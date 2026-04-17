@@ -2161,3 +2161,21 @@ private fun TechnicalMetricsOverlay(
         if (floorPitchDegrees.isFinite()) add("Floor" to "${"%.1f".format(floorPitchDegrees)}°")
         if (lateralOffsetMeters.isFinite()) add("Offset X" to "${"%.2f".format(lateralOffsetMeters)}m")
         sceneMetrics?.correctedDistanceMeters?.takeIf { it.isFinite() }?.let {
+            add("Corrected distance" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.correctedHeightMeters?.takeIf { it.isFinite() }?.let {
+            add("Corrected height" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.floorHeightBiasMeters?.takeIf { it.isFinite() }?.let {
+            add("Floor bias" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.depthOffsetMeters?.takeIf { it.isFinite() }?.let {
+            add("Depth offset" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.depthScale?.takeIf { it.isFinite() }?.let {
+            add("Depth scale" to "${"%.3f".format(it)}x")
+        }
+        sceneMetrics?.distanceCandidateSpreadMeters?.takeIf { it.isFinite() }?.let {
+            add("Distance spread" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.heightCandidateSpreadMeters?.takeIf { it.isFinite() }?.let {
