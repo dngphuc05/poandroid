@@ -282,3 +282,12 @@ private fun ConnectButton(
     }
 }
 
+@Composable
+private fun PocketMocapLogo() {
+    val transition = rememberInfiniteTransition(label = "logo")
+    val pulse by transition.animateFloat(
+        initialValue = 0.90f, targetValue = 1.10f,
+        animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Reverse),
+        label = "logoPulse",
+    )
+    val path = remember {
