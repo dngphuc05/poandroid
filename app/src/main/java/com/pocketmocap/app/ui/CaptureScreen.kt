@@ -2323,3 +2323,14 @@ private fun TechnicalMetricsOverlay(
                     )
                 }
 
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = Color(0xFFE7ECEF),
+                )
+
+                Text(
+                    "Metrics",
+                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                    color = Ink,
+                )
+
