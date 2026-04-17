@@ -2006,3 +2006,12 @@ private fun technicalServerRenderVisibility(
     if (poseX == null || poseY == null || poseZ == null) return null
     if (poseX.size < 33 || poseY.size < 33 || poseZ.size < 33) return null
     val out = FloatArray(33)
+    for (i in 0 until 33) {
+        val x = poseX[i]
+        val y = poseY[i]
+        val z = poseZ[i]
+        if (!x.isFinite() || !y.isFinite() || !z.isFinite()) {
+            out[i] = 0f
+            continue
+        }
+        val raw = poseVisibility?.getOrNull(i) ?: 1f
