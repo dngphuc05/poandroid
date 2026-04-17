@@ -2125,3 +2125,21 @@ private fun TechnicalMetricsOverlay(
     expanded: Boolean,
     onToggle: () -> Unit,
 ) {
+    val metricsScrollState = rememberScrollState()
+    val rows = buildList<Pair<String, String>> {
+        add("Pipeline" to "${uiState.pipelineState}")
+        add("Frames" to "${uiState.frameCount}")
+        add("Latency" to "${"%.1f".format(uiState.lastPipelineMs)}ms")
+        add("Joints" to "${visibleLandmarkCount}/33")
+        sceneMetrics?.let {
+            add("Scene source" to it.source)
+            add("Scene conf" to "${"%.2f".format(it.confidence)}")
+            if (it.floorSource.isNotBlank()) add("Floor source" to it.floorSource)
+            it.solverConfidence.takeIf { value -> value.isFinite() }?.let { value ->
+                add("Solver conf" to "${"%.2f".format(value)}")
+            }
+            it.solverResidualMeters.takeIf { value -> value.isFinite() }?.let { value ->
+                add("Residual" to "${"%.2f".format(value)}m")
+            }
+            it.heightLockState.takeIf { value -> value.isNotBlank() }?.let { value ->
+                add("Height lock" to value)
