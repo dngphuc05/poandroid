@@ -74,3 +74,10 @@ fun ConnectScreen(
     onClearError: () -> Unit,
 ) {
     var serverUrl by remember { mutableStateOf(uiState.serverUrl) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CloudWarm),
+    ) {
+        // Ambient blur circles
