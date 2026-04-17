@@ -1886,3 +1886,15 @@ private fun Technical3DSceneView(
             subjectHeightMeters = displayBodyHeightMeters,
             cameraHeightMeters = displayCameraHeightMeters,
             floorPitchDegrees = displayFloorPitchDegrees,
+            lateralOffsetMeters = displayLateralOffsetMeters,
+            bodyScaleMetrics = bodyScaleMetrics,
+            serverHealth = serverHealth,
+            serverDebug = serverDebug,
+            worldTracking = worldTracking,
+            sceneMetrics = arSceneMetrics,
+            expanded = metricsExpanded,
+            onToggle = { metricsExpanded = !metricsExpanded },
+        )
+    }
+}
+
