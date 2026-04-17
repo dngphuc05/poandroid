@@ -2179,3 +2179,21 @@ private fun TechnicalMetricsOverlay(
             add("Distance spread" to "${"%.2f".format(it)}m")
         }
         sceneMetrics?.heightCandidateSpreadMeters?.takeIf { it.isFinite() }?.let {
+            add("Height spread" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.hipGeometryDistanceMeters?.takeIf { it.isFinite() }?.let {
+            add("Hip ray dist" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.hipGeometryHeightMeters?.takeIf { it.isFinite() }?.let {
+            add("Hip ray height" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.torsoHeightMeters?.takeIf { it.isFinite() }?.let {
+            add("Torso height cue" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.groundedFootDistanceMeters?.takeIf { it.isFinite() }?.let {
+            add("Grounded foot" to "${"%.2f".format(it)}m")
+        }
+        sceneMetrics?.bodyScaleConfidence?.takeIf { it.isFinite() }?.let {
+            add("Body scale conf" to "${"%.2f".format(it)}")
+        }
+        sceneMetrics?.weightHip?.takeIf { it.isFinite() }?.let {
