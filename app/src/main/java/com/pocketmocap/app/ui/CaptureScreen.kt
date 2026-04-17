@@ -2093,3 +2093,17 @@ private fun computeTechnicalBodyScaleMetrics(
         return sqrt(dx * dx + dy * dy + dz * dz) * scale
     }
 
+    return TechnicalBodyScaleMetrics(
+        heightMeters = rawHeight * scale,
+        shoulderWidthMeters = dist(11, 12),
+        hipWidthMeters = dist(23, 24),
+        torsoMeters = distPoints(midpoint(11, 12), midpoint(23, 24)),
+        leftArmMeters = sum(dist(11, 13), dist(13, 15)),
+        rightArmMeters = sum(dist(12, 14), dist(14, 16)),
+        leftHandMeters = dist(15, 19) ?: dist(15, 21),
+        rightHandMeters = dist(16, 20) ?: dist(16, 22),
+        leftLegMeters = sum(dist(23, 25), dist(25, 27)),
+        rightLegMeters = sum(dist(24, 26), dist(26, 28)),
+    )
+}
+
