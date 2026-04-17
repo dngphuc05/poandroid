@@ -2269,3 +2269,21 @@ private fun TechnicalMetricsOverlay(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        "Technical",
+                        style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+                        color = Color(0xFF0E8A61),
+                    )
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFFF1F4F6), RoundedCornerShape(999.dp))
+                            .clickable(onClick = onToggle)
+                            .padding(horizontal = 10.dp, vertical = 5.dp),
+                    ) {
+                        Text(
+                            "Hide",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Slate,
+                            fontWeight = FontWeight.Medium,
+                        )
