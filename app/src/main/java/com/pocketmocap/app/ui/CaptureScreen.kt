@@ -1935,3 +1935,10 @@ private fun technicalSkeletonFloorY(
     return floorY
 }
 
+private fun technicalSkeletonTopY(
+    poseY: FloatArray,
+    poseVisibility: FloatArray?,
+): Float {
+    var topY = Float.NEGATIVE_INFINITY
+    for (idx in intArrayOf(0, 7, 8, 9, 10)) {
+        val visible = poseVisibility?.getOrNull(idx) ?: 1f
