@@ -2251,3 +2251,21 @@ private fun TechnicalMetricsOverlay(
                 Text(
                     "Show Metrics",
                     style = MaterialTheme.typography.labelSmall,
+                    color = Ink,
+                    fontWeight = FontWeight.Medium,
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .width(214.dp)
+                    .fillMaxHeight(0.58f)
+                    .background(Color.White.copy(alpha = 0.97f), RoundedCornerShape(20.dp))
+                    .verticalScroll(metricsScrollState)
+                    .padding(horizontal = 14.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
