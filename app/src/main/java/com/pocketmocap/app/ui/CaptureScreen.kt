@@ -2215,3 +2215,21 @@ private fun TechnicalMetricsOverlay(
         }
         serverDebug?.rawHeightMeters?.takeIf { it.isFinite() }?.let { add("Raw DLT height" to "${"%.2f".format(it)}m") }
         serverDebug?.rawDistanceMeters?.takeIf { it.isFinite() }?.let { add("Raw DLT distance" to "${"%.2f".format(it)}m") }
+        serverDebug?.constrainedHeightMeters?.takeIf { it.isFinite() }?.let { add("Constrained height" to "${"%.2f".format(it)}m") }
+        serverDebug?.constrainedDistanceMeters?.takeIf { it.isFinite() }?.let { add("Constrained distance" to "${"%.2f".format(it)}m") }
+        serverDebug?.arTargetHeightMeters?.takeIf { it.isFinite() }?.let { add("AR target height" to "${"%.2f".format(it)}m") }
+        serverDebug?.arTargetDistanceMeters?.takeIf { it.isFinite() }?.let { add("AR target distance" to "${"%.2f".format(it)}m") }
+        serverDebug?.scaleApplied?.takeIf { it.isFinite() }?.let { add("Scale applied" to "${"%.2f".format(it)}x") }
+        serverDebug?.rootTranslationMeters?.takeIf { it.isFinite() }?.let { add("Root shift" to "${"%.2f".format(it)}m") }
+        serverDebug?.constraintConfidence?.takeIf { it.isFinite() }?.let { add("Constraint conf" to "${"%.2f".format(it)}") }
+        bodyScaleMetrics?.heightMeters?.let { add("Body height" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.shoulderWidthMeters?.let { add("Shoulders" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.hipWidthMeters?.let { add("Hips" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.torsoMeters?.let { add("Torso" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.leftArmMeters?.let { add("Left arm" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.rightArmMeters?.let { add("Right arm" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.leftHandMeters?.let { add("Left hand" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.rightHandMeters?.let { add("Right hand" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.leftLegMeters?.let { add("Left leg" to "${"%.2f".format(it)}m") }
+        bodyScaleMetrics?.rightLegMeters?.let { add("Right leg" to "${"%.2f".format(it)}m") }
+        add("Connection" to "${uiState.connectionState}")
