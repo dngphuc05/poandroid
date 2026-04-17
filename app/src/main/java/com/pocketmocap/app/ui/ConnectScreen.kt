@@ -219,3 +219,12 @@ fun ConnectScreen(
                         style = MaterialTheme.typography.bodySmall,
                         color = Color(0xFFB00020),
                         modifier = Modifier
+                            .padding(16.dp)
+                            .clickable { onClearError() },
+                    )
+                }
+            }
+        }
+    }
+}
+
