@@ -1920,3 +1920,10 @@ private fun technicalSkeletonFloorY(
 ): Float {
     if (groundY.isFinite()) return groundY
     var floorY = Float.POSITIVE_INFINITY
+    for (idx in intArrayOf(27, 28, 29, 30, 31, 32)) {
+        val visible = poseVisibility?.getOrNull(idx) ?: 1f
+        val y = poseY.getOrNull(idx) ?: continue
+        if (visible > 0.18f && y.isFinite()) floorY = minOf(floorY, y)
+    }
+    if (floorY.isFinite()) return floorY
+
