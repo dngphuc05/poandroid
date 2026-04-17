@@ -2044,3 +2044,15 @@ private fun computeTechnicalBodyScaleMetrics(
         return if (x.isFinite() && y.isFinite() && z.isFinite()) Triple(x, y, z) else null
     }
 
+    val floorY = technicalSkeletonFloorY(poseY, poseVisibility, groundY)
+    val maxY = technicalSkeletonTopY(poseY, poseVisibility)
+    if (!floorY.isFinite() || !maxY.isFinite()) return null
+
+    val rawHeight = (maxY - floorY).coerceAtLeast(0.01f)
+    val scale =
+        if (targetHeightMeters.isFinite() && targetHeightMeters in 0.70f..3.50f) {
+            (targetHeightMeters / rawHeight).coerceIn(0.45f, 2.20f)
+        } else {
+            1f
+        }
+
