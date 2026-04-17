@@ -201,3 +201,21 @@ fun ConnectScreen(
                                 )
                             }
                         }
+                        else -> {}
+                    }
+                }
+            }
+
+            // Error message
+            uiState.errorMessage?.let { error ->
+                Spacer(modifier = Modifier.height(16.dp))
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFFFF0F0),
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = error,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFFB00020),
+                        modifier = Modifier
