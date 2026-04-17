@@ -1913,3 +1913,10 @@ private data class TechnicalBodyScaleMetrics(
     val rightLegMeters: Float?,
 )
 
+private fun technicalSkeletonFloorY(
+    poseY: FloatArray,
+    poseVisibility: FloatArray?,
+    groundY: Float,
+): Float {
+    if (groundY.isFinite()) return groundY
+    var floorY = Float.POSITIVE_INFINITY
