@@ -158,3 +158,10 @@ fun ConnectScreen(
                         ),
                     )
 
+                    // Connect button
+                    ConnectButton(
+                        connectionState = uiState.connectionState,
+                        onClick = { onConnect(serverUrl) },
+                    )
+
+                    // Status text
