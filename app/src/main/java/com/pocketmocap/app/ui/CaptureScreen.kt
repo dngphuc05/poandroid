@@ -2305,3 +2305,21 @@ private fun TechnicalMetricsOverlay(
                         color = Slate.copy(alpha = 0.82f),
                     )
                     Text(
+                        "Yellow · Camera origin",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color(0xFFF57F17).copy(alpha = 0.88f),
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Text(
+                        "X Right · Y Up · Z Away",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Ink.copy(alpha = 0.88f),
+                        fontWeight = FontWeight.Medium,
+                    )
+                    Text(
+                        "Drag to orbit · Pinch to zoom",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Slate.copy(alpha = 0.82f),
+                    )
+                }
+
