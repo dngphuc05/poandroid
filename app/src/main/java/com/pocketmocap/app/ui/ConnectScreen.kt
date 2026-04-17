@@ -105,3 +105,14 @@ fun ConnectScreen(
             verticalArrangement = Arrangement.Center,
         ) {
             // Logo glyph
+            PocketMocapLogo()
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // App name
+            Text(
+                text = "Pocket Mocap",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Ink,
+            )
+
