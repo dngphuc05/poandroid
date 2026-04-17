@@ -2287,3 +2287,21 @@ private fun TechnicalMetricsOverlay(
                             color = Slate,
                             fontWeight = FontWeight.Medium,
                         )
+                    }
+                }
+
+                Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                    if (sourceLabel != null) {
+                        Text(
+                            sourceLabel,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Ink.copy(alpha = 0.84f),
+                            fontWeight = FontWeight.Medium,
+                        )
+                    }
+                    Text(
+                        "Grid · 20m span · 1m majors",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Slate.copy(alpha = 0.82f),
+                    )
+                    Text(
