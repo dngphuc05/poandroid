@@ -2015,3 +2015,12 @@ private fun technicalServerRenderVisibility(
             continue
         }
         val raw = poseVisibility?.getOrNull(i) ?: 1f
+        out[i] = when {
+            raw > 0.25f -> raw.coerceAtLeast(0.55f)
+            raw > 0.05f -> 0.48f
+            else -> 0f
+        }
+    }
+    return out
+}
+
