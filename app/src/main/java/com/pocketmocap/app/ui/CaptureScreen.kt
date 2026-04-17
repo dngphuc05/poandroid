@@ -1898,3 +1898,10 @@ private fun Technical3DSceneView(
     }
 }
 
+// ─── Technical Metrics Panel ─────────────────────────────────────────────────
+
+private data class TechnicalBodyScaleMetrics(
+    val heightMeters: Float?,
+    val shoulderWidthMeters: Float?,
+    val hipWidthMeters: Float?,
+    val torsoMeters: Float?,
