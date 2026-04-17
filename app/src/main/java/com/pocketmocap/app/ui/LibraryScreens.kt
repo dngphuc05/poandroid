@@ -98,3 +98,21 @@ fun LibraryCapturesScreen(
                 .padding(horizontal = 24.dp)
                 .padding(top = 96.dp, bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            LibraryTabSwitcher(activeTab = activeTab, onTabSelected = onTabSelected)
+
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = {
+                    Text("Search captures...", style = MaterialTheme.typography.bodySmall)
+                },
+                leadingIcon = {
+                    Icon(Icons.Rounded.Search, contentDescription = null, tint = Color(0xFF306963))
+                },
+                singleLine = true,
+                shape = MaterialTheme.shapes.small,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = Color.White,
