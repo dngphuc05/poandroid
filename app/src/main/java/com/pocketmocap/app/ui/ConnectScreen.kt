@@ -116,3 +116,11 @@ fun ConnectScreen(
                 color = Ink,
             )
 
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = "One Tap to Mo-cap",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Slate,
+            )
+
