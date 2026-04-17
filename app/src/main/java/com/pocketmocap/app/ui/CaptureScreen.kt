@@ -1905,3 +1905,11 @@ private data class TechnicalBodyScaleMetrics(
     val shoulderWidthMeters: Float?,
     val hipWidthMeters: Float?,
     val torsoMeters: Float?,
+    val leftArmMeters: Float?,
+    val rightArmMeters: Float?,
+    val leftHandMeters: Float?,
+    val rightHandMeters: Float?,
+    val leftLegMeters: Float?,
+    val rightLegMeters: Float?,
+)
+
