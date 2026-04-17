@@ -2233,3 +2233,21 @@ private fun TechnicalMetricsOverlay(
         bodyScaleMetrics?.leftLegMeters?.let { add("Left leg" to "${"%.2f".format(it)}m") }
         bodyScaleMetrics?.rightLegMeters?.let { add("Right leg" to "${"%.2f".format(it)}m") }
         add("Connection" to "${uiState.connectionState}")
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 12.dp, end = 12.dp, top = 74.dp, bottom = 92.dp),
+        contentAlignment = Alignment.TopEnd,
+    ) {
+        if (!expanded) {
+            Box(
+                modifier = Modifier
+                    .background(Color.White.copy(alpha = 0.95f), RoundedCornerShape(999.dp))
+                    .clickable(onClick = onToggle)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+            ) {
+                Text(
+                    "Show Metrics",
+                    style = MaterialTheme.typography.labelSmall,
