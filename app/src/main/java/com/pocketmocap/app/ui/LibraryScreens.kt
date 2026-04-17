@@ -52,3 +52,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Canvas
+import com.pocketmocap.app.capture.CaptureSessionRecorder
+import com.pocketmocap.app.PocketMocapViewModel
+import com.pocketmocap.app.R
+import com.pocketmocap.app.ui.theme.CloudWarm
+import com.pocketmocap.app.ui.theme.Glass
+import com.pocketmocap.app.ui.theme.Ink
+import com.pocketmocap.app.ui.theme.Mint
+import com.pocketmocap.app.ui.theme.MintBright
+import com.pocketmocap.app.ui.theme.MintDeep
+import com.pocketmocap.app.ui.theme.SkeletonMint
+import com.pocketmocap.app.ui.theme.Slate
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
