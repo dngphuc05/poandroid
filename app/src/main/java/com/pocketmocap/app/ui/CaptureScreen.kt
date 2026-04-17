@@ -1855,3 +1855,16 @@ private fun Technical3DSceneView(
                     Text(
                         waitingTitle,
                         style = MaterialTheme.typography.labelLarge,
+                        color = Color(0xFF0E8A61),
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Text(
+                        waitingHelp,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Slate.copy(alpha = 0.78f),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+
