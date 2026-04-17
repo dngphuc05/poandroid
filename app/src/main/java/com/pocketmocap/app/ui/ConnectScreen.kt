@@ -235,3 +235,21 @@ private fun ConnectButton(
 ) {
     val isConnecting = connectionState == ConnectionState.CONNECTING
     val isConnected = connectionState == ConnectionState.CONNECTED
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .shadow(if (isConnected) 0.dp else 12.dp, RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                when {
+                    isConnected -> Brush.linearGradient(listOf(Mint.copy(alpha = 0.2f), Mint.copy(alpha = 0.2f)))
+                    else -> Brush.linearGradient(listOf(MintDeep, MintDeep.copy(alpha = 0.85f)))
+                }
+            )
+            .clickable(enabled = !isConnecting && !isConnected, onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
