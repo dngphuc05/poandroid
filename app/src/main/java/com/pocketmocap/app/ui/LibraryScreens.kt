@@ -70,3 +70,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+enum class LibraryTab { CAPTURES, MODELS }
+
+// ── Captures ─────────────────────────────────────────────────────────────────
+
+@Composable
+fun LibraryCapturesScreen(
+    activeTab: LibraryTab,
+    onTabSelected: (LibraryTab) -> Unit,
+) {
+    val context = LocalContext.current
