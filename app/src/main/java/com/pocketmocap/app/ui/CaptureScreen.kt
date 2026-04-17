@@ -1927,3 +1927,11 @@ private fun technicalSkeletonFloorY(
     }
     if (floorY.isFinite()) return floorY
 
+    for (idx in intArrayOf(23, 24, 25, 26, 27, 28)) {
+        val visible = poseVisibility?.getOrNull(idx) ?: 1f
+        val y = poseY.getOrNull(idx) ?: continue
+        if (visible > 0.18f && y.isFinite()) floorY = minOf(floorY, y)
+    }
+    return floorY
+}
+
