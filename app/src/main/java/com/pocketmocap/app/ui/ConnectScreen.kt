@@ -183,3 +183,21 @@ fun ConnectScreen(
                                     color = MintDeep,
                                 )
                             }
+                        }
+                        ConnectionState.CONNECTING -> {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(12.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MintDeep,
+                                )
+                                Text(
+                                    text = "Connecting...",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Slate,
+                                )
+                            }
+                        }
