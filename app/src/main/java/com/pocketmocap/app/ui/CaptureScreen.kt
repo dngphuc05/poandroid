@@ -2334,3 +2334,17 @@ private fun TechnicalMetricsOverlay(
                     color = Ink,
                 )
 
+                rows.forEachIndexed { index, row ->
+                    TechRow(row.first, row.second)
+                    if (index != rows.lastIndex) {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = Color(0xFFE7ECEF),
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
