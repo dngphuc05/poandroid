@@ -1957,3 +1957,11 @@ private fun technicalSkeletonTopY(
     return topY
 }
 
+private fun technicalScreenBodyVerticalRange(
+    screenY: FloatArray,
+    poseVisibility: FloatArray?,
+): Pair<Float, Float>? {
+    fun minY(indices: IntArray, minVisibility: Float): Float {
+        var value = Float.POSITIVE_INFINITY
+        for (idx in indices) {
+            val visible = poseVisibility?.getOrNull(idx) ?: 1f
