@@ -2143,3 +2143,21 @@ private fun TechnicalMetricsOverlay(
             }
             it.heightLockState.takeIf { value -> value.isNotBlank() }?.let { value ->
                 add("Height lock" to value)
+            }
+            it.distanceState.takeIf { value -> value.isNotBlank() }?.let { value ->
+                add("Distance state" to value)
+            }
+            it.footContactState.takeIf { value -> value.isNotBlank() }?.let { value ->
+                add("Foot contact" to value)
+            }
+        }
+        worldTracking?.let {
+            add("Tracking" to it.trackingState)
+            add("Track source" to it.source)
+        }
+        if (subjectDistanceMeters.isFinite()) add("Distance" to "${"%.2f".format(subjectDistanceMeters)}m")
+        if (subjectHeightMeters.isFinite()) add("Height" to "${"%.2f".format(subjectHeightMeters)}m")
+        if (cameraHeightMeters.isFinite()) add("Camera Y" to "${"%.2f".format(cameraHeightMeters)}m")
+        if (floorPitchDegrees.isFinite()) add("Floor" to "${"%.1f".format(floorPitchDegrees)}°")
+        if (lateralOffsetMeters.isFinite()) add("Offset X" to "${"%.2f".format(lateralOffsetMeters)}m")
+        sceneMetrics?.correctedDistanceMeters?.takeIf { it.isFinite() }?.let {
