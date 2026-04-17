@@ -298,3 +298,12 @@ private fun PocketMocapLogo() {
 
     Box(contentAlignment = Alignment.Center) {
         // Outer glow halo
+        Canvas(modifier = Modifier.size(120.dp)) {
+            drawCircle(
+                brush = Brush.radialGradient(
+                    listOf(Mint.copy(alpha = 0.12f), Color.Transparent)
+                ),
+                radius = size.minDimension * 0.5f * pulse,
+            )
+        }
+        // Figma logo — concentric tracking arcs with pointer
