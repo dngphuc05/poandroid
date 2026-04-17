@@ -2035,3 +2035,12 @@ private fun computeTechnicalBodyScaleMetrics(
     if (poseX == null || poseY == null || poseZ == null) return null
     if (poseX.size < 33 || poseY.size < 33 || poseZ.size < 33) return null
 
+    fun visible(idx: Int): Boolean = (poseVisibility?.getOrNull(idx) ?: 1f) > 0.2f
+    fun point(idx: Int): Triple<Float, Float, Float>? {
+        if (!visible(idx)) return null
+        val x = poseX[idx]
+        val y = poseY[idx]
+        val z = poseZ[idx]
+        return if (x.isFinite() && y.isFinite() && z.isFinite()) Triple(x, y, z) else null
+    }
+
