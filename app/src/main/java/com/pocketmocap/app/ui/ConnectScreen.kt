@@ -307,3 +307,12 @@ private fun PocketMocapLogo() {
             )
         }
         // Figma logo — concentric tracking arcs with pointer
+        Canvas(modifier = Modifier.size(80.dp)) {
+            val sx = size.width / 27.5f
+            val sy = size.height / 26.75f
+            scale(sx, sy, pivot = Offset.Zero) {
+                drawPath(path, color = MintBright)
+            }
+        }
+    }
+}
