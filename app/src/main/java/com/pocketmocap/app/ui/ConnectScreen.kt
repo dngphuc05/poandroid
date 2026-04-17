@@ -228,3 +228,10 @@ fun ConnectScreen(
     }
 }
 
+@Composable
+private fun ConnectButton(
+    connectionState: ConnectionState,
+    onClick: () -> Unit,
+) {
+    val isConnecting = connectionState == ConnectionState.CONNECTING
+    val isConnected = connectionState == ConnectionState.CONNECTED
