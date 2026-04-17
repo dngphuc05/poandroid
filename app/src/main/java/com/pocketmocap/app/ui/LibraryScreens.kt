@@ -80,3 +80,21 @@ fun LibraryCapturesScreen(
     onTabSelected: (LibraryTab) -> Unit,
 ) {
     val context = LocalContext.current
+    var searchQuery by remember { mutableStateOf("") }
+    val captures = CaptureSessionRecorder.allCaptureRoots(context)
+        .flatMap { root -> root.listFiles()?.filter { it.isDirectory } ?: emptyList() }
+        .filter { it.name.contains(searchQuery, ignoreCase = true) }
+        .sortedByDescending { it.lastModified() }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.linearGradient(listOf(CloudWarm, Color(0xFFEDEEE6))))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(top = 96.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
