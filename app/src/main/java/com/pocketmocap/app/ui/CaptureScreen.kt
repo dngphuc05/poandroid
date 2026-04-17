@@ -2366,3 +2366,6 @@ private fun TechRow(label: String, value: String) {
             value,
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             color = Ink,
+        )
+    }
+}
