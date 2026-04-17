@@ -2056,3 +2056,12 @@ private fun computeTechnicalBodyScaleMetrics(
             1f
         }
 
+    fun dist(a: Int, b: Int): Float? {
+        val pa = point(a) ?: return null
+        val pb = point(b) ?: return null
+        val dx = pa.first - pb.first
+        val dy = pa.second - pb.second
+        val dz = pa.third - pb.third
+        return sqrt(dx * dx + dy * dy + dz * dz) * scale
+    }
+
