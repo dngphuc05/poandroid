@@ -2348,3 +2348,21 @@ private fun TechnicalMetricsOverlay(
     }
 }
 
+@Composable
+private fun TechRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodySmall,
+            color = Slate.copy(alpha = 0.78f),
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            color = Ink,
