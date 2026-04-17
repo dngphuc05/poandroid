@@ -2084,3 +2084,12 @@ private fun computeTechnicalBodyScaleMetrics(
         )
     }
 
+    fun distPoints(a: Triple<Float, Float, Float>?, b: Triple<Float, Float, Float>?): Float? {
+        a ?: return null
+        b ?: return null
+        val dx = a.first - b.first
+        val dy = a.second - b.second
+        val dz = a.third - b.third
+        return sqrt(dx * dx + dy * dy + dz * dz) * scale
+    }
+
