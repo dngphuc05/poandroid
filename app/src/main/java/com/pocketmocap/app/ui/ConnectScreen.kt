@@ -142,3 +142,19 @@ fun ConnectScreen(
                         style = MaterialTheme.typography.labelMedium,
                         color = Slate,
                     )
+
+                    OutlinedTextField(
+                        value = serverUrl,
+                        onValueChange = { serverUrl = it },
+                        label = { Text("Server URL") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MintDeep,
+                            unfocusedBorderColor = Slate.copy(alpha = 0.2f),
+                            focusedContainerColor = Color.White,
+                            unfocusedContainerColor = Color.White,
+                        ),
+                    )
+
