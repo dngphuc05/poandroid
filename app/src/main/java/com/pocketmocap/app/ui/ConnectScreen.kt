@@ -124,3 +124,21 @@ fun ConnectScreen(
                 color = Slate,
             )
 
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // Server URL card
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = Glass,
+                shadowElevation = 12.dp,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        text = "SERVER CONNECTION",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = Slate,
+                    )
