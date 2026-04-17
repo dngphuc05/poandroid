@@ -2107,3 +2107,21 @@ private fun computeTechnicalBodyScaleMetrics(
     )
 }
 
+@Composable
+private fun TechnicalMetricsOverlay(
+    sourceLabel: String?,
+    uiState: PocketMocapViewModel.UiState,
+    visibleLandmarkCount: Int,
+    subjectDistanceMeters: Float,
+    subjectHeightMeters: Float,
+    cameraHeightMeters: Float,
+    floorPitchDegrees: Float,
+    lateralOffsetMeters: Float,
+    bodyScaleMetrics: TechnicalBodyScaleMetrics?,
+    serverHealth: ServerPoseHealth,
+    serverDebug: ServerPoseDebugSnapshot?,
+    worldTracking: WorldTrackingSnapshot?,
+    sceneMetrics: SceneMetricSnapshot?,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
