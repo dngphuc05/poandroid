@@ -2197,3 +2197,21 @@ private fun TechnicalMetricsOverlay(
             add("Body scale conf" to "${"%.2f".format(it)}")
         }
         sceneMetrics?.weightHip?.takeIf { it.isFinite() }?.let {
+            add("Weights h/f/r" to "${"%.2f".format(it)}/${"%.2f".format(sceneMetrics.weightFoot)}/${"%.2f".format(sceneMetrics.weightRoi)}")
+        }
+        add(
+            "Pose source" to when {
+                serverHealth.usable -> "server_dlt"
+                sceneMetrics?.source == "arcore_floor" -> "client_33pt"
+                else -> "waiting"
+            }
+        )
+        add("Server pose" to (serverDebug?.poseStatus ?: serverHealth.reason))
+        if (!serverHealth.usable && serverHealth.reason != "missing_server_pose") {
+            add("Fallback" to serverHealth.reason)
+        }
+        serverDebug?.correctionReason?.takeIf { it.isNotBlank() && it != "unknown" }?.let {
+            add("Correction" to it)
+        }
+        serverDebug?.rawHeightMeters?.takeIf { it.isFinite() }?.let { add("Raw DLT height" to "${"%.2f".format(it)}m") }
+        serverDebug?.rawDistanceMeters?.takeIf { it.isFinite() }?.let { add("Raw DLT distance" to "${"%.2f".format(it)}m") }
