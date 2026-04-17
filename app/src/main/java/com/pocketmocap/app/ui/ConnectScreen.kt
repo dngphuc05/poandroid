@@ -52,3 +52,18 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.pocketmocap.app.PocketMocapViewModel.ConnectionState
+import com.pocketmocap.app.PocketMocapViewModel.UiState
+import com.pocketmocap.app.ui.theme.Cloud
+import com.pocketmocap.app.ui.theme.CloudWarm
+import com.pocketmocap.app.ui.theme.Glass
+import com.pocketmocap.app.ui.theme.Ink
+import com.pocketmocap.app.ui.theme.Mint
+import com.pocketmocap.app.ui.theme.MintBright
+import com.pocketmocap.app.ui.theme.MintDeep
+import com.pocketmocap.app.ui.theme.RoseMist
+import com.pocketmocap.app.ui.theme.Slate
+
