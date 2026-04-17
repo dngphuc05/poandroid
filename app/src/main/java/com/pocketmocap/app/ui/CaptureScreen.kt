@@ -2024,3 +2024,14 @@ private fun technicalServerRenderVisibility(
     return out
 }
 
+private fun computeTechnicalBodyScaleMetrics(
+    poseX: FloatArray?,
+    poseY: FloatArray?,
+    poseZ: FloatArray?,
+    groundY: Float,
+    poseVisibility: FloatArray?,
+    targetHeightMeters: Float,
+): TechnicalBodyScaleMetrics? {
+    if (poseX == null || poseY == null || poseZ == null) return null
+    if (poseX.size < 33 || poseY.size < 33 || poseZ.size < 33) return null
+
