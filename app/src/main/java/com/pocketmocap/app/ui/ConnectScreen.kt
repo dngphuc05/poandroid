@@ -97,3 +97,11 @@ fun ConnectScreen(
                 .background(RoseMist.copy(alpha = 0.10f), CircleShape)
         )
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            // Logo glyph
