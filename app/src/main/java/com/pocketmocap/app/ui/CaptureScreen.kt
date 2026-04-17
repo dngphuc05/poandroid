@@ -2065,3 +2065,12 @@ private fun computeTechnicalBodyScaleMetrics(
         return sqrt(dx * dx + dy * dy + dz * dz) * scale
     }
 
+    fun sum(vararg values: Float?): Float? {
+        var total = 0f
+        for (value in values) {
+            value ?: return null
+            total += value
+        }
+        return total
+    }
+
