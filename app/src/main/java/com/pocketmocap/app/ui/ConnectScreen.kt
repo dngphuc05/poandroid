@@ -165,3 +165,21 @@ fun ConnectScreen(
                     )
 
                     // Status text
+                    when (uiState.connectionState) {
+                        ConnectionState.CONNECTED -> {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(Mint)
+                                )
+                                Text(
+                                    text = "Connected · ${uiState.sessionId.take(8)}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MintDeep,
+                                )
+                            }
