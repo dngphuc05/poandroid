@@ -1997,3 +1997,12 @@ private fun technicalScreenBodyVerticalRange(
     }
 }
 
+private fun technicalServerRenderVisibility(
+    poseX: FloatArray?,
+    poseY: FloatArray?,
+    poseZ: FloatArray?,
+    poseVisibility: FloatArray?,
+): FloatArray? {
+    if (poseX == null || poseY == null || poseZ == null) return null
+    if (poseX.size < 33 || poseY.size < 33 || poseZ.size < 33) return null
+    val out = FloatArray(33)
