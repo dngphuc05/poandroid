@@ -134,3 +134,21 @@ fun LibraryCapturesScreen(
                         color = Slate,
                         textAlign = TextAlign.Center,
                     )
+                    Text(
+                        "Press REC in Capture to save Technical/Skeleton frame logs",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Slate.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 8.dp),
+                    )
+                }
+            } else {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    captures.forEach { capture ->
+                        CaptureFolderCard(capture)
+                    }
+                }
+            }
