@@ -116,3 +116,21 @@ fun LibraryCapturesScreen(
                 shape = MaterialTheme.shapes.small,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = Color(0xFF7DB6A2),
+                    unfocusedBorderColor = Color(0xFF7DB6A2),
+                ),
+            )
+
+            if (captures.isEmpty()) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        "No captures yet",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = Slate,
+                        textAlign = TextAlign.Center,
+                    )
