@@ -1949,3 +1949,11 @@ private fun technicalSkeletonTopY(
 
     // Fallback for face dropout: exclude hands/feet so a raised wrist or foot
     // cannot shrink the whole Technical skeleton.
+    for (idx in intArrayOf(11, 12, 13, 14, 23, 24, 25, 26)) {
+        val visible = poseVisibility?.getOrNull(idx) ?: 1f
+        val y = poseY.getOrNull(idx) ?: continue
+        if (visible > 0.18f && y.isFinite()) topY = maxOf(topY, y)
+    }
+    return topY
+}
+
