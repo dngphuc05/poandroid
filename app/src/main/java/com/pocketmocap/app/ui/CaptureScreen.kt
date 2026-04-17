@@ -2074,3 +2074,13 @@ private fun computeTechnicalBodyScaleMetrics(
         return total
     }
 
+    fun midpoint(a: Int, b: Int): Triple<Float, Float, Float>? {
+        val pa = point(a) ?: return null
+        val pb = point(b) ?: return null
+        return Triple(
+            (pa.first + pb.first) * 0.5f,
+            (pa.second + pb.second) * 0.5f,
+            (pa.third + pb.third) * 0.5f,
+        )
+    }
+
