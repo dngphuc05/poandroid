@@ -1972,3 +1972,12 @@ private fun technicalScreenBodyVerticalRange(
     }
 
     fun maxY(indices: IntArray, minVisibility: Float): Float {
+        var value = Float.NEGATIVE_INFINITY
+        for (idx in indices) {
+            val visible = poseVisibility?.getOrNull(idx) ?: 1f
+            val y = screenY.getOrNull(idx) ?: continue
+            if (visible > minVisibility && y.isFinite()) value = maxOf(value, y)
+        }
+        return value
+    }
+
