@@ -253,3 +253,21 @@ private fun ConnectButton(
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (isConnecting) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp,
+                    color = Color.White,
+                )
+            } else {
+                Icon(
+                    imageVector = if (isConnected) Icons.Rounded.Check else Icons.Rounded.Cloud,
+                    contentDescription = null,
+                    tint = if (isConnected) MintDeep else Color.White,
+                    modifier = Modifier.size(20.dp),
+                )
+            }
+            Text(
+                text = when {
