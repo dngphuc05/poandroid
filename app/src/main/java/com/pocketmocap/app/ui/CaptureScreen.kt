@@ -1981,3 +1981,12 @@ private fun technicalScreenBodyVerticalRange(
         return value
     }
 
+    val topY = minY(intArrayOf(0, 7, 8, 9, 10), 0.18f)
+        .takeIf { it.isFinite() }
+        ?: minY(intArrayOf(11, 12, 13, 14, 23, 24), 0.22f).takeIf { it.isFinite() }
+        ?: return null
+    val floorY = maxY(intArrayOf(27, 28, 29, 30, 31, 32), 0.18f)
+        .takeIf { it.isFinite() }
+        ?: maxY(intArrayOf(25, 26, 23, 24), 0.22f).takeIf { it.isFinite() }
+        ?: return null
+
