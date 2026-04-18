@@ -206,3 +206,11 @@ internal object PhysicalSceneOptimizer {
                                 (
                                     input.previousDistanceMeters.isFinite() ||
                                         roiDistance != null ||
+                                        relativeScaleDistance != null ||
+                                        footDistance != null
+                                    )
+                            )
+                    )
+        val usableHipGeometryDistance = hipGeometryDistance?.takeUnless { hipGeometryRejected }
+        if (hipGeometryRejected) flags = flags or FLAG_REJECTED_HIP_GEOMETRY
+        val rawDistanceRejected =
