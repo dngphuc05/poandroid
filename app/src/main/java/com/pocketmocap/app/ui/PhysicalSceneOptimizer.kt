@@ -19,3 +19,11 @@ internal data class PhysicalSceneOptimizerInput(
     val bodyScaleConfidence: Float = Float.NaN,
     val boneLengthSpreadMeters: Float = Float.NaN,
     val relativeScaleDistanceMeters: Float = Float.NaN,
+    val previousDistanceMeters: Float,
+    val previousHeightMeters: Float,
+    val floorHeightBiasMeters: Float,
+    val depthScale: Float,
+    val depthOffsetMeters: Float,
+    val heightEndpointBiasMeters: Float,
+)
+
