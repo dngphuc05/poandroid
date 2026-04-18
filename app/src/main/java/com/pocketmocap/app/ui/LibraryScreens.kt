@@ -356,3 +356,21 @@ fun LibraryModelsScreen(
             verticalArrangement = Arrangement.spacedBy(18.dp),
         ) {
             LibraryTabSwitcher(activeTab = activeTab, onTabSelected = onTabSelected)
+
+            // Active model preview card — fixed height so column can scroll
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(300.dp)
+                    .clip(MaterialTheme.shapes.extraLarge)
+                    .shadow(18.dp, MaterialTheme.shapes.extraLarge),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.library_models_backdrop),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
