@@ -499,3 +499,10 @@ internal object PhysicalSceneOptimizer {
         rawPixelHeight: Float?,
     ): Boolean {
         val top = rawTopHeight ?: return false
+        if (hipGeometryHeight <= top + MAX_HIP_RAW_TOP_STANDALONE_GAP_METERS) return false
+        val independentSupport = listOfNotNull(torsoHeight, rawPixelHeight)
+            .any { abs(it - hipGeometryHeight) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS }
+        return !independentSupport
+    }
+
+    private fun semanticEndpointBiasForFactors(
