@@ -416,3 +416,11 @@ internal object PhysicalSceneOptimizer {
                 heightResidual <= 0.45f
         if (heightTrusted) flags = flags or FLAG_HEIGHT_TRUSTED
 
+        val correctedHeight = stabilizeHeight(input.previousHeightMeters, measuredHeight, heightTrusted, input.confidence)
+        val residual = weightedResidual(rawDistanceFactors, correctedDistance) + weightedResidual(heightFactors, correctedHeight)
+        val confidencePenalty = ((distanceControlSpread / 1.25f) + (heightSpread / 0.65f) + (residual / 0.55f))
+            .coerceIn(0f, 1.2f)
+        val explicitQualityPenalty = if (distanceTrusted && heightTrusted) 0f else 0.34f
+        val solverConfidence = (input.confidence * (1f - confidencePenalty * 0.42f - explicitQualityPenalty))
+            .coerceIn(0.08f, 0.96f)
+
