@@ -488,3 +488,14 @@ internal object PhysicalSceneOptimizer {
 
     private fun anchoredHeightFactor(value: Float, anchors: List<Float>, maxDelta: Float): Float? {
         val valid = validHeight(value) ?: return null
+        if (anchors.isEmpty()) return valid
+        return valid.takeIf { candidate -> anchors.any { abs(candidate - it) <= maxDelta } }
+    }
+
+    private fun hipHeightConflictsWithRawTop(
+        hipGeometryHeight: Float,
+        rawTopHeight: Float?,
+        torsoHeight: Float?,
+        rawPixelHeight: Float?,
+    ): Boolean {
+        val top = rawTopHeight ?: return false
