@@ -255,3 +255,10 @@ private fun openCaptureFile(context: android.content.Context, file: File) {
     }
 }
 
+private fun shareCaptureFiles(context: android.content.Context, folder: File) {
+    val files = folder.listFiles()?.filter { it.isFile } ?: emptyList()
+    if (files.isEmpty()) {
+        Toast.makeText(context, "No files to share", Toast.LENGTH_SHORT).show()
+        return
+    }
+    val uris = ArrayList(files.map { it.shareUri(context) })
