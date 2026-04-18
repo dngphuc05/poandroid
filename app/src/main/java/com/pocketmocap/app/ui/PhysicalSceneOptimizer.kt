@@ -188,3 +188,21 @@ internal object PhysicalSceneOptimizer {
             footDistance,
         ).minByOrNull { abs(it - (input.previousDistanceMeters.takeIf { previous -> previous.isFinite() } ?: it)) }
         val hipGeometryRejected =
+            hipGeometryDistance != null &&
+                (
+                    (
+                        stableNonHipReference != null &&
+                            !strictCandidateAgreement(
+                                hipGeometryDistance,
+                                stableNonHipReference,
+                                maxAbsDelta = 0.32f,
+                                maxRatio = 0.16f,
+                            )
+                        ) ||
+                        (
+                            hipReference != null &&
+                                hipGeometryDistance > hipReference &&
+                                !candidateAgreement(hipGeometryDistance, hipReference) &&
+                                (
+                                    input.previousDistanceMeters.isFinite() ||
+                                        roiDistance != null ||
