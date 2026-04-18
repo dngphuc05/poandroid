@@ -65,3 +65,16 @@ internal object PhysicalSceneOptimizer {
     private const val MAX_TOP_LOW_BIAS_MASK_GAP_METERS = 0.045f
     private const val MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS = 0.110f
 
+    private const val FLAG_DISTANCE_TRUSTED = 1
+    private const val FLAG_HEIGHT_TRUSTED = 2
+    private const val FLAG_REJECTED_HIP = 4
+    private const val FLAG_REJECTED_FOOT = 8
+    private const val FACTOR_NATIVE_FALLBACK = 128
+    private const val FACTOR_NATIVE_CERES = 256
+    private const val FACTOR_TORSO = 512
+    private const val FACTOR_GROUNDED_FOOT = 1024
+    private const val FACTOR_BONE = 2048
+    private const val FACTOR_RELATIVE_SCALE = 4096
+    private const val FLAG_REJECTED_HIP_GEOMETRY = 16
+    private const val PACKED_INPUT_VERSION = 3f
+
