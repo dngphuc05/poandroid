@@ -338,3 +338,21 @@ fun LibraryModelsScreen(
         }
     }
 
+    // Determine active model name for the card label
+    val activeModel = vrmModels.getOrNull(activeVrmIndex)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Brush.linearGradient(listOf(CloudWarm, Color(0xFFEAECE4))))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+                .padding(top = 96.dp, bottom = 120.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(18.dp),
+        ) {
+            LibraryTabSwitcher(activeTab = activeTab, onTabSelected = onTabSelected)
