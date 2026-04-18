@@ -159,3 +159,21 @@ fun LibraryCapturesScreen(
 @Composable
 private fun CaptureFolderCard(folder: File) {
     val context = LocalContext.current
+    val files = remember(folder) {
+        folder.listFiles()
+            ?.filter { it.isFile }
+            ?.sortedBy { it.name }
+            ?: emptyList()
+    }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = Color.White.copy(alpha = 0.92f),
+        shadowElevation = 4.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                folder.name,
