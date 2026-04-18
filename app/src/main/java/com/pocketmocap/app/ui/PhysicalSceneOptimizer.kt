@@ -436,3 +436,21 @@ internal object PhysicalSceneOptimizer {
             previousHeight = previousHeight,
         )
         val floorBias = (input.floorHeightBiasMeters + (heightBias - clampedEndpointBias) * 0.20f)
+            .coerceIn(-0.20f, 0.20f)
+
+        return PhysicalSceneOptimizerResult(
+            distanceMeters = correctedDistance,
+            heightMeters = correctedHeight,
+            cameraHeightMeters = (input.rawCameraHeightMeters + floorBias).takeIf { it.isFinite() } ?: input.rawCameraHeightMeters,
+            solverConfidence = solverConfidence,
+            solverResidualMeters = residual,
+            floorHeightBiasMeters = floorBias,
+            depthScale = input.depthScale.coerceIn(0.92f, 1.08f),
+            depthOffsetMeters = depthOffset,
+            heightEndpointBiasMeters = heightBias,
+            distanceCandidateSpreadMeters = distanceSpread,
+            heightCandidateSpreadMeters = heightSpread,
+            distanceTrusted = distanceTrusted,
+            heightTrusted = heightTrusted,
+            exportHeightConstraint = heightTrusted || input.previousHeightMeters.isFinite(),
+            distanceConfidence = (solverConfidence * if (distanceTrusted) 1f else 0.45f).coerceIn(0f, 1f),
