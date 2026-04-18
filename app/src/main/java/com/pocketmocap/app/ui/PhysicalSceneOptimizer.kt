@@ -386,3 +386,14 @@ internal object PhysicalSceneOptimizer {
             maxDelta = 0.22f,
         )
         val heightFactors = buildList {
+            val hipDuplicatesTorso =
+                usableHipGeometryHeight != null &&
+                    torsoHeight != null &&
+                    abs(usableHipGeometryHeight - torsoHeight) <= 0.015f
+            usableHipGeometryHeight?.takeUnless { hipDuplicatesTorso }?.let { add(FactorValue("hip_geometry_height", it, 0.34f)) }
+            topHeight?.let { add(FactorValue("top_ray", it, 0.32f)) }
+            torsoHeight?.let { add(FactorValue("torso_height", it, 0.10f)) }
+            rawHeight?.let { add(FactorValue("fused_raw_height", it, 0.08f)) }
+            pixelHeight?.let { add(FactorValue("pixel_span", it, 0.035f)) }
+        }
+        val measuredHeight = robustWeightedAverage(heightFactors)
