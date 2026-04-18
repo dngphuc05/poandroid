@@ -543,3 +543,21 @@ private fun LibraryTabSwitcher(
         ) {
             LibraryTab.entries.forEach { tab ->
                 val isActive = tab == activeTab
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .then(
+                            if (isActive) Modifier.background(
+                                Brush.linearGradient(listOf(MintDeep, Mint)),
+                                CircleShape,
+                            )
+                            else Modifier
+                        )
+                        .clickable { onTabSelected(tab) }
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = tab.name.lowercase().replaceFirstChar { it.uppercase() },
+                        style = if (isActive) MaterialTheme.typography.labelLarge
+                                else MaterialTheme.typography.bodySmall,
