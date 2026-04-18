@@ -250,3 +250,20 @@ internal object PhysicalSceneOptimizer {
             0f
         }
         val footHipStrictAgreement = trustedFootDistance != null &&
+            usableHipGeometryDistance != null &&
+            abs(trustedFootDistance - usableHipGeometryDistance) <= 0.30f &&
+            abs(trustedFootDistance - usableHipGeometryDistance) / maxOf(trustedFootDistance, usableHipGeometryDistance, 1e-4f) <= 0.12f
+        val footWeight = when {
+            trustedFootDistance == null -> 0f
+            groundedFootDistance != null && footHipStrictAgreement -> 0.22f
+            groundedFootDistance != null && footRoiStrictAgreement -> 0.34f
+            footRoiStrictAgreement -> 0.30f
+            groundedFootDistance != null -> 0.10f
+            usableHipGeometryDistance != null && !candidateAgreement(trustedFootDistance, usableHipGeometryDistance) -> 0.04f
+            usableRawDistance != null && !candidateAgreement(trustedFootDistance, usableRawDistance) -> 0.05f
+            roiDistance != null && footRoiDrift > 0.42f -> 0.06f
+            roiDistance != null && footRoiDrift > 0.25f -> 0.10f
+            roiDistance != null -> 0.12f
+            else -> 0.16f
+        }
+        val hipGeometryWeight = when {
