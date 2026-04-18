@@ -481,3 +481,10 @@ internal object PhysicalSceneOptimizer {
         )
     }
 
+    private data class FactorValue(val name: String, val value: Float, val weight: Float)
+
+    private fun validHeight(value: Float): Float? =
+        value.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+
+    private fun anchoredHeightFactor(value: Float, anchors: List<Float>, maxDelta: Float): Float? {
+        val valid = validHeight(value) ?: return null
