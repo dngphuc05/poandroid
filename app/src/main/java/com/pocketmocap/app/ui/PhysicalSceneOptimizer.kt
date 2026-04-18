@@ -120,3 +120,21 @@ internal object PhysicalSceneOptimizer {
         input.heightEndpointBiasMeters,
     )
 
+    private fun decodeNative(out: FloatArray, input: PhysicalSceneOptimizerInput): PhysicalSceneOptimizerResult {
+        if (out.size < 14) return fallbackOptimize(input)
+        val flags = out[11].toInt()
+        val distanceConfidence = out.getOrNull(14) ?: ((if (flags and FLAG_DISTANCE_TRUSTED != 0) out[3] else out[3] * 0.55f).coerceIn(0f, 1f))
+        val heightConfidence = out.getOrNull(15) ?: ((if (flags and FLAG_HEIGHT_TRUSTED != 0) out[3] else out[3] * 0.55f).coerceIn(0f, 1f))
+        return PhysicalSceneOptimizerResult(
+            distanceMeters = out[0],
+            heightMeters = out[1],
+            cameraHeightMeters = out[2],
+            solverConfidence = out[3],
+            solverResidualMeters = out[4],
+            floorHeightBiasMeters = out[5],
+            depthScale = out[6],
+            depthOffsetMeters = out[7],
+            heightEndpointBiasMeters = out[8],
+            distanceCandidateSpreadMeters = out[9],
+            heightCandidateSpreadMeters = out[10],
+            distanceTrusted = flags and FLAG_DISTANCE_TRUSTED != 0,
