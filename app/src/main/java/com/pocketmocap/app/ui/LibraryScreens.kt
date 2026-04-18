@@ -526,3 +526,20 @@ fun LibraryModelsScreen(
 }
 
 // ── Shared Tab Switcher ──────────────────────────────────────────────────────
+
+@Composable
+private fun LibraryTabSwitcher(
+    activeTab: LibraryTab,
+    onTabSelected: (LibraryTab) -> Unit,
+) {
+    Surface(
+        shape = CircleShape,
+        color = Glass,
+        shadowElevation = 6.dp,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            LibraryTab.entries.forEach { tab ->
+                val isActive = tab == activeTab
