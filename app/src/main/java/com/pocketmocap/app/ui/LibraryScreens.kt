@@ -177,3 +177,21 @@ private fun CaptureFolderCard(folder: File) {
         ) {
             Text(
                 folder.name,
+                style = MaterialTheme.typography.titleSmall,
+                color = Ink,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                "Saved ${formatCaptureDate(folder.lastModified())}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Slate.copy(alpha = 0.72f),
+            )
+            Text(
+                folder.absolutePath,
+                style = MaterialTheme.typography.labelSmall,
+                color = Slate.copy(alpha = 0.58f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(
