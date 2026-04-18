@@ -487,3 +487,10 @@ fun LibraryModelsScreen(
                                 val color = if (isActive) Color.White.copy(0.95f) else SkeletonMint.copy(0.85f)
                                 val accentColor = if (isActive) MintBright.copy(0.6f) else Color.White.copy(0.3f)
                                 // Head
+                                drawCircle(color.copy(alpha = 0.25f), radius = headR, center = Offset(cx, cy))
+                                drawCircle(color, radius = headR, center = Offset(cx, cy), style = Stroke(width = 2.5f))
+                                // Eyes
+                                val eyeY = cy - headR * 0.12f
+                                drawCircle(color, radius = headR * 0.12f, center = Offset(cx - headR * 0.32f, eyeY))
+                                drawCircle(color, radius = headR * 0.12f, center = Offset(cx + headR * 0.32f, eyeY))
+                                // Mouth arc
