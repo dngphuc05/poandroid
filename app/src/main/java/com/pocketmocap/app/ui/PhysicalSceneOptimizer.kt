@@ -313,3 +313,13 @@ internal object PhysicalSceneOptimizer {
             relativeScaleDistance?.let { add(FactorValue("raw_relative_scale", it, 0.10f)) }
         }
         val measuredDistance = robustWeightedAverage(distanceFactors)
+            ?: input.rawDistanceMeters.takeIf { it.isFinite() }
+            ?: input.previousDistanceMeters
+        val distanceSpread = factorSpread(rawDistanceFactors)
+        val stableFootRoiControl = footRoiStrictAgreement && usableHipGeometryDistance == null
+        val distanceControlSpread = if (stableFootRoiControl) {
+            factorSpread(distanceFactors)
+        } else {
+            distanceSpread
+        }
+        val distanceResidual = if (stableFootRoiControl) {
