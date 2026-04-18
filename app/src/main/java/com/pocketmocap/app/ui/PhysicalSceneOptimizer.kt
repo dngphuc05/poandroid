@@ -78,3 +78,17 @@ internal object PhysicalSceneOptimizer {
     private const val FLAG_REJECTED_HIP_GEOMETRY = 16
     private const val PACKED_INPUT_VERSION = 3f
 
+    private val nativeAvailable: Boolean = runCatching {
+        System.loadLibrary("physical_scene_optimizer")
+        true
+    }.getOrDefault(false)
+
+    fun optimize(input: PhysicalSceneOptimizerInput): PhysicalSceneOptimizerResult {
+        if (nativeAvailable) {
+            runCatching { decodeNative(nativeOptimize(encode(input)), input) }
+                .getOrNull()
+                ?.let { return it }
+        }
+        return fallbackOptimize(input)
+    }
+
