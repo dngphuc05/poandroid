@@ -301,3 +301,14 @@ private fun formatFileSize(bytes: Long): String =
     }
 
 // ── Models ───────────────────────────────────────────────────────────────────
+
+@Composable
+fun LibraryModelsScreen(
+    activeTab: LibraryTab,
+    onTabSelected: (LibraryTab) -> Unit,
+    vrmModels: List<PocketMocapViewModel.VrmModel>,
+    activeVrmIndex: Int,
+    onAddVrm: (String, Uri) -> Unit,
+    onSetActiveVrm: (Int) -> Unit,
+) {
+    val context = LocalContext.current
