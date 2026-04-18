@@ -233,3 +233,10 @@ internal object PhysicalSceneOptimizer {
                 footDistance > footReference
         if (correctedHipDepth != null) flags = flags or FLAG_REJECTED_HIP
 
+        val trustedFootDistance = footDistance?.takeIf { foot ->
+            val agreesWithHipGeometry = usableHipGeometryDistance?.let { candidateAgreement(foot, it) } == true
+            val agreesWithFused =
+                roiDistance == null &&
+                    usableRawDistance?.let { candidateAgreement(foot, it) } == true
+            val agreesWithRoi = roiDistance != null && footRoiStrictAgreement
+            val noReference = usableRawDistance == null && roiDistance == null && groundedFootDistance != null
