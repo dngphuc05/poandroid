@@ -454,3 +454,21 @@ internal object PhysicalSceneOptimizer {
             heightTrusted = heightTrusted,
             exportHeightConstraint = heightTrusted || input.previousHeightMeters.isFinite(),
             distanceConfidence = (solverConfidence * if (distanceTrusted) 1f else 0.45f).coerceIn(0f, 1f),
+            heightConfidence = (solverConfidence * if (heightTrusted) 1f else 0.45f).coerceIn(0f, 1f),
+            floorConfidence = input.confidence,
+            weightHip = if (usableHipGeometryHeight != null) hipGeometryWeight else 0f,
+            weightHead = if (topHeight != null) 0.32f else 0f,
+            weightFoot = footWeight,
+            weightTorso = if (torsoHeight != null) 0.10f else 0f,
+            weightBone = input.bodyScaleConfidence.takeIf { it.isFinite() } ?: 0f,
+            weightDepth = 0f,
+            weightRoi = roiWeight,
+            weightTemporal = maxOf(
+                if (input.previousHeightMeters.isFinite() || input.previousDistanceMeters.isFinite()) 1f else 0f,
+                relativeWeight,
+            ),
+            activeFactors = (distanceFactors + heightFactors).map { it.name }
+                .plus(if (flags and FLAG_REJECTED_HIP != 0) listOf("depth_debug_only") else emptyList())
+                .plus(if (flags and FLAG_REJECTED_HIP_GEOMETRY != 0) listOf("rejected_hip_geometry") else emptyList())
+                .plus(if (flags and FLAG_REJECTED_FOOT != 0) listOf("rejected_foot_plane") else emptyList())
+                .plus(if (!distanceTrusted) listOf("untrusted_distance_spread") else emptyList())
