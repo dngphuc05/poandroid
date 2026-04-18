@@ -413,3 +413,21 @@ fun LibraryModelsScreen(
                             drawCircle(Color.White.copy(alpha = 0.85f), radius = 5f, center = pt)
                         }
                         // Head circle
+                        drawCircle(
+                            color = MintBright.copy(alpha = 0.5f),
+                            radius = sc * 0.16f,
+                            center = joints.getValue("head"),
+                            style = Stroke(width = 3f),
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(18.dp)
+                        .clip(CircleShape)
+                        .background(Color.Black.copy(alpha = 0.42f))
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                ) {
+                    Text(
+                        if (activeModel != null) "Active: ${activeModel.name}" else "No model — tap + to import",
