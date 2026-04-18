@@ -287,3 +287,10 @@ private fun openCaptureFolder(context: android.content.Context, folder: File) {
     }
 }
 
+private fun File.shareUri(context: android.content.Context): Uri =
+    FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", this)
+
+private fun formatCaptureDate(timestampMs: Long): String =
+    SimpleDateFormat("MMM d, HH:mm", Locale.US).format(Date(timestampMs))
+
+private fun formatFileSize(bytes: Long): String =
