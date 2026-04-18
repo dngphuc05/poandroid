@@ -56,3 +56,12 @@ internal data class PhysicalSceneOptimizerResult(
     val activeFactors: String,
 )
 
+internal object PhysicalSceneOptimizer {
+    private const val MIN_BODY_HEIGHT_METERS = 1.15f
+    private const val MAX_BODY_HEIGHT_METERS = 2.15f
+    private const val MIN_HEIGHT_ENDPOINT_BIAS_METERS = -0.025f
+    private const val MAX_HEIGHT_ENDPOINT_BIAS_METERS = 0.080f
+    private const val MAX_HIP_RAW_TOP_STANDALONE_GAP_METERS = 0.100f
+    private const val MAX_TOP_LOW_BIAS_MASK_GAP_METERS = 0.045f
+    private const val MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS = 0.110f
+
