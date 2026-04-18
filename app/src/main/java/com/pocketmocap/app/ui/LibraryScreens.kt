@@ -561,3 +561,10 @@ private fun LibraryTabSwitcher(
                         text = tab.name.lowercase().replaceFirstChar { it.uppercase() },
                         style = if (isActive) MaterialTheme.typography.labelLarge
                                 else MaterialTheme.typography.bodySmall,
+                        color = if (isActive) Color.White else Slate,
+                    )
+                }
+            }
+        }
+    }
+}
