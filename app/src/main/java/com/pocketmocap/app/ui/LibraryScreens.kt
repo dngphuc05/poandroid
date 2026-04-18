@@ -320,3 +320,21 @@ fun LibraryModelsScreen(
                 uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
             )
             // Query the actual display name from ContentResolver
+            val name = try {
+                context.contentResolver.query(
+                    uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null
+                )?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        cursor.getString(0)
+                            .removeSuffix(".vrm")
+                            .removeSuffix(".VRM")
+                            .ifBlank { null }
+                    } else null
+                } ?: "Model ${vrmModels.size + 1}"
+            } catch (e: Exception) {
+                "Model ${vrmModels.size + 1}"
+            }
+            onAddVrm(name, uri)
+        }
+    }
+
