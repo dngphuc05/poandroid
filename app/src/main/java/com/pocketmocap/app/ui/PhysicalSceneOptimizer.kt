@@ -240,3 +240,13 @@ internal object PhysicalSceneOptimizer {
                     usableRawDistance?.let { candidateAgreement(foot, it) } == true
             val agreesWithRoi = roiDistance != null && footRoiStrictAgreement
             val noReference = usableRawDistance == null && roiDistance == null && groundedFootDistance != null
+            !footRoiWild && (agreesWithHipGeometry || agreesWithFused || agreesWithRoi || noReference)
+        }
+        if (footDistance != null && trustedFootDistance == null) flags = flags or FLAG_REJECTED_FOOT
+
+        val footRoiDrift = if (footDistance != null && roiDistance != null) {
+            abs(footDistance - roiDistance) / maxOf(footDistance, roiDistance, 1e-4f)
+        } else {
+            0f
+        }
+        val footHipStrictAgreement = trustedFootDistance != null &&
