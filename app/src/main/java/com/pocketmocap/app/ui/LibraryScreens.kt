@@ -494,3 +494,10 @@ fun LibraryModelsScreen(
                                 drawCircle(color, radius = headR * 0.12f, center = Offset(cx - headR * 0.32f, eyeY))
                                 drawCircle(color, radius = headR * 0.12f, center = Offset(cx + headR * 0.32f, eyeY))
                                 // Mouth arc
+                                val mouthY = cy + headR * 0.32f
+                                drawLine(color.copy(alpha = 0.8f),
+                                    start = Offset(cx - headR * 0.24f, mouthY),
+                                    end   = Offset(cx + headR * 0.24f, mouthY),
+                                    strokeWidth = 2f, cap = StrokeCap.Round)
+                                // Shoulders
+                                val shoulderY = cy + headR * 1.25f
