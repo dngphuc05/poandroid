@@ -381,3 +381,21 @@ fun LibraryModelsScreen(
                     Canvas(modifier = Modifier.fillMaxSize()) {
                         val cx = size.width * 0.5f
                         val cy = size.height * 0.5f
+                        val sc = size.height * 0.28f  // scale factor
+                        // Draw simplified human silhouette
+                        val joints = mapOf(
+                            "head" to Offset(cx, cy - sc * 0.72f),
+                            "neck" to Offset(cx, cy - sc * 0.46f),
+                            "ls"   to Offset(cx - sc * 0.34f, cy - sc * 0.30f),
+                            "rs"   to Offset(cx + sc * 0.34f, cy - sc * 0.30f),
+                            "le"   to Offset(cx - sc * 0.54f, cy + sc * 0.04f),
+                            "re"   to Offset(cx + sc * 0.54f, cy + sc * 0.04f),
+                            "lh"   to Offset(cx - sc * 0.17f, cy + sc * 0.12f),
+                            "rh"   to Offset(cx + sc * 0.17f, cy + sc * 0.12f),
+                            "lk"   to Offset(cx - sc * 0.19f, cy + sc * 0.52f),
+                            "rk"   to Offset(cx + sc * 0.19f, cy + sc * 0.52f),
+                            "la"   to Offset(cx - sc * 0.16f, cy + sc * 0.88f),
+                            "ra"   to Offset(cx + sc * 0.16f, cy + sc * 0.88f),
+                        )
+                        listOf(
+                            "head" to "neck", "neck" to "ls", "neck" to "rs",
