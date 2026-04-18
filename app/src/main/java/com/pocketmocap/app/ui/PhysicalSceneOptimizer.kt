@@ -352,3 +352,16 @@ internal object PhysicalSceneOptimizer {
             confidence = input.confidence,
         )
 
+        val previousHeight = validHeight(input.previousHeightMeters)
+        val rawHeight = validHeight(input.rawHeightMeters)
+        val rawTopHeight = validHeight(input.topRayHeightMeters)
+        val rawPixelHeight = validHeight(input.pixelSpanHeightMeters)
+        val usableHipGeometryHeight = hipGeometryHeight?.takeUnless {
+            hipHeightConflictsWithRawTop(
+                hipGeometryHeight = it,
+                rawTopHeight = rawTopHeight,
+                torsoHeight = torsoHeight,
+                rawPixelHeight = rawPixelHeight,
+            )
+        }
+        val heightAnchors = listOfNotNull(usableHipGeometryHeight, torsoHeight, previousHeight)
