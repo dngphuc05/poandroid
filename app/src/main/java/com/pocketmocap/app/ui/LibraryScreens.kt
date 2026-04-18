@@ -519,3 +519,10 @@ fun LibraryModelsScreen(
                             overflow = TextOverflow.Ellipsis,
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+// ── Shared Tab Switcher ──────────────────────────────────────────────────────
