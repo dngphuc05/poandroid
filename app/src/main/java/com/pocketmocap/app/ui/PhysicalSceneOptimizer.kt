@@ -138,3 +138,20 @@ internal object PhysicalSceneOptimizer {
             distanceCandidateSpreadMeters = out[9],
             heightCandidateSpreadMeters = out[10],
             distanceTrusted = flags and FLAG_DISTANCE_TRUSTED != 0,
+            heightTrusted = flags and FLAG_HEIGHT_TRUSTED != 0,
+            exportHeightConstraint = out[12] > 0.5f,
+            distanceConfidence = distanceConfidence,
+            heightConfidence = heightConfidence,
+            floorConfidence = input.confidence,
+            weightHip = out.getOrNull(17) ?: Float.NaN,
+            weightHead = out.getOrNull(18) ?: Float.NaN,
+            weightFoot = out.getOrNull(19) ?: Float.NaN,
+            weightTorso = out.getOrNull(20) ?: Float.NaN,
+            weightBone = out.getOrNull(21) ?: Float.NaN,
+            weightDepth = out.getOrNull(22) ?: 0f,
+            weightRoi = out.getOrNull(23) ?: Float.NaN,
+            weightTemporal = out.getOrNull(24) ?: Float.NaN,
+            activeFactors = factorString(flags, out[13].toInt()),
+        )
+    }
+
