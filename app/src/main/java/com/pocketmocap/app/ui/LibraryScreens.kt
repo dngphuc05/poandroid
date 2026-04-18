@@ -294,3 +294,10 @@ private fun formatCaptureDate(timestampMs: Long): String =
     SimpleDateFormat("MMM d, HH:mm", Locale.US).format(Date(timestampMs))
 
 private fun formatFileSize(bytes: Long): String =
+    when {
+        bytes >= 1_048_576L -> "${"%.1f".format(bytes / 1_048_576.0)} MB"
+        bytes >= 1024L -> "${"%.1f".format(bytes / 1024.0)} KB"
+        else -> "$bytes B"
+    }
+
+// ── Models ───────────────────────────────────────────────────────────────────
