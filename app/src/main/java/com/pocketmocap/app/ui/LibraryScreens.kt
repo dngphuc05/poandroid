@@ -231,3 +231,14 @@ private fun CaptureFolderCard(folder: File) {
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                     )
+                    Text(
+                        formatFileSize(file.length()),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Slate.copy(alpha = 0.70f),
+                    )
+                }
+            }
+        }
+    }
+}
+
