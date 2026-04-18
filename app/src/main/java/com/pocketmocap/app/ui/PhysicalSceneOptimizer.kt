@@ -323,3 +323,12 @@ internal object PhysicalSceneOptimizer {
             distanceSpread
         }
         val distanceResidual = if (stableFootRoiControl) {
+            weightedResidual(distanceFactors, measuredDistance)
+        } else {
+            weightedResidual(rawDistanceFactors, measuredDistance)
+        }
+        val distanceTrusted =
+            distanceControlSpread <= 1.20f &&
+                distanceResidual <= 0.75f
+        if (distanceTrusted) flags = flags or FLAG_DISTANCE_TRUSTED
+
