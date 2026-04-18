@@ -162,3 +162,10 @@ internal object PhysicalSceneOptimizer {
         val footDistance = input.footPlaneDistanceMeters.takeIf { it.isFinite() }
         val groundedFootDistance = input.groundedFootDistanceMeters.takeIf { it.isFinite() }
         val hipGeometryDistance = input.hipGeometryDistanceMeters.takeIf { it.isFinite() }
+        val hipGeometryHeight = validHeight(input.hipGeometryHeightMeters)
+        val torsoHeight = validHeight(input.torsoHeightMeters)
+        val roiDistance = input.roiDistanceMeters.takeIf { it.isFinite() }
+        val relativeScaleDistance = input.relativeScaleDistanceMeters.takeIf { it.isFinite() }
+        var flags = 0
+
+        val footRoiStrictAgreement =
