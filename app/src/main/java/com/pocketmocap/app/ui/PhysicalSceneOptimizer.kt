@@ -110,3 +110,13 @@ internal object PhysicalSceneOptimizer {
         input.torsoHeightMeters,
         input.groundedFootDistanceMeters,
         input.bodyScaleConfidence,
+        input.boneLengthSpreadMeters,
+        input.relativeScaleDistanceMeters,
+        input.previousDistanceMeters,
+        input.previousHeightMeters,
+        input.floorHeightBiasMeters,
+        input.depthScale,
+        input.depthOffsetMeters,
+        input.heightEndpointBiasMeters,
+    )
+
