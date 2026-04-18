@@ -262,3 +262,15 @@ private fun shareCaptureFiles(context: android.content.Context, folder: File) {
         return
     }
     val uris = ArrayList(files.map { it.shareUri(context) })
+    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+        type = "text/*"
+        putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    runCatching {
+        context.startActivity(Intent.createChooser(intent, "Share capture logs"))
+    }.onFailure {
+        Toast.makeText(context, "No app can share these files", Toast.LENGTH_SHORT).show()
+    }
+}
+
