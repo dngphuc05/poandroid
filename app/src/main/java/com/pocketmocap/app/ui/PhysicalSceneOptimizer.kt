@@ -397,3 +397,10 @@ internal object PhysicalSceneOptimizer {
             pixelHeight?.let { add(FactorValue("pixel_span", it, 0.035f)) }
         }
         val measuredHeight = robustWeightedAverage(heightFactors)
+            ?: rawHeight
+            ?: previousHeight
+            ?: Float.NaN
+        val heightSpread = factorSpread(heightFactors)
+        val heightResidual = weightedResidual(heightFactors, measuredHeight)
+        val bodyScaleOk = input.bodyScaleConfidence.takeIf { it.isFinite() }?.let { it >= 0.36f } ?: true
+        val semanticHeightAgreement = hasSemanticHeightAgreement(
