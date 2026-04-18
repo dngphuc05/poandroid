@@ -472,3 +472,12 @@ internal object PhysicalSceneOptimizer {
                 .plus(if (flags and FLAG_REJECTED_HIP_GEOMETRY != 0) listOf("rejected_hip_geometry") else emptyList())
                 .plus(if (flags and FLAG_REJECTED_FOOT != 0) listOf("rejected_foot_plane") else emptyList())
                 .plus(if (!distanceTrusted) listOf("untrusted_distance_spread") else emptyList())
+                .plus(if (!heightTrusted) listOf("untrusted_height_spread") else emptyList())
+                .plus(if (!semanticHeightAgreement) listOf("rejected_height_semantic_agreement") else emptyList())
+                .plus(if (heightSpread > 0.22f) listOf("rejected_height_spread") else emptyList())
+                .plus("kotlin_fallback_optimizer")
+                .distinct()
+                .joinToString("|"),
+        )
+    }
+
