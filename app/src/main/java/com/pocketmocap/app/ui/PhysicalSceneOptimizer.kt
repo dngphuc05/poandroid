@@ -298,3 +298,11 @@ internal object PhysicalSceneOptimizer {
             else -> 0.34f
         }
 
+        val distanceFactors = buildList {
+            usableHipGeometryDistance?.takeIf { hipGeometryWeight > 0f }?.let { add(FactorValue("hip_geometry", it, hipGeometryWeight)) }
+            trustedFootDistance?.takeIf { footWeight > 0f }?.let { add(FactorValue("foot_plane", it, footWeight)) }
+            usableRawDistance?.takeIf { rawWeight > 0f }?.let { add(FactorValue("fused_raw", it, rawWeight)) }
+            roiDistance?.takeIf { roiWeight > 0f }?.let { add(FactorValue("roi", it, roiWeight)) }
+            relativeScaleDistance?.takeIf { relativeWeight > 0f }?.let { add(FactorValue("relative_scale", it, relativeWeight)) }
+        }
+        val rawDistanceFactors = buildList {
