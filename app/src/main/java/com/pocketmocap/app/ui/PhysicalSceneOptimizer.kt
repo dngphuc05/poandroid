@@ -344,3 +344,11 @@ internal object PhysicalSceneOptimizer {
             else -> Float.NaN
         }
         val correctedDistance = stabilizeDistance(
+            previous = input.previousDistanceMeters,
+            measured = measuredDistance,
+            fallback = fallbackDistance,
+            trusted = distanceTrusted,
+            spread = distanceControlSpread,
+            confidence = input.confidence,
+        )
+
