@@ -224,3 +224,12 @@ internal object PhysicalSceneOptimizer {
                     maxRatio = 0.18f,
                 )
         val usableRawDistance = input.rawDistanceMeters.takeIf { it.isFinite() && !rawDistanceRejected }
+
+        val footReference = usableHipGeometryDistance ?: roiDistance ?: usableRawDistance
+        val footRoiWild =
+            footDistance != null &&
+                footReference != null &&
+                !(if (roiDistance != null) footRoiStrictAgreement else candidateAgreement(footDistance, footReference)) &&
+                footDistance > footReference
+        if (correctedHipDepth != null) flags = flags or FLAG_REJECTED_HIP
+
