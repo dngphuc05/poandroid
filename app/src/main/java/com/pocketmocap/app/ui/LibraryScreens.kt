@@ -374,3 +374,10 @@ fun LibraryModelsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.28f))
+                )
+                // Mini 3D skeleton preview in the center of the card
+                if (activeModel != null) {
+                    Canvas(modifier = Modifier.fillMaxSize()) {
+                        val cx = size.width * 0.5f
+                        val cy = size.height * 0.5f
