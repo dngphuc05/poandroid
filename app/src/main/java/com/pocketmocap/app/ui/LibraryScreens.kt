@@ -312,3 +312,11 @@ fun LibraryModelsScreen(
     onSetActiveVrm: (Int) -> Unit,
 ) {
     val context = LocalContext.current
+    val vrmLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+    ) { uri: Uri? ->
+        if (uri != null) {
+            context.contentResolver.takePersistableUriPermission(
+                uri, android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            // Query the actual display name from ContentResolver
