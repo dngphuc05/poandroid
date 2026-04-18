@@ -27,3 +27,10 @@ internal data class PhysicalSceneOptimizerInput(
     val heightEndpointBiasMeters: Float,
 )
 
+internal data class PhysicalSceneOptimizerResult(
+    val distanceMeters: Float,
+    val heightMeters: Float,
+    val cameraHeightMeters: Float,
+    val solverConfidence: Float,
+    val solverResidualMeters: Float,
+    val floorHeightBiasMeters: Float,
