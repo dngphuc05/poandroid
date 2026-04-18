@@ -464,3 +464,19 @@ fun LibraryModelsScreen(
 
                 itemsIndexed(vrmModels) { index, model ->
                     val isActive = index == activeVrmIndex
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    if (isActive) Brush.linearGradient(listOf(MintDeep, Mint))
+                                    else Brush.linearGradient(listOf(Color(0xFF1A2830), Color(0xFF0D1D26)))
+                                )
+                                .clickable { onSetActiveVrm(index) },
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            // Avatar face portrait: head circle + face features + shoulders
