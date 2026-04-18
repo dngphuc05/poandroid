@@ -365,3 +365,14 @@ internal object PhysicalSceneOptimizer {
             )
         }
         val heightAnchors = listOfNotNull(usableHipGeometryHeight, torsoHeight, previousHeight)
+        val clampedEndpointBias = input.heightEndpointBiasMeters
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        val semanticEndpointBias = semanticEndpointBiasForFactors(
+            positiveBias = clampedEndpointBias.coerceAtLeast(0f),
+            rawTopHeight = rawTopHeight,
+            rawPixelHeight = rawPixelHeight,
+            hipGeometryHeight = usableHipGeometryHeight,
+            torsoHeight = torsoHeight,
+            previousHeight = previousHeight,
+        )
+        val topHeight = anchoredHeightFactor(
