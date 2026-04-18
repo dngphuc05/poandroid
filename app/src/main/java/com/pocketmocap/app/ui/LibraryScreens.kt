@@ -456,3 +456,11 @@ fun LibraryModelsScreen(
                                 .clickable { vrmLauncher.launch(arrayOf("*/*")) },
                             contentAlignment = Alignment.Center,
                         ) {
+                            Icon(Icons.Rounded.Add, "Import VRM", tint = Ink)
+                        }
+                        Text("Add VRM", style = MaterialTheme.typography.labelSmall, color = Ink)
+                    }
+                }
+
+                itemsIndexed(vrmModels) { index, model ->
+                    val isActive = index == activeVrmIndex
