@@ -195,3 +195,21 @@ private fun CaptureFolderCard(folder: File) {
                 overflow = TextOverflow.Ellipsis,
             )
             Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    "Share logs",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MintDeep,
+                    modifier = Modifier.clickable {
+                        shareCaptureFiles(context, folder)
+                    },
+                )
+                Text(
+                    "Open folder",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MintDeep,
+                    modifier = Modifier.clickable {
+                        openCaptureFolder(context, folder)
+                    },
