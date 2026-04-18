@@ -306,3 +306,10 @@ internal object PhysicalSceneOptimizer {
             relativeScaleDistance?.takeIf { relativeWeight > 0f }?.let { add(FactorValue("relative_scale", it, relativeWeight)) }
         }
         val rawDistanceFactors = buildList {
+            hipGeometryDistance?.let { add(FactorValue("raw_hip_geometry", it, 0.52f)) }
+            footDistance?.let { add(FactorValue("raw_foot_plane", it, 0.16f)) }
+            input.rawDistanceMeters.takeIf { it.isFinite() }?.let { add(FactorValue("raw_fused", it, 0.20f)) }
+            roiDistance?.let { add(FactorValue("raw_roi", it, 0.04f)) }
+            relativeScaleDistance?.let { add(FactorValue("raw_relative_scale", it, 0.10f)) }
+        }
+        val measuredDistance = robustWeightedAverage(distanceFactors)
