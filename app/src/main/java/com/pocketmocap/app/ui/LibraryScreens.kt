@@ -274,3 +274,16 @@ private fun shareCaptureFiles(context: android.content.Context, folder: File) {
     }
 }
 
+private fun openCaptureFolder(context: android.content.Context, folder: File) {
+    val uri = Uri.parse(folder.toURI().toString())
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "resource/folder")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    runCatching {
+        context.startActivity(intent)
+    }.onFailure {
+        Toast.makeText(context, folder.absolutePath, Toast.LENGTH_LONG).show()
+    }
+}
+
