@@ -152,3 +152,10 @@ fun LibraryCapturesScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun CaptureFolderCard(folder: File) {
+    val context = LocalContext.current
