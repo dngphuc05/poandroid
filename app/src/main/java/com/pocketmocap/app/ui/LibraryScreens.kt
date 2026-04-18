@@ -438,3 +438,21 @@ fun LibraryModelsScreen(
             }
 
             // Model carousel — VRM models only + Add button
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                // Add New button
+                item {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFEFEEE5))
+                                .clickable { vrmLauncher.launch(arrayOf("*/*")) },
+                            contentAlignment = Alignment.Center,
+                        ) {
