@@ -214,3 +214,13 @@ internal object PhysicalSceneOptimizer {
         val usableHipGeometryDistance = hipGeometryDistance?.takeUnless { hipGeometryRejected }
         if (hipGeometryRejected) flags = flags or FLAG_REJECTED_HIP_GEOMETRY
         val rawDistanceRejected =
+            hipGeometryRejected &&
+                input.rawDistanceMeters.isFinite() &&
+                stableNonHipReference != null &&
+                !strictCandidateAgreement(
+                    input.rawDistanceMeters,
+                    stableNonHipReference,
+                    maxAbsDelta = 0.36f,
+                    maxRatio = 0.18f,
+                )
+        val usableRawDistance = input.rawDistanceMeters.takeIf { it.isFinite() && !rawDistanceRejected }
