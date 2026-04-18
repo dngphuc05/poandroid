@@ -169,3 +169,15 @@ internal object PhysicalSceneOptimizer {
         var flags = 0
 
         val footRoiStrictAgreement =
+            footDistance != null &&
+                roiDistance != null &&
+                strictCandidateAgreement(footDistance, roiDistance, maxAbsDelta = 0.48f, maxRatio = 0.16f)
+        val stableNonHipReference = stableNonHipDistanceReference(
+            footDistance = footDistance,
+            groundedFootDistance = groundedFootDistance,
+            roiDistance = roiDistance,
+            relativeScaleDistance = relativeScaleDistance,
+            previousDistance = input.previousDistanceMeters.takeIf { it.isFinite() },
+            footRoiStrictAgreement = footRoiStrictAgreement,
+        )
+        val hipReference = listOfNotNull(
