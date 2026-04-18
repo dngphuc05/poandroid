@@ -283,3 +283,10 @@ internal object PhysicalSceneOptimizer {
             else -> 0.12f
         }
         val relativeWeight = when {
+            relativeScaleDistance == null -> 0f
+            footRoiStrictAgreement -> 0.035f
+            usableHipGeometryDistance == null && trustedFootDistance == null -> 0.18f
+            usableHipGeometryDistance == null -> 0.10f
+            else -> 0.045f
+        }
+        val rawWeight = when {
