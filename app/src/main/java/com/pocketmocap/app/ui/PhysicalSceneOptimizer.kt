@@ -404,3 +404,15 @@ internal object PhysicalSceneOptimizer {
         val heightResidual = weightedResidual(heightFactors, measuredHeight)
         val bodyScaleOk = input.bodyScaleConfidence.takeIf { it.isFinite() }?.let { it >= 0.36f } ?: true
         val semanticHeightAgreement = hasSemanticHeightAgreement(
+            hipGeometryHeight = usableHipGeometryHeight,
+            torsoHeight = torsoHeight,
+            topRayHeight = rawTopHeight ?: topHeight,
+        )
+        val heightTrusted =
+            distanceTrusted &&
+                bodyScaleOk &&
+                semanticHeightAgreement &&
+                heightSpread <= 0.22f &&
+                heightResidual <= 0.45f
+        if (heightTrusted) flags = flags or FLAG_HEIGHT_TRUSTED
+
