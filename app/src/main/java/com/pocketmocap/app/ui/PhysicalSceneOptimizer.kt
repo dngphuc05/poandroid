@@ -332,3 +332,15 @@ internal object PhysicalSceneOptimizer {
                 distanceResidual <= 0.75f
         if (distanceTrusted) flags = flags or FLAG_DISTANCE_TRUSTED
 
+        val fallbackDistance = when {
+            usableHipGeometryDistance != null &&
+                usableHipGeometryDistance in 0.35f..12.0f &&
+                (roiDistance == null || candidateAgreement(usableHipGeometryDistance, roiDistance)) -> usableHipGeometryDistance
+            trustedFootDistance != null &&
+                trustedFootDistance in 0.35f..12.0f -> trustedFootDistance
+            roiDistance != null -> roiDistance
+            relativeScaleDistance != null -> relativeScaleDistance
+            usableRawDistance != null -> usableRawDistance
+            else -> Float.NaN
+        }
+        val correctedDistance = stabilizeDistance(
