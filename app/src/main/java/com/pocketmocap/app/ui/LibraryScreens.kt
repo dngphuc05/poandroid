@@ -213,3 +213,21 @@ private fun CaptureFolderCard(folder: File) {
                     modifier = Modifier.clickable {
                         openCaptureFolder(context, folder)
                     },
+                )
+            }
+            files.forEach { file ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        file.name,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Ink.copy(alpha = 0.84f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { openCaptureFile(context, file) },
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
