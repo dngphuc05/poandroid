@@ -92,3 +92,21 @@ internal object PhysicalSceneOptimizer {
         return fallbackOptimize(input)
     }
 
+    private external fun nativeOptimize(values: FloatArray): FloatArray
+
+    private fun encode(input: PhysicalSceneOptimizerInput): FloatArray = floatArrayOf(
+        PACKED_INPUT_VERSION,
+        input.confidence,
+        input.rawDistanceMeters,
+        input.rawHeightMeters,
+        input.rawCameraHeightMeters,
+        input.rawHipDepthDistanceMeters,
+        input.footPlaneDistanceMeters,
+        input.roiDistanceMeters,
+        input.topRayHeightMeters,
+        input.pixelSpanHeightMeters,
+        input.hipGeometryDistanceMeters,
+        input.hipGeometryHeightMeters,
+        input.torsoHeightMeters,
+        input.groundedFootDistanceMeters,
+        input.bodyScaleConfidence,
