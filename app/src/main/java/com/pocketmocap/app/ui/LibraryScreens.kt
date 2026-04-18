@@ -431,3 +431,10 @@ fun LibraryModelsScreen(
                 ) {
                     Text(
                         if (activeModel != null) "Active: ${activeModel.name}" else "No model — tap + to import",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = Color.White,
+                    )
+                }
+            }
+
+            // Model carousel — VRM models only + Add button
