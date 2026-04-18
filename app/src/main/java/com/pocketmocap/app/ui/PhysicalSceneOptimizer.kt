@@ -48,3 +48,11 @@ internal data class PhysicalSceneOptimizerResult(
     val weightHip: Float,
     val weightHead: Float,
     val weightFoot: Float,
+    val weightTorso: Float,
+    val weightBone: Float,
+    val weightDepth: Float,
+    val weightRoi: Float,
+    val weightTemporal: Float,
+    val activeFactors: String,
+)
+
