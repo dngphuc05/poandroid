@@ -399,3 +399,17 @@ fun LibraryModelsScreen(
                         )
                         listOf(
                             "head" to "neck", "neck" to "ls", "neck" to "rs",
+                            "ls" to "le", "rs" to "re",
+                            "neck" to "lh", "neck" to "rh", "lh" to "rh",
+                            "lh" to "lk", "rh" to "rk", "lk" to "la", "rk" to "ra",
+                        ).forEach { (a, b) ->
+                            drawLine(
+                                color = MintBright.copy(alpha = 0.7f),
+                                start = joints.getValue(a), end = joints.getValue(b),
+                                strokeWidth = 3f, cap = StrokeCap.Round,
+                            )
+                        }
+                        joints.values.forEach { pt ->
+                            drawCircle(Color.White.copy(alpha = 0.85f), radius = 5f, center = pt)
+                        }
+                        // Head circle
