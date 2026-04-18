@@ -480,3 +480,10 @@ fun LibraryModelsScreen(
                             contentAlignment = Alignment.Center,
                         ) {
                             // Avatar face portrait: head circle + face features + shoulders
+                            Canvas(modifier = Modifier.size(52.dp)) {
+                                val cx = size.width * 0.5f
+                                val cy = size.height * 0.42f
+                                val headR = size.height * 0.26f
+                                val color = if (isActive) Color.White.copy(0.95f) else SkeletonMint.copy(0.85f)
+                                val accentColor = if (isActive) MintBright.copy(0.6f) else Color.White.copy(0.3f)
+                                // Head
