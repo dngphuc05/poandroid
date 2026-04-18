@@ -501,3 +501,21 @@ fun LibraryModelsScreen(
                                     strokeWidth = 2f, cap = StrokeCap.Round)
                                 // Shoulders
                                 val shoulderY = cy + headR * 1.25f
+                                drawLine(accentColor,
+                                    start = Offset(cx - headR * 1.1f, shoulderY + headR * 0.4f),
+                                    end   = Offset(cx, shoulderY),
+                                    strokeWidth = 3f, cap = StrokeCap.Round)
+                                drawLine(accentColor,
+                                    start = Offset(cx + headR * 1.1f, shoulderY + headR * 0.4f),
+                                    end   = Offset(cx, shoulderY),
+                                    strokeWidth = 3f, cap = StrokeCap.Round)
+                            }
+                        }
+                        Text(
+                            model.name,
+                            style = if (isActive) MaterialTheme.typography.labelLarge else MaterialTheme.typography.bodySmall,
+                            color = if (isActive) MintDeep else Ink,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
