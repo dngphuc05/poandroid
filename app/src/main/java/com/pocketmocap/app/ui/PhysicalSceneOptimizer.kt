@@ -155,3 +155,10 @@ internal object PhysicalSceneOptimizer {
         )
     }
 
+    private fun fallbackOptimize(input: PhysicalSceneOptimizerInput): PhysicalSceneOptimizerResult {
+        val correctedHipDepth = input.rawHipDepthDistanceMeters
+            .takeIf { it.isFinite() }
+            ?.let { (it * input.depthScale + input.depthOffsetMeters).coerceIn(0.35f, 12.0f) }
+        val footDistance = input.footPlaneDistanceMeters.takeIf { it.isFinite() }
+        val groundedFootDistance = input.groundedFootDistanceMeters.takeIf { it.isFinite() }
+        val hipGeometryDistance = input.hipGeometryDistanceMeters.takeIf { it.isFinite() }
