@@ -242,3 +242,16 @@ private fun CaptureFolderCard(folder: File) {
     }
 }
 
+private fun openCaptureFile(context: android.content.Context, file: File) {
+    val uri = file.shareUri(context)
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(uri, "text/csv")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    runCatching {
+        context.startActivity(Intent.createChooser(intent, "Open ${file.name}"))
+    }.onFailure {
+        Toast.makeText(context, "No app can open this file", Toast.LENGTH_SHORT).show()
+    }
+}
+
