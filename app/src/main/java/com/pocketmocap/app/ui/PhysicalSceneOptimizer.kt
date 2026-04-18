@@ -424,3 +424,15 @@ internal object PhysicalSceneOptimizer {
         val solverConfidence = (input.confidence * (1f - confidencePenalty * 0.42f - explicitQualityPenalty))
             .coerceIn(0.08f, 0.96f)
 
+        val depthOffset = input.depthOffsetMeters
+        val heightBias = learnHeightEndpointBias(
+            input = input,
+            correctedHeight = correctedHeight,
+            trusted = heightTrusted,
+            rawTopHeight = rawTopHeight,
+            rawPixelHeight = rawPixelHeight,
+            hipGeometryHeight = usableHipGeometryHeight,
+            torsoHeight = torsoHeight,
+            previousHeight = previousHeight,
+        )
+        val floorBias = (input.floorHeightBiasMeters + (heightBias - clampedEndpointBias) * 0.20f)
