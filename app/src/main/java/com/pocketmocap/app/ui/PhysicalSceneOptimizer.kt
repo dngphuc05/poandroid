@@ -376,3 +376,13 @@ internal object PhysicalSceneOptimizer {
             previousHeight = previousHeight,
         )
         val topHeight = anchoredHeightFactor(
+            value = input.topRayHeightMeters + semanticEndpointBias,
+            anchors = heightAnchors,
+            maxDelta = 0.18f,
+        )
+        val pixelHeight = anchoredHeightFactor(
+            value = input.pixelSpanHeightMeters + semanticEndpointBias,
+            anchors = heightAnchors,
+            maxDelta = 0.22f,
+        )
+        val heightFactors = buildList {
