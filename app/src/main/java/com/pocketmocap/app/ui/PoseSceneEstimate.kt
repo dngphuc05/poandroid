@@ -446,3 +446,21 @@ internal class SubjectHeightEstimator {
         private const val MIN_BRACKET_RETARGET_LIFT_METERS = 0.045f
         private const val MAX_BRACKET_STABLE_SPREAD_METERS = 0.18f
         private const val BRACKET_HEIGHT_INTERPOLATION = 0.58f
+        private const val MIN_UPPER_WITNESS_GAP_METERS = 0.070f
+        private const val MAX_ESTIMATE_SUPPORT_RESIDUAL_METERS = 0.10f
+        private const val HIP_REJECTS_RETARGET_GAP_METERS = 0.055f
+        private const val MAX_RETARGET_WITNESS_GAP_METERS = 0.115f
+        private const val MAX_TOP_ONLY_ACQUIRE_SPREAD_METERS = 0.090f
+        private const val MAX_HIP_TORSO_REFERENCE_SPREAD_METERS = 0.10f
+        private const val MAX_TOP_TORSO_SAMPLE_SPREAD_METERS = 0.085f
+        private const val MAX_TOP_TORSO_STABLE_SPREAD_METERS = 0.035f
+        private const val MAX_TOP_TORSO_CONSENSUS_SPREAD_METERS = 0.060f
+        private const val MAX_HIP_UPPER_CONSENSUS_SPREAD_METERS = 0.020f
+        private const val MAX_LOCK_REFERENCE_SPREAD_METERS = 0.12f
+        private const val MAX_TOP_ONLY_RETARGET_SPREAD_METERS = 0.055f
+        private const val MIN_POSITIVE_TOP_CORRECTION_METERS = 0.015f
+        private const val MAX_TOP_REFERENCE_RESIDUAL_METERS = 0.18f
+        private const val MAX_LEARNED_TOP_CORRECTION_METERS = 0.12f
+    }
+}
+
