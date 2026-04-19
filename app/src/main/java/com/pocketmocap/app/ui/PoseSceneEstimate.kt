@@ -464,3 +464,10 @@ internal class SubjectHeightEstimator {
     }
 }
 
+internal data class PoseRoi(
+    val minX: Float,
+    val maxX: Float,
+    val minY: Float,
+    val maxY: Float,
+) {
+    val centerX: Float get() = (minX + maxX) * 0.5f
