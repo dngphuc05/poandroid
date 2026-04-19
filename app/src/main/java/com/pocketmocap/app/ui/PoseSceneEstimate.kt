@@ -258,3 +258,13 @@ internal class SubjectHeightEstimator {
         }
         matureFrames = (matureFrames + 1).coerceAtMost(120)
 
+        // Decide if the existing in-flight lock should rise toward the latent
+        // subject-height estimate. Conditions are deliberately relative, not a
+        // hard-coded stature band: sustained top-envelope evidence and a real
+        // gap between current lock and current posterior.
+        val locked = currentLocked.takeIf { it.isFinite() }
+        val anchor = lowerAnchor
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: locked
+        if (matureFrames < ENABLE_RETARGET_AFTER_FRAMES) return null
+        val bracketSupportedFrames = bracketConsensus?.let { consensus ->
