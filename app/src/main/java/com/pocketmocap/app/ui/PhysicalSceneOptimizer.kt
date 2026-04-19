@@ -524,3 +524,12 @@ internal object PhysicalSceneOptimizer {
         return if (top >= maxAnchor - MAX_TOP_LOW_BIAS_MASK_GAP_METERS) positiveBias else 0f
     }
 
+    private fun stableNonHipDistanceReference(
+        footDistance: Float?,
+        groundedFootDistance: Float?,
+        roiDistance: Float?,
+        relativeScaleDistance: Float?,
+        previousDistance: Float?,
+        footRoiStrictAgreement: Boolean,
+    ): Float? {
+        val footRoiReference = if (
