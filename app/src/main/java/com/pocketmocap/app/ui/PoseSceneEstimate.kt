@@ -334,3 +334,13 @@ internal class SubjectHeightEstimator {
         bodyScaleConfidence: Float,
     ): Float? {
         val top = topStature?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        if (bodyScaleConfidence.isFinite() && bodyScaleConfidence < MIN_BRACKET_BODY_SCALE_CONFIDENCE) return null
+        val highTorso = torso?.takeIf { candidate ->
+            candidate.isFinite() &&
+                candidate in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
+                candidate > top + MIN_BRACKET_WITNESS_GAP_METERS &&
+                candidate < top + MAX_BRACKET_WITNESS_GAP_METERS &&
+                hip?.let { candidate > it + MIN_BRACKET_WITNESS_GAP_METERS } != false
+        }
+        val highPixel = pixel?.takeIf { candidate ->
