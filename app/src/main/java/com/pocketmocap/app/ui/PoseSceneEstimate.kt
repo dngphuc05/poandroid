@@ -396,3 +396,18 @@ internal class SubjectHeightEstimator {
     }
 
     private fun topCorrectionReference(
+        hip: Float?,
+        torso: Float?,
+        lockedHeight: Float?,
+    ): Float? {
+        val hipTorso = if (
+            hip != null &&
+            torso != null &&
+            abs(hip - torso) <= MAX_HIP_TORSO_REFERENCE_SPREAD_METERS
+        ) {
+            hip * 0.58f + torso * 0.42f
+        } else {
+            null
+        }
+        if (hipTorso != null) return hipTorso
+
