@@ -326,3 +326,11 @@ internal class SubjectHeightEstimator {
         return if (retargetCorrectionFrames >= LOCKED_RETARGET_FRAMES) retargetEstimate else null
     }
 
+    private fun estimateBracketedHeightSample(
+        topStature: Float?,
+        hip: Float?,
+        torso: Float?,
+        pixel: Float?,
+        bodyScaleConfidence: Float,
+    ): Float? {
+        val top = topStature?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
