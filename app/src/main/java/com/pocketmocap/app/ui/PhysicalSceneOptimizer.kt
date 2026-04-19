@@ -674,3 +674,11 @@ internal object PhysicalSceneOptimizer {
             else -> 0.055f
         }
         val maxStep = when {
+            spread <= 0.45f -> 0.22f
+            spread <= 0.85f -> 0.14f
+            else -> 0.075f
+        }
+        val delta = (validMeasured - previous).coerceIn(-maxStep, maxStep)
+        return (previous + delta * alpha).coerceIn(0.35f, 12.0f)
+    }
+
