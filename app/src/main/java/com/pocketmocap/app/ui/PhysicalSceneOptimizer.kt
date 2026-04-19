@@ -560,3 +560,21 @@ internal object PhysicalSceneOptimizer {
         relativeTemporalReference?.let { return it }
         footRoiReference?.let { return it }
 
+        if (
+            relativeScaleDistance != null &&
+            footDistance != null &&
+            strictCandidateAgreement(relativeScaleDistance, footDistance, maxAbsDelta = 0.42f, maxRatio = 0.18f)
+        ) {
+            return weightedPair(relativeScaleDistance, 0.62f, footDistance, 0.38f)
+        }
+        if (
+            relativeScaleDistance != null &&
+            roiDistance != null &&
+            strictCandidateAgreement(relativeScaleDistance, roiDistance, maxAbsDelta = 0.42f, maxRatio = 0.18f)
+        ) {
+            return weightedPair(relativeScaleDistance, 0.62f, roiDistance, 0.38f)
+        }
+        if (
+            previousDistance != null &&
+            footDistance != null &&
+            strictCandidateAgreement(previousDistance, footDistance, maxAbsDelta = 0.55f, maxRatio = 0.22f)
