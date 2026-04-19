@@ -358,3 +358,13 @@ internal class SubjectHeightEstimator {
                 hip?.let { candidate >= it - 0.04f } != false
         }
         val highWitnesses = listOfNotNull(highTorso, highPixel ?: pixelOnly)
+        if (highTorso == null && highPixel == null && pixelOnly == null) return null
+        if (highWitnesses.isEmpty()) return null
+        val sortedWitnesses = highWitnesses.sorted()
+        val upper = sortedWitnesses[(sortedWitnesses.size - 1) / 2]
+        val interpolation = if (highTorso == null && highPixel == null && pixelOnly != null) {
+            PIXEL_ONLY_BRACKET_HEIGHT_INTERPOLATION
+        } else {
+            BRACKET_HEIGHT_INTERPOLATION
+        }
+        val sample = top + (upper - top) * interpolation
