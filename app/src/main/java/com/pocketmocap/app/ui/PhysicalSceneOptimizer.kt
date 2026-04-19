@@ -689,3 +689,12 @@ internal object PhysicalSceneOptimizer {
         if (!trusted) return previous
         val delta = validMeasured - previous
         val alpha = when {
+            confidence < 0.55f -> 0.015f
+            abs(delta) <= 0.025f -> 0.10f
+            abs(delta) <= 0.075f -> 0.045f
+            abs(delta) <= 0.16f -> 0.018f
+            else -> 0.004f
+        }
+        return (previous + delta * alpha).coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+    }
+
