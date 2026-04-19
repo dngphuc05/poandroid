@@ -515,3 +515,12 @@ internal object PhysicalSceneOptimizer {
     ): Float {
         if (positiveBias <= 0f) return 0f
         val top = rawTopHeight ?: return 0f
+        val biasedTop = top + positiveBias
+        val independentSupport = listOfNotNull(torsoHeight, rawPixelHeight)
+            .any { abs(it - biasedTop) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS }
+        if (independentSupport) return positiveBias
+        val maxAnchor = listOfNotNull(hipGeometryHeight, previousHeight).maxOrNull()
+            ?: return positiveBias
+        return if (top >= maxAnchor - MAX_TOP_LOW_BIAS_MASK_GAP_METERS) positiveBias else 0f
+    }
+
