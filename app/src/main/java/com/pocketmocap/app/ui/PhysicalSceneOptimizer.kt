@@ -650,3 +650,12 @@ internal object PhysicalSceneOptimizer {
         }
     }
 
+    private fun stabilizeDistance(
+        previous: Float,
+        measured: Float,
+        fallback: Float?,
+        trusted: Boolean,
+        spread: Float,
+        confidence: Float,
+    ): Float {
+        val validMeasured = measured.takeIf { it.isFinite() && it in 0.35f..12.0f } ?: return previous
