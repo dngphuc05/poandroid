@@ -382,3 +382,10 @@ internal class SubjectHeightEstimator {
         lockedHeight: Float?,
     ) {
         val top = topBase?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return
+        val reference = topCorrectionReference(
+            hip = hip,
+            torso = torso,
+            lockedHeight = lockedHeight,
+        ) ?: return
+        val residual = reference - top
