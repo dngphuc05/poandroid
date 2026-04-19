@@ -542,3 +542,21 @@ internal object PhysicalSceneOptimizer {
             null
         }
         val relativeTemporalReference = if (
+            relativeScaleDistance != null &&
+            previousDistance != null &&
+            strictCandidateAgreement(relativeScaleDistance, previousDistance, maxAbsDelta = 0.36f, maxRatio = 0.16f)
+        ) {
+            weightedPair(relativeScaleDistance, 0.72f, previousDistance, 0.28f)
+        } else {
+            null
+        }
+        if (footRoiReference != null && relativeTemporalReference != null) {
+            return if (strictCandidateAgreement(footRoiReference, relativeTemporalReference, maxAbsDelta = 0.45f, maxRatio = 0.18f)) {
+                weightedPair(relativeTemporalReference, 0.58f, footRoiReference, 0.42f)
+            } else {
+                footRoiReference
+            }
+        }
+        relativeTemporalReference?.let { return it }
+        footRoiReference?.let { return it }
+
