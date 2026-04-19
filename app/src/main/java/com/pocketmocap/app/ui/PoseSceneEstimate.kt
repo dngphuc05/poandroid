@@ -238,3 +238,10 @@ internal class SubjectHeightEstimator {
             else -> return null
         }
 
+        // Latent smoothing with very low process noise once mature, so jumping
+        // / leg motion / momentary occlusions don't perturb subject stature.
+        estimateMeters = if (!estimateMeters.isFinite()) {
+            target
+        } else {
+            val delta = target - estimateMeters
+            val alpha = when {
