@@ -623,3 +623,13 @@ internal object PhysicalSceneOptimizer {
             (topFinite == null || hipValid <= topFinite + MAX_HIP_RAW_TOP_STANDALONE_GAP_METERS)
         if (hipIndependent && hipDoesNotConflict && hipDoesNotMaskLowTop) return true
 
+        val values = independentSemanticHeightValues(hipGeometryHeight, torsoHeight, topRayHeight)
+        if (values.size < 2) return false
+        for (i in values.indices) {
+            for (j in i + 1 until values.size) {
+                if (abs(values[i] - values[j]) <= 0.08f) return true
+            }
+        }
+        return values.size >= 3 && values.maxOrNull()!! - values.minOrNull()!! <= 0.14f
+    }
+
