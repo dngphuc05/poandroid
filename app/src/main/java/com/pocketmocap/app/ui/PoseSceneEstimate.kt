@@ -419,3 +419,12 @@ internal class SubjectHeightEstimator {
         return if (agreesWithLocked) locked else null
     }
 
+    private fun learnedTopCorrectionMeters(): Float {
+        val sorted = topCorrectionResiduals.takeIf { it.size >= MIN_TOP_CORRECTION_OBSERVATIONS }
+            ?.sorted()
+            ?: return 0f
+        val trim = (sorted.size * 0.20f).toInt().coerceAtMost((sorted.size - 1) / 2)
+        val trimmed = sorted.subList(trim, sorted.size - trim)
+        return trimmed.sum() / trimmed.size
+    }
+
