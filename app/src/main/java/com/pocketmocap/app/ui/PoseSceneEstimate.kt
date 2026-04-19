@@ -314,3 +314,15 @@ internal class SubjectHeightEstimator {
             // If hip geometry also moved upward well beyond the lock, this is
             // no longer the metrics_64 "hip-low, top-tall" pattern. Let the
             // normal semantic/lock gates decide instead of using the top
+            // envelope to chase a high silhouette run.
+            retargetCorrectionFrames = 0
+            return null
+        }
+        if (retargetEstimate - locked < SUBJECT_HEIGHT_RETARGET_STOP_GAP_METERS) {
+            retargetCorrectionFrames = (retargetCorrectionFrames - 1).coerceAtLeast(0)
+            return null
+        }
+        retargetCorrectionFrames = (retargetCorrectionFrames + 1).coerceAtMost(60)
+        return if (retargetCorrectionFrames >= LOCKED_RETARGET_FRAMES) retargetEstimate else null
+    }
+
