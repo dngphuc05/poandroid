@@ -578,3 +578,21 @@ internal object PhysicalSceneOptimizer {
             previousDistance != null &&
             footDistance != null &&
             strictCandidateAgreement(previousDistance, footDistance, maxAbsDelta = 0.55f, maxRatio = 0.22f)
+        ) {
+            return weightedPair(previousDistance, 0.54f, footDistance, 0.46f)
+        }
+        if (
+            previousDistance != null &&
+            roiDistance != null &&
+            strictCandidateAgreement(previousDistance, roiDistance, maxAbsDelta = 0.55f, maxRatio = 0.22f)
+        ) {
+            return weightedPair(previousDistance, 0.54f, roiDistance, 0.46f)
+        }
+        if (
+            previousDistance != null &&
+            groundedFootDistance != null &&
+            strictCandidateAgreement(previousDistance, groundedFootDistance, maxAbsDelta = 0.55f, maxRatio = 0.22f)
+        ) {
+            return weightedPair(previousDistance, 0.54f, groundedFootDistance, 0.46f)
+        }
+        return null
