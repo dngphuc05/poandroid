@@ -122,3 +122,10 @@ internal class SubjectHeightEstimator {
         val lockedForBias = currentLocked
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val endpointBiasSupported = positiveEndpointBias > 0f &&
+            top != null &&
+            (
+                lockedForBias?.let { top >= it - MAX_TOP_LOW_BIAS_MASK_GAP_METERS } == true ||
+                    listOfNotNull(torso)
+                        .any { abs(it - (biasedTop ?: top)) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS }
+                )
+        val topBase = top?.let { it + if (endpointBiasSupported) positiveEndpointBias else 0f }
