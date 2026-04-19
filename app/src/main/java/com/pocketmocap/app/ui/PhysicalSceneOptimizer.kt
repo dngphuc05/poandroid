@@ -682,3 +682,10 @@ internal object PhysicalSceneOptimizer {
         return (previous + delta * alpha).coerceIn(0.35f, 12.0f)
     }
 
+    private fun stabilizeHeight(previous: Float, measured: Float, trusted: Boolean, confidence: Float): Float {
+        val validMeasured = measured.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return previous.takeIf { it.isFinite() } ?: Float.NaN
+        if (!previous.isFinite()) return validMeasured
+        if (!trusted) return previous
+        val delta = validMeasured - previous
+        val alpha = when {
