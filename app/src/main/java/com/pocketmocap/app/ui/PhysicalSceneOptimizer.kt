@@ -616,3 +616,10 @@ internal object PhysicalSceneOptimizer {
             it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS
         }
         val torsoFinite = torsoHeight?.takeIf { it.isFinite() }
+        val hipIndependent = hipValid != null && (torsoFinite == null || abs(hipValid - torsoFinite) > 0.015f)
+        val hipDoesNotConflict = hipValid != null && (torsoFinite == null || abs(hipValid - torsoFinite) <= 0.22f)
+        val topFinite = topRayHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val hipDoesNotMaskLowTop = hipValid != null &&
+            (topFinite == null || hipValid <= topFinite + MAX_HIP_RAW_TOP_STANDALONE_GAP_METERS)
+        if (hipIndependent && hipDoesNotConflict && hipDoesNotMaskLowTop) return true
+
