@@ -45,3 +45,17 @@ private const val SPAN_BRACKET_MAX_GAP_METERS = 0.72f
 private const val SPAN_BRACKET_INTERPOLATION = 0.46f
 private const val PIXEL_ONLY_BRACKET_HEIGHT_INTERPOLATION = 0.82f
 private const val MIN_PIXEL_ONLY_BRACKET_GAP_METERS = 0.085f
+private const val MAX_PIXEL_ONLY_BRACKET_GAP_METERS = 0.16f
+
+private fun heightLockUpwardMarginMeters(
+    anchor: Float,
+    target: Float,
+    matureRetargetActive: Boolean = false,
+): Float = when {
+    matureRetargetActive &&
+        anchor.isFinite() &&
+        target.isFinite() &&
+        target > anchor -> MATURE_RETARGET_UPWARD_MARGIN_METERS
+    else -> HEIGHT_LOCK_UPWARD_MARGIN_METERS
+}
+
