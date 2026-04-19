@@ -115,3 +115,10 @@ internal class SubjectHeightEstimator {
         if (top == null && hip == null) return null
 
         // Use only positive endpoint bias (head-up extension). A persistently
+        // negative bias has been seen to collapse the estimate downward, which
+        // is the metrics_63 failure mode the upstream clamp already addresses.
+        val positiveEndpointBias = maxOf(0f, endpointBias)
+        val biasedTop = top?.let { it + positiveEndpointBias }
+        val lockedForBias = currentLocked
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val endpointBiasSupported = positiveEndpointBias > 0f &&
