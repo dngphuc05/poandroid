@@ -506,3 +506,12 @@ internal object PhysicalSceneOptimizer {
     }
 
     private fun semanticEndpointBiasForFactors(
+        positiveBias: Float,
+        rawTopHeight: Float?,
+        rawPixelHeight: Float?,
+        hipGeometryHeight: Float?,
+        torsoHeight: Float?,
+        previousHeight: Float?,
+    ): Float {
+        if (positiveBias <= 0f) return 0f
+        val top = rawTopHeight ?: return 0f
