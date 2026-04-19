@@ -90,3 +90,21 @@ internal class SubjectHeightEstimator {
         topCorrectionResiduals.clear()
     }
 
+    /**
+     * Updates the latent estimate from the current frame's witnesses.
+     * Returns a non-null target only when the caller should lift an immature
+     * lock toward the estimator with a wider upward margin.
+     */
+    fun update(
+        topRayHeight: Float,
+        hipGeometryHeight: Float,
+        torsoHeight: Float,
+        pixelSpanHeight: Float,
+        bodyScaleConfidence: Float,
+        endpointBias: Float,
+        distanceTrusted: Boolean,
+        sceneConfidence: Float,
+        currentLocked: Float,
+        lowerAnchor: Float,
+    ): Float? {
+        if (!distanceTrusted && sceneConfidence < MIN_SCENE_CONFIDENCE_TO_LEARN) return null
