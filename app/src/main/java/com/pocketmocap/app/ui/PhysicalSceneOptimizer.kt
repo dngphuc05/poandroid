@@ -724,3 +724,20 @@ internal object PhysicalSceneOptimizer {
             (correctedHeight - top).coerceIn(0f, MAX_HEIGHT_ENDPOINT_BIAS_METERS),
         )
         val supportedPositiveBias = semanticEndpointBiasForFactors(
+            positiveBias = candidatePositiveBias,
+            rawTopHeight = rawTopHeight,
+            rawPixelHeight = rawPixelHeight,
+            hipGeometryHeight = hipGeometryHeight,
+            torsoHeight = torsoHeight,
+            previousHeight = previousHeight,
+        ) > 0f
+        if (!supportedPositiveBias) {
+            return if (currentBias > 0f) {
+                (currentBias * 0.96f).coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+            } else {
+                currentBias
+            }
+        }
+        if (!trusted || input.confidence < 0.60f || abs(correctedHeight - top) > 0.28f) return currentBias
+        if (correctedHeight < 1.75f && top > correctedHeight + 0.040f) return currentBias
+        val residual = (correctedHeight - top - currentBias).coerceIn(-0.04f, 0.04f)
