@@ -786,3 +786,14 @@ internal object PhysicalSceneOptimizer {
     }
 
     private fun weightedResidual(factors: List<FactorValue>, target: Float): Float {
+        if (!target.isFinite()) return 0f
+        var total = 0f
+        var weight = 0f
+        for (factor in factors) {
+            if (!factor.value.isFinite()) continue
+            total += abs(factor.value - target) * factor.weight
+            weight += factor.weight
+        }
+        return if (weight > 1e-5f) total / weight else 0f
+    }
+
