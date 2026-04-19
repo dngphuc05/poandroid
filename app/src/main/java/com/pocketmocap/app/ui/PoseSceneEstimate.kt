@@ -282,3 +282,21 @@ internal class SubjectHeightEstimator {
             return null
         }
         val retargetEstimate = if (usingBracketSupport && bracketConsensus != null) {
+            maxOf(estimateMeters, bracketConsensus)
+        } else {
+            estimateMeters
+        }
+        if (locked == null) {
+            if (
+                !usingBracketSupport &&
+                (
+                    topLow == null ||
+                        supportedFrames < MIN_OBSERVATIONS_TO_ACQUIRE ||
+                        topStableSpread == null ||
+                        topStableSpread > MAX_TOP_ONLY_ACQUIRE_SPREAD_METERS
+                    )
+            ) {
+                retargetCorrectionFrames = (retargetCorrectionFrames - 1).coerceAtLeast(0)
+                return null
+            }
+            retargetCorrectionFrames = (retargetCorrectionFrames + 1).coerceAtMost(60)
