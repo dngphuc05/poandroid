@@ -268,3 +268,17 @@ internal class SubjectHeightEstimator {
             ?: locked
         if (matureFrames < ENABLE_RETARGET_AFTER_FRAMES) return null
         val bracketSupportedFrames = bracketConsensus?.let { consensus ->
+            bracketEnvelope.count { abs(it - consensus) <= MAX_ESTIMATE_SUPPORT_RESIDUAL_METERS }
+        } ?: 0
+        val usingBracketSupport = bracketConsensus != null &&
+            bracketSupportedFrames >= MIN_BRACKET_OBSERVATIONS
+        val supportedFrames = if (usingBracketSupport) {
+            bracketSupportedFrames
+        } else {
+            topEnvelope.count { abs(it - estimateMeters) <= MAX_ESTIMATE_SUPPORT_RESIDUAL_METERS }
+        }
+        if (supportedFrames < MIN_OBSERVATIONS_TO_RETARGET) {
+            retargetCorrectionFrames = (retargetCorrectionFrames - 1).coerceAtLeast(0)
+            return null
+        }
+        val retargetEstimate = if (usingBracketSupport && bracketConsensus != null) {
