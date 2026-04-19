@@ -179,3 +179,10 @@ internal class SubjectHeightEstimator {
             samples[(samples.size * 0.78f).toInt().coerceAtMost(samples.size - 1)]
         }
         val topLow = sortedTop?.let { samples ->
+            samples[(samples.size * 0.35f).toInt().coerceAtMost(samples.size - 1)]
+        }
+        val topStableSpread = sortedTop?.let { samples ->
+            samples[(samples.size * 0.90f).toInt().coerceAtMost(samples.size - 1)] -
+                samples[(samples.size * 0.10f).toInt().coerceAtMost(samples.size - 1)]
+        }
+        val hipMed = hipMedian.takeIf { it.size >= 4 }?.let { samples ->
