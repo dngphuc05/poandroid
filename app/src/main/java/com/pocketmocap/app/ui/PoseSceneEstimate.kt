@@ -226,3 +226,15 @@ internal class SubjectHeightEstimator {
             }
             topTorsoConsensus != null -> topTorsoConsensus
             // Top persistently above hip: top acts as the upper-body stature
+            // witness while hip remains a lower bound.
+            topHigh != null && hipMed != null && (topHigh - hipMed) >= MIN_UPPER_WITNESS_GAP_METERS -> {
+                if (topHigh - hipMed > MAX_RETARGET_WITNESS_GAP_METERS && !topOnlyStable) return null
+                topHigh.coerceIn(hipMed + MIN_UPPER_WITNESS_GAP_METERS, MAX_BODY_HEIGHT_METERS)
+            }
+            // Otherwise blend top and hip when both are present.
+            topHigh != null && hipMed != null -> 0.55f * topHigh + 0.45f * hipMed
+            topLow != null -> topLow
+            hipMed != null -> hipMed
+            else -> return null
+        }
+
