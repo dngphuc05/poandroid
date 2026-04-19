@@ -717,3 +717,10 @@ internal object PhysicalSceneOptimizer {
         previousHeight: Float?,
     ): Float {
         val currentBias = input.heightEndpointBiasMeters
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        val top = rawTopHeight ?: return currentBias
+        val candidatePositiveBias = maxOf(
+            currentBias.coerceAtLeast(0f),
+            (correctedHeight - top).coerceIn(0f, MAX_HEIGHT_ENDPOINT_BIAS_METERS),
+        )
+        val supportedPositiveBias = semanticEndpointBiasForFactors(
