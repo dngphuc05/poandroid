@@ -154,3 +154,21 @@ internal class SubjectHeightEstimator {
             if (hipMedian.size > ENVELOPE_LIMIT) hipMedian.removeFirst()
         }
         val torsoSample = torso?.takeIf { sample ->
+            topStature?.let { abs(sample - it) <= MAX_TOP_TORSO_SAMPLE_SPREAD_METERS } == true ||
+                estimatorHip?.let { abs(sample - it) <= MAX_HIP_TORSO_REFERENCE_SPREAD_METERS } == true
+        }
+        torsoSample?.let {
+            torsoMedian.addLast(it)
+            if (torsoMedian.size > ENVELOPE_LIMIT) torsoMedian.removeFirst()
+        }
+        estimateBracketedHeightSample(
+            topStature = topStature,
+            hip = estimatorHip,
+            torso = torso,
+            pixel = pixel,
+            bodyScaleConfidence = bodyScaleConfidence,
+        )?.let {
+            bracketEnvelope.addLast(it)
+            if (bracketEnvelope.size > ENVELOPE_LIMIT) bracketEnvelope.removeFirst()
+        }
+
