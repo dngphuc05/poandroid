@@ -706,3 +706,14 @@ internal object PhysicalSceneOptimizer {
         return (input.depthOffsetMeters + residual * 0.030f).coerceIn(-0.30f, 0.30f)
     }
 
+    private fun learnHeightEndpointBias(
+        input: PhysicalSceneOptimizerInput,
+        correctedHeight: Float,
+        trusted: Boolean,
+        rawTopHeight: Float?,
+        rawPixelHeight: Float?,
+        hipGeometryHeight: Float?,
+        torsoHeight: Float?,
+        previousHeight: Float?,
+    ): Float {
+        val currentBias = input.heightEndpointBiasMeters
