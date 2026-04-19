@@ -698,3 +698,11 @@ internal object PhysicalSceneOptimizer {
         return (previous + delta * alpha).coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
     }
 
+    private fun learnDepthOffset(input: PhysicalSceneOptimizerInput, correctedHipDepth: Float?): Float {
+        val foot = input.footPlaneDistanceMeters.takeIf { it.isFinite() } ?: return input.depthOffsetMeters
+        val corrected = correctedHipDepth ?: return input.depthOffsetMeters
+        if (abs(corrected - foot) > 0.45f || input.confidence < 0.58f) return input.depthOffsetMeters
+        val residual = (foot - corrected).coerceIn(-0.08f, 0.08f)
+        return (input.depthOffsetMeters + residual * 0.030f).coerceIn(-0.30f, 0.30f)
+    }
+
