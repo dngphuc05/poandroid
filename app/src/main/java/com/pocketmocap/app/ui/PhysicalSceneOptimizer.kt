@@ -760,3 +760,11 @@ internal object PhysicalSceneOptimizer {
     ): Boolean {
         if (!a.isFinite() || !b.isFinite()) return false
         val absDelta = abs(a - b)
+        val ratio = absDelta / maxOf(a, b, 1e-4f)
+        return absDelta <= maxAbsDelta && ratio <= maxRatio
+    }
+
+    private fun robustWeightedAverage(factors: List<FactorValue>): Float? {
+        val valid = factors.filter { it.value.isFinite() && it.weight > 0f }
+        if (valid.isEmpty()) return null
+        val median = valid.map { it.value }.sorted()[valid.size / 2]
