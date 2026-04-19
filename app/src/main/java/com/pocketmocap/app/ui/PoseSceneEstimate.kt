@@ -368,3 +368,10 @@ internal class SubjectHeightEstimator {
             BRACKET_HEIGHT_INTERPOLATION
         }
         val sample = top + (upper - top) * interpolation
+        return sample.takeIf {
+            it.isFinite() &&
+                it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
+                it > top + MIN_BRACKET_RETARGET_LIFT_METERS
+        }
+    }
+
