@@ -143,3 +143,14 @@ internal class SubjectHeightEstimator {
             lockedHeight = currentLocked.takeIf { it.isFinite() },
         )
         val topStature = topBase
+            ?.let { it + learnedTopCorrectionMeters() }
+            ?.coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        topStature?.let {
+            topEnvelope.addLast(it)
+            if (topEnvelope.size > ENVELOPE_LIMIT) topEnvelope.removeFirst()
+        }
+        estimatorHip?.let {
+            hipMedian.addLast(it)
+            if (hipMedian.size > ENVELOPE_LIMIT) hipMedian.removeFirst()
+        }
+        val torsoSample = torso?.takeIf { sample ->
