@@ -640,3 +640,13 @@ internal object PhysicalSceneOptimizer {
     ): List<Float> {
         val torso = torsoHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val hip = hipGeometryHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val top = topRayHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        return buildList {
+            torso?.let { add(it) }
+            if (hip != null && (torso == null || abs(hip - torso) > 0.015f)) {
+                add(hip)
+            }
+            top?.let { add(it) }
+        }
+    }
+
