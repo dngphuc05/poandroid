@@ -375,3 +375,10 @@ internal class SubjectHeightEstimator {
         }
     }
 
+    private fun updateTopCorrection(
+        topBase: Float?,
+        hip: Float?,
+        torso: Float?,
+        lockedHeight: Float?,
+    ) {
+        val top = topBase?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
