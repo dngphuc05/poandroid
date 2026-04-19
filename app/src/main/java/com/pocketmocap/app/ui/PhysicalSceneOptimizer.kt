@@ -666,3 +666,11 @@ internal object PhysicalSceneOptimizer {
             val maxStep = if (abs(rawDelta) > 0.75f) 0.55f else 0.24f
             val alpha = if (abs(rawDelta) > 0.75f) 0.34f else 0.18f
             val delta = rawDelta.coerceIn(-maxStep, maxStep)
+            return (previous + delta * alpha).coerceIn(0.35f, 12.0f)
+        }
+        val alpha = when {
+            spread <= 0.45f && confidence >= 0.62f -> 0.24f
+            spread <= 0.85f -> 0.14f
+            else -> 0.055f
+        }
+        val maxStep = when {
