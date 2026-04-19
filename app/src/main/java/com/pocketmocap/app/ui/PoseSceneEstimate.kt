@@ -351,3 +351,10 @@ internal class SubjectHeightEstimator {
                 hip?.let { candidate > it + MIN_BRACKET_WITNESS_GAP_METERS } != false
         }
         val pixelOnly = pixel?.takeIf { candidate ->
+            candidate.isFinite() &&
+                candidate in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
+                candidate > top + MIN_PIXEL_ONLY_BRACKET_GAP_METERS &&
+                candidate < top + MAX_PIXEL_ONLY_BRACKET_GAP_METERS &&
+                hip?.let { candidate >= it - 0.04f } != false
+        }
+        val highWitnesses = listOfNotNull(highTorso, highPixel ?: pixelOnly)
