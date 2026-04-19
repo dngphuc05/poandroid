@@ -69,3 +69,13 @@ private fun heightLockUpwardMarginMeters(
  */
 internal class SubjectHeightEstimator {
     var estimateMeters: Float = Float.NaN
+        private set
+    var matureFrames: Int = 0
+        private set
+    private var retargetCorrectionFrames = 0
+    private val topEnvelope = ArrayDeque<Float>()
+    private val hipMedian = ArrayDeque<Float>()
+    private val torsoMedian = ArrayDeque<Float>()
+    private val bracketEnvelope = ArrayDeque<Float>()
+    private val topCorrectionResiduals = ArrayDeque<Float>()
+
