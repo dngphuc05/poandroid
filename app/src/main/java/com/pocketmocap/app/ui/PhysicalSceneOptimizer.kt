@@ -596,3 +596,14 @@ internal object PhysicalSceneOptimizer {
             return weightedPair(previousDistance, 0.54f, groundedFootDistance, 0.46f)
         }
         return null
+    }
+
+    private fun weightedPair(a: Float, aWeight: Float, b: Float, bWeight: Float): Float =
+        (a * aWeight + b * bWeight) / (aWeight + bWeight)
+
+    private fun hasSemanticHeightAgreement(
+        hipGeometryHeight: Float?,
+        torsoHeight: Float?,
+        topRayHeight: Float?,
+    ): Boolean {
+        // Hip-geometry height already passes a 2-ray LSQ + anthropometric-ratio
