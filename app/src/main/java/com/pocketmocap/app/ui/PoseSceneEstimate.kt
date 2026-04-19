@@ -471,3 +471,11 @@ internal data class PoseRoi(
     val maxY: Float,
 ) {
     val centerX: Float get() = (minX + maxX) * 0.5f
+    val centerY: Float get() = (minY + maxY) * 0.5f
+    val width: Float get() = maxX - minX
+    val height: Float get() = maxY - minY
+    val bottomGap: Float get() = (1f - maxY).coerceIn(0f, 0.40f)
+}
+
+internal data class OverlayPoseEstimate(
+    val distanceMeters: Float,
