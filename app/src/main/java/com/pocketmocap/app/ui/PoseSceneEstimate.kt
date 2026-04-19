@@ -59,3 +59,13 @@ private fun heightLockUpwardMarginMeters(
     else -> HEIGHT_LOCK_UPWARD_MARGIN_METERS
 }
 
+/**
+ * Latent subject-height tracker. Treats human stature as a nearly constant
+ * scene parameter and accumulates a posterior over recent top-ray and hip-
+ * geometry observations. When the in-flight lock has acquired a value that
+ * is persistently below the rolling top envelope, the estimator returns a
+ * non-null retarget target so the caller can lift the lock with a wider upward
+ * margin instead of being pinned by per-frame hip-weighted averaging.
+ */
+internal class SubjectHeightEstimator {
+    var estimateMeters: Float = Float.NaN
