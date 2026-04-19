@@ -108,3 +108,10 @@ internal class SubjectHeightEstimator {
         lowerAnchor: Float,
     ): Float? {
         if (!distanceTrusted && sceneConfidence < MIN_SCENE_CONFIDENCE_TO_LEARN) return null
+        val top = topRayHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val hip = hipGeometryHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val torso = torsoHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val pixel = pixelSpanHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        if (top == null && hip == null) return null
+
+        // Use only positive endpoint bias (head-up extension). A persistently
