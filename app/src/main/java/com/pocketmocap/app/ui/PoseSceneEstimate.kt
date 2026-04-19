@@ -300,3 +300,10 @@ internal class SubjectHeightEstimator {
                 return null
             }
             retargetCorrectionFrames = (retargetCorrectionFrames + 1).coerceAtMost(60)
+            return if (retargetCorrectionFrames >= INITIAL_ACQUIRE_RETARGET_FRAMES) retargetEstimate else null
+        }
+        val validAnchor = anchor ?: locked
+        if (hip != null && hip > validAnchor + HIP_REJECTS_RETARGET_GAP_METERS) {
+            // If the current hip witness itself jumps upward, treat it as a
+            // fresh geometry claim and let the normal trust gates handle it
+            // instead of ratcheting the lock.
