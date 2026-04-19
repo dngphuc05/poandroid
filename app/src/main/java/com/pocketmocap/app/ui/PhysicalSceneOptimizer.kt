@@ -741,3 +741,10 @@ internal object PhysicalSceneOptimizer {
         if (!trusted || input.confidence < 0.60f || abs(correctedHeight - top) > 0.28f) return currentBias
         if (correctedHeight < 1.75f && top > correctedHeight + 0.040f) return currentBias
         val residual = (correctedHeight - top - currentBias).coerceIn(-0.04f, 0.04f)
+        return (currentBias + residual * 0.010f)
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+    }
+
+    private fun candidateAgreement(a: Float, b: Float): Boolean {
+        if (!a.isFinite() || !b.isFinite()) return false
+        val absDelta = abs(a - b)
