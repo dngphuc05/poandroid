@@ -307,3 +307,10 @@ internal class SubjectHeightEstimator {
             // If the current hip witness itself jumps upward, treat it as a
             // fresh geometry claim and let the normal trust gates handle it
             // instead of ratcheting the lock.
+            retargetCorrectionFrames = 0
+            return null
+        }
+        if (hipMed != null && hipMed > validAnchor + HIP_REJECTS_RETARGET_GAP_METERS) {
+            // If hip geometry also moved upward well beyond the lock, this is
+            // no longer the metrics_64 "hip-low, top-tall" pattern. Let the
+            // normal semantic/lock gates decide instead of using the top
