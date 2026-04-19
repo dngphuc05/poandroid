@@ -533,3 +533,12 @@ internal object PhysicalSceneOptimizer {
         footRoiStrictAgreement: Boolean,
     ): Float? {
         val footRoiReference = if (
+            footDistance != null &&
+            roiDistance != null &&
+            footRoiStrictAgreement
+        ) {
+            weightedPair(footDistance, 0.58f, roiDistance, 0.42f)
+        } else {
+            null
+        }
+        val relativeTemporalReference = if (
