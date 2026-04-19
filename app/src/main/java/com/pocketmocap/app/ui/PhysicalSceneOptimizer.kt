@@ -607,3 +607,12 @@ internal object PhysicalSceneOptimizer {
         topRayHeight: Float?,
     ): Boolean {
         // Hip-geometry height already passes a 2-ray LSQ + anthropometric-ratio
+        // check inside estimateBodyFromTopAndHipRays; treat it as sufficient on
+        // its own when it lands in the valid range, is INDEPENDENT of torso
+        // (not the same torso-ratio seed), and torso does not strongly
+        // contradict it. The independence guard prevents a single value from
+        // being counted as agreement with itself.
+        val hipValid = hipGeometryHeight?.takeIf {
+            it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS
+        }
+        val torsoFinite = torsoHeight?.takeIf { it.isFinite() }
