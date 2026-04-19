@@ -202,3 +202,14 @@ internal class SubjectHeightEstimator {
             }
         }
         val topTorsoConsensus = if (
+            topHigh != null &&
+            torsoMed != null &&
+            topStableSpread != null &&
+            topStableSpread <= MAX_TOP_TORSO_STABLE_SPREAD_METERS &&
+            abs(topHigh - torsoMed) <= MAX_TOP_TORSO_CONSENSUS_SPREAD_METERS
+        ) {
+            topHigh * 0.62f + torsoMed * 0.38f
+        } else {
+            null
+        }
+        val lockedForTarget = currentLocked.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
