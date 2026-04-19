@@ -633,3 +633,10 @@ internal object PhysicalSceneOptimizer {
         return values.size >= 3 && values.maxOrNull()!! - values.minOrNull()!! <= 0.14f
     }
 
+    private fun independentSemanticHeightValues(
+        hipGeometryHeight: Float?,
+        torsoHeight: Float?,
+        topRayHeight: Float?,
+    ): List<Float> {
+        val torso = torsoHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val hip = hipGeometryHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
