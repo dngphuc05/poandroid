@@ -479,3 +479,10 @@ internal data class PoseRoi(
 
 internal data class OverlayPoseEstimate(
     val distanceMeters: Float,
+    val bodyHeightMeters: Float,
+    val cameraHeightMeters: Float,
+    val floorPitchDegrees: Float,
+    val lateralOffsetMeters: Float,
+    val roi: PoseRoi,
+    val source: String = "roi_fallback",
+    val confidence: Float = 0.35f,
