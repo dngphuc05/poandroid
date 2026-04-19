@@ -428,3 +428,21 @@ internal class SubjectHeightEstimator {
         return trimmed.sum() / trimmed.size
     }
 
+    companion object {
+        private const val ENVELOPE_LIMIT = 32
+        private const val TOP_CORRECTION_LIMIT = 32
+        private const val MATURE_THRESHOLD = 30
+        private const val ENABLE_RETARGET_AFTER_FRAMES = 10
+        private const val MIN_OBSERVATIONS_TO_RETARGET = 6
+        private const val MIN_OBSERVATIONS_TO_ACQUIRE = 10
+        private const val MIN_BRACKET_OBSERVATIONS = 8
+        private const val INITIAL_ACQUIRE_RETARGET_FRAMES = 3
+        private const val LOCKED_RETARGET_FRAMES = 3
+        private const val MIN_TOP_CORRECTION_OBSERVATIONS = 6
+        private const val MIN_SCENE_CONFIDENCE_TO_LEARN = 0.08f
+        private const val MIN_BRACKET_BODY_SCALE_CONFIDENCE = 0.62f
+        private const val MIN_BRACKET_WITNESS_GAP_METERS = 0.065f
+        private const val MAX_BRACKET_WITNESS_GAP_METERS = 0.32f
+        private const val MIN_BRACKET_RETARGET_LIFT_METERS = 0.045f
+        private const val MAX_BRACKET_STABLE_SPREAD_METERS = 0.18f
+        private const val BRACKET_HEIGHT_INTERPOLATION = 0.58f
