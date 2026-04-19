@@ -186,3 +186,10 @@ internal class SubjectHeightEstimator {
                 samples[(samples.size * 0.10f).toInt().coerceAtMost(samples.size - 1)]
         }
         val hipMed = hipMedian.takeIf { it.size >= 4 }?.let { samples ->
+            samples.sorted()[samples.size / 2]
+        }
+        val torsoMed = torsoMedian.takeIf { it.size >= 6 }?.let { samples ->
+            samples.sorted()[samples.size / 2]
+        }
+        val sortedBracket = bracketEnvelope.takeIf { it.size >= MIN_BRACKET_OBSERVATIONS }?.sorted()
+        val bracketConsensus = sortedBracket?.let { samples ->
