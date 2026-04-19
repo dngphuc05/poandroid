@@ -213,3 +213,16 @@ internal class SubjectHeightEstimator {
             null
         }
         val lockedForTarget = currentLocked.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val topOnlyStable = lockedForTarget == null &&
+            topHigh != null &&
+            topStableSpread != null &&
+            topStableSpread <= MAX_TOP_ONLY_RETARGET_SPREAD_METERS
+
+        val target = when {
+            bracketConsensus != null -> bracketConsensus
+            topTorsoConsensus != null && hipMed != null &&
+                abs(hipMed - topTorsoConsensus) <= MAX_HIP_UPPER_CONSENSUS_SPREAD_METERS -> {
+                topTorsoConsensus * 0.68f + hipMed * 0.32f
+            }
+            topTorsoConsensus != null -> topTorsoConsensus
+            // Top persistently above hip: top acts as the upper-body stature
