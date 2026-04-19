@@ -659,3 +659,10 @@ internal object PhysicalSceneOptimizer {
         confidence: Float,
     ): Float {
         val validMeasured = measured.takeIf { it.isFinite() && it in 0.35f..12.0f } ?: return previous
+        if (!previous.isFinite()) return fallback?.takeIf { !trusted && it.isFinite() } ?: validMeasured
+        if (!trusted) {
+            val support = fallback?.takeIf { it.isFinite() && it in 0.70f..12.0f } ?: return previous
+            val rawDelta = support - previous
+            val maxStep = if (abs(rawDelta) > 0.75f) 0.55f else 0.24f
+            val alpha = if (abs(rawDelta) > 0.75f) 0.34f else 0.18f
+            val delta = rawDelta.coerceIn(-maxStep, maxStep)
