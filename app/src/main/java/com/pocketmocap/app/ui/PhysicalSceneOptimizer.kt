@@ -779,3 +779,10 @@ internal object PhysicalSceneOptimizer {
         return if (totalWeight > 1e-5f) weighted / totalWeight else median
     }
 
+    private fun factorSpread(factors: List<FactorValue>): Float {
+        val values = factors.mapNotNull { it.value.takeIf { value -> value.isFinite() } }
+        if (values.size < 2) return 0f
+        return (values.maxOrNull() ?: 0f) - (values.minOrNull() ?: 0f)
+    }
+
+    private fun weightedResidual(factors: List<FactorValue>, target: Float): Float {
