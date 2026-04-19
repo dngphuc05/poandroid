@@ -815,3 +815,8 @@ internal object PhysicalSceneOptimizer {
         if (flags and FLAG_REJECTED_HIP != 0) values += "depth_debug_only"
         if (flags and FLAG_REJECTED_HIP_GEOMETRY != 0) values += "rejected_hip_geometry"
         if (flags and FLAG_REJECTED_FOOT != 0) values += "rejected_foot_plane"
+        if (flags and FLAG_DISTANCE_TRUSTED == 0) values += "untrusted_distance_spread"
+        if (flags and FLAG_HEIGHT_TRUSTED == 0) values += "untrusted_height_spread"
+        return values.distinct().joinToString("|")
+    }
+}
