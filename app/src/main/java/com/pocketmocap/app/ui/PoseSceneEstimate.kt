@@ -411,3 +411,11 @@ internal class SubjectHeightEstimator {
         }
         if (hipTorso != null) return hipTorso
 
+        val locked = lockedHeight
+            ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        val agreesWithLocked = listOfNotNull(hip, torso)
+            .any { abs(it - locked) <= MAX_LOCK_REFERENCE_SPREAD_METERS }
+        return if (agreesWithLocked) locked else null
+    }
+
