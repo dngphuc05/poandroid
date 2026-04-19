@@ -129,3 +129,17 @@ internal class SubjectHeightEstimator {
                         .any { abs(it - (biasedTop ?: top)) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS }
                 )
         val topBase = top?.let { it + if (endpointBiasSupported) positiveEndpointBias else 0f }
+        val estimatorHip = hip?.takeUnless { candidate ->
+            val topReference = top
+            val torsoSupportsHip = torso?.let { abs(it - candidate) <= MAX_HIP_TORSO_REFERENCE_SPREAD_METERS } == true
+            topReference != null &&
+                candidate > topReference + STARTUP_HIGH_HIP_TOP_GAP_METERS &&
+                !torsoSupportsHip
+        }
+        updateTopCorrection(
+            topBase = topBase,
+            hip = estimatorHip,
+            torso = torso,
+            lockedHeight = currentLocked.takeIf { it.isFinite() },
+        )
+        val topStature = topBase
