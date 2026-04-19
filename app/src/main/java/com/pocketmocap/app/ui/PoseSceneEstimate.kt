@@ -172,3 +172,10 @@ internal class SubjectHeightEstimator {
             if (bracketEnvelope.size > ENVELOPE_LIMIT) bracketEnvelope.removeFirst()
         }
 
+        // Upper percentile of the rolling top envelope captures true stature
+        // from head-up frames while ignoring crouches/raised-arms artifacts.
+        val sortedTop = topEnvelope.takeIf { it.size >= 6 }?.sorted()
+        val topHigh = sortedTop?.let { samples ->
+            samples[(samples.size * 0.78f).toInt().coerceAtMost(samples.size - 1)]
+        }
+        val topLow = sortedTop?.let { samples ->
