@@ -245,3 +245,16 @@ internal class SubjectHeightEstimator {
         } else {
             val delta = target - estimateMeters
             val alpha = when {
+                bracketConsensus != null &&
+                    abs(delta) > 0.010f -> 0.115f
+                matureFrames >= MATURE_THRESHOLD &&
+                    topTorsoConsensus != null &&
+                    abs(delta) > 0.010f -> 0.028f
+                matureFrames >= MATURE_THRESHOLD -> 0.012f
+                matureFrames >= 12 -> 0.06f
+                else -> 0.18f
+            }
+            (estimateMeters + delta * alpha).coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        }
+        matureFrames = (matureFrames + 1).coerceAtMost(120)
+
