@@ -389,3 +389,10 @@ internal class SubjectHeightEstimator {
             lockedHeight = lockedHeight,
         ) ?: return
         val residual = reference - top
+        if (residual < MIN_POSITIVE_TOP_CORRECTION_METERS) return
+        if (abs(residual) > MAX_TOP_REFERENCE_RESIDUAL_METERS) return
+        topCorrectionResiduals.addLast(residual.coerceIn(0f, MAX_LEARNED_TOP_CORRECTION_METERS))
+        if (topCorrectionResiduals.size > TOP_CORRECTION_LIMIT) topCorrectionResiduals.removeFirst()
+    }
+
+    private fun topCorrectionReference(
