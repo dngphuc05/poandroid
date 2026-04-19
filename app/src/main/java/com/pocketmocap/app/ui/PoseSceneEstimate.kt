@@ -79,3 +79,14 @@ internal class SubjectHeightEstimator {
     private val bracketEnvelope = ArrayDeque<Float>()
     private val topCorrectionResiduals = ArrayDeque<Float>()
 
+    fun reset() {
+        estimateMeters = Float.NaN
+        matureFrames = 0
+        retargetCorrectionFrames = 0
+        topEnvelope.clear()
+        hipMedian.clear()
+        torsoMedian.clear()
+        bracketEnvelope.clear()
+        topCorrectionResiduals.clear()
+    }
+
