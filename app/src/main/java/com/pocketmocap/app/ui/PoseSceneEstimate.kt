@@ -193,3 +193,12 @@ internal class SubjectHeightEstimator {
         }
         val sortedBracket = bracketEnvelope.takeIf { it.size >= MIN_BRACKET_OBSERVATIONS }?.sorted()
         val bracketConsensus = sortedBracket?.let { samples ->
+            val spread = samples[(samples.size * 0.90f).toInt().coerceAtMost(samples.size - 1)] -
+                samples[(samples.size * 0.10f).toInt().coerceAtMost(samples.size - 1)]
+            if (spread <= MAX_BRACKET_STABLE_SPREAD_METERS) {
+                samples[samples.size / 2]
+            } else {
+                null
+            }
+        }
+        val topTorsoConsensus = if (
