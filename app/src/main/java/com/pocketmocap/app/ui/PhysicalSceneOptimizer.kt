@@ -797,3 +797,21 @@ internal object PhysicalSceneOptimizer {
         return if (weight > 1e-5f) total / weight else 0f
     }
 
+    private fun factorString(flags: Int, factorBits: Int): String {
+        val values = mutableListOf<String>()
+        if (factorBits and 1 != 0) values += "hip_geometry"
+        if (factorBits and 2 != 0) values += "foot_plane"
+        if (factorBits and 4 != 0) values += "fused_raw"
+        if (factorBits and 8 != 0) values += "roi"
+        if (factorBits and 16 != 0) values += "top_ray"
+        if (factorBits and 32 != 0) values += "fused_raw_height"
+        if (factorBits and 64 != 0) values += "pixel_span"
+        if (factorBits and FACTOR_NATIVE_FALLBACK != 0) values += "native_fallback_optimizer"
+        if (factorBits and FACTOR_NATIVE_CERES != 0) values += "native_ceres_optimizer"
+        if (factorBits and FACTOR_TORSO != 0) values += "torso_height"
+        if (factorBits and FACTOR_GROUNDED_FOOT != 0) values += "grounded_foot"
+        if (factorBits and FACTOR_BONE != 0) values += "bone_constancy"
+        if (factorBits and FACTOR_RELATIVE_SCALE != 0) values += "relative_scale"
+        if (flags and FLAG_REJECTED_HIP != 0) values += "depth_debug_only"
+        if (flags and FLAG_REJECTED_HIP_GEOMETRY != 0) values += "rejected_hip_geometry"
+        if (flags and FLAG_REJECTED_FOOT != 0) values += "rejected_foot_plane"
