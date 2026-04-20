@@ -1224,3 +1224,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     ): Boolean {
         if (lockedHeightMeters.isFinite()) return false
         val heightSpread = optimized.heightCandidateSpreadMeters
+            .takeIf { it.isFinite() }
+            ?: Float.POSITIVE_INFINITY
+        val heightSpreadHard = heightSpread > STARTUP_HEIGHT_SPREAD_QUARANTINE_METERS
+        val heightSpreadSuspect = heightSpread > STARTUP_HEIGHT_SPREAD_SUSPECT_METERS
+        val unsupportedHighHip = hasUnsupportedStartupHighHip(raw)
+        val distanceReady = startupDistanceReady(raw, optimized)
+        val retargetReady =
