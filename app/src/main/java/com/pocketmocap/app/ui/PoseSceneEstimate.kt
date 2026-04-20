@@ -949,3 +949,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     private fun learnHeightEndpointBias(raw: SceneMetricSnapshot) {
         val locked = lockedHeightMeters.takeIf { it.isFinite() } ?: return
         val top = raw.topRayHeightMeters.takeIf { it.isFinite() } ?: return
+        if (raw.confidence < 0.60f || abs(locked - top) > 0.28f) return
+        val residual = (locked - top - heightEndpointBiasMeters).coerceIn(-0.04f, 0.04f)
+        heightEndpointBiasMeters = (heightEndpointBiasMeters + residual * 0.010f)
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        // A persistent top-ray residual can also mean the AR floor/camera-height
+        // relation is biased. Learn it much slower than endpoint bias so we do
+        // not chase ordinary pose noise.
