@@ -753,3 +753,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?.let { it + heightEndpointBiasMeters.coerceAtLeast(0f) }
             ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val startupTopFallback = startupTopCandidate
+            ?.takeIf {
+                !lockedHeightMeters.isFinite() &&
+                    matureSubjectRetarget == null &&
+                    raw.confidence >= 0.50f &&
+                    optimized.heightMeters.isFinite() &&
+                    optimized.heightMeters in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
+                    it > optimized.heightMeters + INITIAL_TOP_FALLBACK_GAP_METERS
+            }
+        // Combine relative semantic witnesses with the rolling latent estimate.
