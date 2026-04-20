@@ -877,3 +877,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             weightTorso = optimized.weightTorso,
             weightBone = optimized.weightBone,
             weightDepth = optimized.weightDepth,
+            weightRoi = optimized.weightRoi,
+            weightTemporal = optimized.weightTemporal,
+            relativeScaleDistanceMeters = relativeScaleDistance,
+            rejectedHipReason = raw.rejectedHipReason.ifBlank {
+                if ("rejected_hip_geometry" in optimized.activeFactors) "optimizer_outlier" else ""
+            },
+            activeFactors = activeFactors,
+        )
+        return subjectSceneSolver.solveShadow(baselineScene, typedMeasurements)
+    }
+
