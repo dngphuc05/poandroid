@@ -1311,3 +1311,20 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return torsoCollapsed && pixelCollapsed
     }
 
+    private fun startupDistanceReady(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+    ): Boolean {
+        val distance = optimized.distanceMeters
+            .takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: return false
+        return optimized.distanceTrusted &&
+            raw.confidence >= STARTUP_MIN_LOCK_CONFIDENCE &&
+            distance.isFinite() &&
+            (
+                optimized.distanceCandidateSpreadMeters.isFinite() &&
+                    optimized.distanceCandidateSpreadMeters <= STARTUP_DISTANCE_SPREAD_MAX_METERS ||
+                    groundedFootRoiDistanceReady(raw)
+                )
+    }
+
