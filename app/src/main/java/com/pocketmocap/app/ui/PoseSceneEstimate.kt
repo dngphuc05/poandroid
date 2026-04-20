@@ -1231,3 +1231,16 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val unsupportedHighHip = hasUnsupportedStartupHighHip(raw)
         val distanceReady = startupDistanceReady(raw, optimized)
         val retargetReady =
+            subjectRetargetActive &&
+                retargetHeight?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS } != null &&
+                distanceReady &&
+                !unsupportedHighHip &&
+                !heightSpreadHard
+
+        if (retargetReady) return false
+        if (!distanceReady || raw.confidence < STARTUP_MIN_LOCK_CONFIDENCE) return true
+        return heightSpreadHard ||
+            unsupportedHighHip ||
+            (heightSpreadSuspect && !distanceReady)
+    }
+
