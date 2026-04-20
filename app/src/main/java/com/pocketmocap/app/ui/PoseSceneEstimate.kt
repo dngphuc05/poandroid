@@ -975,3 +975,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             if (lockedDistanceMeters.isFinite()) {
                 if (fallback != null && !candidateAgreement(lockedDistanceMeters, fallback)) {
                     val delta = (fallback - lockedDistanceMeters).coerceIn(-0.24f, 0.24f)
+                    lockedDistanceMeters = (lockedDistanceMeters + delta * 0.18f).coerceIn(0.35f, 12.0f)
+                }
+                return lockedDistanceMeters
+            }
+            return fallback ?: measured
+        }
+        if (!lockedDistanceMeters.isFinite()) {
+            lockedDistanceMeters = measured
+            return measured
+        }
+
