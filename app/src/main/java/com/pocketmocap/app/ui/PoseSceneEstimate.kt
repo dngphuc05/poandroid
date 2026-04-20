@@ -1121,3 +1121,19 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 return HeightLockResult(lockedHeightMeters, "locked", exportAsConstraint = true)
             }
             // When we have no locked height yet, surface the optimizer's best estimate as a
+            // diagnostic so the UI doesn't go blank. It is never exported as a constraint.
+            val diagnostic = lockedHeightMeters.takeIf { it.isFinite() } ?: measured
+            return HeightLockResult(
+                heightMeters = diagnostic ?: Float.NaN,
+                state = if (lockedHeightMeters.isFinite()) "holding_untrusted" else "acquiring_untrusted",
+                exportAsConstraint = false,
+            )
+        }
+        if (measured == null) {
+            return HeightLockResult(
+                heightMeters = lockedHeightMeters.takeIf { it.isFinite() } ?: Float.NaN,
+                state = "holding_low_confidence",
+                exportAsConstraint = lockedHeightMeters.isFinite(),
+            )
+        }
+        val anthropometricObservation = retargetHeight
