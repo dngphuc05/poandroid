@@ -806,3 +806,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             startupCorrectionHeight = startupCorrectionHeight,
         )
         val heightConstraintTrusted = heightQualityTrusted || heightLock.exportAsConstraint
+        maybeUpdateRelativeScaleAnchor(raw, optimized, heightLock, heightConstraintTrusted)
+        val correctedCameraHeight = optimized.cameraHeightMeters
+        val exportedCorrectedHeight = heightLock.heightMeters
+            .takeIf { optimized.exportHeightConstraint && heightLock.exportAsConstraint }
+            ?: Float.NaN
+        val distanceState = when {
+            optimized.distanceTrusted -> "tracking"
+            lockedDistanceMeters.isFinite() -> "held_low_confidence"
+            else -> "reacquiring"
+        }
+
