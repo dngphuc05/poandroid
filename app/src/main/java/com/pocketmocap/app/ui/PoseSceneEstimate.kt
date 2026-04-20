@@ -1291,3 +1291,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         stableHeightFrames = (stableHeightFrames - 2).coerceAtLeast(0)
     }
 
+    private fun hasUnsupportedStartupHighHip(raw: SceneMetricSnapshot): Boolean {
+        val hip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        val top = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        if (hip <= top + STARTUP_HIGH_HIP_TOP_GAP_METERS) return false
+        val reference = maxOf(hip, top)
