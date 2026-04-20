@@ -795,3 +795,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             optimized.heightMeters in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
             startupTopCandidate > optimized.heightMeters + INITIAL_TOP_CONFLICT_GAP_METERS
         val heightLock = updateHeightLock(
+            measuredHeight = lockMeasuredHeight,
+            confidence = raw.confidence,
+            qualityTrusted = heightQualityTrustedForLock,
+            stickyTrusted = shouldKeepLockedHeightConstraint(raw, optimized, heightQualityTrusted),
+            retargetHeight = semanticHeightTarget,
+            matureRetargetActive = subjectRetargetActive,
+            delayInitialLowLock = initialTopHeightConflict,
+            quarantineInitialLock = quarantineInitialHeightLock,
+            startupCorrectionHeight = startupCorrectionHeight,
+        )
+        val heightConstraintTrusted = heightQualityTrusted || heightLock.exportAsConstraint
