@@ -723,3 +723,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             )
         )
 
+        floorHeightBiasMeters = optimized.floorHeightBiasMeters
+        depthScale = optimized.depthScale
+        depthOffsetMeters = optimized.depthOffsetMeters
+        heightEndpointBiasMeters = optimized.heightEndpointBiasMeters
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        lockedDistanceMeters = optimized.distanceMeters
+        val heightQualityTrusted = isSemanticHeightTrusted(raw, optimized)
