@@ -1152,3 +1152,20 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 pendingHeightFrames += 1
             }
             val requiredPendingFrames = if (delayInitialLowLock) {
+                CONFLICTED_INITIAL_LOCK_FRAMES
+            } else {
+                DEFAULT_INITIAL_LOCK_FRAMES
+            }
+            if (pendingHeightFrames >= requiredPendingFrames && !quarantineInitialLock) {
+                lockedHeightMeters = pendingHeightMeters
+                heightLockAnchorMeters = pendingHeightMeters
+                stableHeightFrames = pendingHeightFrames
+                return HeightLockResult(lockedHeightMeters, "locked", exportAsConstraint = true)
+            }
+            return HeightLockResult(pendingHeightMeters, "acquiring", exportAsConstraint = false)
+        }
+        if (startupCorrection != null && lockedHeightMeters.isFinite()) {
+            applyStartupBadLockCorrection(startupCorrection)
+            return HeightLockResult(lockedHeightMeters, "acquiring", exportAsConstraint = false)
+        }
+        val unconstrainedLockTarget = anthropometricObservation ?: measured
