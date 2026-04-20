@@ -762,3 +762,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                     it > optimized.heightMeters + INITIAL_TOP_FALLBACK_GAP_METERS
             }
         // Combine relative semantic witnesses with the rolling latent estimate.
+        // The max only lets stronger current evidence lift an immature lock; no
+        // stature-specific offset is added to any candidate.
+        val semanticHeightTarget = listOfNotNull(
+            matureSubjectRetarget,
+            bracketSpanTarget,
+            baseSemanticTarget,
+            startupTopFallback,
+        ).maxOrNull()
+        val subjectRetargetActive = matureSubjectRetarget != null || bracketSpanTarget != null || startupTopFallback != null
