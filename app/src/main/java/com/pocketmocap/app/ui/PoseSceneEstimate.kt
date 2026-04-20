@@ -692,3 +692,17 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             heightEndpointBiasMeters = heightEndpointBiasMeters,
         )
 
+    fun resetRuntimeState() {
+        lockedDistanceMeters = Float.NaN
+        distanceRetargetFrames = 0
+        lockedHeightMeters = Float.NaN
+        pendingHeightMeters = Float.NaN
+        pendingHeightFrames = 0
+        stableHeightFrames = 0
+        heightLockAnchorMeters = Float.NaN
+        relativeAnchorDistanceMeters = Float.NaN
+        relativeAnchorTorsoSpanNorm = Float.NaN
+        subjectHeightEstimator.reset()
+        subjectSceneSolver.reset()
+    }
+
