@@ -1198,3 +1198,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             baseAlpha
         }
         val previousLocked = lockedHeightMeters
+        lockedHeightMeters = (lockedHeightMeters + delta * alpha).coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        if (matureRetargetActive && lockedHeightMeters > previousLocked) {
+            heightLockAnchorMeters = lockedHeightMeters
+        } else {
+            rememberLowerHeightAnchor(lockedHeightMeters)
+        }
+        stableHeightFrames = if (absDelta <= 0.075f) stableHeightFrames + 1 else (stableHeightFrames - 1).coerceAtLeast(0)
+        return HeightLockResult(
+            heightMeters = lockedHeightMeters,
+            state = when {
+                confidence < 0.55f -> "holding_low_confidence"
+                stableHeightFrames >= 12 -> "locked"
+                else -> "acquiring"
+            },
+            exportAsConstraint = true,
+        )
+    }
+
