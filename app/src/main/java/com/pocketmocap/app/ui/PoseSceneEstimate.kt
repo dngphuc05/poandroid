@@ -895,3 +895,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: return Float.NaN
         val anchorSpan = relativeAnchorTorsoSpanNorm.takeIf { it.isFinite() && it in 0.035f..0.75f } ?: return Float.NaN
         val anchorDistance = relativeAnchorDistanceMeters.takeIf { it.isFinite() && it in 0.70f..8.0f } ?: return Float.NaN
+        val ratio = (anchorSpan / currentSpan).coerceIn(0.45f, 1.85f)
+        return (anchorDistance * ratio).coerceIn(0.35f, 12.0f)
+    }
+
+    private fun maybeUpdateRelativeScaleAnchor(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+        heightLock: HeightLockResult,
+        heightQualityTrusted: Boolean,
+    ) {
+        val span = raw.shoulderHipSpanNorm
