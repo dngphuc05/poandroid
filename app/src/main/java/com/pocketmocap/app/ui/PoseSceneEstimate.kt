@@ -933,3 +933,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         relativeAnchorDistanceMeters = optimized.distanceMeters
     }
 
+    private fun learnDepthBias(raw: SceneMetricSnapshot, correctedHipDepth: Float?) {
+        val hipRaw = raw.rawHipDepthDistanceMeters.takeIf { it.isFinite() } ?: return
+        val foot = raw.footPlaneDistanceMeters.takeIf { it.isFinite() } ?: return
+        val corrected = correctedHipDepth ?: return
+        if (abs(corrected - foot) > 0.45f || raw.confidence < 0.58f) return
+        val residual = (foot - corrected).coerceIn(-0.08f, 0.08f)
+        depthOffsetMeters = (depthOffsetMeters + residual * 0.030f).coerceIn(-0.30f, 0.30f)
+        if (hipRaw > 0.6f) {
+            val scaleResidual = ((foot - depthOffsetMeters) / hipRaw).coerceIn(0.92f, 1.08f) - depthScale
