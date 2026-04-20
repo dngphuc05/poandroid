@@ -888,3 +888,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return subjectSceneSolver.solveShadow(baselineScene, typedMeasurements)
     }
 
+    private fun estimateRelativeScaleDistance(raw: SceneMetricSnapshot): Float {
+        val currentSpan = raw.shoulderHipSpanNorm
+            .takeIf { it.isFinite() && it in 0.035f..0.75f }
+            ?: raw.torsoSpanNorm.takeIf { it.isFinite() && it in 0.035f..0.55f }
+            ?: return Float.NaN
+        val anchorSpan = relativeAnchorTorsoSpanNorm.takeIf { it.isFinite() && it in 0.035f..0.75f } ?: return Float.NaN
+        val anchorDistance = relativeAnchorDistanceMeters.takeIf { it.isFinite() && it in 0.70f..8.0f } ?: return Float.NaN
