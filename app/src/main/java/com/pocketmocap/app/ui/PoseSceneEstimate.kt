@@ -1110,3 +1110,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                             .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
                         if (matureRetargetActive && lockedHeightMeters > previousLocked) {
                             // Raise the lower anchor along with the lock so the
+                            // anchor's downward pull doesn't reel the lock back
+                            // down once the estimator stops firing.
+                            heightLockAnchorMeters = lockedHeightMeters
+                        } else {
+                            rememberLowerHeightAnchor(lockedHeightMeters)
+                        }
+                    }
+                stableHeightFrames = (stableHeightFrames + 1).coerceAtMost(60)
+                return HeightLockResult(lockedHeightMeters, "locked", exportAsConstraint = true)
+            }
+            // When we have no locked height yet, surface the optimizer's best estimate as a
