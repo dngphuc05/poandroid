@@ -915,3 +915,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 heightLock.state == "locked" &&
                 heightLock.exportAsConstraint
         val distanceOnlyAnchorTrusted =
+            optimized.distanceTrusted &&
+                optimized.distanceCandidateSpreadMeters <= 0.45f &&
+                raw.bodyScaleConfidence.isFinite() &&
+                raw.bodyScaleConfidence >= 0.58f &&
+                raw.confidence >= 0.64f
+        if (!heightAnchorTrusted && !distanceOnlyAnchorTrusted) {
+            if (!heightLock.heightMeters.isFinite() || heightLock.state.contains("untrusted")) {
+                relativeAnchorTorsoSpanNorm = Float.NaN
+                relativeAnchorDistanceMeters = Float.NaN
+            }
+            return
+        }
+        if (!optimized.distanceTrusted || optimized.distanceCandidateSpreadMeters > 0.65f) return
+        if (!optimized.distanceMeters.isFinite() || optimized.distanceMeters !in 0.70f..8.0f) return
+        relativeAnchorTorsoSpanNorm = span
+        relativeAnchorDistanceMeters = optimized.distanceMeters
+    }
+
