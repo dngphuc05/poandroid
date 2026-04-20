@@ -1084,3 +1084,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                     ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
                     ?.let { target ->
                         val constrainedTarget = constrainHeightTargetToAnchor(target, matureRetargetActive)
+                        val delta = constrainedTarget - lockedHeightMeters
+                        val alpha = when {
+                            matureRetargetActive && delta > 0.020f -> 0.170f
+                            abs(delta) <= 0.045f -> 0.045f
+                            delta > 0.010f -> 0.030f
+                            else -> 0.026f
+                        }
+                        val matureAlpha = if (
