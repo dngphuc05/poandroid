@@ -1137,3 +1137,18 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             )
         }
         val anthropometricObservation = retargetHeight
+            ?.takeIf {
+                it.isFinite() &&
+                    it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS &&
+                    abs(it - measured) <= if (matureRetargetActive) 0.48f else 0.30f
+            }
+        val lockObservation = anthropometricObservation ?: measured
+        if (!lockedHeightMeters.isFinite()) {
+            if (!pendingHeightMeters.isFinite() || abs(lockObservation - pendingHeightMeters) > 0.06f) {
+                pendingHeightMeters = lockObservation
+                pendingHeightFrames = 1
+            } else {
+                pendingHeightMeters = pendingHeightMeters * 0.78f + lockObservation * 0.22f
+                pendingHeightFrames += 1
+            }
+            val requiredPendingFrames = if (delayInitialLowLock) {
