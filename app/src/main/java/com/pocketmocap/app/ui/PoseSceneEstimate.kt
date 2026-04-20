@@ -1397,3 +1397,16 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         // we relax the anchor floor so lower-anchor memory does not pin it back
         // down. This is evidence-relative, not tied to any particular stature.
         val downwardMargin = if (
+            matureRetargetActive &&
+            validTarget > anchor
+        ) {
+            HEIGHT_LOCK_DOWNWARD_MARGIN_METERS + 0.040f
+        } else {
+            HEIGHT_LOCK_DOWNWARD_MARGIN_METERS
+        }
+        return validTarget.coerceIn(
+            anchor - downwardMargin,
+            anchor + heightLockUpwardMarginMeters(anchor, validTarget, matureRetargetActive),
+        )
+    }
+
