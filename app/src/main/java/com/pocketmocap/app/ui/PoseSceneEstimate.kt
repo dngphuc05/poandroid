@@ -942,3 +942,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         depthOffsetMeters = (depthOffsetMeters + residual * 0.030f).coerceIn(-0.30f, 0.30f)
         if (hipRaw > 0.6f) {
             val scaleResidual = ((foot - depthOffsetMeters) / hipRaw).coerceIn(0.92f, 1.08f) - depthScale
+            depthScale = (depthScale + scaleResidual * 0.010f).coerceIn(0.92f, 1.08f)
+        }
+    }
+
+    private fun learnHeightEndpointBias(raw: SceneMetricSnapshot) {
+        val locked = lockedHeightMeters.takeIf { it.isFinite() } ?: return
+        val top = raw.topRayHeightMeters.takeIf { it.isFinite() } ?: return
