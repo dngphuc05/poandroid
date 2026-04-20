@@ -779,3 +779,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             optimized.heightMeters
         }
         val heightQualityTrustedForLock = heightQualityTrusted || bracketHeightTrusted
+        val quarantineInitialHeightLock = shouldQuarantineInitialHeightLock(
+            raw = raw,
+            optimized = optimized,
+            retargetHeight = semanticHeightTarget,
+            subjectRetargetActive = subjectRetargetActive,
+        )
+        val startupCorrectionHeight = estimateStartupBadLockCorrectionHeight(raw, optimized)
