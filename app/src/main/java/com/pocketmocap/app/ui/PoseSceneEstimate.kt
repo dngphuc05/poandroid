@@ -1101,3 +1101,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                             alpha
                         }
                         val maxStep = when {
+                            matureRetargetActive && delta > 0f -> MATURE_RETARGET_UPWARD_MARGIN_METERS
+                            delta >= 0f -> 0.030f
+                            else -> 0.040f
+                        }
+                        val previousLocked = lockedHeightMeters
+                        lockedHeightMeters = (lockedHeightMeters + delta.coerceIn(-maxStep, maxStep) * matureAlpha)
+                            .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+                        if (matureRetargetActive && lockedHeightMeters > previousLocked) {
+                            // Raise the lower anchor along with the lock so the
