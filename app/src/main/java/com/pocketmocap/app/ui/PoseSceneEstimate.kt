@@ -1300,3 +1300,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: return false
         if (hip <= top + STARTUP_HIGH_HIP_TOP_GAP_METERS) return false
         val reference = maxOf(hip, top)
+        val torsoCollapsed = raw.torsoHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?.let { it < reference - STARTUP_COLLAPSED_WITNESS_GAP_METERS }
+            ?: true
+        val pixelCollapsed = raw.pixelSpanHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?.let { it < reference - STARTUP_COLLAPSED_WITNESS_GAP_METERS }
+            ?: true
+        return torsoCollapsed && pixelCollapsed
+    }
+
