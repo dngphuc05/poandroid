@@ -661,3 +661,21 @@ internal data class OverlayPoseEstimate(
 
 internal data class PhysicalSceneBias(
     val floorHeightBiasMeters: Float = 0f,
+    val depthScale: Float = 1f,
+    val depthOffsetMeters: Float = 0f,
+    val heightEndpointBiasMeters: Float = 0f,
+)
+
+internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = PhysicalSceneBias()) {
+    private var floorHeightBiasMeters = initialBias.floorHeightBiasMeters.coerceIn(-0.20f, 0.20f)
+    private var depthScale = initialBias.depthScale.takeIf { it.isFinite() }?.coerceIn(0.92f, 1.08f) ?: 1f
+    private var depthOffsetMeters = initialBias.depthOffsetMeters.coerceIn(-0.30f, 0.30f)
+    private var heightEndpointBiasMeters = initialBias.heightEndpointBiasMeters
+        .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+    private var lockedDistanceMeters = Float.NaN
+    private var distanceRetargetFrames = 0
+    private var lockedHeightMeters = Float.NaN
+    private var pendingHeightMeters = Float.NaN
+    private var pendingHeightFrames = 0
+    private var stableHeightFrames = 0
+    private var heightLockAnchorMeters = Float.NaN
