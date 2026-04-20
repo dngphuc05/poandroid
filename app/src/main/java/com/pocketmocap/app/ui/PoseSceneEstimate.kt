@@ -1328,3 +1328,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 )
     }
 
+    private fun groundedFootRoiDistanceReady(raw: SceneMetricSnapshot): Boolean {
+        val foot = raw.groundedFootDistanceMeters
+            .takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: raw.footPlaneDistanceMeters.takeIf {
+                raw.footContactState == "grounded" || raw.footContactState == "grounded_roi_supported"
+            }?.takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: return false
+        val roi = raw.roiDistanceMeters
