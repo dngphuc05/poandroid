@@ -831,3 +831,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             exportedHeightConfidence = exportedHeightConfidence,
         )
         val exportedSolverConfidence = when {
+            !heightLock.exportAsConstraint -> optimized.solverConfidence
+            optimized.distanceTrusted -> maxOf(optimized.solverConfidence, exportedHeightConfidence)
+            else -> maxOf(optimized.solverConfidence, exportedHeightConfidence * 0.82f)
+        }.coerceIn(0f, 1f)
+        val optimizedFactorLabels = if (heightLock.exportAsConstraint) {
+            removeFactorLabels(optimized.activeFactors, setOf("untrusted_height_spread"))
+        } else {
+            optimized.activeFactors
+        }
+        val activeFactors = appendFactorLabels(
