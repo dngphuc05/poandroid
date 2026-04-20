@@ -1024,3 +1024,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         startupCorrectionHeight: Float? = null,
     ): HeightLockResult {
         val measured = measuredHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val startupCorrection = startupCorrectionHeight
+            ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        if (!qualityTrusted) {
+            val matureRetargetCandidate = retargetHeight
+                ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            if (matureRetargetActive && matureRetargetCandidate != null && !lockedHeightMeters.isFinite()) {
+                if (
+                    !pendingHeightMeters.isFinite() ||
+                    abs(matureRetargetCandidate - pendingHeightMeters) > 0.075f
+                ) {
+                    pendingHeightMeters = matureRetargetCandidate
+                    pendingHeightFrames = 1
+                } else {
+                    pendingHeightMeters = pendingHeightMeters * 0.82f + matureRetargetCandidate * 0.18f
+                    pendingHeightFrames += 1
+                }
+                if (pendingHeightFrames >= 8 && !quarantineInitialLock) {
+                    lockedHeightMeters = pendingHeightMeters
