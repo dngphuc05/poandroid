@@ -906,3 +906,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         heightQualityTrusted: Boolean,
     ) {
         val span = raw.shoulderHipSpanNorm
+            .takeIf { it.isFinite() && it in 0.035f..0.75f }
+            ?: raw.torsoSpanNorm.takeIf { it.isFinite() && it in 0.035f..0.55f }
+            ?: return
+        val heightAnchorTrusted =
+            heightQualityTrusted &&
+                optimized.heightTrusted &&
+                heightLock.state == "locked" &&
+                heightLock.exportAsConstraint
+        val distanceOnlyAnchorTrusted =
