@@ -1383,3 +1383,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
     }
 
+    private fun constrainHeightTargetToAnchor(
+        target: Float,
+        matureRetargetActive: Boolean = false,
+    ): Float {
+        val validTarget = target.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return target
+        val anchor = heightLockAnchorMeters
