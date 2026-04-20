@@ -956,3 +956,15 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         // A persistent top-ray residual can also mean the AR floor/camera-height
         // relation is biased. Learn it much slower than endpoint bias so we do
         // not chase ordinary pose noise.
+        floorHeightBiasMeters = (floorHeightBiasMeters + residual * 0.004f).coerceIn(-0.20f, 0.20f)
+    }
+
+    private fun updateDistanceLock(
+        measuredDistance: Float,
+        spreadMeters: Float,
+        confidence: Float,
+        hasTrustedHipDepth: Boolean,
+        qualityTrusted: Boolean,
+        fallbackDistance: Float?,
+    ): Float {
+        val measured = measuredDistance.takeIf { it.isFinite() && it in 0.35f..12.0f }
