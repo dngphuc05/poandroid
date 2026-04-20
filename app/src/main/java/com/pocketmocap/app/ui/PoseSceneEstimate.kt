@@ -1169,3 +1169,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             return HeightLockResult(lockedHeightMeters, "acquiring", exportAsConstraint = false)
         }
         val unconstrainedLockTarget = anthropometricObservation ?: measured
+        val lockTarget = if (matureRetargetActive && unconstrainedLockTarget > lockedHeightMeters) {
+            unconstrainedLockTarget
+        } else {
+            constrainHeightTargetToAnchor(
+                unconstrainedLockTarget,
+                matureRetargetActive,
+            )
+        }
+        val delta = lockTarget - lockedHeightMeters
