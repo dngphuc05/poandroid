@@ -841,3 +841,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             optimized.activeFactors
         }
         val activeFactors = appendFactorLabels(
+            optimizedFactorLabels,
+            heightTrustRejectionLabels(raw, optimized, heightConstraintTrusted) +
+                relativeScaleAnchorLabels(relativeScaleDistance, heightLock, heightConstraintTrusted),
+        )
+
+        val baselineScene = raw.copy(
+            confidence = minOf(raw.confidence, exportedSolverConfidence).coerceIn(0f, 1f),
+            distanceMeters = optimized.distanceMeters,
+            bodyHeightMeters = heightLock.heightMeters,
+            cameraHeightMeters = correctedCameraHeight,
+            correctedDistanceMeters = optimized.distanceMeters,
+            correctedHeightMeters = exportedCorrectedHeight,
+            correctedCameraHeightMeters = correctedCameraHeight,
+            localHeightCandidateMeters = localHeightCandidate?.meters ?: Float.NaN,
+            localHeightCandidateConfidence = localHeightCandidate?.confidence ?: Float.NaN,
+            localHeightCandidateSource = localHeightCandidate?.source ?: "",
+            floorSource = raw.floorSource.ifBlank { "arcore_floor" },
+            solverConfidence = exportedSolverConfidence,
