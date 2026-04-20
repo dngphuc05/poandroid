@@ -1190,3 +1190,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             else -> 0.004f
         }
         val alpha = if (
+            !matureRetargetActive &&
+            delta > 0.035f
+        ) {
+            minOf(baseAlpha, if (stableHeightFrames >= 48) 0.006f else 0.004f)
+        } else {
+            baseAlpha
+        }
+        val previousLocked = lockedHeightMeters
