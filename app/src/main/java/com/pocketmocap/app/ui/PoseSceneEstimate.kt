@@ -993,3 +993,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         distanceRetargetFrames = if (retargeting) distanceRetargetFrames + 1 else 0
         val sustainedRetarget = distanceRetargetFrames >= 10
 
+        val alpha = when {
+            sustainedRetarget -> 0.28f
+            hasTrustedHipDepth && spreadMeters <= 0.55f -> 0.30f
+            spreadMeters <= 0.45f && confidence >= 0.62f -> 0.24f
+            spreadMeters <= 0.85f -> 0.14f
+            else -> 0.055f
+        }
+        val maxStep = when {
