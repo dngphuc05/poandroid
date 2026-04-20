@@ -1261,3 +1261,16 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .takeIf { it.isFinite() }
             ?: Float.POSITIVE_INFINITY
         val spreadStillBad = heightSpread > STARTUP_HEIGHT_SPREAD_SUSPECT_METERS
+        val unsupportedHighHip = hasUnsupportedStartupHighHip(raw)
+        if (!spreadStillBad && !unsupportedHighHip) return null
+
+        val supportedEndpointBias = if (unsupportedHighHip) {
+            0f
+        } else {
+            optimized.heightEndpointBiasMeters
+                .takeIf { it.isFinite() }
+                ?.coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+                ?.coerceAtLeast(0f)
+                ?: heightEndpointBiasMeters.coerceAtLeast(0f)
+        }
+        val correctionTarget = (top + supportedEndpointBias)
