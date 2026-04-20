@@ -771,3 +771,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             startupTopFallback,
         ).maxOrNull()
         val subjectRetargetActive = matureSubjectRetarget != null || bracketSpanTarget != null || startupTopFallback != null
+        val bracketHeightTrusted = bracketSpanTarget != null &&
+            raw.confidence >= STARTUP_MIN_LOCK_CONFIDENCE
+        val lockMeasuredHeight = if (bracketHeightTrusted) {
+            bracketSpanTarget ?: optimized.heightMeters
+        } else {
+            optimized.heightMeters
+        }
+        val heightQualityTrustedForLock = heightQualityTrusted || bracketHeightTrusted
