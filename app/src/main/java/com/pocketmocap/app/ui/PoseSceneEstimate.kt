@@ -1336,3 +1336,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             }?.takeIf { it.isFinite() && it in 0.35f..12.0f }
             ?: return false
         val roi = raw.roiDistanceMeters
+            .takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: return false
+        return candidateAgreement(foot, roi, maxAbsDelta = 0.28f, maxRatio = 0.12f)
+    }
+
+    private fun hasBracketedUpperSpanSupport(raw: SceneMetricSnapshot, top: Float): Boolean =
+        bracketedUpperSpanTarget(raw, top) != null
+
