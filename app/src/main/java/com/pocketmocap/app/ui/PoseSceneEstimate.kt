@@ -1253,3 +1253,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: return null
         if (stableHeightFrames > STARTUP_BAD_LOCK_CORRECTION_FRAMES) return null
         val top = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        if (locked <= top + HEIGHT_LOCK_UPWARD_MARGIN_METERS) return null
+        if (hasBracketedUpperSpanSupport(raw, top)) return null
+        val heightSpread = optimized.heightCandidateSpreadMeters
+            .takeIf { it.isFinite() }
+            ?: Float.POSITIVE_INFINITY
+        val spreadStillBad = heightSpread > STARTUP_HEIGHT_SPREAD_SUSPECT_METERS
