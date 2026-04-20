@@ -1410,3 +1410,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         )
     }
 
+    private fun rememberLowerHeightAnchor(height: Float) {
+        val validHeight = height.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return
+        heightLockAnchorMeters = heightLockAnchorMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?.let { minOf(it, validHeight) }
+            ?: validHeight
+    }
+
