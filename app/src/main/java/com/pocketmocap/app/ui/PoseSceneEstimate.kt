@@ -1178,3 +1178,15 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             )
         }
         val delta = lockTarget - lockedHeightMeters
+        val absDelta = abs(delta)
+        val baseAlpha = when {
+            matureRetargetActive && delta > 0.020f -> 0.170f
+            confidence < 0.55f -> 0.015f
+            anthropometricObservation != null && absDelta <= 0.090f -> 0.060f
+            anthropometricObservation != null && absDelta <= 0.18f && stableHeightFrames > 12 -> 0.030f
+            absDelta <= 0.025f -> 0.080f
+            absDelta <= 0.075f -> 0.032f
+            absDelta <= 0.16f && stableHeightFrames > 16 -> 0.012f
+            else -> 0.004f
+        }
+        val alpha = if (
