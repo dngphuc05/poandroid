@@ -1073,3 +1073,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 }
                 stableHeightFrames = (stableHeightFrames + 1).coerceAtMost(60)
                 val closeEnoughToRetarget = abs(matureRetargetCandidate - lockedHeightMeters) <= 0.10f
+                return HeightLockResult(
+                    lockedHeightMeters,
+                    if (closeEnoughToRetarget) "locked" else "acquiring",
+                    exportAsConstraint = closeEnoughToRetarget,
+                )
+            }
+            if (stickyTrusted && lockedHeightMeters.isFinite()) {
+                retargetHeight
+                    ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+                    ?.let { target ->
+                        val constrainedTarget = constrainHeightTargetToAnchor(target, matureRetargetActive)
