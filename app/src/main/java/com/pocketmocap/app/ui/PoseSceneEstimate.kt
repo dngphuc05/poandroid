@@ -1283,3 +1283,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: return
         if (!lockedHeightMeters.isFinite()) return
         val delta = (validTarget - lockedHeightMeters)
+            .coerceIn(-STARTUP_BAD_LOCK_CORRECTION_MAX_STEP_METERS, 0f)
+        if (delta >= 0f) return
+        lockedHeightMeters = (lockedHeightMeters + delta * STARTUP_BAD_LOCK_CORRECTION_ALPHA)
+            .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        rememberLowerHeightAnchor(lockedHeightMeters)
+        stableHeightFrames = (stableHeightFrames - 2).coerceAtLeast(0)
+    }
+
