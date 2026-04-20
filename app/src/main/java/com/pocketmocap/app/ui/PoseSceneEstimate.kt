@@ -1092,3 +1092,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                             else -> 0.026f
                         }
                         val matureAlpha = if (
+                            !matureRetargetActive &&
+                            delta > 0.035f &&
+                            stableHeightFrames >= 48
+                        ) {
+                            minOf(alpha, 0.006f)
+                        } else {
+                            alpha
+                        }
+                        val maxStep = when {
