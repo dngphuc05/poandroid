@@ -1439,3 +1439,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         exportedHeightConfidence: Float,
     ): LocalHeightCandidate? {
         val candidate = heightLock.heightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: optimized.heightMeters.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        val topValues = listOf(raw.topRayFloorHeightMeters, raw.topRayHeightMeters)
+            .filter { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+        val topHeight = topValues.takeIf { it.isNotEmpty() }?.average()?.toFloat()
+        val topGapMeters = topHeight?.let { abs(candidate - it) }
