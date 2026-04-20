@@ -746,3 +746,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             lowerAnchor = heightLockAnchorMeters,
         )
         val baseSemanticTarget = if (blockHeightRetarget) null else estimateSemanticHeightRetarget(raw, optimized)
+        val bracketSpanTarget = if (blockHeightRetarget) null else estimateBracketedSpanHeightRetarget(raw)
+            ?: estimateLooseBracketedSpanHeightRetarget(raw)
+        val startupTopCandidate = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?.let { it + heightEndpointBiasMeters.coerceAtLeast(0f) }
+            ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val startupTopFallback = startupTopCandidate
