@@ -986,3 +986,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             return measured
         }
 
+        val retargeting =
+            abs(measured - lockedDistanceMeters) > 0.45f &&
+                confidence >= 0.55f &&
+                spreadMeters <= 1.60f
+        distanceRetargetFrames = if (retargeting) distanceRetargetFrames + 1 else 0
+        val sustainedRetarget = distanceRetargetFrames >= 10
+
