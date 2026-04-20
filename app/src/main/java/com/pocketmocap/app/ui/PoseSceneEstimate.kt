@@ -1390,3 +1390,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val validTarget = target.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
             ?: return target
         val anchor = heightLockAnchorMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: lockedHeightMeters.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return validTarget
+        // When the latent subject-height estimator is actively lifting the lock
+        // we relax the anchor floor so lower-anchor memory does not pin it back
+        // down. This is evidence-relative, not tied to any particular stature.
+        val downwardMargin = if (
