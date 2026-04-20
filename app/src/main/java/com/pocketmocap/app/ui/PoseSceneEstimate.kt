@@ -1042,3 +1042,17 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 }
                 if (pendingHeightFrames >= 8 && !quarantineInitialLock) {
                     lockedHeightMeters = pendingHeightMeters
+                    heightLockAnchorMeters = pendingHeightMeters
+                    stableHeightFrames = pendingHeightFrames
+                    return HeightLockResult(lockedHeightMeters, "locked", exportAsConstraint = true)
+                }
+                return HeightLockResult(pendingHeightMeters, "acquiring", exportAsConstraint = false)
+            }
+            pendingHeightFrames = 0
+            pendingHeightMeters = Float.NaN
+            if (startupCorrection != null && lockedHeightMeters.isFinite()) {
+                applyStartupBadLockCorrection(startupCorrection)
+                return HeightLockResult(lockedHeightMeters, "holding_untrusted", exportAsConstraint = false)
+            }
+            if (matureRetargetActive && matureRetargetCandidate != null && lockedHeightMeters.isFinite()) {
+                val constrainedTarget = if (matureRetargetCandidate > lockedHeightMeters) {
