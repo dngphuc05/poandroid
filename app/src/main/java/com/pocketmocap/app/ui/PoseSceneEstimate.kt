@@ -563,3 +563,21 @@ internal data class OverlayPoseEstimate(
     val experimentalSolverCost: Float = Float.NaN,
     val experimentalSolverStatus: String = "",
     val experimentalFactorSummary: String = "",
+    val baselineExperimentalHeightDeltaMeters: Float = Float.NaN,
+    val baselineExperimentalDistanceDeltaMeters: Float = Float.NaN,
+    val promotedSolverSource: String = "baseline",
+    val rawKeypointGeometry: Map<String, Float> = emptyMap(),
+) {
+    fun toSceneMetricSnapshot(): SceneMetricSnapshot =
+        SceneMetricSnapshot(
+            source = source,
+            confidence = confidence,
+            distanceMeters = distanceMeters,
+            bodyHeightMeters = bodyHeightMeters,
+            cameraHeightMeters = cameraHeightMeters,
+            floorPitchDegrees = floorPitchDegrees,
+            lateralOffsetMeters = lateralOffsetMeters,
+            correctedDistanceMeters = correctedDistanceMeters,
+            correctedHeightMeters = correctedHeightMeters,
+            correctedCameraHeightMeters = correctedCameraHeightMeters,
+            localHeightCandidateMeters = localHeightCandidateMeters,
