@@ -1008,3 +1008,19 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             else -> 0.075f
         }
         val delta = (measured - lockedDistanceMeters).coerceIn(-maxStep, maxStep)
+        lockedDistanceMeters = (lockedDistanceMeters + delta * alpha).coerceIn(0.35f, 12.0f)
+        return lockedDistanceMeters
+    }
+
+    private fun updateHeightLock(
+        measuredHeight: Float,
+        confidence: Float,
+        qualityTrusted: Boolean,
+        stickyTrusted: Boolean,
+        retargetHeight: Float?,
+        matureRetargetActive: Boolean = false,
+        delayInitialLowLock: Boolean = false,
+        quarantineInitialLock: Boolean = false,
+        startupCorrectionHeight: Float? = null,
+    ): HeightLockResult {
+        val measured = measuredHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
