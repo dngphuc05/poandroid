@@ -706,3 +706,20 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         subjectSceneSolver.reset()
     }
 
+    fun solve(raw: SceneMetricSnapshot): SceneMetricSnapshot {
+        if (raw.source != "arcore_floor") return raw
+        val relativeScaleDistance = estimateRelativeScaleDistance(raw)
+        val typedMeasurements = SceneMeasurementExtractor.extract(raw, relativeScaleDistance)
+        val optimized = PhysicalSceneOptimizer.optimize(
+            SceneMeasurementExtractor.optimizerInput(
+                raw = raw,
+                relativeScaleDistance = relativeScaleDistance,
+                previousDistanceMeters = lockedDistanceMeters,
+                previousHeightMeters = lockedHeightMeters,
+                floorHeightBiasMeters = floorHeightBiasMeters,
+                depthScale = depthScale,
+                depthOffsetMeters = depthOffsetMeters,
+                heightEndpointBiasMeters = heightEndpointBiasMeters,
+            )
+        )
+
