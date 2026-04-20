@@ -1216,3 +1216,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         )
     }
 
+    private fun shouldQuarantineInitialHeightLock(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+        retargetHeight: Float?,
+        subjectRetargetActive: Boolean,
+    ): Boolean {
+        if (lockedHeightMeters.isFinite()) return false
+        val heightSpread = optimized.heightCandidateSpreadMeters
