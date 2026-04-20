@@ -653,3 +653,11 @@ internal data class OverlayPoseEstimate(
             experimentalSolverStatus = experimentalSolverStatus,
             experimentalFactorSummary = experimentalFactorSummary,
             baselineExperimentalHeightDeltaMeters = baselineExperimentalHeightDeltaMeters,
+            baselineExperimentalDistanceDeltaMeters = baselineExperimentalDistanceDeltaMeters,
+            promotedSolverSource = promotedSolverSource,
+            rawKeypointGeometry = rawKeypointGeometry,
+        )
+}
+
+internal data class PhysicalSceneBias(
+    val floorHeightBiasMeters: Float = 0f,
