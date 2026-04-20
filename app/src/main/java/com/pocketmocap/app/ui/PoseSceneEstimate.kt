@@ -1344,3 +1344,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     private fun hasBracketedUpperSpanSupport(raw: SceneMetricSnapshot, top: Float): Boolean =
         bracketedUpperSpanTarget(raw, top) != null
 
+    private fun bracketedUpperSpanTarget(raw: SceneMetricSnapshot, top: Float): Float? {
+        if (raw.bodyScaleConfidence.isFinite() && raw.bodyScaleConfidence < SPAN_BRACKET_MIN_BODY_SCALE_CONFIDENCE) {
+            return null
+        }
+        val hip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        if (hip != null && hip > top + STARTUP_HIGH_HIP_TOP_GAP_METERS) return null
+        val highTorso = raw.torsoHeightMeters.takeIf { candidate ->
