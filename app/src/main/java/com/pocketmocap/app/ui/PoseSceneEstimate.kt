@@ -1244,3 +1244,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             (heightSpreadSuspect && !distanceReady)
     }
 
+    private fun estimateStartupBadLockCorrectionHeight(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+    ): Float? {
+        val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        if (stableHeightFrames > STARTUP_BAD_LOCK_CORRECTION_FRAMES) return null
+        val top = raw.topRayHeightMeters
