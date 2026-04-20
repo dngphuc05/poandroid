@@ -730,3 +730,19 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
         lockedDistanceMeters = optimized.distanceMeters
         val heightQualityTrusted = isSemanticHeightTrusted(raw, optimized)
+        val lockedSilhouetteNoise = hasLockedHeightSilhouetteNoise(raw)
+        val strongLockedHeightConflict = hasStrongLockedHeightConflict(raw)
+        val blockHeightRetarget = lockedSilhouetteNoise || strongLockedHeightConflict
+        val matureSubjectRetarget = if (blockHeightRetarget) null else subjectHeightEstimator.update(
+            topRayHeight = raw.topRayHeightMeters,
+            hipGeometryHeight = raw.hipGeometryHeightMeters,
+            torsoHeight = raw.torsoHeightMeters,
+            pixelSpanHeight = raw.pixelSpanHeightMeters,
+            bodyScaleConfidence = raw.bodyScaleConfidence,
+            endpointBias = heightEndpointBiasMeters,
+            distanceTrusted = optimized.distanceTrusted,
+            sceneConfidence = raw.confidence,
+            currentLocked = lockedHeightMeters,
+            lowerAnchor = heightLockAnchorMeters,
+        )
+        val baseSemanticTarget = if (blockHeightRetarget) null else estimateSemanticHeightRetarget(raw, optimized)
