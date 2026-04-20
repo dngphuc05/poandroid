@@ -1056,3 +1056,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             }
             if (matureRetargetActive && matureRetargetCandidate != null && lockedHeightMeters.isFinite()) {
                 val constrainedTarget = if (matureRetargetCandidate > lockedHeightMeters) {
+                    matureRetargetCandidate
+                } else {
+                    constrainHeightTargetToAnchor(matureRetargetCandidate, matureRetargetActive)
+                }
+                val delta = constrainedTarget - lockedHeightMeters
+                val previousLocked = lockedHeightMeters
+                val maxStep = if (delta >= 0f) 0.180f else 0.040f
