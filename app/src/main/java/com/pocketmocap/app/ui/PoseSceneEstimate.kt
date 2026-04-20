@@ -1274,3 +1274,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 ?: heightEndpointBiasMeters.coerceAtLeast(0f)
         }
         val correctionTarget = (top + supportedEndpointBias)
+            .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        return correctionTarget.takeIf { it < locked - 0.015f }
+    }
+
+    private fun applyStartupBadLockCorrection(target: Float) {
+        val validTarget = target.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return
+        if (!lockedHeightMeters.isFinite()) return
+        val delta = (validTarget - lockedHeightMeters)
