@@ -817,3 +817,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             else -> "reacquiring"
         }
 
+        val exportedHeightConfidence = when {
+            !heightLock.exportAsConstraint -> optimized.heightConfidence
+            heightQualityTrusted -> maxOf(optimized.heightConfidence, minOf(raw.confidence, 0.62f))
+            heightLock.state == "locked" -> maxOf(optimized.heightConfidence, minOf(raw.confidence, 0.56f))
+            else -> maxOf(optimized.heightConfidence, minOf(raw.confidence, 0.48f))
+        }.coerceIn(0f, 1f)
+        val localHeightCandidate = estimateLocalHeightCandidate(
