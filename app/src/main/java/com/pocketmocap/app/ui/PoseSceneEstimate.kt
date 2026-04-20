@@ -679,3 +679,16 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     private var pendingHeightFrames = 0
     private var stableHeightFrames = 0
     private var heightLockAnchorMeters = Float.NaN
+    private var relativeAnchorDistanceMeters = Float.NaN
+    private var relativeAnchorTorsoSpanNorm = Float.NaN
+    private val subjectHeightEstimator = SubjectHeightEstimator()
+    private val subjectSceneSolver = SubjectSceneSolver()
+
+    val currentBias: PhysicalSceneBias
+        get() = PhysicalSceneBias(
+            floorHeightBiasMeters = floorHeightBiasMeters,
+            depthScale = depthScale,
+            depthOffsetMeters = depthOffsetMeters,
+            heightEndpointBiasMeters = heightEndpointBiasMeters,
+        )
+
