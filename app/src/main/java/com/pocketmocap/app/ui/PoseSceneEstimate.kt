@@ -1427,3 +1427,15 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     )
     private data class LocalHeightCandidate(
         val meters: Float,
+        val confidence: Float,
+        val source: String,
+    )
+
+    private fun estimateLocalHeightCandidate(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+        heightLock: HeightLockResult,
+        exportedCorrectedHeight: Float,
+        exportedHeightConfidence: Float,
+    ): LocalHeightCandidate? {
+        val candidate = heightLock.heightMeters
