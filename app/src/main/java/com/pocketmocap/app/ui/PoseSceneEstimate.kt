@@ -968,3 +968,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         fallbackDistance: Float?,
     ): Float {
         val measured = measuredDistance.takeIf { it.isFinite() && it in 0.35f..12.0f }
+            ?: return lockedDistanceMeters.takeIf { it.isFinite() } ?: measuredDistance
+        if (!qualityTrusted) {
+            distanceRetargetFrames = 0
+            val fallback = fallbackDistance?.takeIf { it.isFinite() && it in 0.70f..12.0f }
+            if (lockedDistanceMeters.isFinite()) {
+                if (fallback != null && !candidateAgreement(lockedDistanceMeters, fallback)) {
+                    val delta = (fallback - lockedDistanceMeters).coerceIn(-0.24f, 0.24f)
