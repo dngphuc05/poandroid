@@ -1373,3 +1373,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 hip?.let { candidate >= it - 0.04f } != false
         }
         val witnesses = listOfNotNull(highTorso, highPixel ?: pixelOnly)
+        val upper = witnesses.minOrNull() ?: return null
+        val interpolation = if (highTorso == null && highPixel == null && pixelOnly != null) {
+            PIXEL_ONLY_BRACKET_HEIGHT_INTERPOLATION
+        } else {
+            SPAN_BRACKET_INTERPOLATION
+        }
+        return (top + (upper - top) * interpolation)
+            .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+    }
+
