@@ -1419,3 +1419,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: validHeight
     }
 
+    private data class FactorValue(val name: String, val value: Float, val weight: Float)
+    private data class HeightLockResult(
+        val heightMeters: Float,
+        val state: String,
+        val exportAsConstraint: Boolean,
+    )
+    private data class LocalHeightCandidate(
+        val meters: Float,
