@@ -1001,3 +1001,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             else -> 0.055f
         }
         val maxStep = when {
+            sustainedRetarget -> 0.34f
+            hasTrustedHipDepth && spreadMeters <= 0.55f -> 0.32f
+            spreadMeters <= 0.45f -> 0.22f
+            spreadMeters <= 0.85f -> 0.14f
+            else -> 0.075f
+        }
+        val delta = (measured - lockedDistanceMeters).coerceIn(-maxStep, maxStep)
