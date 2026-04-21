@@ -1576,3 +1576,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                     )
         } ?: 0f
         val top = ((rawTop ?: Float.NaN) + supportedEndpointBias)
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val torso = raw.torsoHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val reliablePrimaryWitnesses = buildList {
+            hip?.let { add(it) }
+            top
+                ?.takeIf { candidate ->
+                    hip?.let { abs(candidate - it) <= 0.22f } == true ||
+                        abs(candidate - locked) <= 0.22f
+                }
+                ?.let { add(it) }
+            torso
+                ?.takeIf { candidate ->
+                    listOfNotNull(hip, top, locked).any { abs(candidate - it) <= 0.22f }
+                }
+                ?.let { add(it) }
+        }
+        rawTop
