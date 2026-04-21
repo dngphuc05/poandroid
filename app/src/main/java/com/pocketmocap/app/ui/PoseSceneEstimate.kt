@@ -2187,3 +2187,10 @@ private data class ArFloorEstimate(
     val bodyClipRisk: Float = Float.NaN,
     val topEndpointConfidence: Float = Float.NaN,
     val footEndpointConfidence: Float = Float.NaN,
+    val maskEndpointConfidence: Float = Float.NaN,
+    val visualTopScanYNorm: Float = Float.NaN,
+    val visualTopScanConfidence: Float = Float.NaN,
+    val visualTopLiftNorm: Float = Float.NaN,
+    val rawKeypointGeometry: Map<String, Float> = emptyMap(),
+)
+
