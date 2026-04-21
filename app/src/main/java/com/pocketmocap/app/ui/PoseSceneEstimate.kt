@@ -2065,3 +2065,12 @@ internal fun deriveOverlayPoseEstimate(
         ?.let { kotlin.math.abs(it).coerceIn(4f, 42f) }
         ?: roiFloorPitchDegrees
     val roiCameraHeightMeters = if (bodyHeightMeters.isFinite()) {
+        (bodyHeightMeters * (0.60f + roi.bottomGap * 1.05f)).coerceIn(0.65f, 2.40f)
+    } else {
+        Float.NaN
+    }
+    val cameraHeightMeters = arEstimate?.cameraHeightMeters
+        ?: worldTracking?.cameraHeightMeters
+        ?.takeIf { it.isFinite() && it in 0.25f..2.80f }
+        ?: roiCameraHeightMeters
+    val lateralOffsetMeters = arEstimate?.lateralOffsetMeters ?: (
