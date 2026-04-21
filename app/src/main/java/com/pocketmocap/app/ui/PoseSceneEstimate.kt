@@ -1512,3 +1512,17 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return hasSemanticHeightAgreement(raw)
     }
 
+    private fun hasStrongLockedHeightConflict(raw: SceneMetricSnapshot): Boolean {
+        val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        val primaryWitnesses = listOfNotNull(
+            raw.hipGeometryHeightMeters.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS },
+            raw.topRayHeightMeters.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS },
+            raw.torsoHeightMeters.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS },
+        )
+        if (primaryWitnesses.size < 2) return false
+        if (primaryWitnesses.any { abs(it - locked) <= 0.16f }) return false
+        return primaryWitnesses.count { abs(it - locked) > 0.35f } >= 2
+    }
+
