@@ -1611,3 +1611,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val endpointBias = (optimized.heightEndpointBiasMeters.takeIf { it.isFinite() } ?: heightEndpointBiasMeters)
             .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
         val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val rawHip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val torso = raw.torsoHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val rawTop = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val rawPixel = raw.pixelSpanHeightMeters
