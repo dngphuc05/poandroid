@@ -1964,3 +1964,10 @@ internal fun computePoseRoi(
 
     for (i in 0 until 33) {
         val visible = visibility?.getOrNull(i) ?: 1f
+        if (visible <= 0.2f) continue
+        minX = minOf(minX, screenX[i])
+        maxX = maxOf(maxX, screenX[i])
+        minY = minOf(minY, screenY[i])
+        maxY = maxOf(maxY, screenY[i])
+    }
+
