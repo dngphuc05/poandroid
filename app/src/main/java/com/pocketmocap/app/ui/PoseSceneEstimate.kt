@@ -2002,3 +2002,12 @@ internal fun deriveOverlayPoseEstimate(
 ): OverlayPoseEstimate? {
     roi ?: return null
     val effectiveIntrinsics = worldTracking?.intrinsics ?: intrinsics
+    val hipProxy = selectHipAnchorProxy(
+        roi = roi,
+        screenX = screenX,
+        screenY = screenY,
+        visibility = visibility,
+        previousVectorXNorm = previousHipVectorXNorm,
+        previousVectorYNorm = previousHipVectorYNorm,
+    )
+    val arEstimate = deriveArCoreFloorEstimate(
