@@ -1479,3 +1479,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             if (trustedLockSupport) 0.62f else 0f,
         ).coerceIn(0f, 1f)
         val weakAcquiring = !trustedLockSupport &&
+            (heightLock.state.startsWith("acquiring") || heightLock.state.contains("untrusted")) &&
+            exportedHeightConfidence < 0.20f
+        if (weakAcquiring && !strongIndependentSupport) {
+            confidence = minOf(confidence, 0.42f)
+        }
+        if (weakAcquiring && topSupport && bodyScaleSupport && !tightTopSupport && !correctedSupport && !hipSupport) {
+            confidence = minOf(confidence, 0.42f)
+        }
+        if (confidence < 0.28f) return null
+        val source = when {
