@@ -2295,3 +2295,14 @@ private fun deriveArCoreFloorEstimate(
     // FLAG_REJECTED_HIP, so the depth sampling is pure overhead. Skip it.
     val hipDepthEstimate: DepthPatchEstimate? = null
     val torsoHeightPre = estimateTorsoHeightCandidate(screenX, screenY, visibility, 2.50f, intrinsics)
+    val landmarkBodyTop = selectBodyTopProxy(roi, screenX, screenY, visibility)
+    val visualTop = visualTopYNorm
+        .takeIf {
+            it.isFinite() &&
+                visualTopConfidence >= 0.52f &&
+                it in 0f..1f &&
+                it < landmarkBodyTop.yNorm - 0.004f &&
+                it >= landmarkBodyTop.yNorm - 0.060f &&
+                edgeClipRisk(it) <= 0.10f
+        }
+    val bodyTop = if (visualTop != null) {
