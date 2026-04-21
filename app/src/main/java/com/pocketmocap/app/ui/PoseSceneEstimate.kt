@@ -1644,3 +1644,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             abs(topCandidate - torso) <= 0.095f
         ) {
             val upperBody = (torso * 0.66f + topCandidate * 0.34f)
+                .coerceIn(rawHip, topCandidate - 0.020f)
+            (rawHip * 0.45f + upperBody * 0.55f)
+                .coerceIn(rawHip, topCandidate - 0.030f)
+        } else {
+            null
+        }
+        val hip = (upperBodyLift ?: rawHip)
