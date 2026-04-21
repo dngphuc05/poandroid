@@ -2231,3 +2231,21 @@ private data class TorsoSpanDiagnostics(
     val torsoSpanNorm: Float,
 )
 
+private data class HipGeometrySelection(
+    val distanceMeters: Float?,
+    val rejectedReason: String,
+)
+
+private fun deriveArCoreFloorEstimate(
+    roi: PoseRoi,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    worldTracking: WorldTrackingSnapshot?,
+    intrinsics: CameraIntrinsics?,
+    rawSubjectHeightMeters: Float,
+    hipProxy: HipAnchorProxy?,
+    visualTopYNorm: Float,
+    visualTopConfidence: Float,
+): ArFloorEstimate? {
+    worldTracking ?: return null
