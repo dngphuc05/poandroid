@@ -1869,3 +1869,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             // In the current geometry path hipGeometryHeight can be seeded by the
             // torso ratio estimate. If it is numerically the same as torso height,
             // it is not an independent witness and must not create false trust.
+            if (hip != null && (torso == null || abs(hip - torso) > 0.015f)) {
+                add(hip)
+            }
+            top?.let { add(it) }
+        }
+    }
+
