@@ -1948,3 +1948,12 @@ internal data class PoseOverlayRectPx(
     val height: Float,
 )
 
+internal fun computePoseRoi(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+): PoseRoi? {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) {
+        return null
+    }
+
