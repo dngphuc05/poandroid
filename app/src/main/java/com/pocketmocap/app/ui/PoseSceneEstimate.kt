@@ -1887,3 +1887,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             emptyList()
         }
 
+    private fun removeFactorLabels(activeFactors: String, blocked: Set<String>): String =
+        activeFactors
+            .split("|")
+            .filter { it.isNotBlank() && it !in blocked }
+            .joinToString("|")
+
+    private fun appendFactorLabels(activeFactors: String, labels: List<String>): String {
