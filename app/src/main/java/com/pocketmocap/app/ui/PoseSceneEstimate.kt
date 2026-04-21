@@ -1724,3 +1724,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 hip?.let { candidate > it + SPAN_BRACKET_MIN_GAP_METERS } != false
         }
         val highPixel = raw.pixelSpanHeightMeters.takeIf { candidate ->
+            candidate.isFinite() &&
+                candidate in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS &&
+                candidate > top + SPAN_BRACKET_MIN_GAP_METERS &&
+                candidate < top + SPAN_BRACKET_MAX_GAP_METERS &&
+                hip?.let { candidate > it + SPAN_BRACKET_MIN_GAP_METERS } != false
+        }
+        val pixelOnly = raw.pixelSpanHeightMeters.takeIf { candidate ->
