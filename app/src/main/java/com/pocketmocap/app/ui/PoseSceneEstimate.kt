@@ -2223,3 +2223,11 @@ private data class HipVerticalEstimate(
 private data class DepthPatchEstimate(
     val horizontalDistanceMeters: Float,
     val hipHeightMeters: Float,
+    val confidence: Float,
+)
+
+private data class TorsoSpanDiagnostics(
+    val shoulderHipSpanNorm: Float,
+    val torsoSpanNorm: Float,
+)
+
