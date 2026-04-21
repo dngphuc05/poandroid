@@ -1604,3 +1604,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return !strongPrimaryConflict
     }
 
+    private fun estimateSemanticHeightRetarget(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+    ): Float? {
+        val endpointBias = (optimized.heightEndpointBiasMeters.takeIf { it.isFinite() } ?: heightEndpointBiasMeters)
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        val locked = lockedHeightMeters
