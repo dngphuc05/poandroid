@@ -2216,3 +2216,10 @@ private data class HipAnchorProxy(
 
 private data class HipVerticalEstimate(
     val distanceMeters: Float,
+    val bodyHeightMeters: Float,
+    val confidence: Float,
+)
+
+private data class DepthPatchEstimate(
+    val horizontalDistanceMeters: Float,
+    val hipHeightMeters: Float,
