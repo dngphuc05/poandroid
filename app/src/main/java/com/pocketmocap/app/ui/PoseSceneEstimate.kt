@@ -1489,3 +1489,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         }
         if (confidence < 0.28f) return null
         val source = when {
+            correctedSupport -> "corrected_height_continuity"
+            trustedLockSupport -> "height_lock"
+            hipSupport -> "local_display_hip_supported"
+            tightTopSupport && bodyScaleSupport -> "local_display_top_tight"
+            topSupport && bodyScaleSupport -> "local_display_top_supported"
+            else -> "local_display_height"
+        }
+        return LocalHeightCandidate(candidate, confidence, source)
+    }
+
