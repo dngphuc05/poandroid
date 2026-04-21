@@ -1465,3 +1465,17 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             return null
         }
         var confidence = maxOf(
+            exportedHeightConfidence.takeIf { it.isFinite() } ?: 0f,
+            if (bodyScaleSupport && strongIndependentSupport) {
+                (raw.bodyScaleConfidence.takeIf { it.isFinite() } ?: 0f) * 0.72f
+            } else if (bodyScaleSupport && topSupport) {
+                0.38f
+            } else {
+                0f
+            },
+            if (correctedSupport) 0.70f else 0f,
+            if (hipSupport) 0.62f else 0f,
+            if (tightTopSupport) 0.60f else if (topSupport) 0.42f else 0f,
+            if (trustedLockSupport) 0.62f else 0f,
+        ).coerceIn(0f, 1f)
+        val weakAcquiring = !trustedLockSupport &&
