@@ -1941,3 +1941,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     }
 }
 
+internal data class PoseOverlayRectPx(
+    val left: Float,
+    val top: Float,
+    val width: Float,
+    val height: Float,
+)
+
