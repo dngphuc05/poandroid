@@ -1971,3 +1971,10 @@ internal fun computePoseRoi(
         maxY = maxOf(maxY, screenY[i])
     }
 
+    if (!minX.isFinite() || !maxX.isFinite() || !minY.isFinite() || !maxY.isFinite()) {
+        return null
+    }
+    if (maxX <= minX || maxY <= minY) {
+        return null
+    }
+
