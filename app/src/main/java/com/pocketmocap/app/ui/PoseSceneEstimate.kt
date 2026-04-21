@@ -1632,3 +1632,15 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                     )
         } ?: 0f
         val topCandidate = rawTop
+            ?.let { it + semanticEndpointBias }
+            ?.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val upperBodyLift = if (
+            locked == null &&
+            rawHip != null &&
+            torso != null &&
+            topCandidate != null &&
+            topCandidate > rawHip + 0.070f &&
+            torso > rawHip + 0.035f &&
+            abs(topCandidate - torso) <= 0.095f
+        ) {
+            val upperBody = (torso * 0.66f + topCandidate * 0.34f)
