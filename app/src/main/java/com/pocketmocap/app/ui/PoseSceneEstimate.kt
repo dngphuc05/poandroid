@@ -2202,3 +2202,10 @@ private data class GroundContactProxy(
 
 private data class BodyTopProxy(
     val xNorm: Float,
+    val yNorm: Float,
+    val confidence: Float,
+)
+
+private data class HipAnchorProxy(
+    val centerXNorm: Float,
+    val centerYNorm: Float,
