@@ -2249,3 +2249,11 @@ private fun deriveArCoreFloorEstimate(
     visualTopConfidence: Float,
 ): ArFloorEstimate? {
     worldTracking ?: return null
+    intrinsics ?: return null
+    if (!worldTracking.hasGroundPlane) return null
+    val camera = worldTracking.cameraPosition?.takeIf { it.size >= 3 } ?: return null
+    val rotation = worldTracking.cameraRotation?.takeIf { it.size >= 4 } ?: return null
+    val planePoint = worldTracking.groundPoint?.takeIf { it.size >= 3 } ?: return null
+    val planeNormal = worldTracking.groundNormal?.takeIf { it.size >= 3 } ?: return null
+    if (intrinsics.fx <= 1f || intrinsics.fy <= 1f) return null
+
