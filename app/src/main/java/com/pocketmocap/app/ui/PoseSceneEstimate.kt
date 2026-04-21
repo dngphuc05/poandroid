@@ -2011,3 +2011,15 @@ internal fun deriveOverlayPoseEstimate(
         previousVectorYNorm = previousHipVectorYNorm,
     )
     val arEstimate = deriveArCoreFloorEstimate(
+        roi = roi,
+        screenX = screenX,
+        screenY = screenY,
+        visibility = visibility,
+        worldTracking = worldTracking,
+        intrinsics = effectiveIntrinsics,
+        rawSubjectHeightMeters = rawSubjectHeightMeters,
+        hipProxy = hipProxy,
+        visualTopYNorm = visualTopYNorm,
+        visualTopConfidence = visualTopConfidence,
+    )
+    val arBodyHeight = arEstimate?.bodyHeightMeters
