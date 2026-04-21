@@ -1756,3 +1756,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return target.takeIf { it > locked + HEIGHT_LOCK_UPWARD_MARGIN_METERS }
     }
 
+    private fun estimateLooseBracketedSpanHeightRetarget(raw: SceneMetricSnapshot): Float? {
+        val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        val top = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        val topAboveLock = top > locked + SPAN_BRACKET_MIN_TOP_LOCK_GAP_METERS
