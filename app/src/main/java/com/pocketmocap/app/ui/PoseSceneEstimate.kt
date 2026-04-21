@@ -1876,3 +1876,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         }
     }
 
+    private fun relativeScaleAnchorLabels(
+        relativeScaleDistance: Float,
+        heightLock: HeightLockResult,
+        heightQualityTrusted: Boolean,
+    ): List<String> =
+        if (relativeScaleDistance.isFinite() && (!heightQualityTrusted || heightLock.state != "locked")) {
+            listOf("relative_anchor_untrusted")
+        } else {
+            emptyList()
+        }
+
