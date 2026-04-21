@@ -2074,3 +2074,13 @@ internal fun deriveOverlayPoseEstimate(
         ?.takeIf { it.isFinite() && it in 0.25f..2.80f }
         ?: roiCameraHeightMeters
     val lateralOffsetMeters = arEstimate?.lateralOffsetMeters ?: (
+        (roi.centerX - 0.5f) * 2f * distanceMeters * horizontalFovHalfTangent
+    ).coerceIn(-2.75f, 2.75f)
+    val hasArFloorEstimate = arEstimate != null
+    val source = when {
+        hasArFloorEstimate && arEstimate?.floorSource == "arcore_floor_provisional" -> "arcore_floor_provisional"
+        hasArFloorEstimate -> "arcore_floor"
+        worldTracking?.source?.startsWith("imu") == true -> "imu_roi_fallback"
+        else -> "roi_fallback"
+    }
+    val confidence = when {
