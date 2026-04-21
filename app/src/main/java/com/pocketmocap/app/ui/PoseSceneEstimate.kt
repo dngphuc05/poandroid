@@ -1542,3 +1542,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val pixel = raw.pixelSpanHeightMeters
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val pixelHigh = pixel?.let { it > locked + 0.20f } == true
+        val torsoHighUnsupported = torso != null &&
+            torso > locked + 0.12f &&
+            abs(torso - top) > 0.10f
+        return pixelHigh || torsoHighUnsupported
+    }
+
+    private fun shouldKeepLockedHeightConstraint(
