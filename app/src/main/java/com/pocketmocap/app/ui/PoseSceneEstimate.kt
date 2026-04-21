@@ -1800,3 +1800,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return target.takeIf { it > locked + HEIGHT_LOCK_UPWARD_MARGIN_METERS }
     }
 
+    private fun hasSemanticHeightAgreement(raw: SceneMetricSnapshot): Boolean {
+        // Hip geometry already fuses the top-ray and hip-ray observations through
+        // an LSQ that enforces the hip-center:height anthropometric ratio (with a
+        // 0.18 ratio-error rejection). When it converges to an in-range value
+        // and is INDEPENDENT of torso (not seeded from the same torso ratio),
+        // it is itself multi-evidence and can stand alone — torso (low bias)
+        // and top-ray (high bias) frequently never align with each other
