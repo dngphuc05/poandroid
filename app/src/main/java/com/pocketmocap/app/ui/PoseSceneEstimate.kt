@@ -1699,3 +1699,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val totalWeight = weighted.sumOf { it.second.toDouble() }.toFloat()
         if (totalWeight <= 1e-5f) return null
         val target = weighted.sumOf { (value, weight) -> (value * weight).toDouble() }.toFloat() / totalWeight
+        return target.coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+    }
+
+    private fun estimateBracketedSpanHeightRetarget(raw: SceneMetricSnapshot): Float? {
+        val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return null
+        val top = raw.topRayHeightMeters
