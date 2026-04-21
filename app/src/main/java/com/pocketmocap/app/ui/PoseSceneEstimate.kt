@@ -1836,3 +1836,21 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return values.size >= 3 && values.maxOrNull()!! - values.minOrNull()!! <= 0.14f
     }
 
+    private fun heightTrustRejectionLabels(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+        heightQualityTrusted: Boolean,
+    ): List<String> {
+        if (heightQualityTrusted) return emptyList()
+        return buildList {
+            if (optimized.heightCandidateSpreadMeters > 0.22f || "untrusted_height_spread" in optimized.activeFactors) {
+                add("rejected_height_spread")
+            }
+            if (!hasSemanticHeightAgreement(raw)) {
+                add("rejected_height_semantic_agreement")
+            }
+            if (optimized.solverResidualMeters > 0.55f) {
+                add("rejected_height_residual")
+            }
+            add("rejected_torso_fallback_lock")
+        }
