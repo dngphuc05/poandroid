@@ -1792,3 +1792,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             SPAN_BRACKET_INTERPOLATION
         }
         val target = (top + (upper - top) * interpolation)
+            .coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+        val highBracketSupport = highTorso != null
+        if (!topAboveLock && (!highBracketSupport || top < locked - SPAN_BRACKET_TOP_BELOW_LOCK_TOLERANCE_METERS)) {
+            return null
+        }
+        return target.takeIf { it > locked + HEIGHT_LOCK_UPWARD_MARGIN_METERS }
+    }
+
