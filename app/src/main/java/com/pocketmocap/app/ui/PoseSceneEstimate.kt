@@ -2145,3 +2145,10 @@ internal fun deriveOverlayPoseEstimate(
     )
 }
 
+private data class ArFloorEstimate(
+    val distanceMeters: Float,
+    val bodyHeightMeters: Float,
+    val cameraHeightMeters: Float,
+    val floorPitchDegrees: Float,
+    val lateralOffsetMeters: Float,
+    val confidence: Float,
