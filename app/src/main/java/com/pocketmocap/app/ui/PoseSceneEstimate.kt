@@ -1854,3 +1854,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             }
             add("rejected_torso_fallback_lock")
         }
+    }
+
+    private fun independentSemanticHeightValues(
+        hipGeometryHeight: Float,
+        torsoHeight: Float,
+        topRayHeight: Float,
+    ): List<Float> {
+        val torso = torsoHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
