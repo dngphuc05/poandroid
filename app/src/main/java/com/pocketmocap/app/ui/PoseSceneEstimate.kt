@@ -1499,3 +1499,16 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return LocalHeightCandidate(candidate, confidence, source)
     }
 
+    private fun isSemanticHeightTrusted(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+    ): Boolean {
+        if (!optimized.heightTrusted) return false
+        if (hasLockedHeightSilhouetteNoise(raw)) return false
+        if (hasStrongLockedHeightConflict(raw)) return false
+        if (optimized.heightCandidateSpreadMeters > 0.22f) return false
+        if (optimized.solverResidualMeters > 0.55f) return false
+        if ("untrusted_height_spread" in optimized.activeFactors) return false
+        return hasSemanticHeightAgreement(raw)
+    }
+
