@@ -1558,3 +1558,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?: return false
         if (hasStrongLockedHeightConflict(raw)) return false
         val endpointBias = (optimized.heightEndpointBiasMeters.takeIf { it.isFinite() } ?: heightEndpointBiasMeters)
+            .coerceIn(MIN_HEIGHT_ENDPOINT_BIAS_METERS, MAX_HEIGHT_ENDPOINT_BIAS_METERS)
+        val semanticEndpointBias = endpointBias.coerceAtLeast(0f)
+        val hip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val rawTop = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val rawPixel = raw.pixelSpanHeightMeters
