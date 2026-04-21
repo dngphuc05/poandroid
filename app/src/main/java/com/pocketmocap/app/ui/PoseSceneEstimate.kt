@@ -2272,3 +2272,12 @@ private fun deriveArCoreFloorEstimate(
         sqrt(dx * dx + dz * dz).coerceIn(0.35f, 12.0f)
     } ?: Float.NaN
     val footDistance = footRayDiagnostics.midpointDistance.takeIf { it.isFinite() } ?: blendedFootDistance
+    val cameraHeight = abs(dot3(
+        camera[0] - planePoint[0],
+        camera[1] - planePoint[1],
+        camera[2] - planePoint[2],
+        planeNormal[0],
+        planeNormal[1],
+        planeNormal[2],
+    )).coerceIn(0.05f, 3.0f)
+    val roiDistance = if (bodyHeightGuess != null) {
