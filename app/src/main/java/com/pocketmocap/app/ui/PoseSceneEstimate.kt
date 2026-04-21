@@ -2084,3 +2084,21 @@ internal fun deriveOverlayPoseEstimate(
         else -> "roi_fallback"
     }
     val confidence = when {
+        arEstimate != null -> arEstimate.confidence
+        worldTracking?.source?.startsWith("imu") == true -> 0.50f
+        else -> 0.35f
+    }
+
+    return OverlayPoseEstimate(
+        distanceMeters = distanceMeters,
+        bodyHeightMeters = bodyHeightMeters,
+        cameraHeightMeters = cameraHeightMeters,
+        floorPitchDegrees = floorPitchDegrees,
+        lateralOffsetMeters = lateralOffsetMeters,
+        roi = roi,
+        source = source,
+        confidence = confidence,
+        learnedHipVectorXNorm = arEstimate?.learnedHipVectorXNorm ?: hipProxy?.learnedVectorXNorm ?: Float.NaN,
+        learnedHipVectorYNorm = arEstimate?.learnedHipVectorYNorm ?: hipProxy?.learnedVectorYNorm ?: Float.NaN,
+        correctedDistanceMeters = arEstimate?.distanceMeters ?: Float.NaN,
+        correctedHeightMeters = arEstimate?.bodyHeightMeters ?: Float.NaN,
