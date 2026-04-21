@@ -1807,3 +1807,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         // and is INDEPENDENT of torso (not seeded from the same torso ratio),
         // it is itself multi-evidence and can stand alone — torso (low bias)
         // and top-ray (high bias) frequently never align with each other
+        // within 8 cm. The duplication guard (hip ≈ torso ⇒ same source)
+        // remains so a single torso-derived value does not falsely trust.
+        val hip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val torso = raw.torsoHeightMeters.takeIf { it.isFinite() }
+        val top = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val hipIsIndependent = hip != null && (torso == null || abs(hip - torso) > 0.015f)
