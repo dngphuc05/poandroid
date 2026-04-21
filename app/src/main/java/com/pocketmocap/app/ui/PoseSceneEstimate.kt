@@ -2036,3 +2036,13 @@ internal fun deriveOverlayPoseEstimate(
         else -> Float.NaN
     }
 
+    val roiHeight = roi.height.coerceIn(0.18f, 0.94f)
+    val verticalFovHalfTangent = effectiveIntrinsics
+        ?.takeIf { it.fy > 1f && it.imageHeight > 1 }
+        ?.let { it.imageHeight.toFloat() / (2f * it.fy) }
+        ?: tan(Math.toRadians((ASSUMED_VERTICAL_FOV_DEGREES * 0.5f).toDouble())).toFloat()
+    val horizontalFovHalfTangent = effectiveIntrinsics
+        ?.takeIf { it.fx > 1f && it.imageWidth > 1 }
+        ?.let { it.imageWidth.toFloat() / (2f * it.fx) }
+        ?: (verticalFovHalfTangent * viewportAspect.coerceIn(0.45f, 1.20f))
+
