@@ -1594,3 +1594,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 ?.let { add(it) }
         }
         rawTop
+            ?.let { bracketedUpperSpanTarget(raw, it) }
+            ?.takeIf { abs(it - locked) <= 0.14f }
+            ?.let { return true }
+        if (reliablePrimaryWitnesses.none { abs(it - locked) <= 0.16f }) return false
+        val strongPrimaryConflict =
+            hip?.let { abs(it - locked) > 0.42f } == true &&
+                top?.let { abs(it - locked) > 0.42f } == true
+        return !strongPrimaryConflict
+    }
+
