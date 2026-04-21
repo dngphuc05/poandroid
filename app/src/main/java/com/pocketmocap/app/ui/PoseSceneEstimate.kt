@@ -1894,3 +1894,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .joinToString("|")
 
     private fun appendFactorLabels(activeFactors: String, labels: List<String>): String {
+        if (labels.isEmpty()) return activeFactors
+        return (activeFactors.split("|").filter { it.isNotBlank() } + labels)
+            .distinct()
+            .joinToString("|")
+    }
+
+    private fun candidateAgreement(a: Float, b: Float): Boolean {
