@@ -2023,3 +2023,16 @@ internal fun deriveOverlayPoseEstimate(
         visualTopConfidence = visualTopConfidence,
     )
     val arBodyHeight = arEstimate?.bodyHeightMeters
+        ?.takeIf { it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+
+    val trackingBodyHeight = worldTracking?.subjectHeightMeters?.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    val bodyHeightMeters = when {
+        arBodyHeight != null -> arBodyHeight
+        trackingBodyHeight != null -> trackingBodyHeight
+        rawSubjectHeightMeters.isFinite() &&
+            rawSubjectHeightMeters in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS -> {
+            rawSubjectHeightMeters
+        }
+        else -> Float.NaN
+    }
+
