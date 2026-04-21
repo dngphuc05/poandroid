@@ -2281,3 +2281,10 @@ private fun deriveArCoreFloorEstimate(
         planeNormal[2],
     )).coerceIn(0.05f, 3.0f)
     val roiDistance = if (bodyHeightGuess != null) {
+        (
+            bodyHeightGuess / (2f * (intrinsics.imageHeight.toFloat() / (2f * intrinsics.fy)) * roi.height.coerceIn(0.18f, 0.94f))
+        ).coerceIn(0.70f, 12.0f)
+    } else {
+        Float.NaN
+    }
+    // Hip-depth distance via the depth-map patch is intentionally diagnostic-
