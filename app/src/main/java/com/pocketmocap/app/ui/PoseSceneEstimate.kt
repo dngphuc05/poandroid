@@ -1691,3 +1691,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             ?.takeIf { candidate -> anchors.any { abs(candidate - it) <= 0.22f } }
             ?.let { candidate ->
                 val low = (anchors.minOrNull() ?: candidate) - 0.035f
+                val high = (anchors.maxOrNull() ?: candidate) + 0.025f
+                weighted += candidate.coerceIn(low, high) to 0.18f
+            }
+        pixel?.let { weighted += it to 0.02f }
+        if (weighted.size < 2) return null
+        val totalWeight = weighted.sumOf { it.second.toDouble() }.toFloat()
+        if (totalWeight <= 1e-5f) return null
+        val target = weighted.sumOf { (value, weight) -> (value * weight).toDouble() }.toFloat() / totalWeight
