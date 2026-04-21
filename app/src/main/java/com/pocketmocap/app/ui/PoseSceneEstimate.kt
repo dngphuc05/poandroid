@@ -2257,3 +2257,10 @@ private fun deriveArCoreFloorEstimate(
     val planeNormal = worldTracking.groundNormal?.takeIf { it.size >= 3 } ?: return null
     if (intrinsics.fx <= 1f || intrinsics.fy <= 1f) return null
 
+    val bodyHeightGuess = rawSubjectHeightMeters
+        .takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+        ?: worldTracking.subjectHeightMeters.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    val torsoSpanDiagnostics = estimateTorsoSpanDiagnostics(screenX, screenY, visibility)
+    val footContact = selectGroundContactProxy(roi, screenX, screenY, visibility)
+    val footRayDiagnostics = computeFootRayDiagnostics(screenX, screenY, visibility, intrinsics, camera, rotation, planePoint, planeNormal)
+    val footU = footContact.xNorm * intrinsics.imageWidth
