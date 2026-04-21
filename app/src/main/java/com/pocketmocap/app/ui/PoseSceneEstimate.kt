@@ -2209,3 +2209,10 @@ private data class BodyTopProxy(
 private data class HipAnchorProxy(
     val centerXNorm: Float,
     val centerYNorm: Float,
+    val confidence: Float,
+    val learnedVectorXNorm: Float,
+    val learnedVectorYNorm: Float,
+)
+
+private data class HipVerticalEstimate(
+    val distanceMeters: Float,
