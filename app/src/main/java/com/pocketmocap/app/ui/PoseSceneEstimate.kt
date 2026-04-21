@@ -1784,3 +1784,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 hip?.let { candidate >= it - 0.04f } != false
         }
         val upper = listOfNotNull(highTorso, highPixel ?: pixelOnly)
+            .minOrNull()
+            ?: return null
+        val interpolation = if (highTorso == null && highPixel == null && pixelOnly != null) {
+            PIXEL_ONLY_BRACKET_HEIGHT_INTERPOLATION
+        } else {
+            SPAN_BRACKET_INTERPOLATION
+        }
+        val target = (top + (upper - top) * interpolation)
