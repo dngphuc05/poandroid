@@ -1565,3 +1565,14 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val rawTop = raw.topRayHeightMeters
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val rawPixel = raw.pixelSpanHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val supportedEndpointBias = semanticEndpointBias.takeIf { bias ->
+            bias > 0f &&
+                rawTop != null &&
+                (
+                    rawTop >= locked - MAX_TOP_LOW_BIAS_MASK_GAP_METERS ||
+                        listOfNotNull(rawPixel, raw.torsoHeightMeters.takeIf { it.isFinite() })
+                            .any { abs(it - (rawTop + bias)) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP_METERS }
+                    )
+        } ?: 0f
+        val top = ((rawTop ?: Float.NaN) + supportedEndpointBias)
