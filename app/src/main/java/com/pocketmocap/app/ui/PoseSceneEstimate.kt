@@ -1455,3 +1455,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
             ?.let { abs(candidate - it) <= 0.12f } == true
         val bodyScaleSupport = raw.bodyScaleConfidence.isFinite() && raw.bodyScaleConfidence >= 0.80f
+        val trustedLockSupport = heightLock.exportAsConstraint && !heightLock.state.contains("untrusted")
+        val strongIndependentSupport = correctedSupport || hipSupport || tightTopSupport || trustedLockSupport
+        val endpointSupport = raw.topEndpointConfidence >= 0.35f ||
+            raw.maskEndpointConfidence >= 0.35f ||
+            raw.confidence >= 0.50f
+        if (!endpointSupport) return null
+        if (!(correctedSupport || topSupport || hipSupport || bodyScaleSupport || trustedLockSupport)) {
+            return null
+        }
+        var confidence = maxOf(
