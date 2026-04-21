@@ -2194,3 +2194,11 @@ private data class ArFloorEstimate(
     val rawKeypointGeometry: Map<String, Float> = emptyMap(),
 )
 
+private data class GroundContactProxy(
+    val xNorm: Float,
+    val yNorm: Float,
+    val confidence: Float,
+)
+
+private data class BodyTopProxy(
+    val xNorm: Float,
