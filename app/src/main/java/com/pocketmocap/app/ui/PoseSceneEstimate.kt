@@ -1862,3 +1862,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         topRayHeight: Float,
     ): List<Float> {
         val torso = torsoHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val hip = hipGeometryHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val top = topRayHeight.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        return buildList {
+            torso?.let { add(it) }
+            // In the current geometry path hipGeometryHeight can be seeded by the
+            // torso ratio estimate. If it is numerically the same as torso height,
+            // it is not an independent witness and must not create false trust.
