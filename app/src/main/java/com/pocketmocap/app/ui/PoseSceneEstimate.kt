@@ -1915,3 +1915,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         var weighted = 0f
         for (factor in valid) {
             val residual = abs(factor.value - median)
+            val robustWeight = factor.weight / (1f + (residual / 0.22f) * (residual / 0.22f))
+            weighted += factor.value * robustWeight
+            totalWeight += robustWeight
+        }
+        return if (totalWeight > 1e-5f) weighted / totalWeight else median
+    }
+
