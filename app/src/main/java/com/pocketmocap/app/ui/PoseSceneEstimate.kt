@@ -1534,3 +1534,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
             ?: return false
         val top = raw.topRayHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        if (abs(hip - locked) > 0.08f || top <= locked + 0.055f) return false
+        val torso = raw.torsoHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val pixel = raw.pixelSpanHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+        val pixelHigh = pixel?.let { it > locked + 0.20f } == true
