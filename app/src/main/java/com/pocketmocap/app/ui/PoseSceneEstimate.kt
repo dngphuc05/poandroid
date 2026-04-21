@@ -1651,3 +1651,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
             null
         }
         val hip = (upperBodyLift ?: rawHip)
+            ?.let { candidate ->
+                locked?.let {
+                    candidate.coerceIn(
+                        it - HEIGHT_LOCK_DOWNWARD_MARGIN_METERS,
+                        it + heightLockUpwardMarginMeters(it, candidate),
+                    )
+                } ?: candidate
+            }
+        val primaryAnchor = locked ?: hip
