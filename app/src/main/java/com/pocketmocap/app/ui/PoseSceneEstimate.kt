@@ -1908,3 +1908,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     }
 
     private fun robustWeightedAverage(factors: List<FactorValue>): Float? {
+        val valid = factors.filter { it.value.isFinite() && it.weight > 0f }
+        if (valid.isEmpty()) return null
+        val median = valid.map { it.value }.sorted()[valid.size / 2]
+        var totalWeight = 0f
+        var weighted = 0f
+        for (factor in valid) {
+            val residual = abs(factor.value - median)
