@@ -1978,3 +1978,11 @@ internal fun computePoseRoi(
         return null
     }
 
+    return PoseRoi(
+        minX = minX.coerceIn(0f, 1f),
+        maxX = maxX.coerceIn(0f, 1f),
+        minY = minY.coerceIn(0f, 1f),
+        maxY = maxY.coerceIn(0f, 1f),
+    )
+}
+
