@@ -2046,3 +2046,13 @@ internal fun deriveOverlayPoseEstimate(
         ?.let { it.imageWidth.toFloat() / (2f * it.fx) }
         ?: (verticalFovHalfTangent * viewportAspect.coerceIn(0.45f, 1.20f))
 
+    val roiDistanceMeters = if (bodyHeightMeters.isFinite()) {
+        (bodyHeightMeters / (2f * verticalFovHalfTangent * roiHeight)).coerceIn(0.70f, 12.0f)
+    } else {
+        Float.NaN
+    }
+    val distanceMeters = arEstimate?.distanceMeters
+        ?: worldTracking?.subjectDistanceMeters
+        ?.takeIf { it.isFinite() && it in 0.45f..12.0f }
+        ?: roiDistanceMeters
+
