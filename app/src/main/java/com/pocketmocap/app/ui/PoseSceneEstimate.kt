@@ -1682,3 +1682,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 }
             }
         val anchors = listOfNotNull(hip, top)
+        if (anchors.isEmpty()) return null
+
+        val weighted = mutableListOf<Pair<Float, Float>>()
+        hip?.let { weighted += it to 0.72f }
+        top?.let { weighted += it to if (hip != null) 0.08f else 0.22f }
+        torso
+            ?.takeIf { candidate -> anchors.any { abs(candidate - it) <= 0.22f } }
+            ?.let { candidate ->
+                val low = (anchors.minOrNull() ?: candidate) - 0.035f
