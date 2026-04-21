@@ -1957,3 +1957,10 @@ internal fun computePoseRoi(
         return null
     }
 
+    var minX = Float.POSITIVE_INFINITY
+    var maxX = Float.NEGATIVE_INFINITY
+    var minY = Float.POSITIVE_INFINITY
+    var maxY = Float.NEGATIVE_INFINITY
+
+    for (i in 0 until 33) {
+        val visible = visibility?.getOrNull(i) ?: 1f
