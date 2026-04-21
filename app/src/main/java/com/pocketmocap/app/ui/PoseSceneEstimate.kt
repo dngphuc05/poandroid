@@ -1827,3 +1827,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         )
         if (values.size < 2) return false
         var closePairs = 0
+        for (i in values.indices) {
+            for (j in i + 1 until values.size) {
+                if (abs(values[i] - values[j]) <= 0.08f) closePairs += 1
+            }
+        }
+        if (closePairs > 0) return true
+        return values.size >= 3 && values.maxOrNull()!! - values.minOrNull()!! <= 0.14f
+    }
+
