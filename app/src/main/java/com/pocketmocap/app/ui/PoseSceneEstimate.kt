@@ -1660,3 +1660,13 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
                 } ?: candidate
             }
         val primaryAnchor = locked ?: hip
+        val top = topCandidate?.takeIf { candidate ->
+            primaryAnchor?.let { abs(candidate - it) <= 0.22f } == true
+        }?.let { candidate ->
+            val anchor = primaryAnchor ?: candidate
+            when {
+                candidate > anchor -> candidate.coerceAtMost(anchor + heightLockUpwardMarginMeters(anchor, candidate))
+                else -> candidate.coerceAtLeast(anchor - 0.025f)
+            }
+        }
+        val pixel = (raw.pixelSpanHeightMeters + semanticEndpointBias)
