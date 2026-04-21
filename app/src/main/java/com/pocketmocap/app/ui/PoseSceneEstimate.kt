@@ -2264,3 +2264,11 @@ private fun deriveArCoreFloorEstimate(
     val footContact = selectGroundContactProxy(roi, screenX, screenY, visibility)
     val footRayDiagnostics = computeFootRayDiagnostics(screenX, screenY, visibility, intrinsics, camera, rotation, planePoint, planeNormal)
     val footU = footContact.xNorm * intrinsics.imageWidth
+    val footV = footContact.yNorm * intrinsics.imageHeight
+    val footHit = rayPlaneHit(footU, footV, intrinsics, camera, rotation, planePoint, planeNormal)
+    val blendedFootDistance = footHit?.let {
+        val dx = it[0] - camera[0]
+        val dz = it[2] - camera[2]
+        sqrt(dx * dx + dz * dz).coerceIn(0.35f, 12.0f)
+    } ?: Float.NaN
+    val footDistance = footRayDiagnostics.midpointDistance.takeIf { it.isFinite() } ?: blendedFootDistance
