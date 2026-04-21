@@ -2056,3 +2056,12 @@ internal fun deriveOverlayPoseEstimate(
         ?.takeIf { it.isFinite() && it in 0.45f..12.0f }
         ?: roiDistanceMeters
 
+    // ROI geometry remains only the non-AR fallback path. AR Technical metrics use
+    // visible foot landmarks first, then ROI bottom only when foot contact is missing.
+    val roiFloorPitchDegrees = (5f + roi.bottomGap * 68f).coerceIn(4f, 32f)
+    val floorPitchDegrees = arEstimate?.floorPitchDegrees
+        ?: worldTracking?.floorPitchDegrees
+        ?.takeIf { it.isFinite() }
+        ?.let { kotlin.math.abs(it).coerceIn(4f, 42f) }
+        ?: roiFloorPitchDegrees
+    val roiCameraHeightMeters = if (bodyHeightMeters.isFinite()) {
