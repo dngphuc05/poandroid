@@ -2138,3 +2138,10 @@ internal fun deriveOverlayPoseEstimate(
         topEndpointConfidence = arEstimate?.topEndpointConfidence ?: Float.NaN,
         footEndpointConfidence = arEstimate?.footEndpointConfidence ?: Float.NaN,
         maskEndpointConfidence = arEstimate?.maskEndpointConfidence ?: Float.NaN,
+        visualTopScanYNorm = arEstimate?.visualTopScanYNorm ?: Float.NaN,
+        visualTopScanConfidence = arEstimate?.visualTopScanConfidence ?: Float.NaN,
+        visualTopLiftNorm = arEstimate?.visualTopLiftNorm ?: Float.NaN,
+        rawKeypointGeometry = buildRawKeypointGeometryMap(screenX, screenY, visibility),
+    )
+}
+
