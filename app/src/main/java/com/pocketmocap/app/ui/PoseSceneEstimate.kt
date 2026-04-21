@@ -2288,3 +2288,10 @@ private fun deriveArCoreFloorEstimate(
         Float.NaN
     }
     // Hip-depth distance via the depth-map patch is intentionally diagnostic-
+    // only (see comment near hipSelection below). On real captures it either
+    // reports values >> the true subject distance (file 52: mean 3.19 m vs
+    // 2.10 m truth, all frames out-of-range) or fails to read the depth map
+    // entirely (file 53: 100% NaN). The optimizer already gates it behind
+    // FLAG_REJECTED_HIP, so the depth sampling is pure overhead. Skip it.
+    val hipDepthEstimate: DepthPatchEstimate? = null
+    val torsoHeightPre = estimateTorsoHeightCandidate(screenX, screenY, visibility, 2.50f, intrinsics)
