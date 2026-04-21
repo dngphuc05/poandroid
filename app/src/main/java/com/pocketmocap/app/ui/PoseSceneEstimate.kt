@@ -1549,3 +1549,12 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     }
 
     private fun shouldKeepLockedHeightConstraint(
+        raw: SceneMetricSnapshot,
+        optimized: PhysicalSceneOptimizerResult,
+        heightQualityTrusted: Boolean,
+    ): Boolean {
+        if (heightQualityTrusted) return false
+        val locked = lockedHeightMeters.takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        if (hasStrongLockedHeightConflict(raw)) return false
+        val endpointBias = (optimized.heightEndpointBiasMeters.takeIf { it.isFinite() } ?: heightEndpointBiasMeters)
