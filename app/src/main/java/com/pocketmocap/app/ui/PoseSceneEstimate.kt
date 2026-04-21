@@ -1526,3 +1526,11 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         return primaryWitnesses.count { abs(it - locked) > 0.35f } >= 2
     }
 
+    private fun hasLockedHeightSilhouetteNoise(raw: SceneMetricSnapshot): Boolean {
+        val locked = lockedHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        val hip = raw.hipGeometryHeightMeters
+            .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
+            ?: return false
+        val top = raw.topRayHeightMeters
