@@ -1901,3 +1901,10 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
     }
 
     private fun candidateAgreement(a: Float, b: Float): Boolean {
+        if (!a.isFinite() || !b.isFinite()) return false
+        val absDelta = abs(a - b)
+        val ratio = absDelta / maxOf(a, b, 1e-4f)
+        return absDelta <= 1.25f || ratio <= 0.35f
+    }
+
+    private fun robustWeightedAverage(factors: List<FactorValue>): Float? {
