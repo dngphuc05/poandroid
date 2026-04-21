@@ -1986,3 +1986,19 @@ internal fun computePoseRoi(
     )
 }
 
+internal fun deriveOverlayPoseEstimate(
+    roi: PoseRoi?,
+    rawSubjectHeightMeters: Float,
+    screenX: FloatArray? = null,
+    screenY: FloatArray? = null,
+    visibility: FloatArray? = null,
+    viewportAspect: Float = DEFAULT_VIEWPORT_ASPECT,
+    worldTracking: WorldTrackingSnapshot? = null,
+    intrinsics: CameraIntrinsics? = null,
+    previousHipVectorXNorm: Float = Float.NaN,
+    previousHipVectorYNorm: Float = Float.NaN,
+    visualTopYNorm: Float = Float.NaN,
+    visualTopConfidence: Float = Float.NaN,
+): OverlayPoseEstimate? {
+    roi ?: return null
+    val effectiveIntrinsics = worldTracking?.intrinsics ?: intrinsics
