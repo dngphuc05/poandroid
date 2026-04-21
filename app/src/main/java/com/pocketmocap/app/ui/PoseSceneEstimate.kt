@@ -1815,3 +1815,15 @@ internal class PhysicalSceneFactorGraph(initialBias: PhysicalSceneBias = Physica
         val top = raw.topRayHeightMeters
             .takeIf { it.isFinite() && it in MIN_BODY_HEIGHT_METERS..MAX_BODY_HEIGHT_METERS }
         val hipIsIndependent = hip != null && (torso == null || abs(hip - torso) > 0.015f)
+        val hipDoesNotConflict = hip != null && (torso == null || abs(hip - torso) <= 0.22f)
+        val hipDoesNotMaskLowTop = hip != null &&
+            (top == null || hip <= top + 0.100f)
+        if (hipIsIndependent && hipDoesNotConflict && hipDoesNotMaskLowTop) return true
+
+        val values = independentSemanticHeightValues(
+            hipGeometryHeight = raw.hipGeometryHeightMeters,
+            torsoHeight = raw.torsoHeightMeters,
+            topRayHeight = raw.topRayHeightMeters,
+        )
+        if (values.size < 2) return false
+        var closePairs = 0
