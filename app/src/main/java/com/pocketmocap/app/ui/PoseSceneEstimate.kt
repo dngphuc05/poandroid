@@ -2860,3 +2860,10 @@ private fun estimateTorsoSpanDiagnostics(
     if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
     val leftShoulder = jointPoint(screenX, screenY, visibility, 11, minVisibility = 0.30f)
     val rightShoulder = jointPoint(screenX, screenY, visibility, 12, minVisibility = 0.30f)
+    val leftHip = jointPoint(screenX, screenY, visibility, 23, minVisibility = 0.30f)
+    val rightHip = jointPoint(screenX, screenY, visibility, 24, minVisibility = 0.30f)
+    if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null) return null
+
+    fun distance(a: Pair<Float, Float>, b: Pair<Float, Float>): Float {
+        val dx = a.first - b.first
+        val dy = a.second - b.second
