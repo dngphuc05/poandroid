@@ -2927,3 +2927,11 @@ private fun metricJointSpan(
     intrinsics: CameraIntrinsics,
 ): Float? {
     val va = visibility?.getOrNull(a) ?: 1f
+    val vb = visibility?.getOrNull(b) ?: 1f
+    if (va < 0.28f || vb < 0.28f) return null
+    val ax = screenX[a]
+    val ay = screenY[a]
+    val bx = screenX[b]
+    val by = screenY[b]
+    if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
+    val du = abs(ax - bx) * intrinsics.imageWidth
