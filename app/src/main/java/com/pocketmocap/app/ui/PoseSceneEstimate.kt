@@ -2963,3 +2963,21 @@ private fun candidateAgreement(
 ): Boolean {
     if (!a.isFinite() || !b.isFinite()) return false
     val delta = abs(a - b)
+    val ratio = delta / maxOf(a, b, 1e-4f)
+    return delta <= maxAbsDelta || ratio <= maxRatio
+}
+
+private fun inferCameraHeightFromFootRayScale(
+    rawCameraHeight: Float,
+    footPlaneDistance: Float,
+    subjectDistance: Float,
+    floorSource: String,
+    footConfidence: Float,
+): Float {
+    if (!rawCameraHeight.isFinite() || !footPlaneDistance.isFinite() || !subjectDistance.isFinite()) {
+        return rawCameraHeight
+    }
+    if (rawCameraHeight !in 0.20f..4.50f || footPlaneDistance !in 0.45f..12.0f || subjectDistance !in 0.45f..12.0f) {
+        return rawCameraHeight
+    }
+    if (footConfidence < 0.18f) return rawCameraHeight
