@@ -2996,3 +2996,13 @@ private fun inferCameraHeightFromFootRayScale(
     val ratio = (subjectDistance / footPlaneDistance).coerceIn(0.45f, 1.65f)
     val scaled = (rawCameraHeight * ratio).coerceIn(0.20f, 2.50f)
     val heldOrProvisional = floorSource.endsWith("_held") || floorSource.contains("provisional")
+    val correctionWeight = when {
+        heldOrProvisional && mismatch > 0.80f -> 1.0f
+        mismatch > 1.20f -> 0.92f
+        mismatch > 0.80f -> 0.82f
+        else -> 0.62f
+    }
+    return (rawCameraHeight * (1f - correctionWeight) + scaled * correctionWeight)
+        .coerceIn(0.20f, 2.50f)
+}
+
