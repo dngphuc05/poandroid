@@ -2846,3 +2846,10 @@ private fun estimateTorsoHeightCandidate(
     // hip-midpoint vertical at ~0.288-0.30 of standing height for adults. The
     // earlier 0.33 divisor produced a persistent 12-17 cm undershoot on real
     // captures (mean torso_height_m 1.66 / 1.71 vs ground-truth 1.83). 0.30
+    // matches the ground truth and the standard anthropometric value while
+    // still keeping torso a low-weight diagnostic in the optimizer.
+    return (torsoMeters / 0.30f)
+        .takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+}
+
+private fun estimateTorsoSpanDiagnostics(
