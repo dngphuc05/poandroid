@@ -2739,3 +2739,17 @@ private fun edgeClipRisk(edgeMarginNorm: Float): Float {
     }
 }
 
+private data class BodyScaleDiagnostics(
+    val spreadMeters: Float,
+    val confidence: Float,
+)
+
+private fun selectHipGeometryDistance(
+    torsoDistance: Float?,
+    lockedDistance: Float?,
+    topSolvedDistance: Float?,
+    footDistance: Float,
+    torsoHeight: Float?,
+    topSolvedHeight: Float?,
+): HipGeometrySelection {
+    val torso = torsoDistance?.takeIf { it.isFinite() && it in 0.35f..12.0f }
