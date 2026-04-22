@@ -2805,3 +2805,11 @@ private fun selectHipGeometryHeight(
     }
 }
 
+private fun classifyFootContact(
+    footDistance: Float,
+    hipDistance: Float?,
+    roiDistance: Float,
+    footConfidence: Float,
+): String {
+    if (!footDistance.isFinite() || footConfidence < 0.36f) return "missing_or_occluded"
+    val agreesWithHip = hipDistance?.let { candidateAgreement(footDistance, it, 0.30f, 0.12f) } == true
