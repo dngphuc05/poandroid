@@ -2713,3 +2713,14 @@ private fun estimateVisualTopResidualCrownLiftNorm(
     if (!footRays.midpointDistance.isFinite() || footRays.midpointDistance !in 0.70f..6.0f) return 0f
     if (edgeClipRisk(roi.minY) > 0.05f || edgeClipRisk(bodyTop.yNorm) > 0.05f) return 0f
     val roiAllowance = (roi.height.takeIf { it.isFinite() } ?: 0f) * 0.006f
+    val confidenceScale = ((visualTopConfidence - 0.66f) / 0.24f).coerceIn(0.25f, 1f)
+    val residual = visualTopLiftNorm * 0.72f + roiAllowance
+    return (residual * confidenceScale).coerceIn(0.004f, 0.018f)
+}
+
+private fun estimateBodyClipRisk(
+    roi: PoseRoi,
+    bodyTop: BodyTopProxy,
+    footContact: GroundContactProxy,
+): Float {
+    val topRisk = edgeClipRisk(minOf(roi.minY, bodyTop.yNorm))
