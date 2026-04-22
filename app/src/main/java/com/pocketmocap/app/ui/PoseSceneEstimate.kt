@@ -2471,3 +2471,13 @@ private fun deriveArCoreFloorEstimate(
         Float.NaN
     }
     val heightCandidates = mutableListOf<Float>()
+    val hipGeometryHeight = selectHipGeometryHeight(
+        torsoHeight = torsoHeightCandidate,
+        lockedHeight = rawSubjectHeightMeters,
+        topSolvedHeight = hipVerticalEstimate?.bodyHeightMeters,
+    )
+        ?.takeIf { it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    if (hipGeometryHeight != null) {
+        heightCandidates += hipGeometryHeight
+    }
+    val semanticHeightRefs = listOfNotNull(hipGeometryHeight, torsoHeightCandidate)
