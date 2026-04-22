@@ -3100,3 +3100,10 @@ private fun selectHipAnchorProxy(
 ): HipAnchorProxy? {
     if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
     val leftVis = visibility?.getOrNull(23) ?: 1f
+    val rightVis = visibility?.getOrNull(24) ?: 1f
+    val leftX = screenX[23]
+    val leftY = screenY[23]
+    val rightX = screenX[24]
+    val rightY = screenY[24]
+    val hasLeft = leftVis > 0.20f && leftX.isFinite() && leftY.isFinite()
+    val hasRight = rightVis > 0.20f && rightX.isFinite() && rightY.isFinite()
