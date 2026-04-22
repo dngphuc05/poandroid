@@ -2640,3 +2640,17 @@ private fun rayFloorDistanceForJoint(
         ?: return null
     val dx = hit[0] - camera[0]
     val dz = hit[2] - camera[2]
+    return sqrt(dx * dx + dz * dz).takeIf { it.isFinite() && it in 0.35f..12.0f }
+}
+
+private fun computeFootRayDiagnostics(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    intrinsics: CameraIntrinsics,
+    camera: FloatArray,
+    rotation: FloatArray,
+    planePoint: FloatArray,
+    planeNormal: FloatArray,
+): FootRayDiagnostics {
+    fun side(indices: IntArray): Float? {
