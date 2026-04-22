@@ -3125,3 +3125,21 @@ private fun selectHipAnchorProxy(
             centerYNorm = (leftY + previousVectorYNorm * 0.5f).coerceIn(0f, 1f),
             confidence = (leftVis * 0.76f).coerceIn(0f, 1f),
             learnedVectorXNorm = previousVectorXNorm,
+            learnedVectorYNorm = previousVectorYNorm,
+        )
+        hasRight && hasPrevVector -> HipAnchorProxy(
+            centerXNorm = (rightX - previousVectorXNorm * 0.5f).coerceIn(0f, 1f),
+            centerYNorm = (rightY - previousVectorYNorm * 0.5f).coerceIn(0f, 1f),
+            confidence = (rightVis * 0.76f).coerceIn(0f, 1f),
+            learnedVectorXNorm = previousVectorXNorm,
+            learnedVectorYNorm = previousVectorYNorm,
+        )
+        else -> HipAnchorProxy(
+            centerXNorm = roi.centerX,
+            centerYNorm = (roi.minY + roi.maxY) * 0.58f,
+            confidence = 0.22f,
+            learnedVectorXNorm = previousVectorXNorm,
+            learnedVectorYNorm = previousVectorYNorm,
+        )
+    }
+}
