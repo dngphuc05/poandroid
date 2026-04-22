@@ -2956,3 +2956,10 @@ private fun jointPoint(
 }
 
 private fun candidateAgreement(
+    a: Float,
+    b: Float,
+    maxAbsDelta: Float,
+    maxRatio: Float,
+): Boolean {
+    if (!a.isFinite() || !b.isFinite()) return false
+    val delta = abs(a - b)
