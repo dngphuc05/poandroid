@@ -2684,3 +2684,10 @@ private fun estimateCrownEndpointLiftNorm(
     if (!footRays.midpointDistance.isFinite() || footRays.midpointDistance !in 0.70f..6.0f) return 0f
     if (edgeClipRisk(roi.minY) > 0.05f || edgeClipRisk(bodyTop.yNorm) > 0.05f) return 0f
     val shoulderWidth = normalizedJointSpan(screenX, screenY, visibility, 11, 12) ?: return 0f
+    val headSpan = normalizedJointSpan(screenX, screenY, visibility, 7, 8)
+        ?: normalizedJointSpan(screenX, screenY, visibility, 9, 10)
+        ?: 0f
+    val headVisible = intArrayOf(0, 7, 8, 9, 10).count { idx ->
+        val vis = visibility?.getOrNull(idx) ?: 1f
+        val x = screenX.getOrNull(idx)
+        val y = screenY.getOrNull(idx)
