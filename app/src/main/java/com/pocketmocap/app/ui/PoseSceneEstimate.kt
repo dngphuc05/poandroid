@@ -3068,3 +3068,17 @@ private fun selectGroundContactProxy(
     val bottomY = samples.maxOf { it.y }
     val keepBand = 0.085f
     val chosen = samples.filter { it.y >= bottomY - keepBand }
+    if (chosen.isEmpty()) {
+        return GroundContactProxy(roi.centerX, roi.maxY, 0.28f)
+    }
+
+    var weightedX = 0f
+    var weightSum = 0f
+    for (s in chosen) {
+        weightedX += s.x * s.weight
+        weightSum += s.weight
+    }
+    if (weightSum <= 1e-4f) {
+        return GroundContactProxy(roi.centerX, roi.maxY, 0.30f)
+    }
+
