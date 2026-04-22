@@ -2464,3 +2464,10 @@ private fun deriveArCoreFloorEstimate(
         heightFromVerticalRay ?: heightFromDistanceAngle
     }
     val pixelHeightCandidate = if (pixelSpanHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS) {
+        // Pixel span underestimates true top-to-floor when feet/head landmarks sit inside body silhouette.
+        // Keep this as a backup candidate, not a dominant one.
+        pixelSpanHeight * 1.10f
+    } else {
+        Float.NaN
+    }
+    val heightCandidates = mutableListOf<Float>()
