@@ -3188,3 +3188,11 @@ private fun sampleHipDepthPatch(
     depthMap ?: return null
     if (depthMap.width <= 2 || depthMap.height <= 2 || depthMap.depthMm.isEmpty()) return null
     val cx = (xNorm * (depthMap.width - 1)).roundToInt().coerceIn(0, depthMap.width - 1)
+    val cy = (yNorm * (depthMap.height - 1)).roundToInt().coerceIn(0, depthMap.height - 1)
+    val radius = 2
+    val samples = ArrayList<Float>(25)
+    for (y in (cy - radius).coerceAtLeast(0)..(cy + radius).coerceAtMost(depthMap.height - 1)) {
+        for (x in (cx - radius).coerceAtLeast(0)..(cx + radius).coerceAtMost(depthMap.width - 1)) {
+            val idx = y * depthMap.width + x
+            if (idx !in depthMap.depthMm.indices) continue
+            val mm = depthMap.depthMm[idx].toInt() and 0xFFFF
