@@ -2981,3 +2981,11 @@ private fun inferCameraHeightFromFootRayScale(
         return rawCameraHeight
     }
     if (footConfidence < 0.18f) return rawCameraHeight
+    val sourceCanBeBiased = floorSource == "arcore_floor_hit" ||
+        floorSource == "arcore_floor_hit_held" ||
+        floorSource == "arcore_floor_provisional" ||
+        floorSource == "arcore_floor_provisional_held"
+    if (!sourceCanBeBiased) return rawCameraHeight
+    val mismatch = abs(footPlaneDistance - subjectDistance)
+    if (mismatch < 0.42f) return rawCameraHeight
+
