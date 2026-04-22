@@ -2425,3 +2425,19 @@ private fun deriveArCoreFloorEstimate(
         footConfidence = footContact.confidence,
     )
 
+    val bodyHeightNorm = (footContact.yNorm - topYForGeometry).coerceIn(0.10f, 0.98f)
+    val vTan = intrinsics.imageHeight.toFloat() / (2f * intrinsics.fy)
+    val pixelSpanHeight = bodyHeightNorm * 2f * vTan * distance
+    val heightFromVerticalRay = if (footHit != null) {
+        topRay?.let {
+            estimateVerticalHeightFromTopRay(
+                camera = camera,
+                topRay = it,
+                footPoint = footHit,
+                planeNormal = planeNormal,
+            )
+        }
+    } else {
+        null
+    }
+    val heightFromDistanceAngle = topRay?.let {
