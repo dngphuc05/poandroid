@@ -2314,3 +2314,15 @@ private fun deriveArCoreFloorEstimate(
         landmarkBodyTop
     }
     val visualTopRawLiftNorm = (landmarkBodyTop.yNorm - bodyTop.yNorm).coerceAtLeast(0f)
+    val crownLiftNorm = if (visualTop != null) {
+        estimateVisualTopResidualCrownLiftNorm(
+            roi = roi,
+            bodyTop = bodyTop,
+            visualTopLiftNorm = visualTopRawLiftNorm,
+            visualTopConfidence = visualTopConfidence,
+            footRays = footRayDiagnostics,
+        )
+    } else {
+        estimateCrownEndpointLiftNorm(roi, screenX, screenY, visibility, bodyTop, footRayDiagnostics)
+    }
+    val visualTopLiftNorm = visualTopRawLiftNorm + crownLiftNorm
