@@ -2902,3 +2902,11 @@ private fun estimateBodyScaleDiagnostics(
         11, 12, 23, 24,
     )
     val lengths = mutableListOf<Float>()
+    var i = 0
+    while (i < segments.size) {
+        val len = metricJointSpan(screenX, screenY, visibility, segments[i], segments[i + 1], distanceMeters, intrinsics)
+        if (len != null) lengths += len
+        i += 2
+    }
+    if (lengths.size < 4) return BodyScaleDiagnostics(Float.NaN, 0.25f)
+    val sorted = lengths.sorted()
