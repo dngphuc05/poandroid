@@ -2449,3 +2449,10 @@ private fun deriveArCoreFloorEstimate(
         )
     }
     val topRayFloorHeight = heightFromVerticalRay ?: heightFromDistanceAngle
+    val rootHipRayFloorDistance = hipVerticalEstimate?.distanceMeters ?: hipDistance ?: Float.NaN
+    val distanceHeightGeometryResidual = listOfNotNull(
+        footRayDiagnostics.midpointDistance.takeIf { it.isFinite() },
+        rootHipRayFloorDistance.takeIf { it.isFinite() },
+        roiDistance.takeIf { it.isFinite() },
+    ).let { values -> if (values.size >= 2) values.maxOrNull()!! - values.minOrNull()!! else Float.NaN }
+    val floorLikelyBiasCorrected = correctedCameraHeight.isFinite() &&
