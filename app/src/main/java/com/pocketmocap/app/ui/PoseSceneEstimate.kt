@@ -2917,3 +2917,13 @@ private fun estimateBodyScaleDiagnostics(
     return BodyScaleDiagnostics(spreadMeters, confidence)
 }
 
+private fun metricJointSpan(
+    screenX: FloatArray,
+    screenY: FloatArray,
+    visibility: FloatArray?,
+    a: Int,
+    b: Int,
+    distanceMeters: Float,
+    intrinsics: CameraIntrinsics,
+): Float? {
+    val va = visibility?.getOrNull(a) ?: 1f
