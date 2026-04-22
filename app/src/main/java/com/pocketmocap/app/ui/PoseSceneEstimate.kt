@@ -3031,3 +3031,11 @@ private fun selectGroundContactProxy(
         )
     }
 
+    // Stronger floor-contact candidates first.
+    addSample(29, minVis = 0.18f, weightScale = 1.10f) // left heel
+    addSample(30, minVis = 0.18f, weightScale = 1.10f) // right heel
+    addSample(31, minVis = 0.18f, weightScale = 1.14f) // left foot index
+    addSample(32, minVis = 0.18f, weightScale = 1.14f) // right foot index
+    addSample(27, minVis = 0.22f, weightScale = 0.92f) // left ankle
+    addSample(28, minVis = 0.22f, weightScale = 0.92f) // right ankle
+
