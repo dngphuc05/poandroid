@@ -2753,3 +2753,10 @@ private fun selectHipGeometryDistance(
     topSolvedHeight: Float?,
 ): HipGeometrySelection {
     val torso = torsoDistance?.takeIf { it.isFinite() && it in 0.35f..12.0f }
+    val locked = lockedDistance?.takeIf { it.isFinite() && it in 0.35f..12.0f }
+    val foot = footDistance.takeIf { it.isFinite() && it in 0.35f..12.0f }
+    val top = topSolvedDistance?.takeIf { it.isFinite() && it in 0.35f..12.0f }
+    val topHeight = topSolvedHeight?.takeIf { it.isFinite() }
+    val torsoH = torsoHeight?.takeIf { it.isFinite() }
+    val topHeightDisagrees = topHeight != null && torsoH != null && abs(topHeight - torsoH) > 0.18f
+
