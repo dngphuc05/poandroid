@@ -3161,3 +3161,12 @@ private fun estimateDistanceFromHipRay(
         planeNormal[2],
     )
     val horizontalX = hipRay[0] - planeNormal[0] * vertical
+    val horizontalY = hipRay[1] - planeNormal[1] * vertical
+    val horizontalZ = hipRay[2] - planeNormal[2] * vertical
+    val horizontalNorm = sqrt(
+        horizontalX * horizontalX +
+            horizontalY * horizontalY +
+            horizontalZ * horizontalZ
+    )
+    if (!horizontalNorm.isFinite() || horizontalNorm < 1e-5f) return null
+    val tanElevation = vertical / horizontalNorm
