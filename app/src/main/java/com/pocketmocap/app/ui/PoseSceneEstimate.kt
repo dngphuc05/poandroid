@@ -2396,3 +2396,12 @@ private fun deriveArCoreFloorEstimate(
         footConfidence = footContact.confidence,
     )
     val footSupportedByGeometry = footDistance.isFinite() &&
+        (
+            hipDistance?.let { candidateAgreement(footDistance, it, 0.30f, 0.12f) } == true ||
+                (roiDistance.isFinite() && candidateAgreement(footDistance, roiDistance, 0.48f, 0.16f))
+            )
+    val footUsableForFusion =
+        footContactState == "grounded" ||
+            footContactState == "grounded_roi_supported" ||
+            footSupportedByGeometry
+    val trustedFootDistance = footDistance.takeIf { footUsableForFusion }
