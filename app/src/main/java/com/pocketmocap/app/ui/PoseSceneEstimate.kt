@@ -2881,3 +2881,17 @@ private fun estimateTorsoSpanDiagnostics(
     )
 }
 
+private fun estimateBodyScaleDiagnostics(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    distanceMeters: Float,
+    intrinsics: CameraIntrinsics,
+): BodyScaleDiagnostics {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) {
+        return BodyScaleDiagnostics(Float.NaN, Float.NaN)
+    }
+    if (!distanceMeters.isFinite() || distanceMeters !in 0.35f..12.0f || intrinsics.fx <= 1f || intrinsics.fy <= 1f) {
+        return BodyScaleDiagnostics(Float.NaN, Float.NaN)
+    }
+    val segments = intArrayOf(
