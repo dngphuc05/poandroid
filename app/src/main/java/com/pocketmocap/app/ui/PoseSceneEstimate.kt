@@ -2822,3 +2822,13 @@ private fun classifyFootContact(
     }
 }
 
+private fun estimateTorsoHeightCandidate(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    distanceMeters: Float,
+    intrinsics: CameraIntrinsics,
+): Float? {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
+    if (!distanceMeters.isFinite() || distanceMeters !in 0.35f..12.0f) return null
+    val leftShoulder = jointPoint(screenX, screenY, visibility, 11, minVisibility = 0.40f)
