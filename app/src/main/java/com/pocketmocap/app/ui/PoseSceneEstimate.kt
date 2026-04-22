@@ -3061,3 +3061,10 @@ private fun selectGroundContactProxy(
     addAnkleSoleFallback(27, 25)
     addAnkleSoleFallback(28, 26)
 
+    if (samples.isEmpty()) {
+        return GroundContactProxy(roi.centerX, roi.maxY, 0.28f)
+    }
+
+    val bottomY = samples.maxOf { it.y }
+    val keepBand = 0.085f
+    val chosen = samples.filter { it.y >= bottomY - keepBand }
