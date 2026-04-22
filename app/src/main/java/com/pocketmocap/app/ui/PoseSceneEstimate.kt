@@ -2493,3 +2493,10 @@ private fun deriveArCoreFloorEstimate(
         heightCandidates += torsoHeightCandidate
     }
 
+    val measuredHeight = when (heightCandidates.size) {
+        0 -> Float.NaN
+        1 -> heightCandidates[0]
+        2 -> {
+            val a = heightCandidates[0]
+            val b = heightCandidates[1]
+            val deltaRatio = abs(a - b) / maxOf(a, b, 1e-4f)
