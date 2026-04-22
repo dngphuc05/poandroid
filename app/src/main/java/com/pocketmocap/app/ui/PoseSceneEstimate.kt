@@ -2456,3 +2456,11 @@ private fun deriveArCoreFloorEstimate(
         roiDistance.takeIf { it.isFinite() },
     ).let { values -> if (values.size >= 2) values.maxOrNull()!! - values.minOrNull()!! else Float.NaN }
     val floorLikelyBiasCorrected = correctedCameraHeight.isFinite() &&
+        cameraHeight.isFinite() &&
+        abs(correctedCameraHeight - cameraHeight) > 0.10f
+    val topRayHeightCandidate = if (floorLikelyBiasCorrected) {
+        heightFromDistanceAngle ?: heightFromVerticalRay
+    } else {
+        heightFromVerticalRay ?: heightFromDistanceAngle
+    }
+    val pixelHeightCandidate = if (pixelSpanHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS) {
