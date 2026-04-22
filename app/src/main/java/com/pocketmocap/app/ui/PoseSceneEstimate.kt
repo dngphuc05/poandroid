@@ -3039,3 +3039,11 @@ private fun selectGroundContactProxy(
     addSample(27, minVis = 0.22f, weightScale = 0.92f) // left ankle
     addSample(28, minVis = 0.22f, weightScale = 0.92f) // right ankle
 
+    // If only ankles are visible, project a small sole extension from shin length.
+    fun addAnkleSoleFallback(ankleIdx: Int, kneeIdx: Int) {
+        val ankleVis = visibility?.getOrNull(ankleIdx) ?: 1f
+        val kneeVis = visibility?.getOrNull(kneeIdx) ?: 1f
+        val ankleX = screenX[ankleIdx]
+        val ankleY = screenY[ankleIdx]
+        if (ankleVis < 0.20f || !ankleX.isFinite() || !ankleY.isFinite()) return
+        val kneeY = screenY[kneeIdx].takeIf { kneeVis > 0.20f && it.isFinite() }
