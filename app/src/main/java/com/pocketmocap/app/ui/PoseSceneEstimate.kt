@@ -2778,3 +2778,11 @@ private fun selectHipGeometryDistance(
     } else {
         selected
     }
+}
+
+private fun selectHipGeometryHeight(
+    torsoHeight: Float?,
+    lockedHeight: Float,
+    topSolvedHeight: Float?,
+): Float? {
+    val torso = torsoHeight?.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
