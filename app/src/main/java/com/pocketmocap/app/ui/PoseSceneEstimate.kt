@@ -2500,3 +2500,15 @@ private fun deriveArCoreFloorEstimate(
             val a = heightCandidates[0]
             val b = heightCandidates[1]
             val deltaRatio = abs(a - b) / maxOf(a, b, 1e-4f)
+            when {
+                deltaRatio <= 0.16f -> a * 0.52f + b * 0.48f
+                deltaRatio <= 0.38f -> (a + b) * 0.5f
+                else -> {
+                    val low = minOf(a, b)
+                    val high = maxOf(a, b)
+                    low * 0.35f + high * 0.65f
+                }
+            }
+        }
+        else -> {
+            val sorted = heightCandidates.sorted()
