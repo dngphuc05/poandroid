@@ -2526,3 +2526,10 @@ private fun deriveArCoreFloorEstimate(
         return null
     }
     val bodyHeight = measuredBodyHeight.coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
+    val lateralAnchorX = hipProxy?.centerXNorm ?: footContact.xNorm
+    val lateral = (((lateralAnchorX - 0.5f) * intrinsics.imageWidth) / intrinsics.fx * distance)
+        .coerceIn(-3.0f, 3.0f)
+
+    val footSupportConfidence = if (footHit != null) footContact.confidence else 0.08f
+    val bodyClipRisk = estimateBodyClipRisk(roi, bodyTop, footContact)
+    val topEndpointConfidence = (bodyTop.confidence * (1f - edgeClipRisk(bodyTop.yNorm))).coerceIn(0f, 1f)
