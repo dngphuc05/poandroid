@@ -2867,3 +2867,10 @@ private fun estimateTorsoSpanDiagnostics(
     fun distance(a: Pair<Float, Float>, b: Pair<Float, Float>): Float {
         val dx = a.first - b.first
         val dy = a.second - b.second
+        return sqrt(dx * dx + dy * dy)
+    }
+
+    val shoulderMidY = (leftShoulder.second + rightShoulder.second) * 0.5f
+    val hipMidY = (leftHip.second + rightHip.second) * 0.5f
+    val torsoSpan = abs(hipMidY - shoulderMidY)
+    val shoulderHipSpan = (distance(leftShoulder, leftHip) + distance(rightShoulder, rightHip)) * 0.5f
