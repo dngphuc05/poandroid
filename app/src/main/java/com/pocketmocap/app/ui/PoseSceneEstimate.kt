@@ -2839,3 +2839,10 @@ private fun estimateTorsoHeightCandidate(
     val shoulderY = (leftShoulder.second + rightShoulder.second) * 0.5f
     val hipY = (leftHip.second + rightHip.second) * 0.5f
     val torsoPixelsNorm = abs(hipY - shoulderY)
+    if (torsoPixelsNorm !in 0.045f..0.42f) return null
+    val vTan = intrinsics.imageHeight.toFloat() / (2f * intrinsics.fy)
+    val torsoMeters = torsoPixelsNorm * 2f * vTan * distanceMeters
+    // Drillis-Contini segment length data places the shoulder-midpoint to
+    // hip-midpoint vertical at ~0.288-0.30 of standing height for adults. The
+    // earlier 0.33 divisor produced a persistent 12-17 cm undershoot on real
+    // captures (mean torso_height_m 1.66 / 1.71 vs ground-truth 1.83). 0.30
