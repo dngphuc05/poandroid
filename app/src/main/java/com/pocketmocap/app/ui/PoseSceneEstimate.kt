@@ -2813,3 +2813,12 @@ private fun classifyFootContact(
 ): String {
     if (!footDistance.isFinite() || footConfidence < 0.36f) return "missing_or_occluded"
     val agreesWithHip = hipDistance?.let { candidateAgreement(footDistance, it, 0.30f, 0.12f) } == true
+    val agreesWithRoi = roiDistance.isFinite() && candidateAgreement(footDistance, roiDistance, 0.48f, 0.16f)
+    return when {
+        footConfidence >= 0.58f && agreesWithHip -> "grounded"
+        footConfidence >= 0.66f && agreesWithRoi -> "grounded_roi_supported"
+        footConfidence >= 0.42f -> "moving_or_uncertain"
+        else -> "missing_or_occluded"
+    }
+}
+
