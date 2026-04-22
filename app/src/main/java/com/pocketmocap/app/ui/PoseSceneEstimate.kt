@@ -2619,3 +2619,17 @@ private data class FootRayDiagnostics(
     val spread: Float = Float.NaN,
 )
 
+private fun rayFloorDistanceForJoint(
+    index: Int,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    intrinsics: CameraIntrinsics,
+    camera: FloatArray,
+    rotation: FloatArray,
+    planePoint: FloatArray,
+    planeNormal: FloatArray,
+    minVisibility: Float = 0.18f,
+): Float? {
+    if (screenX == null || screenY == null) return null
+    val x = screenX.getOrNull(index) ?: return null
