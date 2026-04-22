@@ -3143,3 +3143,12 @@ private fun selectHipAnchorProxy(
         )
     }
 }
+
+private fun estimateDistanceFromHipRay(
+    cameraHeight: Float,
+    bodyHeightMeters: Float,
+    hipRay: FloatArray,
+    planeNormal: FloatArray,
+): Float? {
+    if (!cameraHeight.isFinite() || !bodyHeightMeters.isFinite()) return null
+    val hipHeightMeters = (bodyHeightMeters * 0.53f).coerceIn(0.42f, 1.28f)
