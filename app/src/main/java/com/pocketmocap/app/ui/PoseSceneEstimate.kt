@@ -2691,3 +2691,12 @@ private fun estimateCrownEndpointLiftNorm(
         val vis = visibility?.getOrNull(idx) ?: 1f
         val x = screenX.getOrNull(idx)
         val y = screenY.getOrNull(idx)
+        vis > 0.35f && x != null && y != null && x.isFinite() && y.isFinite()
+    }
+    if (headVisible < 2) return 0f
+    val bodySpan = roi.height.takeIf { it.isFinite() } ?: return 0f
+    if (bodySpan !in 0.30f..0.78f) return 0f
+    val spanBasedLift = maxOf(shoulderWidth * 0.22f, headSpan * 0.54f)
+    return spanBasedLift.coerceIn(0f, 0.042f)
+}
+
