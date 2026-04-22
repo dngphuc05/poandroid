@@ -2306,3 +2306,11 @@ private fun deriveArCoreFloorEstimate(
                 edgeClipRisk(it) <= 0.10f
         }
     val bodyTop = if (visualTop != null) {
+        landmarkBodyTop.copy(
+            yNorm = visualTop,
+            confidence = maxOf(landmarkBodyTop.confidence, visualTopConfidence.coerceIn(0.20f, 0.98f)),
+        )
+    } else {
+        landmarkBodyTop
+    }
+    val visualTopRawLiftNorm = (landmarkBodyTop.yNorm - bodyTop.yNorm).coerceAtLeast(0f)
