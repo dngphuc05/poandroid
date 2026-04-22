@@ -2334,3 +2334,11 @@ private fun deriveArCoreFloorEstimate(
         rotation = rotation,
     )
     val hipRay = hipProxy?.let {
+        cameraRayWorld(
+            u = it.centerXNorm * intrinsics.imageWidth,
+            v = it.centerYNorm * intrinsics.imageHeight,
+            intrinsics = intrinsics,
+            rotation = rotation,
+        )
+    }
+    val hipVerticalEstimate = if (topRay != null && hipRay != null) {
