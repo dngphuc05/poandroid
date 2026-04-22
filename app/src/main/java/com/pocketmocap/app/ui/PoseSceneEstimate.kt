@@ -2910,3 +2910,10 @@ private fun estimateBodyScaleDiagnostics(
     }
     if (lengths.size < 4) return BodyScaleDiagnostics(Float.NaN, 0.25f)
     val sorted = lengths.sorted()
+    val median = sorted[sorted.size / 2].coerceAtLeast(1e-4f)
+    val meanAbsResidual = lengths.sumOf { abs(it - median).toDouble() }.toFloat() / lengths.size
+    val spreadMeters = meanAbsResidual.coerceIn(0f, 1.50f)
+    val confidence = (1f - (spreadMeters / maxOf(median * 1.45f, 0.18f))).coerceIn(0.18f, 1f)
+    return BodyScaleDiagnostics(spreadMeters, confidence)
+}
+
