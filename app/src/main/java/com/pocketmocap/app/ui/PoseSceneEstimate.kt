@@ -3170,3 +3170,21 @@ private fun estimateDistanceFromHipRay(
     )
     if (!horizontalNorm.isFinite() || horizontalNorm < 1e-5f) return null
     val tanElevation = vertical / horizontalNorm
+    if (!tanElevation.isFinite() || abs(tanElevation) < 1e-4f) return null
+    val distance = (hipHeightMeters - cameraHeight) / tanElevation
+    return distance.takeIf { it.isFinite() && it in 0.35f..12.0f }
+}
+
+private fun sampleHipDepthPatch(
+    depthMap: DepthMapSnapshot?,
+    xNorm: Float,
+    yNorm: Float,
+    intrinsics: CameraIntrinsics,
+    camera: FloatArray,
+    rotation: FloatArray,
+    planePoint: FloatArray,
+    planeNormal: FloatArray,
+): DepthPatchEstimate? {
+    depthMap ?: return null
+    if (depthMap.width <= 2 || depthMap.height <= 2 || depthMap.depthMm.isEmpty()) return null
+    val cx = (xNorm * (depthMap.width - 1)).roundToInt().coerceIn(0, depthMap.width - 1)
