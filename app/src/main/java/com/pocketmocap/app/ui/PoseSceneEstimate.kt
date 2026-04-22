@@ -3082,3 +3082,11 @@ private fun selectGroundContactProxy(
         return GroundContactProxy(roi.centerX, roi.maxY, 0.30f)
     }
 
+    val confidence = (chosen.sumOf { it.weight.toDouble() }.toFloat() / 2.8f).coerceIn(0.35f, 1f)
+    return GroundContactProxy(
+        xNorm = (weightedX / weightSum).coerceIn(0f, 1f),
+        yNorm = maxOf(bottomY, roi.maxY - 0.003f).coerceIn(0f, 1f),
+        confidence = confidence,
+    )
+}
+
