@@ -2793,3 +2793,15 @@ private fun selectHipGeometryHeight(
     return when {
         top != null && topAgreesWithLocked -> {
             val lockedValue = locked!!
+            val cappedTop = top.coerceIn(
+                lockedValue - HEIGHT_LOCK_DOWNWARD_MARGIN_METERS,
+                lockedValue + heightLockUpwardMarginMeters(lockedValue, top),
+            )
+            cappedTop * 0.18f + lockedValue * 0.82f
+        }
+        top != null && topAgreesWithTorso -> top
+        locked != null -> locked
+        else -> null
+    }
+}
+
