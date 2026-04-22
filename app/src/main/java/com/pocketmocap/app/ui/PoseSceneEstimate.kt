@@ -2342,3 +2342,15 @@ private fun deriveArCoreFloorEstimate(
         )
     }
     val hipVerticalEstimate = if (topRay != null && hipRay != null) {
+        estimateBodyFromTopAndHipRays(
+            camera = camera,
+            topRay = topRay,
+            hipRay = hipRay,
+            planePoint = planePoint,
+            planeNormal = planeNormal,
+            hipConfidence = hipProxy?.confidence ?: 0f,
+        )
+    } else {
+        null
+    }
+    val torsoSeedDistance = if (hipRay != null && torsoHeightPre != null) {
