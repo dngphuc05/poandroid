@@ -3090,3 +3090,13 @@ private fun selectGroundContactProxy(
     )
 }
 
+private fun selectHipAnchorProxy(
+    roi: PoseRoi,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    previousVectorXNorm: Float,
+    previousVectorYNorm: Float,
+): HipAnchorProxy? {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
+    val leftVis = visibility?.getOrNull(23) ?: 1f
