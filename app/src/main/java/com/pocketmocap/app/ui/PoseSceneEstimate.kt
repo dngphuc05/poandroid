@@ -2378,3 +2378,14 @@ private fun deriveArCoreFloorEstimate(
         null
     }
     // Hip depth is intentionally diagnostic-only. On real captures it often spikes
+    // to 9-12m while the subject is actually 2-3m away, so it must not become a
+    // physical ruler for distance/height or server DLT scaling.
+    val hipSelection = selectHipGeometryDistance(
+        torsoDistance = torsoSeedDistance,
+        lockedDistance = lockedHeightDistance,
+        topSolvedDistance = hipVerticalEstimate?.distanceMeters,
+        footDistance = footDistance,
+        torsoHeight = torsoHeightPre,
+        topSolvedHeight = hipVerticalEstimate?.bodyHeightMeters,
+    )
+    val hipDistance = hipSelection.distanceMeters
