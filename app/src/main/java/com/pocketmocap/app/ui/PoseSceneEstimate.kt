@@ -2731,3 +2731,11 @@ private fun estimateBodyClipRisk(
 }
 
 private fun edgeClipRisk(edgeMarginNorm: Float): Float {
+    if (!edgeMarginNorm.isFinite()) return 1f
+    return when {
+        edgeMarginNorm <= 0.006f -> 1f
+        edgeMarginNorm >= 0.055f -> 0f
+        else -> ((0.055f - edgeMarginNorm) / (0.055f - 0.006f)).coerceIn(0f, 1f)
+    }
+}
+
