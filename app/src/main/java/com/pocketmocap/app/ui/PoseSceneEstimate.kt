@@ -3047,3 +3047,17 @@ private fun selectGroundContactProxy(
         val ankleY = screenY[ankleIdx]
         if (ankleVis < 0.20f || !ankleX.isFinite() || !ankleY.isFinite()) return
         val kneeY = screenY[kneeIdx].takeIf { kneeVis > 0.20f && it.isFinite() }
+        val extension = if (kneeY != null) {
+            ((ankleY - kneeY).coerceAtLeast(0.05f) * 0.24f).coerceIn(0.012f, 0.055f)
+        } else {
+            0.020f
+        }
+        samples += FootSample(
+            x = ankleX,
+            y = (ankleY + extension).coerceIn(0f, 1f),
+            weight = ankleVis.coerceIn(0f, 1f) * 0.64f,
+        )
+    }
+    addAnkleSoleFallback(27, 25)
+    addAnkleSoleFallback(28, 26)
+
