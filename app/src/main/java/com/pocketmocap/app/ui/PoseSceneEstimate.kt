@@ -3006,3 +3006,13 @@ private fun inferCameraHeightFromFootRayScale(
         .coerceIn(0.20f, 2.50f)
 }
 
+private fun selectGroundContactProxy(
+    roi: PoseRoi,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+): GroundContactProxy {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) {
+        return GroundContactProxy(roi.centerX, roi.maxY, 0.28f)
+    }
+
