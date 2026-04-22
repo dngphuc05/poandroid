@@ -2786,3 +2786,10 @@ private fun selectHipGeometryHeight(
     topSolvedHeight: Float?,
 ): Float? {
     val torso = torsoHeight?.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    val locked = lockedHeight.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    val top = topSolvedHeight?.takeIf { it.isFinite() && it in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS }
+    val topAgreesWithTorso = top != null && torso != null && abs(top - torso) <= 0.10f
+    val topAgreesWithLocked = top != null && locked != null && abs(top - locked) <= 0.12f
+    return when {
+        top != null && topAgreesWithLocked -> {
+            val lockedValue = locked!!
