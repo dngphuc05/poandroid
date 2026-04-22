@@ -3016,3 +3016,10 @@ private fun selectGroundContactProxy(
         return GroundContactProxy(roi.centerX, roi.maxY, 0.28f)
     }
 
+    data class FootSample(val x: Float, val y: Float, val weight: Float)
+
+    val samples = mutableListOf<FootSample>()
+    fun addSample(index: Int, minVis: Float = 0.18f, weightScale: Float = 1f) {
+        val visible = visibility?.getOrNull(index) ?: 1f
+        val x = screenX[index]
+        val y = screenY[index]
