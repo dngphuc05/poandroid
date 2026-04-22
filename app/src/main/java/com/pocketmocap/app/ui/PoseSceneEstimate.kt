@@ -2533,3 +2533,21 @@ private fun deriveArCoreFloorEstimate(
     val footSupportConfidence = if (footHit != null) footContact.confidence else 0.08f
     val bodyClipRisk = estimateBodyClipRisk(roi, bodyTop, footContact)
     val topEndpointConfidence = (bodyTop.confidence * (1f - edgeClipRisk(bodyTop.yNorm))).coerceIn(0f, 1f)
+    val footEndpointConfidence = (footContact.confidence * (1f - edgeClipRisk(1f - footContact.yNorm))).coerceIn(0f, 1f)
+    val maskEndpointConfidence = (minOf(topEndpointConfidence, footEndpointConfidence) * (1f - bodyClipRisk)).coerceIn(0f, 1f)
+
+    return ArFloorEstimate(
+        distanceMeters = distance,
+        bodyHeightMeters = bodyHeight,
+        cameraHeightMeters = correctedCameraHeight,
+        floorPitchDegrees = worldTracking.floorPitchDegrees.takeIf { it.isFinite() } ?: 0f,
+        lateralOffsetMeters = lateral,
+        confidence = (
+            worldTracking.confidence * 0.46f +
+                (hipProxy?.confidence ?: 0f) * 0.22f +
+                footSupportConfidence * 0.20f
+        ).coerceIn(0f, 1f),
+        learnedHipVectorXNorm = hipProxy?.learnedVectorXNorm ?: Float.NaN,
+        learnedHipVectorYNorm = hipProxy?.learnedVectorYNorm ?: Float.NaN,
+        floorSource = worldTracking.source,
+        rawHipDepthDistanceMeters = hipDepthEstimate?.horizontalDistanceMeters ?: Float.NaN,
