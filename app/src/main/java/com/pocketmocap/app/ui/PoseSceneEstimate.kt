@@ -2512,3 +2512,17 @@ private fun deriveArCoreFloorEstimate(
         }
         else -> {
             val sorted = heightCandidates.sorted()
+            sorted[sorted.size / 2]
+        }
+    }
+    val measuredBodyHeight = stabilizeBodyHeight(
+        measuredHeight = measuredHeight,
+        previousHeight = rawSubjectHeightMeters,
+        roiHeight = pixelHeightCandidate,
+        hipDistance = hipDistance,
+        footDistance = footDistance,
+    )
+    if (!measuredBodyHeight.isFinite() || measuredBodyHeight !in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS) {
+        return null
+    }
+    val bodyHeight = measuredBodyHeight.coerceIn(MIN_BODY_HEIGHT_METERS, MAX_BODY_HEIGHT_METERS)
