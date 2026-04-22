@@ -2853,3 +2853,10 @@ private fun estimateTorsoHeightCandidate(
 }
 
 private fun estimateTorsoSpanDiagnostics(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+): TorsoSpanDiagnostics? {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
+    val leftShoulder = jointPoint(screenX, screenY, visibility, 11, minVisibility = 0.30f)
+    val rightShoulder = jointPoint(screenX, screenY, visibility, 12, minVisibility = 0.30f)
