@@ -2587,3 +2587,13 @@ private fun deriveArCoreFloorEstimate(
         visualTopLiftNorm = visualTopLiftNorm,
         rawKeypointGeometry = buildRawKeypointGeometryMap(screenX, screenY, visibility),
     )
+}
+
+
+private fun buildRawKeypointGeometryMap(
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+): Map<String, Float> {
+    if (screenX == null || screenY == null) return emptyMap()
+    val indices = intArrayOf(0, 7, 8, 11, 12, 23, 24, 27, 28, 29, 30, 31, 32)
