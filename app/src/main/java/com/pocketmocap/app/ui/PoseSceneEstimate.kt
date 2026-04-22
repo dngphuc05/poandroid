@@ -2949,3 +2949,10 @@ private fun jointPoint(
     minVisibility: Float,
 ): Pair<Float, Float>? {
     val visible = visibility?.getOrNull(index) ?: 1f
+    if (visible < minVisibility) return null
+    val x = screenX[index]
+    val y = screenY[index]
+    return if (x.isFinite() && y.isFinite()) Pair(x, y) else null
+}
+
+private fun candidateAgreement(
