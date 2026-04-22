@@ -2654,3 +2654,18 @@ private fun computeFootRayDiagnostics(
     planeNormal: FloatArray,
 ): FootRayDiagnostics {
     fun side(indices: IntArray): Float? {
+        val values = indices.asIterable().mapNotNull { rayFloorDistanceForJoint(it, screenX, screenY, visibility, intrinsics, camera, rotation, planePoint, planeNormal) }
+        return values.takeIf { it.isNotEmpty() }?.average()?.toFloat()
+    }
+    val left = side(intArrayOf(29, 31, 27))
+    val right = side(intArrayOf(30, 32, 28))
+    val valid = listOfNotNull(left, right)
+    return FootRayDiagnostics(
+        leftDistance = left ?: Float.NaN,
+        rightDistance = right ?: Float.NaN,
+        midpointDistance = valid.takeIf { it.isNotEmpty() }?.average()?.toFloat() ?: Float.NaN,
+        nearestDistance = valid.minOrNull() ?: Float.NaN,
+        spread = if (valid.size >= 2) abs(valid[0] - valid[1]) else Float.NaN,
+    )
+}
+
