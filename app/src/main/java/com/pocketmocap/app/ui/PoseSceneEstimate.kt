@@ -2633,3 +2633,10 @@ private fun rayFloorDistanceForJoint(
 ): Float? {
     if (screenX == null || screenY == null) return null
     val x = screenX.getOrNull(index) ?: return null
+    val y = screenY.getOrNull(index) ?: return null
+    val vis = visibility?.getOrNull(index) ?: 1f
+    if (vis < minVisibility || !x.isFinite() || !y.isFinite()) return null
+    val hit = rayPlaneHit(x * intrinsics.imageWidth, y * intrinsics.imageHeight, intrinsics, camera, rotation, planePoint, planeNormal)
+        ?: return null
+    val dx = hit[0] - camera[0]
+    val dz = hit[2] - camera[2]
