@@ -3107,3 +3107,21 @@ private fun selectHipAnchorProxy(
     val rightY = screenY[24]
     val hasLeft = leftVis > 0.20f && leftX.isFinite() && leftY.isFinite()
     val hasRight = rightVis > 0.20f && rightX.isFinite() && rightY.isFinite()
+    val hasPrevVector =
+        previousVectorXNorm.isFinite() &&
+            previousVectorYNorm.isFinite() &&
+            sqrt(previousVectorXNorm * previousVectorXNorm + previousVectorYNorm * previousVectorYNorm) > 1e-4f
+
+    return when {
+        hasLeft && hasRight -> HipAnchorProxy(
+            centerXNorm = ((leftX + rightX) * 0.5f).coerceIn(0f, 1f),
+            centerYNorm = ((leftY + rightY) * 0.5f).coerceIn(0f, 1f),
+            confidence = ((leftVis + rightVis) * 0.5f).coerceIn(0f, 1f),
+            learnedVectorXNorm = rightX - leftX,
+            learnedVectorYNorm = rightY - leftY,
+        )
+        hasLeft && hasPrevVector -> HipAnchorProxy(
+            centerXNorm = (leftX + previousVectorXNorm * 0.5f).coerceIn(0f, 1f),
+            centerYNorm = (leftY + previousVectorYNorm * 0.5f).coerceIn(0f, 1f),
+            confidence = (leftVis * 0.76f).coerceIn(0f, 1f),
+            learnedVectorXNorm = previousVectorXNorm,
