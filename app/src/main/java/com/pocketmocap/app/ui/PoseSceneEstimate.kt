@@ -2326,3 +2326,11 @@ private fun deriveArCoreFloorEstimate(
         estimateCrownEndpointLiftNorm(roi, screenX, screenY, visibility, bodyTop, footRayDiagnostics)
     }
     val visualTopLiftNorm = visualTopRawLiftNorm + crownLiftNorm
+    val topYForGeometry = (bodyTop.yNorm - crownLiftNorm).coerceIn(0f, 1f)
+    val topRay = cameraRayWorld(
+        u = bodyTop.xNorm * intrinsics.imageWidth,
+        v = topYForGeometry * intrinsics.imageHeight,
+        intrinsics = intrinsics,
+        rotation = rotation,
+    )
+    val hipRay = hipProxy?.let {
