@@ -2942,3 +2942,10 @@ private fun metricJointSpan(
 }
 
 private fun jointPoint(
+    screenX: FloatArray,
+    screenY: FloatArray,
+    visibility: FloatArray?,
+    index: Int,
+    minVisibility: Float,
+): Pair<Float, Float>? {
+    val visible = visibility?.getOrNull(index) ?: 1f
