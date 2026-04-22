@@ -2989,3 +2989,10 @@ private fun inferCameraHeightFromFootRayScale(
     val mismatch = abs(footPlaneDistance - subjectDistance)
     if (mismatch < 0.42f) return rawCameraHeight
 
+    // For a fixed screen foot ray and floor normal, ray-plane horizontal distance
+    // is proportional to camera height above the floor. If hit-test floor distance
+    // is too far compared with the trusted subject anchor, the selected floor is
+    // too low; scaling height by distance ratio estimates the corrected floor.
+    val ratio = (subjectDistance / footPlaneDistance).coerceIn(0.45f, 1.65f)
+    val scaled = (rawCameraHeight * ratio).coerceIn(0.20f, 2.50f)
+    val heldOrProvisional = floorSource.endsWith("_held") || floorSource.contains("provisional")
