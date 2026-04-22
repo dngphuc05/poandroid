@@ -2441,3 +2441,11 @@ private fun deriveArCoreFloorEstimate(
         null
     }
     val heightFromDistanceAngle = topRay?.let {
+        estimateHeightFromDistanceAndTopAngle(
+            cameraHeight = correctedCameraHeight,
+            distanceMeters = distance,
+            topRay = it,
+            planeNormal = planeNormal,
+        )
+    }
+    val topRayFloorHeight = heightFromVerticalRay ?: heightFromDistanceAngle
