@@ -3023,3 +3023,11 @@ private fun selectGroundContactProxy(
         val visible = visibility?.getOrNull(index) ?: 1f
         val x = screenX[index]
         val y = screenY[index]
+        if (visible < minVis || !x.isFinite() || !y.isFinite()) return
+        samples += FootSample(
+            x = x,
+            y = y,
+            weight = (visible.coerceIn(0f, 1f) * weightScale).coerceAtLeast(0.05f),
+        )
+    }
+
