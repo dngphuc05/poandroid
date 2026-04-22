@@ -2389,3 +2389,10 @@ private fun deriveArCoreFloorEstimate(
         topSolvedHeight = hipVerticalEstimate?.bodyHeightMeters,
     )
     val hipDistance = hipSelection.distanceMeters
+    val footContactState = classifyFootContact(
+        footDistance = footDistance,
+        hipDistance = hipDistance,
+        roiDistance = roiDistance,
+        footConfidence = footContact.confidence,
+    )
+    val footSupportedByGeometry = footDistance.isFinite() &&
