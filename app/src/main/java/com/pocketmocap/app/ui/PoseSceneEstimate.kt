@@ -2874,3 +2874,10 @@ private fun estimateTorsoSpanDiagnostics(
     val hipMidY = (leftHip.second + rightHip.second) * 0.5f
     val torsoSpan = abs(hipMidY - shoulderMidY)
     val shoulderHipSpan = (distance(leftShoulder, leftHip) + distance(rightShoulder, rightHip)) * 0.5f
+    if (!torsoSpan.isFinite() || !shoulderHipSpan.isFinite()) return null
+    return TorsoSpanDiagnostics(
+        shoulderHipSpanNorm = shoulderHipSpan.coerceIn(0f, 1.5f),
+        torsoSpanNorm = torsoSpan.coerceIn(0f, 1f),
+    )
+}
+
