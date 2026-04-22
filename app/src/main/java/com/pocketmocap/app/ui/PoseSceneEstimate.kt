@@ -3152,3 +3152,12 @@ private fun estimateDistanceFromHipRay(
 ): Float? {
     if (!cameraHeight.isFinite() || !bodyHeightMeters.isFinite()) return null
     val hipHeightMeters = (bodyHeightMeters * 0.53f).coerceIn(0.42f, 1.28f)
+    val vertical = dot3(
+        hipRay[0],
+        hipRay[1],
+        hipRay[2],
+        planeNormal[0],
+        planeNormal[1],
+        planeNormal[2],
+    )
+    val horizontalX = hipRay[0] - planeNormal[0] * vertical
