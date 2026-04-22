@@ -2412,3 +2412,16 @@ private fun deriveArCoreFloorEstimate(
         roiDistance = roiDistance,
     )
     val bodyScaleDiagnostics = estimateBodyScaleDiagnostics(screenX, screenY, visibility, distance, intrinsics)
+    val torsoHeightCandidate = estimateTorsoHeightCandidate(screenX, screenY, visibility, distance, intrinsics)
+    val groundedFootDistance = footRayDiagnostics.nearestDistance
+        .takeIf { it.isFinite() && (footContactState == "grounded" || footContactState == "grounded_roi_supported") }
+        ?: footDistance.takeIf { footContactState == "grounded" || footContactState == "grounded_roi_supported" }
+        ?: Float.NaN
+    val correctedCameraHeight = inferCameraHeightFromFootRayScale(
+        rawCameraHeight = cameraHeight,
+        footPlaneDistance = footDistance,
+        subjectDistance = distance,
+        floorSource = worldTracking.source,
+        footConfidence = footContact.confidence,
+    )
+
