@@ -2832,3 +2832,10 @@ private fun estimateTorsoHeightCandidate(
     if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return null
     if (!distanceMeters.isFinite() || distanceMeters !in 0.35f..12.0f) return null
     val leftShoulder = jointPoint(screenX, screenY, visibility, 11, minVisibility = 0.40f)
+    val rightShoulder = jointPoint(screenX, screenY, visibility, 12, minVisibility = 0.40f)
+    val leftHip = jointPoint(screenX, screenY, visibility, 23, minVisibility = 0.40f)
+    val rightHip = jointPoint(screenX, screenY, visibility, 24, minVisibility = 0.40f)
+    if (leftShoulder == null || rightShoulder == null || leftHip == null || rightHip == null) return null
+    val shoulderY = (leftShoulder.second + rightShoulder.second) * 0.5f
+    val hipY = (leftHip.second + rightHip.second) * 0.5f
+    val torsoPixelsNorm = abs(hipY - shoulderY)
