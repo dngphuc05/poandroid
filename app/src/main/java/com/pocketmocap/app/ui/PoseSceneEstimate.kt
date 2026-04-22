@@ -2669,3 +2669,18 @@ private fun computeFootRayDiagnostics(
     )
 }
 
+
+private fun estimateCrownEndpointLiftNorm(
+    roi: PoseRoi,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    bodyTop: BodyTopProxy,
+    footRays: FootRayDiagnostics,
+): Float {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) return 0f
+    if (bodyTop.confidence < 0.62f) return 0f
+    if (!footRays.spread.isFinite() || footRays.spread > 0.045f) return 0f
+    if (!footRays.midpointDistance.isFinite() || footRays.midpointDistance !in 0.70f..6.0f) return 0f
+    if (edgeClipRisk(roi.minY) > 0.05f || edgeClipRisk(bodyTop.yNorm) > 0.05f) return 0f
+    val shoulderWidth = normalizedJointSpan(screenX, screenY, visibility, 11, 12) ?: return 0f
