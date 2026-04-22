@@ -2700,3 +2700,16 @@ private fun estimateCrownEndpointLiftNorm(
     return spanBasedLift.coerceIn(0f, 0.042f)
 }
 
+private fun estimateVisualTopResidualCrownLiftNorm(
+    roi: PoseRoi,
+    bodyTop: BodyTopProxy,
+    visualTopLiftNorm: Float,
+    visualTopConfidence: Float,
+    footRays: FootRayDiagnostics,
+): Float {
+    if (visualTopConfidence < 0.66f || bodyTop.confidence < 0.62f) return 0f
+    if (!visualTopLiftNorm.isFinite() || visualTopLiftNorm <= 0f) return 0f
+    if (!footRays.spread.isFinite() || footRays.spread > 0.055f) return 0f
+    if (!footRays.midpointDistance.isFinite() || footRays.midpointDistance !in 0.70f..6.0f) return 0f
+    if (edgeClipRisk(roi.minY) > 0.05f || edgeClipRisk(bodyTop.yNorm) > 0.05f) return 0f
+    val roiAllowance = (roi.height.takeIf { it.isFinite() } ?: 0f) * 0.006f
