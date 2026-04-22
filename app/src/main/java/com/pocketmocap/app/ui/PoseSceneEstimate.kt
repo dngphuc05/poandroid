@@ -2405,3 +2405,10 @@ private fun deriveArCoreFloorEstimate(
             footContactState == "grounded_roi_supported" ||
             footSupportedByGeometry
     val trustedFootDistance = footDistance.takeIf { footUsableForFusion }
+    val distance = fuseDistanceEstimate(
+        footDistance = trustedFootDistance ?: Float.NaN,
+        hipDistance = hipDistance,
+        hipConfidence = hipVerticalEstimate?.confidence ?: 0f,
+        roiDistance = roiDistance,
+    )
+    val bodyScaleDiagnostics = estimateBodyScaleDiagnostics(screenX, screenY, visibility, distance, intrinsics)
