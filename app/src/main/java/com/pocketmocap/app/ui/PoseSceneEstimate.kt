@@ -2895,3 +2895,10 @@ private fun estimateBodyScaleDiagnostics(
         return BodyScaleDiagnostics(Float.NaN, Float.NaN)
     }
     val segments = intArrayOf(
+        11, 13, 13, 15,
+        12, 14, 14, 16,
+        23, 25, 25, 27,
+        24, 26, 26, 28,
+        11, 12, 23, 24,
+    )
+    val lengths = mutableListOf<Float>()
