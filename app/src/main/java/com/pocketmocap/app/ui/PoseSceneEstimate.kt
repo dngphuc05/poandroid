@@ -2364,3 +2364,17 @@ private fun deriveArCoreFloorEstimate(
         null
     }
     val lockedHeightDistance = if (
+        hipRay != null &&
+        rawSubjectHeightMeters.isFinite() &&
+        rawSubjectHeightMeters in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS
+    ) {
+        estimateDistanceFromHipRay(
+            cameraHeight = cameraHeight,
+            bodyHeightMeters = rawSubjectHeightMeters,
+            hipRay = hipRay,
+            planeNormal = planeNormal,
+        )
+    } else {
+        null
+    }
+    // Hip depth is intentionally diagnostic-only. On real captures it often spikes
