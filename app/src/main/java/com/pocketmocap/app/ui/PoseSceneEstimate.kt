@@ -2481,3 +2481,15 @@ private fun deriveArCoreFloorEstimate(
         heightCandidates += hipGeometryHeight
     }
     val semanticHeightRefs = listOfNotNull(hipGeometryHeight, torsoHeightCandidate)
+    val trustedTopRayHeight = topRayHeightCandidate
+        ?.takeIf { candidate ->
+            candidate in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS &&
+                semanticHeightRefs.any { abs(it - candidate) <= 0.14f }
+        }
+    if (trustedTopRayHeight != null) {
+        heightCandidates += trustedTopRayHeight
+    }
+    if (torsoHeightCandidate != null) {
+        heightCandidates += torsoHeightCandidate
+    }
+
