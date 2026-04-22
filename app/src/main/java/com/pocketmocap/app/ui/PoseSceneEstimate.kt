@@ -2724,3 +2724,10 @@ private fun estimateBodyClipRisk(
     footContact: GroundContactProxy,
 ): Float {
     val topRisk = edgeClipRisk(minOf(roi.minY, bodyTop.yNorm))
+    val bottomRisk = edgeClipRisk(minOf(1f - roi.maxY, 1f - footContact.yNorm))
+    val leftRisk = edgeClipRisk(roi.minX)
+    val rightRisk = edgeClipRisk(1f - roi.maxX)
+    return maxOf(topRisk, bottomRisk, leftRisk, rightRisk).coerceIn(0f, 1f)
+}
+
+private fun edgeClipRisk(edgeMarginNorm: Float): Float {
