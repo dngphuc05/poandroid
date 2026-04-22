@@ -2760,3 +2760,21 @@ private fun selectHipGeometryDistance(
     val torsoH = torsoHeight?.takeIf { it.isFinite() }
     val topHeightDisagrees = topHeight != null && torsoH != null && abs(topHeight - torsoH) > 0.18f
 
+    val selected = when {
+        torso != null && locked != null && candidateAgreement(torso, locked, 0.36f, 0.16f) -> {
+            HipGeometrySelection(torso * 0.72f + locked * 0.28f, "")
+        }
+        torso != null && topHeightDisagrees -> HipGeometrySelection(torso, "top_height_disagrees_with_torso")
+        locked != null && topHeightDisagrees -> HipGeometrySelection(locked, "top_height_disagrees_with_locked_height")
+        torso != null -> HipGeometrySelection(torso, "")
+        locked != null -> HipGeometrySelection(locked, "")
+        top != null && foot != null && !candidateAgreement(top, foot, 1.20f, 0.40f) -> {
+            HipGeometrySelection(null, "top_foot_distance_disagreement")
+        }
+        else -> HipGeometrySelection(top, "")
+    }
+    return if (selected.distanceMeters == null && selected.rejectedReason.isBlank() && topSolvedDistance != null) {
+        HipGeometrySelection(null, "invalid_hip_geometry")
+    } else {
+        selected
+    }
