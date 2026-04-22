@@ -2611,3 +2611,11 @@ private fun buildRawKeypointGeometryMap(
     return out
 }
 
+private data class FootRayDiagnostics(
+    val leftDistance: Float = Float.NaN,
+    val rightDistance: Float = Float.NaN,
+    val midpointDistance: Float = Float.NaN,
+    val nearestDistance: Float = Float.NaN,
+    val spread: Float = Float.NaN,
+)
+
