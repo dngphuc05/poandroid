@@ -2935,3 +2935,10 @@ private fun metricJointSpan(
     val by = screenY[b]
     if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
     val du = abs(ax - bx) * intrinsics.imageWidth
+    val dv = abs(ay - by) * intrinsics.imageHeight
+    val dx = du / intrinsics.fx * distanceMeters
+    val dy = dv / intrinsics.fy * distanceMeters
+    return sqrt(dx * dx + dy * dy).takeIf { it.isFinite() && it > 0.005f }
+}
+
+private fun jointPoint(
