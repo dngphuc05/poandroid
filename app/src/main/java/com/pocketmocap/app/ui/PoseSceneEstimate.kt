@@ -2354,3 +2354,13 @@ private fun deriveArCoreFloorEstimate(
         null
     }
     val torsoSeedDistance = if (hipRay != null && torsoHeightPre != null) {
+        estimateDistanceFromHipRay(
+            cameraHeight = cameraHeight,
+            bodyHeightMeters = torsoHeightPre,
+            hipRay = hipRay,
+            planeNormal = planeNormal,
+        )
+    } else {
+        null
+    }
+    val lockedHeightDistance = if (
