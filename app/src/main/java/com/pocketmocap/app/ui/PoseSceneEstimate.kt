@@ -2597,3 +2597,17 @@ private fun buildRawKeypointGeometryMap(
 ): Map<String, Float> {
     if (screenX == null || screenY == null) return emptyMap()
     val indices = intArrayOf(0, 7, 8, 11, 12, 23, 24, 27, 28, 29, 30, 31, 32)
+    val out = linkedMapOf<String, Float>()
+    for (idx in indices) {
+        val x = screenX.getOrNull(idx)
+        val y = screenY.getOrNull(idx)
+        val v = visibility?.getOrNull(idx) ?: 1f
+        if (x != null && y != null && x.isFinite() && y.isFinite()) {
+            out["kp_${idx}_x_norm"] = x.coerceIn(0f, 1f)
+            out["kp_${idx}_y_norm"] = y.coerceIn(0f, 1f)
+            out["kp_${idx}_vis"] = v.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f
+        }
+    }
+    return out
+}
+
