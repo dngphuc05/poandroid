@@ -3196,3 +3196,10 @@ private fun sampleHipDepthPatch(
             val idx = y * depthMap.width + x
             if (idx !in depthMap.depthMm.indices) continue
             val mm = depthMap.depthMm[idx].toInt() and 0xFFFF
+            if (mm <= 0 || mm > 12000) continue
+            samples += mm / 1000f
+        }
+    }
+    if (samples.size < 4) return null
+    samples.sort()
+    val median = samples[samples.size / 2]
