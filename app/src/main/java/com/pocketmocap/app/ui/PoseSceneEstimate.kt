@@ -3366,3 +3366,16 @@ private fun stabilizeBodyHeight(
         }
     }
 
+    return stabilized.coerceIn(MIN_MEASURED_HEIGHT_METERS, MAX_MEASURED_HEIGHT_METERS)
+}
+
+private fun selectBodyTopProxy(
+    roi: PoseRoi,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+): BodyTopProxy {
+    if (screenX == null || screenY == null || screenX.size < 33 || screenY.size < 33) {
+        return BodyTopProxy(roi.centerX, roi.minY, 0.20f)
+    }
+    val headIndices = intArrayOf(0, 7, 8, 9, 10)
