@@ -3655,3 +3655,11 @@ private fun estimateBodyFromTopAndHipRays(
         br += weight * b * rhs
     }
 
+    // The top of the body and the hip center should lie on the same vertical
+    // line. Project both camera rays onto the floor plane and solve their shared
+    // horizontal anchor, then use the hip-height ratio as the vertical constraint.
+    accumulate(topPlane[0], -hipPlane[0], 0f, 1.0f)
+    accumulate(topPlane[1], -hipPlane[1], 0f, 1.0f)
+    accumulate(topPlane[2], -hipPlane[2], 0f, 1.0f)
+    accumulate(-HIP_HEIGHT_BODY_RATIO * topN, hipN, (HIP_HEIGHT_BODY_RATIO - 1f) * cameraHeight, 1.65f)
+
