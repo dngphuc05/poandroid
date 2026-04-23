@@ -82,3 +82,19 @@ fun SetupScreen(
             .background(CloudWarm),
     ) {
         // Ambient blur circles
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(468.dp)
+                .blur(56.dp)
+                .background(Mint.copy(alpha = 0.18f), CircleShape)
+        )
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 156.dp)
+                .size(width = 234.dp, height = 280.dp)
+                .blur(44.dp)
+                .background(RoseMist.copy(alpha = 0.16f), CircleShape)
+        )
+
