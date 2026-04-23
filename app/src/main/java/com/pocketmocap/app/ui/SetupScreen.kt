@@ -73,3 +73,12 @@ fun SetupScreen(
     onClearError: () -> Unit,
 ) {
     val isCalibrating = uiState.calibrationStep != CalibrationStep.PENDING &&
+        uiState.calibrationStep != CalibrationStep.COMPLETE
+    var showVrmWarning by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(CloudWarm),
+    ) {
+        // Ambient blur circles
