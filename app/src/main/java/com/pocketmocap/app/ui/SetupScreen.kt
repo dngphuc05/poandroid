@@ -177,3 +177,21 @@ fun SetupScreen(
                 }
             }
 
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Calibration status — when complete (idle after calibration)
+            if (uiState.calibrationStep == CalibrationStep.COMPLETE && !isCalibrating) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(24.dp),
+                    color = Glass,
+                    shadowElevation = 12.dp,
+                ) {
+                    Column(
+                        modifier = Modifier.padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
