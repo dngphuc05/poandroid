@@ -3663,3 +3663,11 @@ private fun estimateBodyFromTopAndHipRays(
     accumulate(topPlane[2], -hipPlane[2], 0f, 1.0f)
     accumulate(-HIP_HEIGHT_BODY_RATIO * topN, hipN, (HIP_HEIGHT_BODY_RATIO - 1f) * cameraHeight, 1.65f)
 
+    val det = aa * bb - ab * ab
+    if (!det.isFinite() || abs(det) < 1e-6f) return null
+    val topT = (ar * bb - br * ab) / det
+    val hipT = (aa * br - ab * ar) / det
+    if (!topT.isFinite() || !hipT.isFinite() || topT <= 0f || hipT <= 0f || topT > 20f || hipT > 20f) {
+        return null
+    }
+
