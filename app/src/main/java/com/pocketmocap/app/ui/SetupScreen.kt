@@ -150,3 +150,16 @@ fun SetupScreen(
                         )
                     }
                     // Button
+                    Box(
+                        modifier = Modifier
+                            .size(280.dp)
+                            .shadow(36.dp, CircleShape)
+                            .clip(CircleShape)
+                            .background(Brush.linearGradient(listOf(MintDeep, Mint)))
+                            .clickable {
+                                if (uiState.vrmModels.isEmpty()) showVrmWarning = true
+                                else onStartCalibration()
+                            },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        val label = if (uiState.calibrationStep == CalibrationStep.COMPLETE)
