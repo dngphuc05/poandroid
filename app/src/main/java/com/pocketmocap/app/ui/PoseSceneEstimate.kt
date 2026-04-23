@@ -3600,3 +3600,11 @@ private fun estimateVerticalHeightFromTopRay(
     val denom = dot3(dPlane[0], dPlane[1], dPlane[2], dPlane[0], dPlane[1], dPlane[2])
     if (!denom.isFinite() || denom < 1e-5f) return null
     val t = -dot3(qPlane[0], qPlane[1], qPlane[2], dPlane[0], dPlane[1], dPlane[2]) / denom
+    if (!t.isFinite() || t <= 0f || t > 20f) return null
+    val hx = qx + topRay[0] * t
+    val hy = qy + topRay[1] * t
+    val hz = qz + topRay[2] * t
+    val height = dot3(hx, hy, hz, planeNormal[0], planeNormal[1], planeNormal[2])
+    return height.takeIf { it.isFinite() && it > 0f }
+}
+
