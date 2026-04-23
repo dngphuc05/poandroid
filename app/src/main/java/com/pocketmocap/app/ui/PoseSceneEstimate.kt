@@ -3245,3 +3245,13 @@ private fun sampleHipDepthPatch(
     )
     if (!horizontal.isFinite() || horizontal !in 0.20f..12.0f) return null
     val confidence = (
+        (filtered.size.toFloat() / samples.size.toFloat()) * 0.72f +
+            (1f - (abs(filtered.first() - filtered.last()) / maxOf(depthMeters, 1e-4f)).coerceIn(0f, 1f)) * 0.28f
+        ).coerceIn(0.20f, 1f)
+    return DepthPatchEstimate(
+        horizontalDistanceMeters = horizontal,
+        hipHeightMeters = abs(vertical).coerceIn(0.20f, 1.50f),
+        confidence = confidence,
+    )
+}
+
