@@ -3386,3 +3386,19 @@ private fun selectBodyTopProxy(
     var headMaxX = Float.NEGATIVE_INFINITY
     var headMinY = Float.POSITIVE_INFINITY
     var headMaxY = Float.NEGATIVE_INFINITY
+    for (idx in headIndices) {
+        val visible = visibility?.getOrNull(idx) ?: 1f
+        val x = screenX[idx]
+        val y = screenY[idx]
+        if (visible <= 0.28f || !x.isFinite() || !y.isFinite()) continue
+        val weight = visible.coerceIn(0f, 1f)
+        headX += x * weight
+        headWeight += weight
+        topY = minOf(topY, y)
+        headMinX = minOf(headMinX, x)
+        headMaxX = maxOf(headMaxX, x)
+        headMinY = minOf(headMinY, y)
+        headMaxY = maxOf(headMaxY, y)
+    }
+    if (topY.isFinite()) {
+        val headWidth = if (headMinX.isFinite() && headMaxX.isFinite()) headMaxX - headMinX else 0f
