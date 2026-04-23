@@ -123,3 +123,14 @@ fun SetupScreen(
                 color = Slate,
             )
 
+            Spacer(modifier = Modifier.height(40.dp))
+
+            // Big SETUP & CALIBRATE button — disappears when calibrating
+            AnimatedVisibility(visible = !isCalibrating) {
+                val transition = rememberInfiniteTransition(label = "setupBtn")
+                val pulse by transition.animateFloat(
+                    initialValue = 0.92f, targetValue = 1.06f,
+                    animationSpec = infiniteRepeatable(tween(1800, easing = LinearEasing), RepeatMode.Reverse),
+                    label = "btnPulse",
+                )
+
