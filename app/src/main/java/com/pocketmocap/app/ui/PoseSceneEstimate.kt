@@ -3719,3 +3719,10 @@ private fun estimateHeightFromDistanceAndTopAngle(
     if (!cameraHeight.isFinite() || !distanceMeters.isFinite()) return null
     if (distanceMeters <= 0f) return null
 
+    val up = dot3(topRay[0], topRay[1], topRay[2], planeNormal[0], planeNormal[1], planeNormal[2])
+    val horizontalVecX = topRay[0] - planeNormal[0] * up
+    val horizontalVecY = topRay[1] - planeNormal[1] * up
+    val horizontalVecZ = topRay[2] - planeNormal[2] * up
+    val horizontalNorm = sqrt(horizontalVecX * horizontalVecX + horizontalVecY * horizontalVecY + horizontalVecZ * horizontalVecZ)
+    if (!horizontalNorm.isFinite() || horizontalNorm <= 1e-5f) return null
+
