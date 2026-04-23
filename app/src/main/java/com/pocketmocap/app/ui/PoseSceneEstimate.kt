@@ -3466,3 +3466,10 @@ internal fun evaluateServerPoseHealth(
         val x = poseX[i]
         val y = poseY[i]
         val z = poseZ[i]
+        if (!x.isFinite() || !y.isFinite() || !z.isFinite()) continue
+        validJointCount += 1
+    }
+    if (validJointCount < 12) {
+        return ServerPoseHealth(false, "too_few_valid_joints", validJointCount, 0)
+    }
+
