@@ -3642,3 +3642,16 @@ private fun estimateBodyFromTopAndHipRays(
 
     var aa = 0f
     var ab = 0f
+    var bb = 0f
+    var ar = 0f
+    var br = 0f
+
+    fun accumulate(a: Float, b: Float, rhs: Float, weight: Float) {
+        if (!a.isFinite() || !b.isFinite() || !rhs.isFinite() || weight <= 0f) return
+        aa += weight * a * a
+        ab += weight * a * b
+        bb += weight * b * b
+        ar += weight * a * rhs
+        br += weight * b * rhs
+    }
+
