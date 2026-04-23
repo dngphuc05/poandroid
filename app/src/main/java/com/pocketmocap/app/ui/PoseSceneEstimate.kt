@@ -3305,3 +3305,14 @@ private fun fuseDistanceEstimate(
         }
     }
 
+    return fused.coerceIn(0.35f, 12.0f)
+}
+
+private fun stabilizeBodyHeight(
+    measuredHeight: Float,
+    previousHeight: Float,
+    roiHeight: Float,
+    hipDistance: Float?,
+    footDistance: Float,
+): Float {
+    val previousValid = previousHeight.isFinite() && previousHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS
