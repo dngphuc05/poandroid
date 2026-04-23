@@ -3293,3 +3293,15 @@ private fun fuseDistanceEstimate(
         else -> roiDistance
     }
 
+    if (hasRoi) {
+        val roi = roiDistance.coerceIn(0.70f, 12.0f)
+        val driftFromRoi = abs(fused - roi) / maxOf(fused, roi, 1e-4f)
+        fused = when {
+            hasHip && hipConfidence >= 0.62f -> fused * 0.99f + roi * 0.01f
+            driftFromRoi <= 0.15f -> fused * 0.95f + roi * 0.05f
+            driftFromRoi <= 0.30f -> fused * 0.97f + roi * 0.03f
+            !hasHip && hasFoot -> fused * 0.92f + roi * 0.08f
+            else -> fused * 0.96f + roi * 0.04f
+        }
+    }
+
