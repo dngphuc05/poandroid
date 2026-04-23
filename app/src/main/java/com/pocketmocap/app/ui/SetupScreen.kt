@@ -66,3 +66,10 @@ import com.pocketmocap.app.ui.theme.MintDeep
 import com.pocketmocap.app.ui.theme.RoseMist
 import com.pocketmocap.app.ui.theme.Slate
 
+@Composable
+fun SetupScreen(
+    uiState: UiState,
+    onStartCalibration: () -> Unit,
+    onClearError: () -> Unit,
+) {
+    val isCalibrating = uiState.calibrationStep != CalibrationStep.PENDING &&
