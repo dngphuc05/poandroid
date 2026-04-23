@@ -109,3 +109,17 @@ fun SetupScreen(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
+            // Hero text
+            Text(
+                text = "Ready to\nRecord",
+                style = MaterialTheme.typography.headlineLarge,
+                color = Ink,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "One Tap to Mocap",
+                style = MaterialTheme.typography.bodyLarge,
+                color = Slate,
+            )
+
