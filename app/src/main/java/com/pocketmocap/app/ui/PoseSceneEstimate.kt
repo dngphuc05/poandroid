@@ -3678,3 +3678,14 @@ private fun estimateBodyFromTopAndHipRays(
     val ratioError = abs((hipHeight / topHeight) - HIP_HEIGHT_BODY_RATIO)
     if (ratioError > 0.18f) return null
 
+    val hipPoint = floatArrayOf(
+        camera[0] + hipRay[0] * hipT,
+        camera[1] + hipRay[1] * hipT,
+        camera[2] + hipRay[2] * hipT,
+    )
+    val groundUnderHip = floatArrayOf(
+        hipPoint[0] - normal[0] * hipHeight,
+        hipPoint[1] - normal[1] * hipHeight,
+        hipPoint[2] - normal[2] * hipHeight,
+    )
+    val dx = groundUnderHip[0] - camera[0]
