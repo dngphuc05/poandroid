@@ -3779,3 +3779,10 @@ internal fun computePoseOverlayRectPx(
 
     if (imageWidth > 0 && imageHeight > 0) {
         val scale = maxOf(
+            viewportWidthPx / imageWidth.toFloat(),
+            viewportHeightPx / imageHeight.toFloat(),
+        )
+        val displayWidth = imageWidth * scale
+        val displayHeight = imageHeight * scale
+        val offsetX = (displayWidth - viewportWidthPx) * 0.5f
+        val offsetY = (displayHeight - viewportHeightPx) * 0.5f
