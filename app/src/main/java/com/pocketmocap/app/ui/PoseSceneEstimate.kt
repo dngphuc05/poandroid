@@ -3339,3 +3339,21 @@ private fun stabilizeBodyHeight(
             0f
         }
 
+    if (measuredValid) {
+        val signedJump = measuredHeight - previousHeight
+        val jump = abs(signedJump)
+        stabilized = when {
+            signedJump > 0f && jump <= 0.03f -> previousHeight * 0.94f + measuredHeight * 0.06f
+            signedJump > 0f && jump <= 0.08f -> previousHeight * 0.975f + measuredHeight * 0.025f
+            signedJump > 0f && jump > 0.16f -> previousHeight * 0.998f + measuredHeight * 0.002f
+            signedJump > 0f && jump > 0.08f -> previousHeight * 0.992f + measuredHeight * 0.008f
+            jump <= 0.03f -> previousHeight * 0.80f + measuredHeight * 0.20f
+            jump <= 0.08f -> previousHeight * 0.88f + measuredHeight * 0.12f
+            jump > 0.16f -> previousHeight * 0.996f + measuredHeight * 0.004f
+            jump > 0.08f -> previousHeight * 0.982f + measuredHeight * 0.018f
+            distanceDisagreement > 0.45f -> previousHeight * 0.97f + measuredHeight * 0.03f
+            distanceDisagreement > 0.25f -> previousHeight * 0.94f + measuredHeight * 0.06f
+            else -> previousHeight * 0.92f + measuredHeight * 0.08f
+        }
+    }
+
