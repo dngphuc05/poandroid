@@ -3635,3 +3635,10 @@ private fun estimateBodyFromTopAndHipRays(
         topRay[2] - normal[2] * topN,
     )
     val hipPlane = floatArrayOf(
+        hipRay[0] - normal[0] * hipN,
+        hipRay[1] - normal[1] * hipN,
+        hipRay[2] - normal[2] * hipN,
+    )
+
+    var aa = 0f
+    var ab = 0f
