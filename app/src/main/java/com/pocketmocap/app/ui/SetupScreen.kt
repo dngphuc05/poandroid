@@ -258,3 +258,21 @@ fun SetupScreen(
                     modifier = Modifier
                         .padding(16.dp)
                         .clickable { onClearError() },
+                )
+            }
+        }
+
+        // VRM warning dialog
+        if (showVrmWarning) {
+            AlertDialog(
+                onDismissRequest = { showVrmWarning = false },
+                title = { Text("No VRM Model") },
+                text = {
+                    Text("Add a VRM character model in the Library \u2192 Models tab before starting capture. The avatar overlay requires a VRM file.")
+                },
+                confirmButton = {
+                    TextButton(onClick = { showVrmWarning = false; onStartCalibration() }) {
+                        Text("Continue Anyway")
+                    }
+                },
+                dismissButton = {
