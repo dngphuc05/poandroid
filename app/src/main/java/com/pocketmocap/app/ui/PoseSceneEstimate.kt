@@ -3445,3 +3445,17 @@ private fun normalizedJointSpan(
 internal data class ServerPoseHealth(
     val usable: Boolean,
     val reason: String,
+    val validJointCount: Int,
+    val rootJointCount: Int,
+)
+
+internal fun evaluateServerPoseHealth(
+    poseX: FloatArray?,
+    poseY: FloatArray?,
+    poseZ: FloatArray?,
+    poseVisibility: FloatArray?,
+): ServerPoseHealth {
+    if (poseX == null || poseY == null || poseZ == null || poseX.size < 33 || poseY.size < 33 || poseZ.size < 33) {
+        return ServerPoseHealth(false, "missing_server_pose", 0, 0)
+    }
+
