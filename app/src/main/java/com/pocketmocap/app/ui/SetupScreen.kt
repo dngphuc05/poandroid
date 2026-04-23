@@ -195,3 +195,21 @@ fun SetupScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text("CALIBRATION STATUS", style = MaterialTheme.typography.labelMedium, color = Slate, modifier = Modifier.weight(1f))
+                            Text("Complete", style = MaterialTheme.typography.labelMedium, color = MintDeep, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+                        listOf("Intrinsic Calc", "Extrinsic Anchor", "Bootstrap").forEachIndexed { i, step ->
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Mint.copy(alpha = 0.10f))
+                                    .padding(12.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(CircleShape)
