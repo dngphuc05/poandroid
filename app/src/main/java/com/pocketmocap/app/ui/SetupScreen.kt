@@ -98,3 +98,14 @@ fun SetupScreen(
                 .background(RoseMist.copy(alpha = 0.16f), CircleShape)
         )
 
+        // Main content — padded for header (top ~80dp) and bottom nav (~80dp)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp)
+                .padding(top = 96.dp, bottom = 100.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
+
