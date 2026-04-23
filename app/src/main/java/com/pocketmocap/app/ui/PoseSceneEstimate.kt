@@ -3554,3 +3554,10 @@ private fun rayPlaneHit(
     )
 }
 
+private fun cameraRayWorld(
+    u: Float,
+    v: Float,
+    intrinsics: CameraIntrinsics,
+    rotation: FloatArray,
+): FloatArray? {
+    val sensorWidth = intrinsics.imageHeight.toFloat()
