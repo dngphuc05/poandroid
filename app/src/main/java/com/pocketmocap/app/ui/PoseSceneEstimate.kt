@@ -3422,3 +3422,11 @@ private fun selectBodyTopProxy(
     return BodyTopProxy(roi.centerX, roi.minY, 0.22f)
 }
 
+private fun normalizedJointSpan(
+    screenX: FloatArray,
+    screenY: FloatArray,
+    visibility: FloatArray?,
+    a: Int,
+    b: Int,
+): Float? {
+    val va = visibility?.getOrNull(a) ?: 1f
