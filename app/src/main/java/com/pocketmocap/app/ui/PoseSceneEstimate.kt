@@ -3210,3 +3210,14 @@ private fun sampleHipDepthPatch(
     val u = xNorm * intrinsics.imageWidth
     val v = yNorm * intrinsics.imageHeight
     val camPoint = floatArrayOf(
+        ((u - intrinsics.cx) / intrinsics.fx) * depthMeters,
+        -((v - intrinsics.cy) / intrinsics.fy) * depthMeters,
+        -depthMeters,
+    )
+    val worldOffset = rotateByQuat(rotation, camPoint)
+    val worldPoint = floatArrayOf(
+        camera[0] + worldOffset[0],
+        camera[1] + worldOffset[1],
+        camera[2] + worldOffset[2],
+    )
+    val worldVec = floatArrayOf(
