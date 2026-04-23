@@ -276,3 +276,12 @@ fun SetupScreen(
                     }
                 },
                 dismissButton = {
+                    TextButton(onClick = { showVrmWarning = false }) {
+                        Text("Go to Library")
+                    }
+                },
+            )
+        }
+    }
+}
+
