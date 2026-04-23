@@ -3282,3 +3282,14 @@ private fun fuseDistanceEstimate(
         hasHip -> hipDistance!!
         hasFoot && hasRoi -> {
             val driftFromRoi = abs(footDistance - roiDistance) / maxOf(footDistance, roiDistance, 1e-4f)
+            when {
+                driftFromRoi > 0.42f -> roiDistance * 0.30f + footDistance * 0.70f
+                driftFromRoi > 0.25f -> roiDistance * 0.22f + footDistance * 0.78f
+                driftFromRoi > 0.14f -> roiDistance * 0.14f + footDistance * 0.86f
+                else -> footDistance * 0.92f + roiDistance * 0.08f
+            }
+        }
+        hasFoot -> footDistance
+        else -> roiDistance
+    }
+
