@@ -163,3 +163,17 @@ fun SetupScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         val label = if (uiState.calibrationStep == CalibrationStep.COMPLETE)
+                            "RECALIBRATE" else "SETUP &\nCALIBRATE"
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                letterSpacing = 1.2.sp,
+                            ),
+                            color = Color.White,
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                }
+            }
+
