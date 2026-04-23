@@ -3357,3 +3357,12 @@ private fun stabilizeBodyHeight(
         }
     }
 
+    if (roiValid) {
+        val roiJump = abs(roiHeight - previousHeight)
+        stabilized = if (roiJump <= 0.08f) {
+            stabilized * 0.94f + roiHeight * 0.06f
+        } else {
+            stabilized * 0.98f + roiHeight * 0.02f
+        }
+    }
+
