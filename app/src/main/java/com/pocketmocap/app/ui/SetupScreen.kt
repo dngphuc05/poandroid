@@ -227,3 +227,16 @@ fun SetupScreen(
             }
         }
 
+        // Calibration panel slides up from bottom
+        AnimatedVisibility(
+            visible = isCalibrating,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            enter = slideInVertically(initialOffsetY = { it }, animationSpec = tween(400)),
+            exit = slideOutVertically(targetOffsetY = { it }, animationSpec = tween(300)),
+        ) {
+            CalibrationPanel(
+                step = uiState.calibrationStep,
+                bootstrapProgress = uiState.bootstrapProgress,
+            )
+        }
+
