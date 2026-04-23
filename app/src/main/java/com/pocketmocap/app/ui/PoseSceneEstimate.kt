@@ -3488,3 +3488,10 @@ internal fun evaluateServerPoseHealth(
         return ServerPoseHealth(false, "missing_root_joints", validJointCount, rootCount)
     }
 
+    fun validIndexedCount(indices: IntArray, minVisibility: Float): Int {
+        var count = 0
+        for (idx in indices) {
+            val visible = poseVisibility?.getOrNull(idx) ?: 1f
+            if (visible <= minVisibility) continue
+            val x = poseX[idx]
+            val y = poseY[idx]
