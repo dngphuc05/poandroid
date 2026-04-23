@@ -3409,3 +3409,16 @@ private fun selectBodyTopProxy(
         // crown itself. Use a bounded anatomical lift: enough for full-body
         // captures where the crown sits above the visible head landmarks, but
         // still far below the old large margins that caused height overshoot.
+        val headMargin = maxOf(
+            0.018f,
+            minOf(0.085f, maxOf(headWidth * 0.62f, headHeight * 0.68f, shoulderWidth * 0.18f)),
+        )
+        return BodyTopProxy(
+            xNorm = (headX / headWeight.coerceAtLeast(1e-4f)).coerceIn(0f, 1f),
+            yNorm = (topY - headMargin).coerceIn(0f, 1f),
+            confidence = (headWeight / headIndices.size.toFloat()).coerceIn(0.15f, 1f),
+        )
+    }
+    return BodyTopProxy(roi.centerX, roi.minY, 0.22f)
+}
+
