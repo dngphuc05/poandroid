@@ -3502,3 +3502,12 @@ internal fun evaluateServerPoseHealth(
     }
 
     val upperCount = validIndexedCount(intArrayOf(0, 7, 8, 11, 12, 13, 14, 23, 24), 0.05f)
+    if (upperCount < 5) {
+        return ServerPoseHealth(false, "missing_upper_body_joints", validJointCount, rootCount)
+    }
+
+    val legCount = validIndexedCount(intArrayOf(23, 24, 25, 26, 27, 28, 29, 30, 31, 32), 0.05f)
+    if (legCount < 5) {
+        return ServerPoseHealth(false, "missing_lower_body_joints", validJointCount, rootCount)
+    }
+
