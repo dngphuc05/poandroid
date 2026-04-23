@@ -3480,3 +3480,11 @@ internal fun evaluateServerPoseHealth(
         if (visible <= 0.05f) continue
         val x = poseX[idx]
         val y = poseY[idx]
+        val z = poseZ[idx]
+        if (!x.isFinite() || !y.isFinite() || !z.isFinite()) continue
+        rootCount += 1
+    }
+    if (rootCount < 3) {
+        return ServerPoseHealth(false, "missing_root_joints", validJointCount, rootCount)
+    }
+
