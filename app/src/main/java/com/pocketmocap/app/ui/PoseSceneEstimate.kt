@@ -3593,3 +3593,10 @@ private fun estimateVerticalHeightFromTopRay(
         qz - planeNormal[2] * qDotN,
     )
     val dPlane = floatArrayOf(
+        topRay[0] - planeNormal[0] * dDotN,
+        topRay[1] - planeNormal[1] * dDotN,
+        topRay[2] - planeNormal[2] * dDotN,
+    )
+    val denom = dot3(dPlane[0], dPlane[1], dPlane[2], dPlane[0], dPlane[1], dPlane[2])
+    if (!denom.isFinite() || denom < 1e-5f) return null
+    val t = -dot3(qPlane[0], qPlane[1], qPlane[2], dPlane[0], dPlane[1], dPlane[2]) / denom
