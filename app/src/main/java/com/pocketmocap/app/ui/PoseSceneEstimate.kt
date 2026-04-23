@@ -3583,3 +3583,13 @@ private fun estimateVerticalHeightFromTopRay(
     planeNormal: FloatArray,
 ): Float? {
     val qx = camera[0] - footPoint[0]
+    val qy = camera[1] - footPoint[1]
+    val qz = camera[2] - footPoint[2]
+    val qDotN = dot3(qx, qy, qz, planeNormal[0], planeNormal[1], planeNormal[2])
+    val dDotN = dot3(topRay[0], topRay[1], topRay[2], planeNormal[0], planeNormal[1], planeNormal[2])
+    val qPlane = floatArrayOf(
+        qx - planeNormal[0] * qDotN,
+        qy - planeNormal[1] * qDotN,
+        qz - planeNormal[2] * qDotN,
+    )
+    val dPlane = floatArrayOf(
