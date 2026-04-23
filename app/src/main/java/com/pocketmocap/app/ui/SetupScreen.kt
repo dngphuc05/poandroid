@@ -285,3 +285,21 @@ fun SetupScreen(
     }
 }
 
+// ─── Calibration Panel (slides up from bottom) ──────────────────────────────
+
+@Composable
+private fun CalibrationPanel(
+    step: CalibrationStep,
+    bootstrapProgress: Float,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+        color = Glass,
+        shadowElevation = 24.dp,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(32.dp)
+                .padding(bottom = 48.dp),
