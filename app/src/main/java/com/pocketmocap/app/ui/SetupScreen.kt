@@ -134,3 +134,19 @@ fun SetupScreen(
                     label = "btnPulse",
                 )
 
+                Box(contentAlignment = Alignment.Center) {
+                    // Pulsing glow ring behind button
+                    Canvas(modifier = Modifier.size(320.dp)) {
+                        drawCircle(
+                            brush = Brush.radialGradient(
+                                listOf(Mint.copy(alpha = 0.14f), Color.Transparent)
+                            ),
+                            radius = size.minDimension * 0.5f * pulse,
+                        )
+                        drawCircle(
+                            color = MintBright.copy(alpha = 0.20f),
+                            radius = size.minDimension * 0.45f * pulse,
+                            style = Stroke(width = size.minDimension * 0.02f),
+                        )
+                    }
+                    // Button
