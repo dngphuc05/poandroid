@@ -213,3 +213,17 @@ fun SetupScreen(
                                     modifier = Modifier
                                         .size(32.dp)
                                         .clip(CircleShape)
+                                        .background(Mint),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    Text("${i + 1}", style = MaterialTheme.typography.labelLarge, color = MintDeep)
+                                }
+                                Text(step, style = MaterialTheme.typography.titleSmall, color = Ink, modifier = Modifier.weight(1f))
+                                Icon(Icons.Rounded.Check, null, tint = MintDeep, modifier = Modifier.size(18.dp))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
