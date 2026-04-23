@@ -3576,3 +3576,10 @@ private fun cameraRayWorld(
     return rotateByQuat(rotation, normalize3(rayCamera) ?: return null)
 }
 
+private fun estimateVerticalHeightFromTopRay(
+    camera: FloatArray,
+    topRay: FloatArray,
+    footPoint: FloatArray,
+    planeNormal: FloatArray,
+): Float? {
+    val qx = camera[0] - footPoint[0]
