@@ -3430,3 +3430,11 @@ private fun normalizedJointSpan(
     b: Int,
 ): Float? {
     val va = visibility?.getOrNull(a) ?: 1f
+    val vb = visibility?.getOrNull(b) ?: 1f
+    if (va <= 0.25f || vb <= 0.25f) return null
+    val ax = screenX[a]
+    val ay = screenY[a]
+    val bx = screenX[b]
+    val by = screenY[b]
+    if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
+    val dx = ax - bx
