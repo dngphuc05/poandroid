@@ -3689,3 +3689,10 @@ private fun estimateBodyFromTopAndHipRays(
         hipPoint[2] - normal[2] * hipHeight,
     )
     val dx = groundUnderHip[0] - camera[0]
+    val dy = groundUnderHip[1] - camera[1]
+    val dz = groundUnderHip[2] - camera[2]
+    val vertical = dot3(dx, dy, dz, normal[0], normal[1], normal[2])
+    val hx = dx - normal[0] * vertical
+    val hy = dy - normal[1] * vertical
+    val hz = dz - normal[2] * vertical
+    val distance = sqrt(hx * hx + hy * hy + hz * hz)
