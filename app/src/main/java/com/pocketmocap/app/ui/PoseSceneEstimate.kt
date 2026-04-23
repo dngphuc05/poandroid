@@ -3316,3 +3316,18 @@ private fun stabilizeBodyHeight(
     footDistance: Float,
 ): Float {
     val previousValid = previousHeight.isFinite() && previousHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS
+    val measuredValid = measuredHeight.isFinite() && measuredHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS
+    val roiValid = roiHeight.isFinite() && roiHeight in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS
+    val hipValid = hipDistance != null && hipDistance.isFinite()
+    val footValid = footDistance.isFinite()
+
+    if (!previousValid) {
+        return when {
+            measuredValid && roiValid -> (measuredHeight * 0.84f + roiHeight * 0.16f)
+                .coerceIn(MIN_MEASURED_HEIGHT_METERS, MAX_MEASURED_HEIGHT_METERS)
+            measuredValid -> measuredHeight
+            roiValid -> roiHeight
+            else -> Float.NaN
+        }
+    }
+
