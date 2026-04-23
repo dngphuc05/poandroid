@@ -3617,3 +3617,13 @@ private fun estimateBodyFromTopAndHipRays(
     hipConfidence: Float,
 ): HipVerticalEstimate? {
     val normal = normalize3(planeNormal) ?: return null
+    val cameraHeight = dot3(
+        camera[0] - planePoint[0],
+        camera[1] - planePoint[1],
+        camera[2] - planePoint[2],
+        normal[0],
+        normal[1],
+        normal[2],
+    )
+    if (!cameraHeight.isFinite() || cameraHeight !in 0.15f..2.80f) return null
+
