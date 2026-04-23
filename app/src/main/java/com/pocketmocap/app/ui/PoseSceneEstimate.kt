@@ -3561,3 +3561,10 @@ private fun cameraRayWorld(
     rotation: FloatArray,
 ): FloatArray? {
     val sensorWidth = intrinsics.imageHeight.toFloat()
+    val sensorHeight = intrinsics.imageWidth.toFloat()
+    val sensorU = (v / intrinsics.imageHeight.toFloat()) * sensorWidth
+    val sensorV = (1f - (u / intrinsics.imageWidth.toFloat())) * sensorHeight
+    val sensorFx = intrinsics.fy
+    val sensorFy = intrinsics.fx
+    val sensorCx = intrinsics.cy
+    val sensorCy = sensorHeight - intrinsics.cx
