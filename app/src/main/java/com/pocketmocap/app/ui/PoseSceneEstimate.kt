@@ -3331,3 +3331,11 @@ private fun stabilizeBodyHeight(
         }
     }
 
+    var stabilized = previousHeight
+    val distanceDisagreement =
+        if (hipValid && footValid) {
+            abs(hipDistance!! - footDistance)
+        } else {
+            0f
+        }
+
