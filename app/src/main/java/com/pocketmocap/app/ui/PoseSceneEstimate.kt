@@ -3752,3 +3752,12 @@ private fun rotateByQuat(q: FloatArray, v: FloatArray): FloatArray {
     )
 }
 
+private fun dot3(
+    ax: Float,
+    ay: Float,
+    az: Float,
+    bx: Float,
+    by: Float,
+    bz: Float,
+): Float = ax * bx + ay * by + az * bz
+
