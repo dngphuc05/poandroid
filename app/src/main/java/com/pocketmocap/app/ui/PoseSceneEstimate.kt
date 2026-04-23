@@ -3726,3 +3726,10 @@ private fun estimateHeightFromDistanceAndTopAngle(
     val horizontalNorm = sqrt(horizontalVecX * horizontalVecX + horizontalVecY * horizontalVecY + horizontalVecZ * horizontalVecZ)
     if (!horizontalNorm.isFinite() || horizontalNorm <= 1e-5f) return null
 
+    val tanElevation = up / horizontalNorm
+    val height = cameraHeight + distanceMeters * tanElevation
+    return height.takeIf { it.isFinite() && it > 0f }
+}
+
+private fun normalize3(v: FloatArray): FloatArray? {
+    val l = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
