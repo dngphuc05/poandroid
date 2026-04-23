@@ -3733,3 +3733,10 @@ private fun estimateHeightFromDistanceAndTopAngle(
 
 private fun normalize3(v: FloatArray): FloatArray? {
     val l = sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2])
+    if (l < 1e-6f) return null
+    return floatArrayOf(v[0] / l, v[1] / l, v[2] / l)
+}
+
+private fun rotateByQuat(q: FloatArray, v: FloatArray): FloatArray {
+    val x = q[0]
+    val y = q[1]
