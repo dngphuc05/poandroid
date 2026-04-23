@@ -3402,3 +3402,10 @@ private fun selectBodyTopProxy(
     }
     if (topY.isFinite()) {
         val headWidth = if (headMinX.isFinite() && headMaxX.isFinite()) headMaxX - headMinX else 0f
+        val headHeight = if (headMinY.isFinite() && headMaxY.isFinite()) headMaxY - headMinY else 0f
+        val shoulderWidth = normalizedJointSpan(screenX, screenY, visibility, 11, 12) ?: roi.width
+        // The MediaPipe head landmarks (eyes/ears, idx 7-10) sit just below the
+        // crown of the head — roughly the upper third of head height, not the
+        // crown itself. Use a bounded anatomical lift: enough for full-body
+        // captures where the crown sits above the visible head landmarks, but
+        // still far below the old large margins that caused height overshoot.
