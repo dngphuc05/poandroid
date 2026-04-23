@@ -3438,3 +3438,10 @@ private fun normalizedJointSpan(
     val by = screenY[b]
     if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
     val dx = ax - bx
+    val dy = ay - by
+    return sqrt(dx * dx + dy * dy).takeIf { it.isFinite() && it > 1e-4f }
+}
+
+internal data class ServerPoseHealth(
+    val usable: Boolean,
+    val reason: String,
