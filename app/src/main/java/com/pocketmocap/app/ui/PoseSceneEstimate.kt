@@ -3221,3 +3221,16 @@ private fun sampleHipDepthPatch(
         camera[2] + worldOffset[2],
     )
     val worldVec = floatArrayOf(
+        worldPoint[0] - camera[0],
+        worldPoint[1] - camera[1],
+        worldPoint[2] - camera[2],
+    )
+    val vertical = dot3(
+        worldPoint[0] - planePoint[0],
+        worldPoint[1] - planePoint[1],
+        worldPoint[2] - planePoint[2],
+        planeNormal[0],
+        planeNormal[1],
+        planeNormal[2],
+    )
+    val planeVec = floatArrayOf(
