@@ -3526,3 +3526,13 @@ internal fun classifyServerPoseMissingReason(
         else -> serverHealth.reason
     }
 
+private fun rayPlaneHit(
+    u: Float,
+    v: Float,
+    intrinsics: CameraIntrinsics,
+    camera: FloatArray,
+    rotation: FloatArray,
+    planePoint: FloatArray,
+    planeNormal: FloatArray,
+): FloatArray? {
+    val rayWorld = cameraRayWorld(u, v, intrinsics, rotation) ?: return null
