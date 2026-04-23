@@ -3536,3 +3536,21 @@ private fun rayPlaneHit(
     planeNormal: FloatArray,
 ): FloatArray? {
     val rayWorld = cameraRayWorld(u, v, intrinsics, rotation) ?: return null
+    val denom = dot3(rayWorld[0], rayWorld[1], rayWorld[2], planeNormal[0], planeNormal[1], planeNormal[2])
+    if (abs(denom) < 1e-4f) return null
+    val t = dot3(
+        planePoint[0] - camera[0],
+        planePoint[1] - camera[1],
+        planePoint[2] - camera[2],
+        planeNormal[0],
+        planeNormal[1],
+        planeNormal[2],
+    ) / denom
+    if (!t.isFinite() || t <= 0f || t > 20f) return null
+    return floatArrayOf(
+        camera[0] + rayWorld[0] * t,
+        camera[1] + rayWorld[1] * t,
+        camera[2] + rayWorld[2] * t,
+    )
+}
+
