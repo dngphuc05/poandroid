@@ -3234,3 +3234,14 @@ private fun sampleHipDepthPatch(
         planeNormal[2],
     )
     val planeVec = floatArrayOf(
+        worldVec[0] - planeNormal[0] * dot3(worldVec[0], worldVec[1], worldVec[2], planeNormal[0], planeNormal[1], planeNormal[2]),
+        worldVec[1] - planeNormal[1] * dot3(worldVec[0], worldVec[1], worldVec[2], planeNormal[0], planeNormal[1], planeNormal[2]),
+        worldVec[2] - planeNormal[2] * dot3(worldVec[0], worldVec[1], worldVec[2], planeNormal[0], planeNormal[1], planeNormal[2]),
+    )
+    val horizontal = sqrt(
+        planeVec[0] * planeVec[0] +
+            planeVec[1] * planeVec[1] +
+            planeVec[2] * planeVec[2]
+    )
+    if (!horizontal.isFinite() || horizontal !in 0.20f..12.0f) return null
+    val confidence = (
