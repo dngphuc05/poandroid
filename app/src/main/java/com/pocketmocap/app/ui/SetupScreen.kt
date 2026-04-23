@@ -240,3 +240,21 @@ fun SetupScreen(
             )
         }
 
+        // Error toast
+        uiState.errorMessage?.let { error ->
+            Surface(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 24.dp, vertical = 108.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFFFF0F0),
+                shadowElevation = 8.dp,
+            ) {
+                Text(
+                    text = error,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color(0xFFB00020),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { onClearError() },
