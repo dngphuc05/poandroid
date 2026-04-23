@@ -3710,3 +3710,12 @@ private fun estimateBodyFromTopAndHipRays(
     )
 }
 
+private fun estimateHeightFromDistanceAndTopAngle(
+    cameraHeight: Float,
+    distanceMeters: Float,
+    topRay: FloatArray,
+    planeNormal: FloatArray,
+): Float? {
+    if (!cameraHeight.isFinite() || !distanceMeters.isFinite()) return null
+    if (distanceMeters <= 0f) return null
+
