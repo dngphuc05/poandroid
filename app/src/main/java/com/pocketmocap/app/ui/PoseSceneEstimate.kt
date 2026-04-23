@@ -3379,3 +3379,10 @@ private fun selectBodyTopProxy(
         return BodyTopProxy(roi.centerX, roi.minY, 0.20f)
     }
     val headIndices = intArrayOf(0, 7, 8, 9, 10)
+    var headX = 0f
+    var headWeight = 0f
+    var topY = Float.POSITIVE_INFINITY
+    var headMinX = Float.POSITIVE_INFINITY
+    var headMaxX = Float.NEGATIVE_INFINITY
+    var headMinY = Float.POSITIVE_INFINITY
+    var headMaxY = Float.NEGATIVE_INFINITY
