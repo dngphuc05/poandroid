@@ -3255,3 +3255,10 @@ private fun sampleHipDepthPatch(
     )
 }
 
+private fun fuseDistanceEstimate(
+    footDistance: Float,
+    hipDistance: Float?,
+    hipConfidence: Float,
+    roiDistance: Float,
+): Float {
+    val hasHip = hipDistance != null && hipDistance.isFinite()
