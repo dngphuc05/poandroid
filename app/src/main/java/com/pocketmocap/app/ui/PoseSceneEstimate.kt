@@ -3797,3 +3797,16 @@ internal fun computePoseOverlayRectPx(
         bottom = roi.maxY * viewportHeightPx + paddingPx
     }
 
+    val clampedLeft = left.coerceIn(0f, viewportWidthPx - 1f)
+    val clampedTop = top.coerceIn(0f, viewportHeightPx - 1f)
+    val clampedRight = right.coerceIn(clampedLeft + 1f, viewportWidthPx)
+    val clampedBottom = bottom.coerceIn(clampedTop + 1f, viewportHeightPx)
+    val width = (clampedRight - clampedLeft).coerceAtLeast(1f)
+    val height = (clampedBottom - clampedTop).coerceAtLeast(1f)
+    return PoseOverlayRectPx(
+        left = clampedLeft,
+        top = clampedTop,
+        width = width,
+        height = height,
+    )
+}
