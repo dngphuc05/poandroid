@@ -3671,3 +3671,10 @@ private fun estimateBodyFromTopAndHipRays(
         return null
     }
 
+    val topHeight = cameraHeight + topT * topN
+    val hipHeight = cameraHeight + hipT * hipN
+    if (topHeight !in MIN_MEASURED_HEIGHT_METERS..MAX_MEASURED_HEIGHT_METERS) return null
+    if (hipHeight <= 0.20f || hipHeight >= topHeight) return null
+    val ratioError = abs((hipHeight / topHeight) - HIP_HEIGHT_BODY_RATIO)
+    if (ratioError > 0.18f) return null
+
