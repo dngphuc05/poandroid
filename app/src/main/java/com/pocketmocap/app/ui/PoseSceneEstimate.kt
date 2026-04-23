@@ -3627,3 +3627,11 @@ private fun estimateBodyFromTopAndHipRays(
     )
     if (!cameraHeight.isFinite() || cameraHeight !in 0.15f..2.80f) return null
 
+    val topN = dot3(topRay[0], topRay[1], topRay[2], normal[0], normal[1], normal[2])
+    val hipN = dot3(hipRay[0], hipRay[1], hipRay[2], normal[0], normal[1], normal[2])
+    val topPlane = floatArrayOf(
+        topRay[0] - normal[0] * topN,
+        topRay[1] - normal[1] * topN,
+        topRay[2] - normal[2] * topN,
+    )
+    val hipPlane = floatArrayOf(
