@@ -3511,3 +3511,18 @@ internal fun evaluateServerPoseHealth(
         return ServerPoseHealth(false, "missing_lower_body_joints", validJointCount, rootCount)
     }
 
+    return ServerPoseHealth(true, "ok", validJointCount, rootCount)
+}
+
+internal fun classifyServerPoseMissingReason(
+    pose3DReceivedCount: Int,
+    lastServerParseReason: String,
+    serverHealth: ServerPoseHealth,
+): String =
+    when {
+        serverHealth.usable -> "none"
+        pose3DReceivedCount <= 0 -> "no_pose3d_received"
+        lastServerParseReason.isNotBlank() && lastServerParseReason != "ok" -> lastServerParseReason
+        else -> serverHealth.reason
+    }
+
