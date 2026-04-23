@@ -3608,3 +3608,12 @@ private fun estimateVerticalHeightFromTopRay(
     return height.takeIf { it.isFinite() && it > 0f }
 }
 
+private fun estimateBodyFromTopAndHipRays(
+    camera: FloatArray,
+    topRay: FloatArray,
+    hipRay: FloatArray,
+    planePoint: FloatArray,
+    planeNormal: FloatArray,
+    hipConfidence: Float,
+): HipVerticalEstimate? {
+    val normal = normalize3(planeNormal) ?: return null
