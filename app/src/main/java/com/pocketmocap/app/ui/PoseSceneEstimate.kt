@@ -3761,3 +3761,14 @@ private fun dot3(
     bz: Float,
 ): Float = ax * bx + ay * by + az * bz
 
+internal fun computePoseOverlayRectPx(
+    roi: PoseRoi?,
+    imageWidth: Int,
+    imageHeight: Int,
+    viewportWidthPx: Float,
+    viewportHeightPx: Float,
+    paddingPx: Float = 20f,
+): PoseOverlayRectPx? {
+    roi ?: return null
+    if (viewportWidthPx <= 1f || viewportHeightPx <= 1f) return null
+
