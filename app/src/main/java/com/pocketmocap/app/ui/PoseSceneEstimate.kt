@@ -3740,3 +3740,15 @@ private fun normalize3(v: FloatArray): FloatArray? {
 private fun rotateByQuat(q: FloatArray, v: FloatArray): FloatArray {
     val x = q[0]
     val y = q[1]
+    val z = q[2]
+    val w = q[3]
+    val tx = 2f * (y * v[2] - z * v[1])
+    val ty = 2f * (z * v[0] - x * v[2])
+    val tz = 2f * (x * v[1] - y * v[0])
+    return floatArrayOf(
+        v[0] + w * tx + (y * tz - z * ty),
+        v[1] + w * ty + (z * tx - x * tz),
+        v[2] + w * tz + (x * ty - y * tx),
+    )
+}
+
