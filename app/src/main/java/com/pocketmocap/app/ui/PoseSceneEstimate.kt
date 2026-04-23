@@ -3568,3 +3568,11 @@ private fun cameraRayWorld(
     val sensorFy = intrinsics.fx
     val sensorCx = intrinsics.cy
     val sensorCy = sensorHeight - intrinsics.cx
+    val rayCamera = floatArrayOf(
+        (sensorU - sensorCx) / sensorFx,
+        -(sensorV - sensorCy) / sensorFy,
+        -1f,
+    )
+    return rotateByQuat(rotation, normalize3(rayCamera) ?: return null)
+}
+
