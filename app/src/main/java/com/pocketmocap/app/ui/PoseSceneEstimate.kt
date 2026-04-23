@@ -3203,3 +3203,10 @@ private fun sampleHipDepthPatch(
     if (samples.size < 4) return null
     samples.sort()
     val median = samples[samples.size / 2]
+    val filtered = samples.filter { abs(it - median) <= maxOf(0.18f, median * 0.12f) }
+    if (filtered.size < 3) return null
+    val depthMeters = filtered[filtered.size / 2]
+
+    val u = xNorm * intrinsics.imageWidth
+    val v = yNorm * intrinsics.imageHeight
+    val camPoint = floatArrayOf(
