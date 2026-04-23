@@ -3269,3 +3269,16 @@ private fun fuseDistanceEstimate(
     }
 
     var fused = when {
+        hasHip && hasFoot -> {
+            val hip = hipDistance!!
+            val deltaRatio = abs(hip - footDistance) / maxOf(hip, footDistance, 1e-4f)
+            when {
+                deltaRatio <= 0.08f -> hip * 0.68f + footDistance * 0.32f
+                deltaRatio <= 0.18f -> hip * 0.78f + footDistance * 0.22f
+                hipConfidence >= 0.58f -> hip * 0.90f + footDistance * 0.10f
+                else -> hip * 0.62f + footDistance * 0.38f
+            }
+        }
+        hasHip -> hipDistance!!
+        hasFoot && hasRoi -> {
+            val driftFromRoi = abs(footDistance - roiDistance) / maxOf(footDistance, roiDistance, 1e-4f)
