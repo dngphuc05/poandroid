@@ -303,3 +303,15 @@ private fun CalibrationPanel(
                 .fillMaxWidth()
                 .padding(32.dp)
                 .padding(bottom = 48.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            Text("CALIBRATING", style = MaterialTheme.typography.labelMedium, color = Slate)
+
+            CalibrationStepRow(
+                number = 1,
+                label = "Intrinsic Calc",
+                subtitle = "Reading camera focal length & pixel pitch",
+                isDone = step.ordinal > CalibrationStep.INTRINSIC_CALC.ordinal,
+                isActive = step == CalibrationStep.INTRINSIC_CALC,
+            )
+
