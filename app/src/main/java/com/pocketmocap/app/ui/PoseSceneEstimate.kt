@@ -3459,3 +3459,10 @@ internal fun evaluateServerPoseHealth(
         return ServerPoseHealth(false, "missing_server_pose", 0, 0)
     }
 
+    var validJointCount = 0
+    for (i in 0 until 33) {
+        val visible = poseVisibility?.getOrNull(i) ?: 1f
+        if (visible <= 0.05f) continue
+        val x = poseX[i]
+        val y = poseY[i]
+        val z = poseZ[i]
