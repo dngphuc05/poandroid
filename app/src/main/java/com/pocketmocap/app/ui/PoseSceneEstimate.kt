@@ -3772,3 +3772,10 @@ internal fun computePoseOverlayRectPx(
     roi ?: return null
     if (viewportWidthPx <= 1f || viewportHeightPx <= 1f) return null
 
+    val left: Float
+    val top: Float
+    val right: Float
+    val bottom: Float
+
+    if (imageWidth > 0 && imageHeight > 0) {
+        val scale = maxOf(
