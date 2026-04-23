@@ -52,3 +52,17 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.pocketmocap.app.PocketMocapViewModel.CalibrationStep
+import com.pocketmocap.app.PocketMocapViewModel.UiState
+import com.pocketmocap.app.ui.theme.CloudWarm
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
+import com.pocketmocap.app.ui.theme.Glass
+import com.pocketmocap.app.ui.theme.Ink
+import com.pocketmocap.app.ui.theme.Mint
+import com.pocketmocap.app.ui.theme.MintBright
+import com.pocketmocap.app.ui.theme.MintDeep
+import com.pocketmocap.app.ui.theme.RoseMist
+import com.pocketmocap.app.ui.theme.Slate
+
