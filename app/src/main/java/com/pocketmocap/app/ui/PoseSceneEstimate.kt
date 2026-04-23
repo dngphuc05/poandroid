@@ -3495,3 +3495,10 @@ internal fun evaluateServerPoseHealth(
             if (visible <= minVisibility) continue
             val x = poseX[idx]
             val y = poseY[idx]
+            val z = poseZ[idx]
+            if (x.isFinite() && y.isFinite() && z.isFinite()) count += 1
+        }
+        return count
+    }
+
+    val upperCount = validIndexedCount(intArrayOf(0, 7, 8, 11, 12, 13, 14, 23, 24), 0.05f)
