@@ -3262,3 +3262,10 @@ private fun fuseDistanceEstimate(
     roiDistance: Float,
 ): Float {
     val hasHip = hipDistance != null && hipDistance.isFinite()
+    val hasFoot = footDistance.isFinite()
+    val hasRoi = roiDistance.isFinite()
+    if (!hasHip && !hasFoot && !hasRoi) {
+        return Float.NaN
+    }
+
+    var fused = when {
