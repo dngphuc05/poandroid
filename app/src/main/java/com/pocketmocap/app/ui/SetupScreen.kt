@@ -323,3 +323,15 @@ private fun CalibrationPanel(
                 isActive = step == CalibrationStep.EXTRINSIC_ANCHOR,
             )
 
+            CalibrationStepRow(
+                number = 3,
+                label = if (step == CalibrationStep.BOOTSTRAP) "Bootstrap (${(bootstrapProgress * 15).toInt()}/15)" else "Bootstrap",
+                subtitle = "Stand still \u2013 warming up GRU & bone lengths",
+                isDone = step == CalibrationStep.COMPLETE,
+                isActive = step == CalibrationStep.BOOTSTRAP,
+                progress = if (step == CalibrationStep.BOOTSTRAP) bootstrapProgress else null,
+            )
+        }
+    }
+}
+
