@@ -3473,3 +3473,10 @@ internal fun evaluateServerPoseHealth(
         return ServerPoseHealth(false, "too_few_valid_joints", validJointCount, 0)
     }
 
+    val rootIndices = intArrayOf(23, 24, 11, 12)
+    var rootCount = 0
+    for (idx in rootIndices) {
+        val visible = poseVisibility?.getOrNull(idx) ?: 1f
+        if (visible <= 0.05f) continue
+        val x = poseX[idx]
+        val y = poseY[idx]
