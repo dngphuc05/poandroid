@@ -3786,3 +3786,14 @@ internal fun computePoseOverlayRectPx(
         val displayHeight = imageHeight * scale
         val offsetX = (displayWidth - viewportWidthPx) * 0.5f
         val offsetY = (displayHeight - viewportHeightPx) * 0.5f
+        left = roi.minX * displayWidth - offsetX - paddingPx
+        top = roi.minY * displayHeight - offsetY - paddingPx
+        right = roi.maxX * displayWidth - offsetX + paddingPx
+        bottom = roi.maxY * displayHeight - offsetY + paddingPx
+    } else {
+        left = roi.minX * viewportWidthPx - paddingPx
+        top = roi.minY * viewportHeightPx - paddingPx
+        right = roi.maxX * viewportWidthPx + paddingPx
+        bottom = roi.maxY * viewportHeightPx + paddingPx
+    }
+
