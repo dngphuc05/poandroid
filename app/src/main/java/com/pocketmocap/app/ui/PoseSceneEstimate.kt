@@ -3696,3 +3696,17 @@ private fun estimateBodyFromTopAndHipRays(
     val hy = dy - normal[1] * vertical
     val hz = dz - normal[2] * vertical
     val distance = sqrt(hx * hx + hy * hy + hz * hz)
+    if (!distance.isFinite() || distance !in 0.35f..12.0f) return null
+
+    val confidence = (
+        0.36f +
+            hipConfidence.coerceIn(0f, 1f) * 0.42f +
+            ((0.18f - ratioError).coerceAtLeast(0f) / 0.18f) * 0.22f
+        ).coerceIn(0f, 0.88f)
+    return HipVerticalEstimate(
+        distanceMeters = distance,
+        bodyHeightMeters = topHeight,
+        confidence = confidence,
+    )
+}
+
