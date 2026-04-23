@@ -315,3 +315,11 @@ private fun CalibrationPanel(
                 isActive = step == CalibrationStep.INTRINSIC_CALC,
             )
 
+            CalibrationStepRow(
+                number = 2,
+                label = "Extrinsic Anchor",
+                subtitle = "Setting phone as coordinate origin [0,0,0]",
+                isDone = step.ordinal > CalibrationStep.EXTRINSIC_ANCHOR.ordinal,
+                isActive = step == CalibrationStep.EXTRINSIC_ANCHOR,
+            )
+
