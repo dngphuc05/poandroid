@@ -73,3 +73,12 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
     override fun surfaceDestroyed(h: SurfaceHolder) { surfaceReady = false }
     override fun surfaceChanged(h: SurfaceHolder, f: Int, w: Int, h2: Int) {}
 
+    /** Clear surface (no person detected). */
+    fun clear() = withCanvas { drawColor(0, PorterDuff.Mode.CLEAR) }
+
+    /** Draw skeleton overlay — call from any thread. */
+    fun renderSkeleton(
+        xNorm: FloatArray, yNorm: FloatArray, vis: FloatArray?,
+        imageWidth: Int, imageHeight: Int,
+    ) = withCanvas { drawSkeletonInternal(xNorm, yNorm, vis, imageWidth, imageHeight, avatar = false) }
+
