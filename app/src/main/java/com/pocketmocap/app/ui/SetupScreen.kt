@@ -398,3 +398,10 @@ private fun CalibrationStepRow(
                             .height(4.dp)
                             .clip(RoundedCornerShape(2.dp))
                             .background(Brush.horizontalGradient(listOf(MintDeep, Mint))),
+                    )
+                }
+            }
+        }
+    }
+}
+
