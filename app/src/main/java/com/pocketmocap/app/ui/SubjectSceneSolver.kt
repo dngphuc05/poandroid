@@ -192,3 +192,10 @@ internal class SubjectSceneSolver(
             else -> "baseline"
         }
         val factorSummary = measurements
+            .filter { it.valid }
+            .groupingBy { it.source }
+            .eachCount()
+            .entries
+            .joinToString("|") { "${it.key}:${it.value}" }
+            .ifBlank { "no_valid_measurements" }
+
