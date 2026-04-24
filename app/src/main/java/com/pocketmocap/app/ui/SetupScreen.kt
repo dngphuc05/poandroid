@@ -371,3 +371,12 @@ private fun CalibrationStepRow(
                 SpinningArc()
                 Text(number.toString(), style = MaterialTheme.typography.labelLarge, color = MintDeep)
             } else {
+                Box(
+                    modifier = Modifier.size(44.dp).clip(CircleShape).background(Color(0xFFD9DDE0)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(number.toString(), style = MaterialTheme.typography.labelLarge, color = Slate)
+                }
+            }
+        }
+
