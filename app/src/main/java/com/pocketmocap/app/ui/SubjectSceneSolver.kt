@@ -344,3 +344,10 @@ internal class SubjectSceneSolver(
                 state = "shadow_no_valid_factors",
                 summary = "empty_after_quality",
             )
+        }
+        val seed = weightedMedian(corrected) ?: fallback
+        val posterior = robustMean(corrected, seed, kind)
+        val residuals = corrected.map { abs(it.valueMeters - posterior) }
+        val robustSpread = percentile(residuals, 0.70f) ?: defaultSigma
+        val sigma = maxOf(minSigma, minOf(maxSigma, maxOf(robustSpread, informationSigma(corrected))))
+        val support = corrected.count { abs(it.valueMeters - posterior) <= supportGate(kind) }
