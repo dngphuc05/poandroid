@@ -111,3 +111,14 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
     ): Pair<Float, Float> {
         val lx = xNorm[idx]; val ly = yNorm[idx]
         val W = width.toFloat(); val H = height.toFloat()
+        return if (imageWidth > 0 && imageHeight > 0) {
+            val scale = max(W / imageWidth, H / imageHeight) * if (avatar) 0.86f else 1f
+            val dispW = imageWidth * scale; val dispH = imageHeight * scale
+            val offX = (dispW - W) / 2f
+            val offY = (dispH - H) / 2f - if (avatar) H * 0.03f else 0f
+            Pair(lx * dispW - offX, ly * dispH - offY)
+        } else {
+            Pair(lx * W, ly * H)
+        }
+    }
+
