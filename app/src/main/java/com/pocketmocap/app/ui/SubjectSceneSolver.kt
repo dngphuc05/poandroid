@@ -245,3 +245,13 @@ internal class SubjectSceneSolver(
         )
     }
 
+    private fun shouldPromoteHeight(
+        baseline: SceneMetricSnapshot,
+        posterior: PosteriorEstimate,
+        currentMeasurements: List<SceneMeasurement>,
+    ): Boolean {
+        if (posterior.state != "shadow_window_ready") return false
+        if ("rejected_height_semantic_agreement" in baseline.activeFactors) return false
+        if (!posterior.valueMeters.isFinite() || posterior.valueMeters !in 1.05f..2.35f) return false
+        if (posterior.confidence < 0.58f || posterior.sigmaMeters > 0.070f || posterior.support < 10) return false
+        val baselineTrusted = baseline.heightLockState == "locked" ||
