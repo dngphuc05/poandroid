@@ -9,3 +9,10 @@ internal enum class SceneMeasurementKind {
     CameraHeight,
 }
 
+internal data class SceneMeasurement(
+    val kind: SceneMeasurementKind,
+    val valueMeters: Float,
+    val sigmaMeters: Float,
+    val confidence: Float,
+    val source: String,
+    val valid: Boolean,
