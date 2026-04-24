@@ -24,3 +24,21 @@ import kotlin.math.max
  * landmarks are available.  Call [clear] when no person is detected.
  */
 class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
+
+    @Volatile private var surfaceReady = false
+
+    // ── Paints (allocated once) ───────────────────────────────────────────────
+    private val bonePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        strokeWidth = 6f
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val facePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(100, 100, 230, 200)
+        strokeWidth = 2f
+        style = Paint.Style.STROKE
+        strokeCap = Paint.Cap.ROUND
+    }
+    private val jointPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
