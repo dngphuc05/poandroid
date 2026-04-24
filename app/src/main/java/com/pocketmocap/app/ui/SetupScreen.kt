@@ -414,3 +414,16 @@ private fun SpinningArc() {
         label = "arcRotation",
     )
 
+    Canvas(modifier = Modifier.size(44.dp)) {
+        rotate(rotation) {
+            drawArc(
+                color = MintDeep,
+                startAngle = 0f,
+                sweepAngle = 270f,
+                useCenter = false,
+                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round),
+            )
+        }
+    }
+}
+
