@@ -296,3 +296,12 @@ internal class SubjectSceneSolver(
         return baselineDelta.isFinite() && abs(baselineDelta) >= 0.08f
     }
 
+    private fun remember(measurements: List<SceneMeasurement>) {
+        val valid = measurements.filter { it.valid && it.valueMeters.isFinite() }
+        if (valid.isEmpty()) return
+        measurementWindow.addLast(valid)
+        while (measurementWindow.size > windowSize) {
+            measurementWindow.removeFirst()
+        }
+    }
+
