@@ -197,3 +197,12 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
             }
         }
 
+        // ROI bounding box
+        var minX = Float.MAX_VALUE; var maxX = -Float.MAX_VALUE
+        var minY = Float.MAX_VALUE; var maxY = -Float.MAX_VALUE
+        for (i in 0 until 33) {
+            val (cx, cy) = p(i)
+            if (cx < minX) minX = cx; if (cx > maxX) maxX = cx
+            if (cy < minY) minY = cy; if (cy > maxY) maxY = cy
+        }
+        val pad = 28f
