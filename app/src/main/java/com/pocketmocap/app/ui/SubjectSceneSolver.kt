@@ -265,3 +265,16 @@ internal class SubjectSceneSolver(
             .any { abs(it.valueMeters - posterior.valueMeters) > 0.20f }
         if (strongConflict) return false
         val upperWitnessMedian = median(
+            currentMeasurements
+                .filter {
+                    it.kind == SceneMeasurementKind.Height &&
+                        it.valid &&
+                        it.confidence >= 0.35f &&
+                        it.source in setOf("top_ray_height", "pixel_span_height", "torso_height")
+                }
+                .map { it.valueMeters }
+        )
+        if (upperWitnessMedian != null && upperWitnessMedian > posterior.valueMeters + 0.085f) return false
+        return baselineDelta.isFinite() && (abs(baselineDelta) >= 0.025f || !baselineTrusted)
+    }
+
