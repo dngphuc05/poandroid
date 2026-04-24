@@ -500,3 +500,10 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.CameraHeight -> 0.05f
         }
 
+    private fun finiteDelta(a: Float, b: Float): Float? =
+        if (a.isFinite() && b.isFinite()) b - a else null
+
+    private fun finiteOrZero(value: Float): Float =
+        if (value.isFinite()) value else 0f
+
+    private fun Float?.format3(): String =
