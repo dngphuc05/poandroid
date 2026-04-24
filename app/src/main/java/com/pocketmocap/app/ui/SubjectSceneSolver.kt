@@ -422,3 +422,11 @@ internal class SubjectSceneSolver(
             .sortedBy { it.first }
         if (sorted.isEmpty()) return null
         val total = sorted.sumOf { it.second.toDouble() }.toFloat()
+        var acc = 0f
+        for ((value, weight) in sorted) {
+            acc += weight
+            if (acc >= total * 0.5f) return value
+        }
+        return sorted.last().first
+    }
+
