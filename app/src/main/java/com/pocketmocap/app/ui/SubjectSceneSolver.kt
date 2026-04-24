@@ -415,3 +415,10 @@ internal class SubjectSceneSolver(
         return center
     }
 
+    private fun weightedMedian(samples: List<WeightedSample>): Float? {
+        val sorted = samples
+            .map { it.valueMeters to (it.prior * it.confidence / (it.sigmaMeters * it.sigmaMeters)) }
+            .filter { it.first.isFinite() && it.second.isFinite() && it.second > 0f }
+            .sortedBy { it.first }
+        if (sorted.isEmpty()) return null
+        val total = sorted.sumOf { it.second.toDouble() }.toFloat()
