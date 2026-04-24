@@ -180,3 +180,15 @@ internal class SubjectSceneSolver(
             ?: finiteDelta(baseline.bodyHeightMeters, experimentalHeight)
             ?: Float.NaN
         val distanceDelta = finiteDelta(baseline.correctedDistanceMeters, experimentalDistance)
+            ?: finiteDelta(baseline.distanceMeters, experimentalDistance)
+            ?: Float.NaN
+        val validCount = measurements.count { it.valid }
+        val promoteHeight = shouldPromoteHeight(baseline, heightPosterior, measurements)
+        val promoteDistance = shouldPromoteDistance(baseline, distancePosterior, measurements)
+        val promotedSource = when {
+            promoteHeight && promoteDistance -> "experimental_height_distance"
+            promoteHeight -> "experimental_height"
+            promoteDistance -> "experimental_distance"
+            else -> "baseline"
+        }
+        val factorSummary = measurements
