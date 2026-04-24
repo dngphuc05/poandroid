@@ -129,3 +129,16 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         if (xNorm.size < 33) return
         fun p(i: Int) = px(i, xNorm, yNorm, imageWidth, imageHeight, avatar = avatar)
         fun v(i: Int) = vis?.getOrNull(i) ?: 0.8f
+
+        if (avatar) {
+            // Torso fill
+            val sh11 = p(11); val sh12 = p(12); val h23 = p(23); val h24 = p(24)
+            val torsoPath = android.graphics.Path().apply {
+                moveTo(sh11.first, sh11.second)
+                lineTo(sh12.first, sh12.second)
+                lineTo(h24.first, h24.second)
+                lineTo(h23.first, h23.second)
+                close()
+            }
+            drawPath(torsoPath, torsoFill)
+
