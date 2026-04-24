@@ -255,3 +255,13 @@ internal class SubjectSceneSolver(
         if (!posterior.valueMeters.isFinite() || posterior.valueMeters !in 1.05f..2.35f) return false
         if (posterior.confidence < 0.58f || posterior.sigmaMeters > 0.070f || posterior.support < 10) return false
         val baselineTrusted = baseline.heightLockState == "locked" ||
+            (baseline.heightLockState.startsWith("holding") && "untrusted" !in baseline.heightLockState)
+        val baselineDelta = finiteDelta(baseline.correctedHeightMeters, posterior.valueMeters)
+            ?: finiteDelta(baseline.bodyHeightMeters, posterior.valueMeters)
+            ?: 0f
+        if (baselineTrusted && abs(baselineDelta) > 0.11f) return false
+        val strongConflict = currentMeasurements
+            .filter { it.kind == SceneMeasurementKind.Height && it.valid && it.confidence >= 0.55f }
+            .any { abs(it.valueMeters - posterior.valueMeters) > 0.20f }
+        if (strongConflict) return false
+        val upperWitnessMedian = median(
