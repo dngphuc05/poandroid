@@ -377,3 +377,12 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.CameraHeight -> listOf("camera_height")
         }
         val anchor = anchorSources
+            .asSequence()
+            .mapNotNull { source -> median(samples.filter { it.source == source }.map { it.valueMeters }) }
+            .firstOrNull()
+            ?: median(samples.map { it.valueMeters })
+            ?: return emptyMap()
+        return samples
+            .groupBy { it.source }
+            .mapValues { (_, sourceSamples) ->
+                val sourceMedian = median(sourceSamples.map { it.valueMeters }) ?: anchor
