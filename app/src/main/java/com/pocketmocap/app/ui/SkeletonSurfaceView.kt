@@ -142,3 +142,11 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
             }
             drawPath(torsoPath, torsoFill)
 
+            // Head circle
+            val nose = p(0); val lear = p(7); val rear = p(8)
+            val headR = kotlin.math.sqrt(
+                ((rear.first - lear.first) * (rear.first - lear.first) +
+                 (rear.second - lear.second) * (rear.second - lear.second)).toDouble()
+            ).toFloat() * 0.55f
+            drawCircle(nose.first, nose.second, headR.coerceAtLeast(20f), headFill)
+
