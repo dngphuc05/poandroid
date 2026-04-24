@@ -56,3 +56,10 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         pathEffect = DashPathEffect(floatArrayOf(20f, 10f), 0f)
     }
 
+    // Avatar body fill
+    private val torsoFill  = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(63, 100, 230, 200) ; style = Paint.Style.FILL }
+    private val limbFill   = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(51, 100, 230, 200) ; style = Paint.Style.FILL }
+    private val headFill   = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = Color.argb(45, 200, 100, 200) ; style = Paint.Style.FILL }
+
+    private val majorJoints = setOf(0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28)
+
