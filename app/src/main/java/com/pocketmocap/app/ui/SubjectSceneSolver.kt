@@ -479,3 +479,10 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.CameraHeight -> 1.0f
         }
 
+    private fun huberGate(kind: SceneMeasurementKind): Float =
+        when (kind) {
+            SceneMeasurementKind.Height -> 0.075f
+            SceneMeasurementKind.Distance -> 0.32f
+            SceneMeasurementKind.CameraHeight -> 0.08f
+        }
+
