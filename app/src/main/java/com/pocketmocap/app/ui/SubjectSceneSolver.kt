@@ -27,3 +27,21 @@ internal object SceneMeasurementExtractor {
         timestampUs: Long = 0L,
     ): List<SceneMeasurement> {
         val clipRisk = raw.bodyClipRisk.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f
+        val clipTrust = (1f - clipRisk).coerceIn(0f, 1f)
+        val topEndpointTrust = raw.topEndpointConfidence.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: raw.confidence
+        val footEndpointTrust = raw.footEndpointConfidence.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: raw.confidence
+        val maskEndpointTrust = raw.maskEndpointConfidence.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: clipTrust
+        return buildList {
+            addDistance("raw_distance", raw.distanceMeters, 0.40f, raw.distanceConfidence, timestampUs)
+            addDistance("hip_geometry_distance", raw.hipGeometryDistanceMeters, 0.18f, raw.bodyScaleConfidence, timestampUs)
+            addDistance("foot_plane_distance", raw.footPlaneDistanceMeters, 0.55f, raw.confidence * footEndpointTrust, timestampUs)
+            addDistance("grounded_foot_distance", raw.groundedFootDistanceMeters, 0.16f, raw.confidence * footEndpointTrust, timestampUs)
+            addDistance("roi_distance", raw.roiDistanceMeters, 0.45f, raw.confidence * 0.75f * clipTrust, timestampUs)
+            addDistance("relative_scale_distance", relativeScaleDistance, 0.28f, raw.distanceConfidence, timestampUs)
+            addHeight("raw_height", raw.bodyHeightMeters, 0.22f, raw.heightConfidence, timestampUs)
+            addHeight("top_ray_height", raw.topRayHeightMeters, 0.10f, raw.confidence * topEndpointTrust, timestampUs)
+            addHeight("pixel_span_height", raw.pixelSpanHeightMeters, 0.18f, raw.confidence * 0.70f * maskEndpointTrust, timestampUs)
+            addHeight("hip_geometry_height", raw.hipGeometryHeightMeters, 0.09f, raw.bodyScaleConfidence, timestampUs)
+            addHeight("torso_height", raw.torsoHeightMeters, 0.12f, raw.bodyScaleConfidence, timestampUs)
+            addCameraHeight("camera_height", raw.cameraHeightMeters, 0.08f, raw.floorConfidence, timestampUs)
+        }
