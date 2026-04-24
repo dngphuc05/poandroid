@@ -206,3 +206,12 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
             if (cy < minY) minY = cy; if (cy > maxY) maxY = cy
         }
         val pad = 28f
+        val rect = RectF(
+            (minX - pad).coerceAtLeast(0f), (minY - pad).coerceAtLeast(0f),
+            (maxX + pad).coerceAtMost(width.toFloat()), (maxY + pad).coerceAtMost(height.toFloat())
+        )
+        if (rect.width() > 0 && rect.height() > 0) {
+            drawRoundRect(rect, 18f, 18f, roiPaint)
+        }
+    }
+
