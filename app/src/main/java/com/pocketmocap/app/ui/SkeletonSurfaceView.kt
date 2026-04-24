@@ -122,3 +122,10 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         }
     }
 
+    private fun Canvas.drawSkeletonInternal(
+        xNorm: FloatArray, yNorm: FloatArray, vis: FloatArray?,
+        imageWidth: Int, imageHeight: Int, avatar: Boolean,
+    ) {
+        if (xNorm.size < 33) return
+        fun p(i: Int) = px(i, xNorm, yNorm, imageWidth, imageHeight, avatar = avatar)
+        fun v(i: Int) = vis?.getOrNull(i) ?: 0.8f
