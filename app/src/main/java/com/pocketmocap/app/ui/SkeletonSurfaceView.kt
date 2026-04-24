@@ -104,3 +104,10 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         }
     }
 
+    private fun Canvas.px(
+        idx: Int, xNorm: FloatArray, yNorm: FloatArray,
+        imageWidth: Int, imageHeight: Int,
+        avatar: Boolean = false,
+    ): Pair<Float, Float> {
+        val lx = xNorm[idx]; val ly = yNorm[idx]
+        val W = width.toFloat(); val H = height.toFloat()
