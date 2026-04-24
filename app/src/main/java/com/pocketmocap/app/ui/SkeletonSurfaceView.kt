@@ -150,3 +150,12 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
             ).toFloat() * 0.55f
             drawCircle(nose.first, nose.second, headR.coerceAtLeast(20f), headFill)
 
+            // Limb capsules (drawn as broad strokes)
+            val limbPairs = listOf(11 to 13, 13 to 15, 12 to 14, 14 to 16,
+                                   23 to 25, 25 to 27, 24 to 26, 26 to 28)
+            limbFill.strokeWidth = 28f
+            limbFill.style = Paint.Style.STROKE
+            limbFill.strokeCap = Paint.Cap.ROUND
+            for ((a, b) in limbPairs) {
+                if (v(a) > 0.3f && v(b) > 0.3f) {
+                    val pa = p(a); val pb = p(b)
