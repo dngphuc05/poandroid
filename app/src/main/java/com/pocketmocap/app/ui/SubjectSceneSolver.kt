@@ -313,3 +313,16 @@ internal class SubjectSceneSolver(
         maxSigma: Float,
     ): PosteriorEstimate {
         val samples = measurementWindow
+            .flatten()
+            .filter { it.kind == kind && it.valid && it.confidence > 0f && it.valueMeters.isFinite() }
+        if (samples.size < MIN_WINDOW_SAMPLES) {
+            return PosteriorEstimate(
+                valueMeters = fallback,
+                sigmaMeters = defaultSigma.coerceIn(minSigma, maxSigma),
+                confidence = 0.20f,
+                support = samples.size,
+                state = "shadow_warming",
+                summary = "warming:n=${samples.size}",
+            )
+        }
+        val sourceBias = estimateSourceBias(samples, kind)
