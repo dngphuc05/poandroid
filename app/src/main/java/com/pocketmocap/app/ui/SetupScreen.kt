@@ -380,3 +380,21 @@ private fun CalibrationStepRow(
             }
         }
 
+        Column(modifier = Modifier.weight(1f)) {
+            Text(label, style = MaterialTheme.typography.titleSmall, color = if (isDone) MintDeep else Ink)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = Slate)
+            if (progress != null) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Mint.copy(alpha = 0.2f)),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = progress)
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(2.dp))
+                            .background(Brush.horizontalGradient(listOf(MintDeep, Mint))),
