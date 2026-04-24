@@ -45,3 +45,21 @@ internal object SceneMeasurementExtractor {
             addHeight("torso_height", raw.torsoHeightMeters, 0.12f, raw.bodyScaleConfidence, timestampUs)
             addCameraHeight("camera_height", raw.cameraHeightMeters, 0.08f, raw.floorConfidence, timestampUs)
         }
+    }
+
+    fun optimizerInput(
+        raw: SceneMetricSnapshot,
+        relativeScaleDistance: Float,
+        previousDistanceMeters: Float,
+        previousHeightMeters: Float,
+        floorHeightBiasMeters: Float,
+        depthScale: Float,
+        depthOffsetMeters: Float,
+        heightEndpointBiasMeters: Float,
+    ): PhysicalSceneOptimizerInput =
+        PhysicalSceneOptimizerInput(
+            confidence = raw.confidence,
+            rawDistanceMeters = raw.distanceMeters,
+            rawHeightMeters = raw.bodyHeightMeters,
+            rawCameraHeightMeters = raw.cameraHeightMeters,
+            rawHipDepthDistanceMeters = Float.NaN,
