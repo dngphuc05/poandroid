@@ -430,3 +430,10 @@ internal class SubjectSceneSolver(
         return sorted.last().first
     }
 
+    private fun informationSigma(samples: List<WeightedSample>): Float {
+        val info = samples.sumOf {
+            (it.prior * it.confidence / (it.sigmaMeters * it.sigmaMeters)).toDouble()
+        }.toFloat()
+        return if (info > 1e-4f) kotlin.math.sqrt(1f / info) else 1f
+    }
+
