@@ -507,3 +507,10 @@ internal class SubjectSceneSolver(
         if (value.isFinite()) value else 0f
 
     private fun Float?.format3(): String =
+        if (this != null && isFinite()) "%.3f".format(this) else "nan"
+
+    private data class WeightedSample(
+        val source: String,
+        val valueMeters: Float,
+        val sigmaMeters: Float,
+        val confidence: Float,
