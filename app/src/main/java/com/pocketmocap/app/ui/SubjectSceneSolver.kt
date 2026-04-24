@@ -351,3 +351,19 @@ internal class SubjectSceneSolver(
         val robustSpread = percentile(residuals, 0.70f) ?: defaultSigma
         val sigma = maxOf(minSigma, minOf(maxSigma, maxOf(robustSpread, informationSigma(corrected))))
         val support = corrected.count { abs(it.valueMeters - posterior) <= supportGate(kind) }
+        val confidence = (
+            support.toFloat() / corrected.size.toFloat() *
+                (1f - (sigma / maxSigma)).coerceIn(0f, 1f)
+            ).coerceIn(0.05f, 0.95f)
+        val topBias = sourceBias["top_ray_height"]
+        val hipBias = sourceBias["hip_geometry_height"]
+        return PosteriorEstimate(
+            valueMeters = posterior,
+            sigmaMeters = sigma,
+            confidence = confidence,
+            support = support,
+            state = if (measurementWindow.size >= windowSize / 2) "shadow_window_ready" else "shadow_warming",
+            summary = "n=${corrected.size},support=$support,top_bias=${topBias.format3()},hip_bias=${hipBias.format3()}",
+        )
+    }
+
