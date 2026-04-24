@@ -514,3 +514,10 @@ internal class SubjectSceneSolver(
         val valueMeters: Float,
         val sigmaMeters: Float,
         val confidence: Float,
+        val prior: Float,
+    )
+
+    private data class PosteriorEstimate(
+        val valueMeters: Float,
+        val sigmaMeters: Float,
+        val confidence: Float,
