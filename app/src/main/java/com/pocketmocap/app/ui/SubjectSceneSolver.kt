@@ -493,3 +493,10 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.CameraHeight -> 0.10f
         }
 
+    private fun learnBiasGate(kind: SceneMeasurementKind): Float =
+        when (kind) {
+            SceneMeasurementKind.Height -> 0.024f
+            SceneMeasurementKind.Distance -> 0.18f
+            SceneMeasurementKind.CameraHeight -> 0.05f
+        }
+
