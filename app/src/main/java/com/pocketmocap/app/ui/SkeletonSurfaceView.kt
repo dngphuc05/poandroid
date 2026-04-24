@@ -42,3 +42,17 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
     }
     private val jointPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.WHITE
+        style = Paint.Style.FILL
+    }
+    private val glowPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(114, 0, 229, 160)  // Mint 45%
+        style = Paint.Style.STROKE
+        strokeWidth = 3f
+    }
+    private val roiPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(191, 0, 229, 160)  // Mint 75%
+        style = Paint.Style.STROKE
+        strokeWidth = 2.5f
+        pathEffect = DashPathEffect(floatArrayOf(20f, 10f), 0f)
+    }
+
