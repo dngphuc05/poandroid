@@ -89,3 +89,18 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
     ) = withCanvas { drawSkeletonInternal(xNorm, yNorm, vis, imageWidth, imageHeight, avatar = true) }
 
     // ── Internal drawing ──────────────────────────────────────────────────────
+
+    private inline fun withCanvas(block: Canvas.() -> Unit) {
+        if (!surfaceReady) return
+        // API 26+: hardware canvas → GPU compositing path, avoids CPU software blend
+        val canvas = if (android.os.Build.VERSION.SDK_INT >= 26)
+            holder.lockHardwareCanvas() else holder.lockCanvas()
+        canvas ?: return
+        try {
+            canvas.drawColor(0, PorterDuff.Mode.CLEAR)
+            canvas.block()
+        } finally {
+            holder.unlockCanvasAndPost(canvas)
+        }
+    }
+
