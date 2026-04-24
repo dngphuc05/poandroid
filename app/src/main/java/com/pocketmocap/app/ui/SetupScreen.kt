@@ -335,3 +335,21 @@ private fun CalibrationPanel(
     }
 }
 
+@Composable
+private fun CalibrationStepRow(
+    number: Int,
+    label: String,
+    subtitle: String,
+    isDone: Boolean,
+    isActive: Boolean,
+    progress: Float? = null,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                when {
+                    isDone -> Mint.copy(alpha = 0.12f)
+                    isActive -> Color.White
+                    else -> Color(0xFFE5E9EB)
