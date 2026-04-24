@@ -405,3 +405,12 @@ private fun CalibrationStepRow(
     }
 }
 
+@Composable
+private fun SpinningArc() {
+    val infiniteTransition = rememberInfiniteTransition(label = "spin")
+    val rotation by infiniteTransition.animateFloat(
+        initialValue = 0f, targetValue = 360f,
+        animationSpec = infiniteRepeatable(tween(1200, easing = LinearEasing), RepeatMode.Restart),
+        label = "arcRotation",
+    )
+
