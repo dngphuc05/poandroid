@@ -147,3 +147,19 @@ internal class SubjectSceneSolver(
         measurementWindow.clear()
     }
 
+    fun solveShadow(
+        baseline: SceneMetricSnapshot,
+        measurements: List<SceneMeasurement>,
+    ): SceneMetricSnapshot {
+        remember(measurements)
+        val heightPosterior = solvePosterior(
+            kind = SceneMeasurementKind.Height,
+            fallback = baseline.correctedHeightMeters
+                .takeIf { it.isFinite() }
+                ?: baseline.bodyHeightMeters.takeIf { it.isFinite() }
+                ?: Float.NaN,
+            defaultSigma = 0.25f,
+            minSigma = 0.015f,
+            maxSigma = 0.80f,
+        )
+        val distancePosterior = solvePosterior(
