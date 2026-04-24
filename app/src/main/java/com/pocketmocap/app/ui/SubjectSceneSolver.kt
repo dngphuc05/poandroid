@@ -305,3 +305,11 @@ internal class SubjectSceneSolver(
         }
     }
 
+    private fun solvePosterior(
+        kind: SceneMeasurementKind,
+        fallback: Float,
+        defaultSigma: Float,
+        minSigma: Float,
+        maxSigma: Float,
+    ): PosteriorEstimate {
+        val samples = measurementWindow
