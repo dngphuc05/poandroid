@@ -235,3 +235,13 @@ internal class SubjectSceneSolver(
             experimentalHeightState = heightPosterior.state.ifBlank { baseline.heightLockState.ifBlank { "unknown" } },
             experimentalDistanceMeters = experimentalDistance,
             experimentalDistanceSigmaMeters = distanceSigma,
+            experimentalDistanceConfidence = distancePosterior.confidence,
+            experimentalSolverCost = (heightSigma + distanceSigma) * maxOf(1, validCount).toFloat(),
+            experimentalSolverStatus = "shadow_sliding_window",
+            experimentalFactorSummary = "measurements=$validCount|promote=$promotedSource|height=${heightPosterior.summary}|distance=${distancePosterior.summary}|$factorSummary",
+            baselineExperimentalHeightDeltaMeters = heightDelta,
+            baselineExperimentalDistanceDeltaMeters = distanceDelta,
+            promotedSolverSource = promotedSource,
+        )
+    }
+
