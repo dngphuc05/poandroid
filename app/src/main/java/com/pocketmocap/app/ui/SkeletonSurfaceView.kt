@@ -215,3 +215,21 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         }
     }
 
+    companion object {
+        private val BONE_CONNECTIONS = listOf(
+            11 to 12, 11 to 23, 12 to 24, 23 to 24,
+            11 to 13, 13 to 15, 12 to 14, 14 to 16,
+            23 to 25, 25 to 27, 24 to 26, 26 to 28,
+            0 to 11,  0 to 12,
+        )
+        private val FACE_CONNECTIONS = listOf(
+            0 to 1, 1 to 2, 2 to 3, 3 to 7,
+            0 to 4, 4 to 5, 5 to 6, 6 to 8,
+            9 to 10,
+        )
+        private val HAND_CONNECTIONS = listOf(
+            15 to 17, 15 to 19, 15 to 21,
+            16 to 18, 16 to 20, 16 to 22,
+        )
+        private val FOOT_CONNECTIONS = listOf(
+            27 to 29, 27 to 31, 29 to 31,
