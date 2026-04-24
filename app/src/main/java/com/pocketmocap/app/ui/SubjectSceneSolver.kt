@@ -470,3 +470,12 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.Distance -> when (source) {
                 "grounded_foot_distance" -> 1.60f
                 "foot_plane_distance" -> 1.15f
+                "relative_scale_distance" -> 0.85f
+                "roi_distance" -> 0.45f
+                "hip_geometry_distance" -> 0.42f
+                "raw_distance" -> 0.30f
+                else -> 0.20f
+            }
+            SceneMeasurementKind.CameraHeight -> 1.0f
+        }
+
