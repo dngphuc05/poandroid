@@ -353,3 +353,21 @@ private fun CalibrationStepRow(
                     isDone -> Mint.copy(alpha = 0.12f)
                     isActive -> Color.White
                     else -> Color(0xFFE5E9EB)
+                }
+            )
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(modifier = Modifier.size(44.dp), contentAlignment = Alignment.Center) {
+            if (isDone) {
+                Box(
+                    modifier = Modifier.size(44.dp).clip(CircleShape).background(Mint),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(Icons.Rounded.Check, "Done", tint = MintDeep, modifier = Modifier.size(24.dp))
+                }
+            } else if (isActive) {
+                SpinningArc()
+                Text(number.toString(), style = MaterialTheme.typography.labelLarge, color = MintDeep)
+            } else {
