@@ -81,3 +81,14 @@ internal object SceneMeasurementExtractor {
             depthOffsetMeters = depthOffsetMeters,
             heightEndpointBiasMeters = heightEndpointBiasMeters,
         )
+
+    private fun MutableList<SceneMeasurement>.addDistance(
+        source: String,
+        valueMeters: Float,
+        sigmaMeters: Float,
+        confidence: Float,
+        timestampUs: Long,
+    ) {
+        addMeasurement(SceneMeasurementKind.Distance, source, valueMeters, sigmaMeters, confidence, 0.35f, 12.0f, timestampUs)
+    }
+
