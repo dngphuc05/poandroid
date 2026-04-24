@@ -521,3 +521,13 @@ internal class SubjectSceneSolver(
         val valueMeters: Float,
         val sigmaMeters: Float,
         val confidence: Float,
+        val support: Int,
+        val state: String,
+        val summary: String,
+    )
+
+    private companion object {
+        private const val DEFAULT_WINDOW_SIZE = 60
+        private const val MIN_WINDOW_SAMPLES = 12
+    }
+}
