@@ -163,3 +163,13 @@ internal class SubjectSceneSolver(
             maxSigma = 0.80f,
         )
         val distancePosterior = solvePosterior(
+            kind = SceneMeasurementKind.Distance,
+            fallback = baseline.correctedDistanceMeters
+                .takeIf { it.isFinite() }
+                ?: baseline.distanceMeters.takeIf { it.isFinite() }
+                ?: Float.NaN,
+            defaultSigma = 0.50f,
+            minSigma = 0.02f,
+            maxSigma = 2.50f,
+        )
+        val experimentalHeight = heightPosterior.valueMeters
