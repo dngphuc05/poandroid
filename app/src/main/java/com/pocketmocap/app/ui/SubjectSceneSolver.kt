@@ -199,3 +199,21 @@ internal class SubjectSceneSolver(
             .joinToString("|") { "${it.key}:${it.value}" }
             .ifBlank { "no_valid_measurements" }
 
+        return baseline.copy(
+            confidence = if (promoteHeight || promoteDistance) {
+                maxOf(baseline.confidence, minOf(heightPosterior.confidence, distancePosterior.confidence) * 0.92f)
+            } else {
+                baseline.confidence
+            }.coerceIn(0f, 1f),
+            distanceMeters = if (promoteDistance) experimentalDistance else baseline.distanceMeters,
+            bodyHeightMeters = if (promoteHeight) experimentalHeight else baseline.bodyHeightMeters,
+            correctedDistanceMeters = if (promoteDistance) experimentalDistance else baseline.correctedDistanceMeters,
+            correctedHeightMeters = if (promoteHeight) experimentalHeight else baseline.correctedHeightMeters,
+            heightLockState = if (promoteHeight && baseline.heightLockState != "locked") {
+                "locked"
+            } else {
+                baseline.heightLockState
+            },
+            solverConfidence = if (promoteHeight || promoteDistance) {
+                maxOf(finiteOrZero(baseline.solverConfidence), minOf(heightPosterior.confidence, distancePosterior.confidence) * 0.90f)
+            } else {
