@@ -400,3 +400,18 @@ internal class SubjectSceneSolver(
         var center = seed
         repeat(3) {
             var weighted = 0f
+            var total = 0f
+            for (sample in samples) {
+                val residual = abs(sample.valueMeters - center)
+                val huber = minOf(1f, huberGate(kind) / maxOf(residual, 1e-4f))
+                val weight = sample.prior * sample.confidence * huber / (sample.sigmaMeters * sample.sigmaMeters)
+                if (weight.isFinite() && weight > 0f) {
+                    weighted += sample.valueMeters * weight
+                    total += weight
+                }
+            }
+            if (total > 0f) center = weighted / total
+        }
+        return center
+    }
+
