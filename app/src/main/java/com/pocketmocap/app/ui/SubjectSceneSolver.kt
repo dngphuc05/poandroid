@@ -138,3 +138,12 @@ internal object SceneMeasurementExtractor {
     }
 }
 
+internal class SubjectSceneSolver(
+    private val windowSize: Int = DEFAULT_WINDOW_SIZE,
+) {
+    private val measurementWindow = ArrayDeque<List<SceneMeasurement>>()
+
+    fun reset() {
+        measurementWindow.clear()
+    }
+
