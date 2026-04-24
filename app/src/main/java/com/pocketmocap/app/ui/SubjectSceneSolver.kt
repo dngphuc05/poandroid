@@ -278,3 +278,12 @@ internal class SubjectSceneSolver(
         return baselineDelta.isFinite() && (abs(baselineDelta) >= 0.025f || !baselineTrusted)
     }
 
+    private fun shouldPromoteDistance(
+        baseline: SceneMetricSnapshot,
+        posterior: PosteriorEstimate,
+        currentMeasurements: List<SceneMeasurement>,
+    ): Boolean {
+        if (posterior.state != "shadow_window_ready") return false
+        if (!posterior.valueMeters.isFinite() || posterior.valueMeters !in 0.35f..12.0f) return false
+        if (posterior.confidence < 0.56f || posterior.sigmaMeters > 0.30f || posterior.support < 10) return false
+        val baselineDelta = finiteDelta(baseline.correctedDistanceMeters, posterior.valueMeters)
