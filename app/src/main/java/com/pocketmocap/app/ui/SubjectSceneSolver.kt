@@ -173,3 +173,10 @@ internal class SubjectSceneSolver(
             maxSigma = 2.50f,
         )
         val experimentalHeight = heightPosterior.valueMeters
+        val experimentalDistance = distancePosterior.valueMeters
+        val heightSigma = heightPosterior.sigmaMeters
+        val distanceSigma = distancePosterior.sigmaMeters
+        val heightDelta = finiteDelta(baseline.correctedHeightMeters, experimentalHeight)
+            ?: finiteDelta(baseline.bodyHeightMeters, experimentalHeight)
+            ?: Float.NaN
+        val distanceDelta = finiteDelta(baseline.correctedDistanceMeters, experimentalDistance)
