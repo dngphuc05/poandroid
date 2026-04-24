@@ -367,3 +367,13 @@ internal class SubjectSceneSolver(
         )
     }
 
+    private fun estimateSourceBias(
+        samples: List<SceneMeasurement>,
+        kind: SceneMeasurementKind,
+    ): Map<String, Float> {
+        val anchorSources = when (kind) {
+            SceneMeasurementKind.Height -> listOf("top_ray_height", "raw_height")
+            SceneMeasurementKind.Distance -> listOf("grounded_foot_distance", "foot_plane_distance", "relative_scale_distance")
+            SceneMeasurementKind.CameraHeight -> listOf("camera_height")
+        }
+        val anchor = anchorSources
