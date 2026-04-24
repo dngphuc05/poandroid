@@ -427,3 +427,21 @@ private fun SpinningArc() {
     }
 }
 
+// Reusable glass card
+@Composable
+fun PocketGlassCard(
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp),
+        color = Glass,
+        shadowElevation = 12.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            content()
+        }
