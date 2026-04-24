@@ -326,3 +326,21 @@ internal class SubjectSceneSolver(
             )
         }
         val sourceBias = estimateSourceBias(samples, kind)
+        val corrected = samples.map { sample ->
+            WeightedSample(
+                source = sample.source,
+                valueMeters = sample.valueMeters - (sourceBias[sample.source] ?: 0f),
+                sigmaMeters = sample.sigmaMeters.coerceIn(minSigma, maxSigma),
+                confidence = sample.confidence.coerceIn(0f, 1f),
+                prior = sourcePrior(sample.source, kind),
+            )
+        }.filter { it.prior > 0f && it.confidence > 0f }
+        if (corrected.isEmpty()) {
+            return PosteriorEstimate(
+                valueMeters = fallback,
+                sigmaMeters = defaultSigma.coerceIn(minSigma, maxSigma),
+                confidence = 0.15f,
+                support = 0,
+                state = "shadow_no_valid_factors",
+                summary = "empty_after_quality",
+            )
