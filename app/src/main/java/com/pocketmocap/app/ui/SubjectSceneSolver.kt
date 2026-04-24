@@ -102,3 +102,13 @@ internal object SceneMeasurementExtractor {
         addMeasurement(SceneMeasurementKind.Height, source, valueMeters, sigmaMeters, confidence, 1.05f, 2.35f, timestampUs)
     }
 
+    private fun MutableList<SceneMeasurement>.addCameraHeight(
+        source: String,
+        valueMeters: Float,
+        sigmaMeters: Float,
+        confidence: Float,
+        timestampUs: Long,
+    ) {
+        addMeasurement(SceneMeasurementKind.CameraHeight, source, valueMeters, sigmaMeters, confidence, 0.45f, 2.20f, timestampUs)
+    }
+
