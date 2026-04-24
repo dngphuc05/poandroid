@@ -217,3 +217,21 @@ internal class SubjectSceneSolver(
             solverConfidence = if (promoteHeight || promoteDistance) {
                 maxOf(finiteOrZero(baseline.solverConfidence), minOf(heightPosterior.confidence, distancePosterior.confidence) * 0.90f)
             } else {
+                baseline.solverConfidence
+            }.coerceIn(0f, 1f),
+            distanceConfidence = if (promoteDistance) {
+                maxOf(finiteOrZero(baseline.distanceConfidence), distancePosterior.confidence)
+            } else {
+                baseline.distanceConfidence
+            }.coerceIn(0f, 1f),
+            heightConfidence = if (promoteHeight) {
+                maxOf(finiteOrZero(baseline.heightConfidence), heightPosterior.confidence)
+            } else {
+                baseline.heightConfidence
+            }.coerceIn(0f, 1f),
+            experimentalHeightMeters = experimentalHeight,
+            experimentalHeightSigmaMeters = heightSigma,
+            experimentalHeightConfidence = heightPosterior.confidence,
+            experimentalHeightState = heightPosterior.state.ifBlank { baseline.heightLockState.ifBlank { "unknown" } },
+            experimentalDistanceMeters = experimentalDistance,
+            experimentalDistanceSigmaMeters = distanceSigma,
