@@ -386,3 +386,10 @@ internal class SubjectSceneSolver(
             .groupBy { it.source }
             .mapValues { (_, sourceSamples) ->
                 val sourceMedian = median(sourceSamples.map { it.valueMeters }) ?: anchor
+                val rawBias = sourceMedian - anchor
+                val gate = if (kind == SceneMeasurementKind.Height) 0.16f else 0.85f
+                if (abs(rawBias) >= learnBiasGate(kind)) rawBias.coerceIn(-gate, gate) else 0f
+            }
+    }
+
+    private fun robustMean(
