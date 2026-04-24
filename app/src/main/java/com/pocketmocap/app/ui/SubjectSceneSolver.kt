@@ -393,3 +393,10 @@ internal class SubjectSceneSolver(
     }
 
     private fun robustMean(
+        samples: List<WeightedSample>,
+        seed: Float,
+        kind: SceneMeasurementKind,
+    ): Float {
+        var center = seed
+        repeat(3) {
+            var weighted = 0f
