@@ -437,3 +437,11 @@ internal class SubjectSceneSolver(
         return if (info > 1e-4f) kotlin.math.sqrt(1f / info) else 1f
     }
 
+    private fun robustWindowSpread(values: List<Float>): Float? {
+        if (values.size < 3) return null
+        val sorted = values.sorted()
+        val p10 = sorted[(sorted.lastIndex * 0.10f).toInt().coerceIn(0, sorted.lastIndex)]
+        val p90 = sorted[(sorted.lastIndex * 0.90f).toInt().coerceIn(0, sorted.lastIndex)]
+        return abs(p90 - p10)
+    }
+
