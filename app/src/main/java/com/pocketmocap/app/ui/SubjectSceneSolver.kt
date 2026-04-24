@@ -112,3 +112,14 @@ internal object SceneMeasurementExtractor {
         addMeasurement(SceneMeasurementKind.CameraHeight, source, valueMeters, sigmaMeters, confidence, 0.45f, 2.20f, timestampUs)
     }
 
+    private fun MutableList<SceneMeasurement>.addMeasurement(
+        kind: SceneMeasurementKind,
+        source: String,
+        valueMeters: Float,
+        sigmaMeters: Float,
+        confidence: Float,
+        minValue: Float,
+        maxValue: Float,
+        timestampUs: Long,
+    ) {
+        val valid = valueMeters.isFinite() && valueMeters in minValue..maxValue
