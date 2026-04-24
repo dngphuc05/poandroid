@@ -123,3 +123,18 @@ internal object SceneMeasurementExtractor {
         timestampUs: Long,
     ) {
         val valid = valueMeters.isFinite() && valueMeters in minValue..maxValue
+        add(
+            SceneMeasurement(
+                kind = kind,
+                valueMeters = valueMeters,
+                sigmaMeters = sigmaMeters,
+                confidence = confidence.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f,
+                source = source,
+                valid = valid,
+                timestampUs = timestampUs,
+                debugReason = if (valid) "accepted_for_shadow" else "invalid_or_out_of_range",
+            )
+        )
+    }
+}
+
