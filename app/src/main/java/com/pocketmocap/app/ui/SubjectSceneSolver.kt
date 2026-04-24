@@ -16,3 +16,14 @@ internal data class SceneMeasurement(
     val confidence: Float,
     val source: String,
     val valid: Boolean,
+    val timestampUs: Long = 0L,
+    val debugReason: String = "",
+)
+
+internal object SceneMeasurementExtractor {
+    fun extract(
+        raw: SceneMetricSnapshot,
+        relativeScaleDistance: Float,
+        timestampUs: Long = 0L,
+    ): List<SceneMeasurement> {
+        val clipRisk = raw.bodyClipRisk.takeIf { it.isFinite() }?.coerceIn(0f, 1f) ?: 0f
