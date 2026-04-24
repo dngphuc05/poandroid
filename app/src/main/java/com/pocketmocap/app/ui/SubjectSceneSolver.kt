@@ -445,3 +445,10 @@ internal class SubjectSceneSolver(
         return abs(p90 - p10)
     }
 
+    private fun median(values: List<Float>): Float? {
+        val sorted = values.filter { it.isFinite() }.sorted()
+        if (sorted.isEmpty()) return null
+        return sorted[sorted.size / 2]
+    }
+
+    private fun percentile(values: List<Float>, p: Float): Float? {
