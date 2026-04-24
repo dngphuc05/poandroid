@@ -185,3 +185,15 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
             }
         }
 
+        // Joints — skip invisible joints (vis < 0.20) to prevent scattered ghost dots
+        for (i in 0 until 33) {
+            if ((vis?.getOrNull(i) ?: 0.8f) < 0.20f) continue
+            val (cx, cy) = p(i)
+            if (i in majorJoints) {
+                drawCircle(cx, cy, 16f, glowPaint)
+                drawCircle(cx, cy, 8f, jointPaint)
+            } else {
+                drawCircle(cx, cy, 4f, jointPaint)
+            }
+        }
+
