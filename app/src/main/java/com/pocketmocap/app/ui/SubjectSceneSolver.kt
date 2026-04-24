@@ -287,3 +287,12 @@ internal class SubjectSceneSolver(
         if (!posterior.valueMeters.isFinite() || posterior.valueMeters !in 0.35f..12.0f) return false
         if (posterior.confidence < 0.56f || posterior.sigmaMeters > 0.30f || posterior.support < 10) return false
         val baselineDelta = finiteDelta(baseline.correctedDistanceMeters, posterior.valueMeters)
+            ?: finiteDelta(baseline.distanceMeters, posterior.valueMeters)
+            ?: 0f
+        val strongConflict = currentMeasurements
+            .filter { it.kind == SceneMeasurementKind.Distance && it.valid && it.confidence >= 0.55f }
+            .any { abs(it.valueMeters - posterior.valueMeters) > 0.85f }
+        if (strongConflict) return false
+        return baselineDelta.isFinite() && abs(baselineDelta) >= 0.08f
+    }
+
