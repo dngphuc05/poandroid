@@ -486,3 +486,10 @@ internal class SubjectSceneSolver(
             SceneMeasurementKind.CameraHeight -> 0.08f
         }
 
+    private fun supportGate(kind: SceneMeasurementKind): Float =
+        when (kind) {
+            SceneMeasurementKind.Height -> 0.090f
+            SceneMeasurementKind.Distance -> 0.42f
+            SceneMeasurementKind.CameraHeight -> 0.10f
+        }
+
