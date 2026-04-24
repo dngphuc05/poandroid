@@ -63,3 +63,13 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
 
     private val majorJoints = setOf(0, 11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28)
 
+    init {
+        holder.addCallback(this)
+        setZOrderOnTop(true)
+        holder.setFormat(PixelFormat.TRANSPARENT)
+    }
+
+    override fun surfaceCreated(h: SurfaceHolder) { surfaceReady = true }
+    override fun surfaceDestroyed(h: SurfaceHolder) { surfaceReady = false }
+    override fun surfaceChanged(h: SurfaceHolder, f: Int, w: Int, h2: Int) {}
+
