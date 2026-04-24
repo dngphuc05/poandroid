@@ -445,3 +445,5 @@ fun PocketGlassCard(
         ) {
             content()
         }
+    }
+}
