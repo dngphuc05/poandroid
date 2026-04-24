@@ -452,3 +452,21 @@ internal class SubjectSceneSolver(
     }
 
     private fun percentile(values: List<Float>, p: Float): Float? {
+        val sorted = values.filter { it.isFinite() }.sorted()
+        if (sorted.isEmpty()) return null
+        return sorted[(sorted.lastIndex * p).toInt().coerceIn(0, sorted.lastIndex)]
+    }
+
+    private fun sourcePrior(source: String, kind: SceneMeasurementKind): Float =
+        when (kind) {
+            SceneMeasurementKind.Height -> when (source) {
+                "top_ray_height" -> 1.45f
+                "hip_geometry_height" -> 0.95f
+                "raw_height" -> 0.70f
+                "pixel_span_height" -> 0.42f
+                "torso_height" -> 0.30f
+                else -> 0.20f
+            }
+            SceneMeasurementKind.Distance -> when (source) {
+                "grounded_foot_distance" -> 1.60f
+                "foot_plane_distance" -> 1.15f
