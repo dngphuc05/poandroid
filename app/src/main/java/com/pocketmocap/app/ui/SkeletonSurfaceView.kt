@@ -175,3 +175,13 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         for ((a, b) in FACE_CONNECTIONS) {
             if (v(a) > 0.3f && v(b) > 0.3f) {
                 val pa = p(a); val pb = p(b)
+                drawLine(pa.first, pa.second, pb.first, pb.second, facePaint)
+            }
+        }
+        for ((a, b) in HAND_CONNECTIONS + FOOT_CONNECTIONS) {
+            if (v(a) > 0.3f && v(b) > 0.3f) {
+                val pa = p(a); val pb = p(b)
+                drawLine(pa.first, pa.second, pb.first, pb.second, facePaint)
+            }
+        }
+
