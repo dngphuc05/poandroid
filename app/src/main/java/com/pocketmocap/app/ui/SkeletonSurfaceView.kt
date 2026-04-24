@@ -233,3 +233,7 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         )
         private val FOOT_CONNECTIONS = listOf(
             27 to 29, 27 to 31, 29 to 31,
+            28 to 30, 28 to 32, 30 to 32,
+        )
+    }
+}
