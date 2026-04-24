@@ -82,3 +82,10 @@ class SkeletonSurfaceView(context: Context) : SurfaceView(context), SurfaceHolde
         imageWidth: Int, imageHeight: Int,
     ) = withCanvas { drawSkeletonInternal(xNorm, yNorm, vis, imageWidth, imageHeight, avatar = false) }
 
+    /** Draw avatar body overlay — call from any thread. */
+    fun renderAvatar(
+        xNorm: FloatArray, yNorm: FloatArray, vis: FloatArray?,
+        imageWidth: Int, imageHeight: Int,
+    ) = withCanvas { drawSkeletonInternal(xNorm, yNorm, vis, imageWidth, imageHeight, avatar = true) }
+
+    // ── Internal drawing ──────────────────────────────────────────────────────
