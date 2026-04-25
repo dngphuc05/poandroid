@@ -485,3 +485,10 @@ private fun retargetVrmBones(
     )
 }
 
+private fun norm3(x: Float, y: Float, z: Float): FloatArray? {
+    val length = sqrt(x * x + y * y + z * z)
+    if (length < 1e-6f) return null
+    return floatArrayOf(x / length, y / length, z / length)
+}
+
+private fun cross3(a: FloatArray, b: FloatArray): FloatArray? {
