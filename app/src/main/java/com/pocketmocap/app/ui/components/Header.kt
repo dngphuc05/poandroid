@@ -44,3 +44,21 @@ fun Header(modifier: Modifier = Modifier) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 PocketMocapGlyph()
+                Text(
+                    text = "Pocket Mocap",
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFFDfe3E6)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = "UP",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = Slate,
+                )
+            }
