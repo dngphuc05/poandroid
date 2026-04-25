@@ -99,3 +99,20 @@ private fun SegmentedAction(
                             Color.White.copy(alpha = 0.08f),
                             Color.White.copy(alpha = 0.03f),
                         )
+                    )
+                }
+            )
+            .padding(horizontal = 18.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = textColor,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
