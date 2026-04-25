@@ -207,3 +207,20 @@ internal fun VrmSceneView(
                 cameraHeightDelta >= 0.08f ||
                 lateralDelta >= 0.08f
 
+        pendingOverlayFrames = if (meaningfulChange) pendingOverlayFrames + 1 else 0
+        if (pendingOverlayFrames < 3) {
+            return@LaunchedEffect
+        }
+
+        overlayDistanceMeters = overlayDistanceMeters * 0.72f + estimate.distanceMeters * 0.28f
+        overlayBodyHeightMeters = overlayBodyHeightMeters * 0.82f + estimate.bodyHeightMeters * 0.18f
+        overlayCameraHeightMeters = overlayCameraHeightMeters * 0.72f + estimate.cameraHeightMeters * 0.28f
+        overlayLateralOffsetMeters =
+            if (useLateralOffset) {
+                overlayLateralOffsetMeters * 0.68f + estimate.lateralOffsetMeters * 0.32f
+            } else {
+                0f
+            }
+        pendingOverlayFrames = 0
+    }
+
