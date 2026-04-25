@@ -29,3 +29,10 @@ import com.pocketmocap.app.ui.theme.MintDeep
 import com.pocketmocap.app.ui.theme.PocketMocapMotion
 import com.pocketmocap.app.ui.theme.Slate
 
+enum class CaptureView(val label: String) {
+    AVATAR("Avatar"),
+    SKELETON("Skeleton"),
+    TECHNICAL("Technical"),
+}
+
+@Composable
