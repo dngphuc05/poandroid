@@ -397,3 +397,10 @@ private fun retargetVrmBones(
         return norm3(dx, dy, dz)
     }
     fun dirJoints(a: Int, b: Int): FloatArray? {
+        if (v(a) < 0.3f || v(b) < 0.3f) return null
+        return dirVec(vrmP(a), vrmP(b))
+    }
+    fun setBoneDirection(boneName: String, dir: FloatArray?) {
+        if (dir == null) return
+        val bind = BIND_DIR[boneName] ?: return
+        val node = cache.getOrPut(boneName) { model.nodes.find { it.name == boneName } } ?: return
