@@ -435,3 +435,11 @@ private fun retargetVrmBones(
         }
     }
 
+    setBoneDirection(Bone.SPINE, spineDir)
+    setBoneDirection(Bone.SPINE1, spineDir)
+    setBoneDirection(Bone.SPINE2, spineDir)
+
+    val headDir = dirVec(shoulderMid, vrmP(MP_NOSE))
+    setBoneDirection(Bone.NECK, headDir)
+    setBoneDirection(Bone.HEAD, headDir)
+
