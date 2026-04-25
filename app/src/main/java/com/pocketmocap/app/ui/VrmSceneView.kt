@@ -63,3 +63,21 @@ private val BIND_DIR = mapOf(
     Bone.L_FORE to floatArrayOf(-1.0000f, 0.0000f, 0.0000f),
     Bone.L_HAND to floatArrayOf(-1.0000f, 0.0000f, 0.0000f),
     Bone.R_ARM to floatArrayOf(0.9631f, -0.2692f, -0.0006f),
+    Bone.R_FORE to floatArrayOf(1.0000f, 0.0000f, 0.0000f),
+    Bone.R_HAND to floatArrayOf(1.0000f, 0.0000f, 0.0000f),
+)
+
+private const val MP_NOSE = 0
+private const val MP_L_SHOULDER = 11
+private const val MP_R_SHOULDER = 12
+private const val MP_L_ELBOW = 13
+private const val MP_R_ELBOW = 14
+private const val MP_L_WRIST = 15
+private const val MP_R_WRIST = 16
+private const val MP_L_HIP = 23
+private const val MP_R_HIP = 24
+private const val MP_L_KNEE = 25
+private const val MP_R_KNEE = 26
+private const val MP_L_ANKLE = 27
+private const val MP_R_ANKLE = 28
+private const val MP_L_HEEL = 29
