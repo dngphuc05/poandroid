@@ -119,3 +119,13 @@ internal fun VrmSceneView(
         computePoseRoi(screenX, screenY, visibility)
     }
     val overlayEstimate = remember(roi, screenX, screenY, visibility, subjectHeightMeters, worldTracking) {
+        deriveOverlayPoseEstimate(
+            roi = roi,
+            screenX = screenX,
+            screenY = screenY,
+            visibility = visibility,
+            rawSubjectHeightMeters = subjectHeightMeters,
+            worldTracking = worldTracking,
+        )
+    }
+
