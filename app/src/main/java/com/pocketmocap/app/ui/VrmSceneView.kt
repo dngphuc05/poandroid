@@ -428,3 +428,10 @@ private fun retargetVrmBones(
         hipsNode.position = Position(x = 0f, y = 0f, z = 0f)
         if (pelvisRight != null && spineDir != null) {
             val pelvisBack = cross3(pelvisRight, spineDir)?.let { norm3(it[0], it[1], it[2]) }
+            if (pelvisBack != null) {
+                val q = quatFromBasis(pelvisRight, spineDir, pelvisBack)
+                hipsNode.quaternion = Quaternion(q[0], q[1], q[2], q[3])
+            }
+        }
+    }
+
