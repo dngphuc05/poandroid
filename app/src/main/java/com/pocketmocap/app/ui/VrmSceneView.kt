@@ -285,3 +285,15 @@ internal fun VrmSceneView(
         }
         if (!maxY.isFinite()) {
             var fallbackTop = Float.NEGATIVE_INFINITY
+            for (value in rawY) {
+                if (value.isFinite()) fallbackTop = maxOf(fallbackTop, value)
+            }
+            maxY = fallbackTop
+        }
+        val rootIndices = if (preferMetricPose) {
+            intArrayOf(MP_L_HIP, MP_R_HIP)
+        } else {
+            intArrayOf(MP_L_HIP, MP_R_HIP, MP_L_SHOULDER, MP_R_SHOULDER)
+        }
+        for (idx in rootIndices) {
+            val visible = visibility?.getOrNull(idx) ?: 1f
