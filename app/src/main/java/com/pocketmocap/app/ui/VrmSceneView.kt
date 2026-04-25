@@ -404,3 +404,10 @@ private fun retargetVrmBones(
         if (dir == null) return
         val bind = BIND_DIR[boneName] ?: return
         val node = cache.getOrPut(boneName) { model.nodes.find { it.name == boneName } } ?: return
+        val parentWorld = node.parent?.worldQuaternion?.let(::quatToArray) ?: floatArrayOf(0f, 0f, 0f, 1f)
+        val localTarget = quatRotateVector(quatConjugate(parentWorld), dir) ?: return
+        val q = quatShortestArc(bind, localTarget)
+        node.quaternion = Quaternion(q[0], q[1], q[2], q[3])
+    }
+
+    val hipMid = Triple(
