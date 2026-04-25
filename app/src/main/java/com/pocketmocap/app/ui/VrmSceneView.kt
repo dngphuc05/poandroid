@@ -318,3 +318,15 @@ internal fun VrmSceneView(
             (overlayBodyHeightMeters / rawHeight.coerceAtLeast(0.60f)).coerceIn(0.35f, 2.50f)
         }
 
+        val lateralOffset = if (useLateralOffset) overlayLateralOffsetMeters else 0f
+        val depthAnchor = if (useLateralOffset) -overlayDistanceMeters else 0f
+        val depthScale = if (useLateralOffset) 1f else 0.58f
+        val tx = FloatArray(33)
+        val ty = FloatArray(33)
+        val tz = FloatArray(33)
+        for (i in 0 until 33) {
+            tx[i] = lateralOffset + (rawX[i] - rootX) * scale
+            ty[i] = (rawY[i] - floor) * scale
+            tz[i] = depthAnchor + (rawZ[i] - rootZ) * scale * depthScale
+        }
+
