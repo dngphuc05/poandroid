@@ -224,3 +224,19 @@ internal fun VrmSceneView(
         pendingOverlayFrames = 0
     }
 
+    LaunchedEffect(overlayDistanceMeters, overlayBodyHeightMeters, overlayCameraHeightMeters) {
+        if (useLateralOffset) {
+            cameraNode.position = Position(
+                x = 0f,
+                y = overlayCameraHeightMeters,
+                z = 1.15f,
+            )
+            cameraNode.lookAt(
+                Position(
+                    x = 0f,
+                    y = (overlayBodyHeightMeters * 0.72f).coerceIn(0.95f, 1.45f),
+                    z = -overlayDistanceMeters,
+                )
+            )
+        } else {
+            val framedY = (overlayBodyHeightMeters * 0.58f).coerceIn(0.92f, 1.32f)
