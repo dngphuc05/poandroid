@@ -477,3 +477,11 @@ private fun retargetVrmBones(
         1.68f
     }
     val scaleFactor = (bodyHeight / 1.68f).coerceIn(0.78f, 1.12f)
+    model.setScale(scaleFactor)
+    model.position = Position(
+        x = hipMid.first,
+        y = 0f,
+        z = hipMid.third,
+    )
+}
+
