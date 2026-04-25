@@ -111,3 +111,11 @@ internal fun VrmSceneView(
         )
     }
     var overlayCameraHeightMeters by remember { mutableFloatStateOf(1.35f) }
+    var overlayLateralOffsetMeters by remember { mutableFloatStateOf(0f) }
+    var pendingOverlayFrames by remember { mutableIntStateOf(0) }
+    var hasOverlayEstimate by remember { mutableStateOf(false) }
+
+    val roi = remember(screenX, screenY, visibility) {
+        computePoseRoi(screenX, screenY, visibility)
+    }
+    val overlayEstimate = remember(roi, screenX, screenY, visibility, subjectHeightMeters, worldTracking) {
