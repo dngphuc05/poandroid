@@ -81,3 +81,21 @@ private const val MP_R_KNEE = 26
 private const val MP_L_ANKLE = 27
 private const val MP_R_ANKLE = 28
 private const val MP_L_HEEL = 29
+private const val MP_R_HEEL = 30
+private const val MP_L_FOOT_INDEX = 31
+private const val MP_R_FOOT_INDEX = 32
+
+@Composable
+internal fun VrmSceneView(
+    poseX: FloatArray?,
+    poseY: FloatArray?,
+    poseZ: FloatArray?,
+    groundY: Float,
+    subjectHeightMeters: Float,
+    worldTracking: WorldTrackingSnapshot?,
+    screenX: FloatArray?,
+    screenY: FloatArray?,
+    visibility: FloatArray?,
+    useLateralOffset: Boolean = true,
+    preferMetricPose: Boolean = false,
+    modifier: Modifier = Modifier,
