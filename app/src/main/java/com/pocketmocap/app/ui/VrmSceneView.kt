@@ -99,3 +99,15 @@ internal fun VrmSceneView(
     useLateralOffset: Boolean = true,
     preferMetricPose: Boolean = false,
     modifier: Modifier = Modifier,
+) {
+    var overlayDistanceMeters by remember { mutableFloatStateOf(2.25f) }
+    var overlayBodyHeightMeters by remember {
+        mutableFloatStateOf(
+            if (subjectHeightMeters.isFinite() && subjectHeightMeters in 1.15f..2.15f) {
+                subjectHeightMeters
+            } else {
+                1.68f
+            }
+        )
+    }
+    var overlayCameraHeightMeters by remember { mutableFloatStateOf(1.35f) }
