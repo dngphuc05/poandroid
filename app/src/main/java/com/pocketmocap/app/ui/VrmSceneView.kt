@@ -421,3 +421,10 @@ private fun retargetVrmBones(
         (pz[MP_L_SHOULDER] + pz[MP_R_SHOULDER]) * 0.5f,
     )
 
+    val hipsNode = cache.getOrPut(Bone.HIPS) { model.nodes.find { it.name == Bone.HIPS } }
+    val pelvisRight = dirJoints(MP_L_HIP, MP_R_HIP)
+    val spineDir = dirVec(hipMid, shoulderMid)
+    if (hipsNode != null) {
+        hipsNode.position = Position(x = 0f, y = 0f, z = 0f)
+        if (pelvisRight != null && spineDir != null) {
+            val pelvisBack = cross3(pelvisRight, spineDir)?.let { norm3(it[0], it[1], it[2]) }
