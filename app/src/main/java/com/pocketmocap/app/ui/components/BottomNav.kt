@@ -34,3 +34,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.pocketmocap.app.ui.theme.Cloud
 import com.pocketmocap.app.ui.theme.Ink
+import com.pocketmocap.app.ui.theme.Mint
+import com.pocketmocap.app.ui.theme.MintBright
+import com.pocketmocap.app.ui.theme.PocketMocapMotion
+
+enum class NavTab { SETUP, CAPTURE, LIBRARY }
+
+@Composable
