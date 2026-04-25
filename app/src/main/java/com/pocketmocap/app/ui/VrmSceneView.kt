@@ -451,3 +451,11 @@ private fun retargetVrmBones(
     setBoneDirection(Bone.R_LEG, dirJoints(MP_R_KNEE, MP_R_ANKLE))
     setBoneDirection(Bone.R_FOOT, dirJoints(MP_R_ANKLE, MP_R_FOOT_INDEX) ?: dirJoints(MP_R_ANKLE, MP_R_HEEL))
 
+    setBoneDirection(Bone.L_ARM, dirJoints(MP_L_SHOULDER, MP_L_ELBOW))
+    setBoneDirection(Bone.L_FORE, dirJoints(MP_L_ELBOW, MP_L_WRIST))
+    setBoneDirection(Bone.L_HAND, dirJoints(MP_L_ELBOW, MP_L_WRIST))
+
+    setBoneDirection(Bone.R_ARM, dirJoints(MP_R_SHOULDER, MP_R_ELBOW))
+    setBoneDirection(Bone.R_FORE, dirJoints(MP_R_ELBOW, MP_R_WRIST))
+    setBoneDirection(Bone.R_HAND, dirJoints(MP_R_ELBOW, MP_R_WRIST))
+
