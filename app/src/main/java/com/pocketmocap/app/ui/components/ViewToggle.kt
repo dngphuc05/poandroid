@@ -36,3 +36,21 @@ enum class CaptureView(val label: String) {
 }
 
 @Composable
+fun ViewToggle(
+    activeView: CaptureView,
+    onViewSelected: (CaptureView) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(28.dp),
+        color = Color(0xFFE4E8EB).copy(alpha = 0.82f),
+        shadowElevation = 16.dp,
+    ) {
+        Row(
+            modifier = Modifier.padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            CaptureView.entries.forEach { view ->
+                SegmentedAction(
+                    label = view.label,
