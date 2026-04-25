@@ -552,3 +552,11 @@ private fun quatFromBasis(xAxis: FloatArray, yAxis: FloatArray, zAxis: FloatArra
         )
     } else if (m11 > m22) {
         val s = sqrt(1f + m11 - m00 - m22) * 2f
+        floatArrayOf(
+            (m01 + m10) / s,
+            0.25f * s,
+            (m12 + m21) / s,
+            (m02 - m20) / s,
+        )
+    } else {
+        val s = sqrt(1f + m22 - m00 - m11) * 2f
