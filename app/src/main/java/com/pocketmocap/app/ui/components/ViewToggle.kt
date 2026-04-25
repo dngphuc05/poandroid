@@ -81,3 +81,21 @@ private fun SegmentedAction(
         label = "segmentText",
     )
 
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(24.dp))
+            .clickable(onClick = onClick)
+            .background(
+                if (selected) {
+                    Brush.linearGradient(
+                        listOf(
+                            MintDeep.copy(alpha = containerAlpha),
+                            Mint.copy(alpha = containerAlpha),
+                        )
+                    )
+                } else {
+                    Brush.linearGradient(
+                        listOf(
+                            Color.White.copy(alpha = 0.08f),
+                            Color.White.copy(alpha = 0.03f),
+                        )
