@@ -307,3 +307,14 @@ internal fun VrmSceneView(
             rootZ /= rootCount
         }
 
+        val rawHeight = when {
+            maxY.isFinite() -> (maxY - floor).coerceAtLeast(0.60f)
+            subjectHeightMeters.isFinite() && subjectHeightMeters in 0.75f..3.5f -> subjectHeightMeters
+            else -> overlayBodyHeightMeters
+        }
+        val scale = if (preferMetricPose && overlayBodyHeightMeters.isFinite() && overlayBodyHeightMeters in 0.75f..3.5f) {
+            (overlayBodyHeightMeters / rawHeight.coerceAtLeast(0.60f)).coerceIn(0.12f, 2.50f)
+        } else {
+            (overlayBodyHeightMeters / rawHeight.coerceAtLeast(0.60f)).coerceIn(0.35f, 2.50f)
+        }
+
