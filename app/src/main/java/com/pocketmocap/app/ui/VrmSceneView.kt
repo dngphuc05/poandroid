@@ -525,3 +525,10 @@ private fun quatShortestArc(from: FloatArray, to: FloatArray): FloatArray {
         if (it < 1e-8f) return floatArrayOf(0f, 0f, 0f, 1f) else it
     }
     val scale = t / cl
+    return floatArrayOf(cx * scale, cy * scale, cz * scale, s)
+}
+
+private fun quatFromBasis(xAxis: FloatArray, yAxis: FloatArray, zAxis: FloatArray): FloatArray {
+    val m00 = xAxis[0]; val m01 = yAxis[0]; val m02 = zAxis[0]
+    val m10 = xAxis[1]; val m11 = yAxis[1]; val m12 = zAxis[1]
+    val m20 = xAxis[2]; val m21 = yAxis[2]; val m22 = zAxis[2]
