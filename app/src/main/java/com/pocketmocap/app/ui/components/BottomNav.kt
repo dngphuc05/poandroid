@@ -89,3 +89,13 @@ private fun RowScope.BottomNavItem(
     onClick: () -> Unit,
 ) {
     val iconColor by animateColorAsState(
+        targetValue = if (selected) Ink else Ink.copy(alpha = 0.6f),
+        animationSpec = tween(PocketMocapMotion.ControlTransitionMillis),
+        label = "iconColor",
+    )
+    val labelColor by animateColorAsState(
+        targetValue = if (selected) Ink else Ink.copy(alpha = 0.6f),
+        animationSpec = tween(PocketMocapMotion.ControlTransitionMillis),
+        label = "labelColor",
+    )
+
