@@ -26,3 +26,21 @@ import com.pocketmocap.app.ui.theme.Cloud
 import com.pocketmocap.app.ui.theme.MintBright
 import com.pocketmocap.app.ui.theme.Slate
 
+@Composable
+fun Header(modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        color = Cloud.copy(alpha = 0.92f),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                PocketMocapGlyph()
