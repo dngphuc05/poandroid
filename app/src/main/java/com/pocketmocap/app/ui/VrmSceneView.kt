@@ -172,3 +172,17 @@ internal fun VrmSceneView(
                 pendingOverlayFrames = 0
                 return@LaunchedEffect
             }
+
+            overlayDistanceMeters = overlayDistanceMeters * 0.82f + nextDistance * 0.18f
+            overlayBodyHeightMeters = overlayBodyHeightMeters * 0.88f + metricHeight * 0.12f
+            overlayCameraHeightMeters = overlayCameraHeightMeters * 0.84f + nextCameraHeight * 0.16f
+            overlayLateralOffsetMeters =
+                if (useLateralOffset) {
+                    overlayLateralOffsetMeters * 0.82f + nextLateral * 0.18f
+                } else {
+                    0f
+                }
+            pendingOverlayFrames = 0
+            return@LaunchedEffect
+        }
+
