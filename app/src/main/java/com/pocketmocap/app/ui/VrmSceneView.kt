@@ -255,3 +255,18 @@ internal fun VrmSceneView(
         }
     }
 
+    val boneCache = remember { mutableMapOf<String, Node?>() }
+    LaunchedEffect(
+        poseX,
+        poseY,
+        poseZ,
+        groundY,
+        subjectHeightMeters,
+        overlayDistanceMeters,
+        overlayBodyHeightMeters,
+        overlayLateralOffsetMeters,
+        useLateralOffset,
+        preferMetricPose,
+        modelNode,
+    ) {
+        val model = modelNode ?: return@LaunchedEffect
