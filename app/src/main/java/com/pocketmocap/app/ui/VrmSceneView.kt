@@ -270,3 +270,10 @@ internal fun VrmSceneView(
         modelNode,
     ) {
         val model = modelNode ?: return@LaunchedEffect
+        val rawX = poseX ?: return@LaunchedEffect
+        val rawY = poseY ?: return@LaunchedEffect
+        val rawZ = poseZ ?: return@LaunchedEffect
+        if (rawX.size < 33 || rawY.size < 33 || rawZ.size < 33) return@LaunchedEffect
+
+        var floor = if (groundY.isFinite()) groundY else robustVrmFloorY(rawY, visibility)
+        var maxY = robustVrmTopY(rawY, visibility)
