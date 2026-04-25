@@ -63,3 +63,11 @@ fun ViewToggle(
     }
 }
 
+@Composable
+private fun SegmentedAction(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val containerAlpha by animateFloatAsState(
