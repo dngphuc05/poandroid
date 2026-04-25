@@ -117,3 +117,17 @@ private fun RowScope.BottomNavItem(
         ) {
             Icon(
                 imageVector = icon,
+                contentDescription = label,
+                tint = iconColor,
+                modifier = Modifier.size(22.dp),
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = labelColor,
+                maxLines = 1,
+                softWrap = false,
+            )
+        }
+    }
+}
