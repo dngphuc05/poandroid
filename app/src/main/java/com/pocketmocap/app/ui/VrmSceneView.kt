@@ -583,3 +583,11 @@ private fun quatMultiply(a: FloatArray, b: FloatArray): FloatArray = floatArrayO
 )
 
 private fun quatRotateVector(q: FloatArray, v: FloatArray): FloatArray? {
+    if (q.size < 4 || v.size < 3) return null
+    val normalized = norm3(v[0], v[1], v[2]) ?: return null
+    val rotated = quatMultiply(
+        quatMultiply(q, floatArrayOf(normalized[0], normalized[1], normalized[2], 0f)),
+        quatConjugate(q),
+    )
+    return norm3(rotated[0], rotated[1], rotated[2])
+}
