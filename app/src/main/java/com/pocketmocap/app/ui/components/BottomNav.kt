@@ -41,3 +41,21 @@ import com.pocketmocap.app.ui.theme.PocketMocapMotion
 enum class NavTab { SETUP, CAPTURE, LIBRARY }
 
 @Composable
+fun BottomNav(
+    activeTab: NavTab,
+    onTabSelected: (NavTab) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .shadow(24.dp, RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp)),
+        color = Cloud.copy(alpha = 0.8f),
+        shape = RoundedCornerShape(topStart = 48.dp, topEnd = 48.dp),
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 27.dp, vertical = 14.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+        ) {
