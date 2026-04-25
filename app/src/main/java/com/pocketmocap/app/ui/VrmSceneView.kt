@@ -375,3 +375,17 @@ private fun robustVrmTopY(rawY: FloatArray, visibility: FloatArray?): Float {
         return value
     }
     val head = maxVisible(intArrayOf(MP_NOSE), 0.18f)
+    if (head.isFinite()) return head
+    val torso = maxVisible(intArrayOf(MP_L_SHOULDER, MP_R_SHOULDER, MP_L_HIP, MP_R_HIP), 0.22f)
+    return if (torso.isFinite()) torso else Float.NEGATIVE_INFINITY
+}
+
+private fun retargetVrmBones(
+    model: ModelNode,
+    cache: MutableMap<String, Node?>,
+    px: FloatArray,
+    py: FloatArray,
+    pz: FloatArray,
+    vis: FloatArray?,
+) {
+    fun vrmP(i: Int) = Triple(px[i], py[i], pz[i])
