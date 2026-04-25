@@ -99,3 +99,21 @@ private fun RowScope.BottomNavItem(
         label = "labelColor",
     )
 
+    Box(
+        modifier = Modifier.weight(1f),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(
+                    if (selected) Brush.linearGradient(listOf(MintBright, Mint))
+                    else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent))
+                )
+                .clickable(onClick = onClick)
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(
+                imageVector = icon,
