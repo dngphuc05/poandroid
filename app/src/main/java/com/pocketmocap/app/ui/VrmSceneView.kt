@@ -345,3 +345,14 @@ internal fun VrmSceneView(
     }
 }
 
+private fun robustVrmFloorY(rawY: FloatArray, visibility: FloatArray?): Float {
+    fun minVisible(indices: IntArray, minVisibility: Float): Float {
+        var value = Float.POSITIVE_INFINITY
+        for (idx in indices) {
+            val visible = visibility?.getOrNull(idx) ?: 1f
+            val y = rawY.getOrNull(idx) ?: continue
+            if (visible > minVisibility && y.isFinite()) value = minOf(value, y)
+        }
+        return value
+    }
+    val foot = minVisible(
