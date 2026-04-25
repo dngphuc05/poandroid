@@ -532,3 +532,15 @@ private fun quatFromBasis(xAxis: FloatArray, yAxis: FloatArray, zAxis: FloatArra
     val m00 = xAxis[0]; val m01 = yAxis[0]; val m02 = zAxis[0]
     val m10 = xAxis[1]; val m11 = yAxis[1]; val m12 = zAxis[1]
     val m20 = xAxis[2]; val m21 = yAxis[2]; val m22 = zAxis[2]
+
+    val trace = m00 + m11 + m22
+    return if (trace > 0f) {
+        val s = sqrt(trace + 1f) * 2f
+        floatArrayOf(
+            (m21 - m12) / s,
+            (m02 - m20) / s,
+            (m10 - m01) / s,
+            0.25f * s,
+        )
+    } else if (m00 > m11 && m00 > m22) {
+        val s = sqrt(1f + m00 - m11 - m22) * 2f
