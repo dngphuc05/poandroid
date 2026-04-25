@@ -186,3 +186,14 @@ internal fun VrmSceneView(
             return@LaunchedEffect
         }
 
+        val estimate = overlayEstimate ?: return@LaunchedEffect
+        if (!hasOverlayEstimate) {
+            overlayDistanceMeters = estimate.distanceMeters
+            overlayBodyHeightMeters = estimate.bodyHeightMeters
+            overlayCameraHeightMeters = estimate.cameraHeightMeters
+            overlayLateralOffsetMeters = if (useLateralOffset) estimate.lateralOffsetMeters else 0f
+            hasOverlayEstimate = true
+            pendingOverlayFrames = 0
+            return@LaunchedEffect
+        }
+
