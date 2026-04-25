@@ -197,3 +197,13 @@ internal fun VrmSceneView(
             return@LaunchedEffect
         }
 
+        val distanceDelta = abs(estimate.distanceMeters - overlayDistanceMeters)
+        val heightDelta = abs(estimate.bodyHeightMeters - overlayBodyHeightMeters)
+        val cameraHeightDelta = abs(estimate.cameraHeightMeters - overlayCameraHeightMeters)
+        val lateralDelta = abs(estimate.lateralOffsetMeters - overlayLateralOffsetMeters)
+        val meaningfulChange =
+            distanceDelta >= 0.15f ||
+                heightDelta >= 0.08f ||
+                cameraHeightDelta >= 0.08f ||
+                lateralDelta >= 0.08f
+
