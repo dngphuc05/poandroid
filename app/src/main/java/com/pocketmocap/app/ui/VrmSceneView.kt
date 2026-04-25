@@ -136,3 +136,13 @@ internal fun VrmSceneView(
     }
 
     var modelNode by remember { mutableStateOf<ModelNode?>(null) }
+    LaunchedEffect(Unit) {
+        val instance: FilamentInstance? = modelLoader.loadModelInstance("angry.vrm")
+        if (instance != null) {
+            modelNode = ModelNode(
+                modelInstance = instance,
+                autoAnimate = false,
+            )
+        }
+    }
+
