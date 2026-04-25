@@ -154,3 +154,21 @@ internal fun VrmSceneView(
                 ?: worldTracking?.subjectDistanceMeters?.takeIf { it.isFinite() && it in 0.35f..12f }
                 ?: overlayDistanceMeters
             val nextCameraHeight = estimate?.cameraHeightMeters
+                ?: worldTracking?.cameraHeightMeters?.takeIf { it.isFinite() && it in 0.45f..2.30f }
+                ?: overlayCameraHeightMeters
+            val nextLateral = if (useLateralOffset) {
+                estimate?.lateralOffsetMeters
+                    ?: worldTracking?.lateralOffsetMeters?.takeIf { it.isFinite() && abs(it) <= 2.5f }
+                    ?: overlayLateralOffsetMeters
+            } else {
+                0f
+            }
+            if (!hasOverlayEstimate) {
+                overlayDistanceMeters = nextDistance
+                overlayBodyHeightMeters = metricHeight
+                overlayCameraHeightMeters = nextCameraHeight
+                overlayLateralOffsetMeters = nextLateral
+                hasOverlayEstimate = true
+                pendingOverlayFrames = 0
+                return@LaunchedEffect
+            }
