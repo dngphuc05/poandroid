@@ -59,3 +59,21 @@ fun BottomNav(
                 .padding(horizontal = 27.dp, vertical = 14.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
+            BottomNavItem(
+                icon = Icons.Rounded.Adjust,
+                label = "SETUP",
+                selected = activeTab == NavTab.SETUP,
+                onClick = { onTabSelected(NavTab.SETUP) },
+            )
+            BottomNavItem(
+                icon = Icons.Rounded.Videocam,
+                label = "CAPTURE",
+                selected = activeTab == NavTab.CAPTURE,
+                onClick = { onTabSelected(NavTab.CAPTURE) },
+            )
+            BottomNavItem(
+                icon = Icons.Rounded.CollectionsBookmark,
+                label = "LIBRARY",
+                selected = activeTab == NavTab.LIBRARY,
+                onClick = { onTabSelected(NavTab.LIBRARY) },
+            )
