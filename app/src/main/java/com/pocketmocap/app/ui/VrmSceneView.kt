@@ -516,3 +516,12 @@ private fun quatShortestArc(from: FloatArray, to: FloatArray): FloatArray {
         return floatArrayOf(n[0], n[1], n[2], 0f)
     }
 
+    val cx = from[1] * to[2] - from[2] * to[1]
+    val cy = from[2] * to[0] - from[0] * to[2]
+    val cz = from[0] * to[1] - from[1] * to[0]
+    val s = sqrt((1f + dot) / 2f)
+    val t = sqrt((1f - dot) / 2f)
+    val cl = sqrt(cx * cx + cy * cy + cz * cz).let {
+        if (it < 1e-8f) return floatArrayOf(0f, 0f, 0f, 1f) else it
+    }
+    val scale = t / cl
