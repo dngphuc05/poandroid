@@ -507,3 +507,12 @@ private fun quatShortestArc(from: FloatArray, to: FloatArray): FloatArray {
     }
     if (dot < -0.9999f) {
         val ax = if (abs(from[0]) < 0.8f) 1f else 0f
+        val ay = if (abs(from[0]) >= 0.8f) 1f else 0f
+        val n = norm3(
+            from[1] * ay - from[2] * 0f,
+            from[2] * ax - from[0] * ay,
+            from[0] * 0f - from[1] * ax,
+        ) ?: floatArrayOf(1f, 0f, 0f)
+        return floatArrayOf(n[0], n[1], n[2], 0f)
+    }
+
