@@ -77,3 +77,15 @@ fun BottomNav(
                 selected = activeTab == NavTab.LIBRARY,
                 onClick = { onTabSelected(NavTab.LIBRARY) },
             )
+        }
+    }
+}
+
+@Composable
+private fun RowScope.BottomNavItem(
+    icon: ImageVector,
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    val iconColor by animateColorAsState(
