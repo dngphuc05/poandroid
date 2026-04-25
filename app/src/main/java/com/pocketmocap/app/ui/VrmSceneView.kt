@@ -129,3 +129,10 @@ internal fun VrmSceneView(
         )
     }
 
+    val engine = rememberEngine()
+    val modelLoader = rememberModelLoader(engine)
+    val cameraNode = rememberCameraNode(engine) {
+        position = Position(y = overlayCameraHeightMeters, z = 1.15f)
+    }
+
+    var modelNode by remember { mutableStateOf<ModelNode?>(null) }
