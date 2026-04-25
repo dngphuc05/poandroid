@@ -45,3 +45,21 @@ private object Bone {
     val R_ARM = "${PFXM}RightArm"
     val R_FORE = "${PFXM}RightForeArm"
     val R_HAND = "${PFXM}RightHand"
+}
+
+private val BIND_DIR = mapOf(
+    Bone.SPINE to floatArrayOf(0.0001f, 0.9863f, 0.1647f),
+    Bone.SPINE1 to floatArrayOf(0.0000f, 0.9863f, 0.1647f),
+    Bone.SPINE2 to floatArrayOf(0.0000f, 0.9863f, 0.1647f),
+    Bone.NECK to floatArrayOf(0.0000f, 0.9863f, 0.1647f),
+    Bone.HEAD to floatArrayOf(0.0000f, 0.9997f, 0.0259f),
+    Bone.L_UP_LEG to floatArrayOf(-0.8925f, -0.4507f, 0.0192f),
+    Bone.L_LEG to floatArrayOf(-0.0196f, -0.9988f, -0.0448f),
+    Bone.L_FOOT to floatArrayOf(0.0229f, -0.9930f, 0.1155f),
+    Bone.R_UP_LEG to floatArrayOf(0.8925f, -0.4510f, 0.0095f),
+    Bone.R_LEG to floatArrayOf(0.0196f, -0.9995f, -0.0249f),
+    Bone.R_FOOT to floatArrayOf(-0.0229f, -0.9951f, 0.0958f),
+    Bone.L_ARM to floatArrayOf(-0.9631f, -0.2691f, 0.0006f),
+    Bone.L_FORE to floatArrayOf(-1.0000f, 0.0000f, 0.0000f),
+    Bone.L_HAND to floatArrayOf(-1.0000f, 0.0000f, 0.0000f),
+    Bone.R_ARM to floatArrayOf(0.9631f, -0.2692f, -0.0006f),
