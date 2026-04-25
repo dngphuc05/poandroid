@@ -16,3 +16,11 @@ import com.google.android.filament.gltfio.FilamentInstance
 import dev.romainguy.kotlin.math.Quaternion
 import io.github.sceneview.Scene
 import io.github.sceneview.math.Position
+import io.github.sceneview.node.ModelNode
+import io.github.sceneview.node.Node
+import io.github.sceneview.rememberCameraNode
+import io.github.sceneview.rememberEngine
+import io.github.sceneview.rememberModelLoader
+import kotlin.math.abs
+import kotlin.math.sqrt
+
