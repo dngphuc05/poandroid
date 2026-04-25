@@ -459,3 +459,10 @@ private fun retargetVrmBones(
     setBoneDirection(Bone.R_FORE, dirJoints(MP_R_ELBOW, MP_R_WRIST))
     setBoneDirection(Bone.R_HAND, dirJoints(MP_R_ELBOW, MP_R_WRIST))
 
+    val leftFootDir = dirJoints(MP_L_ANKLE, MP_L_FOOT_INDEX) ?: dirJoints(MP_L_ANKLE, MP_L_HEEL)
+    val rightFootDir = dirJoints(MP_R_ANKLE, MP_R_FOOT_INDEX) ?: dirJoints(MP_R_ANKLE, MP_R_HEEL)
+    setBoneDirection(Bone.L_FOOT, leftFootDir)
+    setBoneDirection(Bone.R_FOOT, rightFootDir)
+
+    var minY = Float.POSITIVE_INFINITY
+    var maxY = Float.NEGATIVE_INFINITY
