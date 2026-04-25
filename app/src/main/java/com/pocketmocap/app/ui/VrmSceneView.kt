@@ -389,3 +389,11 @@ private fun retargetVrmBones(
     vis: FloatArray?,
 ) {
     fun vrmP(i: Int) = Triple(px[i], py[i], pz[i])
+    fun v(i: Int) = vis?.getOrNull(i) ?: 0.8f
+    fun dirVec(from: Triple<Float, Float, Float>, to: Triple<Float, Float, Float>): FloatArray? {
+        val dx = to.first - from.first
+        val dy = to.second - from.second
+        val dz = to.third - from.third
+        return norm3(dx, dy, dz)
+    }
+    fun dirJoints(a: Int, b: Int): FloatArray? {
