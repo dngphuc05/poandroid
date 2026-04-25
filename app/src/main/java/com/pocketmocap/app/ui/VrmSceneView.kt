@@ -277,3 +277,11 @@ internal fun VrmSceneView(
 
         var floor = if (groundY.isFinite()) groundY else robustVrmFloorY(rawY, visibility)
         var maxY = robustVrmTopY(rawY, visibility)
+        var rootX = 0f
+        var rootZ = 0f
+        var rootCount = 0
+        if (!floor.isFinite()) {
+            floor = 0f
+        }
+        if (!maxY.isFinite()) {
+            var fallbackTop = Float.NEGATIVE_INFINITY
