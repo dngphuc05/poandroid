@@ -492,3 +492,11 @@ private fun norm3(x: Float, y: Float, z: Float): FloatArray? {
 }
 
 private fun cross3(a: FloatArray, b: FloatArray): FloatArray? {
+    if (a.size < 3 || b.size < 3) return null
+    return floatArrayOf(
+        a[1] * b[2] - a[2] * b[1],
+        a[2] * b[0] - a[0] * b[2],
+        a[0] * b[1] - a[1] * b[0],
+    )
+}
+
