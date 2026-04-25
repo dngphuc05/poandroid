@@ -146,3 +146,11 @@ internal fun VrmSceneView(
         }
     }
 
+    LaunchedEffect(overlayEstimate, preferMetricPose, subjectHeightMeters) {
+        val metricHeight = subjectHeightMeters.takeIf { it.isFinite() && it in 1.15f..2.25f }
+        if (preferMetricPose && metricHeight != null) {
+            val estimate = overlayEstimate
+            val nextDistance = estimate?.distanceMeters
+                ?: worldTracking?.subjectDistanceMeters?.takeIf { it.isFinite() && it in 0.35f..12f }
+                ?: overlayDistanceMeters
+            val nextCameraHeight = estimate?.cameraHeightMeters
