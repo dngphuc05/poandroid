@@ -23,3 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pocketmocap.app.R
 
+// ── Design tokens ──────────────────────────────────────────────
+val Cloud = Color(0xFFF5F7F9)
+val CloudWarm = Color(0xFFF5F4EB)
+val Ink = Color(0xFF2C2F31)
+val Slate = Color(0xFF595C5E)
+val Mint = Color(0xFF89F0CB)
+val MintBright = Color(0xFF98FFD9)
