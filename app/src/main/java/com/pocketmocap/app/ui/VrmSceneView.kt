@@ -240,3 +240,18 @@ internal fun VrmSceneView(
             )
         } else {
             val framedY = (overlayBodyHeightMeters * 0.58f).coerceIn(0.92f, 1.32f)
+            cameraNode.position = Position(
+                x = 0f,
+                y = framedY,
+                z = 2.05f,
+            )
+            cameraNode.lookAt(
+                Position(
+                    x = 0f,
+                    y = framedY,
+                    z = 0f,
+                )
+            )
+        }
+    }
+
