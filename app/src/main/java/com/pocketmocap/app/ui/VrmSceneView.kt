@@ -466,3 +466,14 @@ private fun retargetVrmBones(
 
     var minY = Float.POSITIVE_INFINITY
     var maxY = Float.NEGATIVE_INFINITY
+    for (i in 0 until 33) {
+        if (v(i) < 0.2f) continue
+        minY = minOf(minY, py[i])
+        maxY = maxOf(maxY, py[i])
+    }
+    val bodyHeight = if (minY.isFinite() && maxY.isFinite()) {
+        (maxY - minY).coerceAtLeast(0.85f)
+    } else {
+        1.68f
+    }
+    val scaleFactor = (bodyHeight / 1.68f).coerceIn(0.78f, 1.12f)
