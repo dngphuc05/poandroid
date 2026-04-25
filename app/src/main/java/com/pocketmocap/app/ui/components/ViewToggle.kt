@@ -54,3 +54,12 @@ fun ViewToggle(
             CaptureView.entries.forEach { view ->
                 SegmentedAction(
                     label = view.label,
+                    selected = activeView == view,
+                    onClick = { onViewSelected(view) },
+                    modifier = Modifier.widthIn(min = if (view == CaptureView.TECHNICAL) 104.dp else 92.dp),
+                )
+            }
+        }
+    }
+}
+
