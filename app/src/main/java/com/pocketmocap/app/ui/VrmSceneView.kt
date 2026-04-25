@@ -24,3 +24,10 @@ import io.github.sceneview.rememberModelLoader
 import kotlin.math.abs
 import kotlin.math.sqrt
 
+private const val PFXM = "vis_char_060:mixamorig:"
+
+private object Bone {
+    val HIPS = "${PFXM}Hips"
+    val SPINE = "${PFXM}Spine"
+    val SPINE1 = "${PFXM}Spine1"
+    val SPINE2 = "${PFXM}Spine2"
