@@ -330,3 +330,18 @@ internal fun VrmSceneView(
             tz[i] = depthAnchor + (rawZ[i] - rootZ) * scale * depthScale
         }
 
+        retargetVrmBones(model, boneCache, tx, ty, tz, visibility)
+    }
+
+    Box(modifier = modifier) {
+        Scene(
+            modifier = Modifier.fillMaxSize(),
+            engine = engine,
+            modelLoader = modelLoader,
+            cameraNode = cameraNode,
+            isOpaque = false,
+            childNodes = listOfNotNull(modelNode),
+        )
+    }
+}
+
