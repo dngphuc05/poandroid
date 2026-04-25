@@ -569,3 +569,10 @@ private fun quatFromBasis(xAxis: FloatArray, yAxis: FloatArray, zAxis: FloatArra
     }
 }
 
+private fun quatToArray(q: Quaternion): FloatArray =
+    floatArrayOf(q.x, q.y, q.z, q.w)
+
+private fun quatConjugate(q: FloatArray): FloatArray =
+    floatArrayOf(-q[0], -q[1], -q[2], q[3])
+
+private fun quatMultiply(a: FloatArray, b: FloatArray): FloatArray = floatArrayOf(
