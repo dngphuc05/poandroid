@@ -297,3 +297,13 @@ internal fun VrmSceneView(
         }
         for (idx in rootIndices) {
             val visible = visibility?.getOrNull(idx) ?: 1f
+            if (visible <= 0.2f) continue
+            rootX += rawX[idx]
+            rootZ += rawZ[idx]
+            rootCount += 1
+        }
+        if (rootCount > 0) {
+            rootX /= rootCount
+            rootZ /= rootCount
+        }
+
