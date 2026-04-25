@@ -71,3 +71,13 @@ private fun SegmentedAction(
     modifier: Modifier = Modifier,
 ) {
     val containerAlpha by animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = PocketMocapMotion.ControlTween,
+        label = "segmentAlpha",
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (selected) Color.White else Slate,
+        animationSpec = tween(PocketMocapMotion.ControlTransitionMillis),
+        label = "segmentText",
+    )
+
