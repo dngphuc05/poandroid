@@ -500,3 +500,10 @@ private fun cross3(a: FloatArray, b: FloatArray): FloatArray? {
     )
 }
 
+private fun quatShortestArc(from: FloatArray, to: FloatArray): FloatArray {
+    val dot = (from[0] * to[0] + from[1] * to[1] + from[2] * to[2]).coerceIn(-1f, 1f)
+    if (dot > 0.9999f) {
+        return floatArrayOf(0f, 0f, 0f, 1f)
+    }
+    if (dot < -0.9999f) {
+        val ax = if (abs(from[0]) < 0.8f) 1f else 0f
