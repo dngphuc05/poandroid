@@ -560,3 +560,12 @@ private fun quatFromBasis(xAxis: FloatArray, yAxis: FloatArray, zAxis: FloatArra
         )
     } else {
         val s = sqrt(1f + m22 - m00 - m11) * 2f
+        floatArrayOf(
+            (m02 + m20) / s,
+            (m12 + m21) / s,
+            0.25f * s,
+            (m10 - m01) / s,
+        )
+    }
+}
+
