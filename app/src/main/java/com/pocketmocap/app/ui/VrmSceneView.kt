@@ -356,3 +356,11 @@ private fun robustVrmFloorY(rawY: FloatArray, visibility: FloatArray?): Float {
         return value
     }
     val foot = minVisible(
+        intArrayOf(MP_L_ANKLE, MP_R_ANKLE, MP_L_HEEL, MP_R_HEEL, MP_L_FOOT_INDEX, MP_R_FOOT_INDEX),
+        0.18f,
+    )
+    if (foot.isFinite()) return foot
+    val lower = minVisible(intArrayOf(MP_L_KNEE, MP_R_KNEE, MP_L_HIP, MP_R_HIP), 0.22f)
+    return if (lower.isFinite()) lower else Float.POSITIVE_INFINITY
+}
+
