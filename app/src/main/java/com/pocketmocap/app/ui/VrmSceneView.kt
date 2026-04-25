@@ -411,3 +411,13 @@ private fun retargetVrmBones(
     }
 
     val hipMid = Triple(
+        (px[MP_L_HIP] + px[MP_R_HIP]) * 0.5f,
+        (py[MP_L_HIP] + py[MP_R_HIP]) * 0.5f,
+        (pz[MP_L_HIP] + pz[MP_R_HIP]) * 0.5f,
+    )
+    val shoulderMid = Triple(
+        (px[MP_L_SHOULDER] + px[MP_R_SHOULDER]) * 0.5f,
+        (py[MP_L_SHOULDER] + py[MP_R_SHOULDER]) * 0.5f,
+        (pz[MP_L_SHOULDER] + pz[MP_R_SHOULDER]) * 0.5f,
+    )
+
