@@ -364,3 +364,14 @@ private fun robustVrmFloorY(rawY: FloatArray, visibility: FloatArray?): Float {
     return if (lower.isFinite()) lower else Float.POSITIVE_INFINITY
 }
 
+private fun robustVrmTopY(rawY: FloatArray, visibility: FloatArray?): Float {
+    fun maxVisible(indices: IntArray, minVisibility: Float): Float {
+        var value = Float.NEGATIVE_INFINITY
+        for (idx in indices) {
+            val visible = visibility?.getOrNull(idx) ?: 1f
+            val y = rawY.getOrNull(idx) ?: continue
+            if (visible > minVisibility && y.isFinite()) value = maxOf(value, y)
+        }
+        return value
+    }
+    val head = maxVisible(intArrayOf(MP_NOSE), 0.18f)
