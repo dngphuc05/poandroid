@@ -293,3 +293,15 @@ float spread(const std::vector<Factor>& factors) {
     return has ? hi - lo : 0.0f;
 }
 
+float weighted_residual(const std::vector<Factor>& factors, float target) {
+    if (!finite(target)) return 0.0f;
+    float total = 0.0f;
+    float weight = 0.0f;
+    for (const auto& factor : factors) {
+        if (!finite(factor.value)) continue;
+        total += std::fabs(factor.value - target) * factor.weight;
+        weight += factor.weight;
+    }
+    return weight > 1e-5f ? total / weight : 0.0f;
+}
+
