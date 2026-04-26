@@ -53,3 +53,8 @@ if (POCKET_MOCAP_HAS_CERES)
     target_link_libraries(physical_scene_optimizer Ceres::ceres)
 endif()
 
+target_link_libraries(
+    physical_scene_optimizer
+    android
+    log
+)
