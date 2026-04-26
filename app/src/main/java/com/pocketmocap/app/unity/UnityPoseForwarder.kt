@@ -79,3 +79,13 @@ class UnityPoseForwarder {
     private fun sendToUnity(method: String, message: String) {
         try {
             // Unity's UnitySendMessage via reflection (when Unity is embedded as a library)
+            val unityPlayerClass = Class.forName("com.unity3d.player.UnityPlayer")
+            val sendMethod = unityPlayerClass.getMethod(
+                "UnitySendMessage", String::class.java, String::class.java, String::class.java
+            )
+            sendMethod.invoke(null, UNITY_GAME_OBJECT, method, message)
+        } catch (e: Exception) {
+            Log.w(TAG, "UnitySendMessage($method) failed: ${e.message}")
+        }
+    }
+}
