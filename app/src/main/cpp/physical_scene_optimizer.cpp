@@ -54,3 +54,25 @@ struct Factor {
     int bit;
 };
 
+struct OptimizerInputs {
+    float confidence = std::numeric_limits<float>::quiet_NaN();
+    float raw_distance = std::numeric_limits<float>::quiet_NaN();
+    float raw_height = std::numeric_limits<float>::quiet_NaN();
+    float raw_camera_height = std::numeric_limits<float>::quiet_NaN();
+    float raw_hip = std::numeric_limits<float>::quiet_NaN();
+    float foot = std::numeric_limits<float>::quiet_NaN();
+    float roi = std::numeric_limits<float>::quiet_NaN();
+    float top = std::numeric_limits<float>::quiet_NaN();
+    float pixel = std::numeric_limits<float>::quiet_NaN();
+    float hip_geometry_distance = std::numeric_limits<float>::quiet_NaN();
+    float hip_geometry_height = std::numeric_limits<float>::quiet_NaN();
+    float torso_height = std::numeric_limits<float>::quiet_NaN();
+    float grounded_foot = std::numeric_limits<float>::quiet_NaN();
+    float body_scale_confidence = std::numeric_limits<float>::quiet_NaN();
+    float bone_length_spread = std::numeric_limits<float>::quiet_NaN();
+    float relative_scale_distance = std::numeric_limits<float>::quiet_NaN();
+    float previous_distance = std::numeric_limits<float>::quiet_NaN();
+    float previous_height = std::numeric_limits<float>::quiet_NaN();
+    float floor_bias = 0.0f;
+    float depth_scale = 1.0f;
+    float depth_offset = 0.0f;
