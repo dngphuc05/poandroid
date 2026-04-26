@@ -147,3 +147,12 @@ private val DarkScheme = darkColorScheme(
     onSurface = Color(0xFFF2F6F4),
 )
 
+// ── Shapes ─────────────────────────────────────────────────────
+private val PocketMocapShapes = Shapes(
+    extraSmall = RoundedCornerShape(14.dp),
+    small = RoundedCornerShape(16.dp),
+    medium = RoundedCornerShape(24.dp),
+    large = RoundedCornerShape(32.dp),
+    extraLarge = RoundedCornerShape(48.dp),
+)
+
