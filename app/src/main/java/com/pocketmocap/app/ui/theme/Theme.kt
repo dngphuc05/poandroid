@@ -61,3 +61,10 @@ private val DisplayFontFamily = FontFamily(
     Font(R.font.plus_jakarta_sans_variable, weight = FontWeight.ExtraBold),
 )
 
+private val BodyFontFamily = FontFamily(
+    Font(R.font.be_vietnam_pro_regular, weight = FontWeight.Normal),
+    Font(R.font.be_vietnam_pro_medium, weight = FontWeight.Medium),
+    Font(R.font.be_vietnam_pro_semi_bold, weight = FontWeight.SemiBold),
+    Font(R.font.be_vietnam_pro_bold, weight = FontWeight.Bold),
+)
+
