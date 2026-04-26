@@ -196,3 +196,18 @@ bool hip_height_conflicts_with_raw_top(float hip_height, float raw_top, float to
     return !independent_support;
 }
 
+float semantic_endpoint_bias_for_factors(
+    float positive_bias,
+    float raw_top,
+    float raw_pixel,
+    float hip_height,
+    float torso_height,
+    float previous_height
+) {
+    if (positive_bias <= 0.0f || !valid_height(raw_top)) return 0.0f;
+    const float biased_top = raw_top + positive_bias;
+    const bool independent_support =
+        (valid_height(torso_height) && std::fabs(torso_height - biased_top) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP) ||
+        (valid_height(raw_pixel) && std::fabs(raw_pixel - biased_top) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP);
+    if (independent_support) return positive_bias;
+
