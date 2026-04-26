@@ -466,3 +466,15 @@ bool solve_with_ceres(
         }
     }
 
+    add_residual(problem, state, ResidualKind::CameraHeight, STATE_CAMERA_HEIGHT, input.raw_camera_height, 0.80, new ceres::HuberLoss(0.12));
+    if (finite(input.previous_distance)) {
+        add_residual(problem, state, ResidualKind::Distance, STATE_DISTANCE, input.previous_distance, 0.36, new ceres::HuberLoss(0.45));
+    }
+    if (finite(input.previous_height)) {
+        add_residual(problem, state, ResidualKind::Height, STATE_HEIGHT, input.previous_height, 3.80, new ceres::HuberLoss(0.035));
+    }
+    add_residual(problem, state, ResidualKind::Bias, STATE_FLOOR_BIAS, input.floor_bias, 5.0, new ceres::HuberLoss(0.035));
+    add_residual(problem, state, ResidualKind::Bias, STATE_DEPTH_SCALE, input.depth_scale, 7.0, new ceres::HuberLoss(0.010));
+    add_residual(problem, state, ResidualKind::Bias, STATE_DEPTH_OFFSET, input.depth_offset, 4.0, new ceres::HuberLoss(0.035));
+    add_residual(problem, state, ResidualKind::Bias, STATE_ENDPOINT_BIAS, input.endpoint_bias, 4.5, new ceres::HuberLoss(0.025));
+
