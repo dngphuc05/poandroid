@@ -211,3 +211,12 @@ float semantic_endpoint_bias_for_factors(
         (valid_height(raw_pixel) && std::fabs(raw_pixel - biased_top) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP);
     if (independent_support) return positive_bias;
 
+    float max_anchor = std::numeric_limits<float>::quiet_NaN();
+    if (valid_height(hip_height)) max_anchor = hip_height;
+    if (valid_height(previous_height)) {
+        max_anchor = valid_height(max_anchor) ? std::max(max_anchor, previous_height) : previous_height;
+    }
+    if (!valid_height(max_anchor)) return positive_bias;
+    return raw_top >= max_anchor - MAX_TOP_LOW_BIAS_MASK_GAP ? positive_bias : 0.0f;
+}
+
