@@ -170,3 +170,10 @@ object PocketMocapMotion {
     val ControlTween: FiniteAnimationSpec<Float> =
         tween(durationMillis = ControlTransitionMillis, easing = EmphasizedEasing)
 
+    val BubbleSpring: SpringSpec<Float> =
+        spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
+}
+
+// ── Theme composable ───────────────────────────────────────────
+@Composable
+fun PocketMocapTheme(
