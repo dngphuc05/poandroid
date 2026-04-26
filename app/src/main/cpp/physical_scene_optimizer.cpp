@@ -354,3 +354,14 @@ int factor_bits(const std::vector<Factor>& factors) {
     return bits;
 }
 
+#if POCKET_MOCAP_HAS_CERES
+enum class ResidualKind {
+    Distance,
+    Height,
+    CameraHeight,
+    HipDepth,
+    TopHeight,
+    PixelHeight,
+    Bias,
+};
+
