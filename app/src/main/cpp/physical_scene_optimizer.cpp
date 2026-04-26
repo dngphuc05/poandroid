@@ -187,3 +187,12 @@ bool height_agrees_with_anchor(float candidate, const std::vector<float>& anchor
     return !has_anchor;
 }
 
+bool hip_height_conflicts_with_raw_top(float hip_height, float raw_top, float torso_height, float raw_pixel) {
+    if (!valid_height(hip_height) || !valid_height(raw_top)) return false;
+    if (hip_height <= raw_top + MAX_HIP_RAW_TOP_STANDALONE_GAP) return false;
+    const bool independent_support =
+        (valid_height(torso_height) && std::fabs(torso_height - hip_height) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP) ||
+        (valid_height(raw_pixel) && std::fabs(raw_pixel - hip_height) <= MAX_ENDPOINT_BIAS_SUPPORT_GAP);
+    return !independent_support;
+}
+
