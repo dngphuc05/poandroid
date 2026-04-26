@@ -132,3 +132,18 @@ private val LightScheme = lightColorScheme(
     onSurface = Ink,
 )
 
+private val DarkScheme = darkColorScheme(
+    background = Color(0xFF0F1413),
+    surface = Color(0xFF17201D),
+    primary = Mint,
+    onPrimary = Ink,
+    secondary = MintBright,
+    onSecondary = Ink,
+    tertiary = RoseMist,
+    onTertiary = Ink,
+    surfaceVariant = Color(0xFF2A3331),
+    onSurfaceVariant = Color(0xFFD1D7D4),
+    outline = Color(0x33576B65),
+    onSurface = Color(0xFFF2F6F4),
+)
+
