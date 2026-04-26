@@ -51,3 +51,13 @@ object MocapColors {
     val TextSecondary = Slate
     val BackgroundHeader = Cloud
     val BackgroundViewport = CloudWarm
+    val GlassBg = GlassStrong
+    val GlassBgLight = Color(0xCCF5F7F9)
+}
+
+// ── Fonts ──────────────────────────────────────────────────────
+private val DisplayFontFamily = FontFamily(
+    Font(R.font.plus_jakarta_sans_variable, weight = FontWeight.Bold),
+    Font(R.font.plus_jakarta_sans_variable, weight = FontWeight.ExtraBold),
+)
+
