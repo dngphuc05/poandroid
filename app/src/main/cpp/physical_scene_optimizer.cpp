@@ -534,3 +534,24 @@ OptimizerInputs read_inputs(JNIEnv* env, jfloatArray values) {
         input.bone_length_spread = in[15];
         const int shift = has_relative_scale ? 1 : 0;
         if (has_relative_scale) input.relative_scale_distance = in[16];
+        input.previous_distance = in[16 + shift];
+        input.previous_height = in[17 + shift];
+        input.floor_bias = finite(in[18 + shift]) ? clamp(in[18 + shift], -0.20f, 0.20f) : 0.0f;
+        input.depth_scale = finite(in[19 + shift]) ? clamp(in[19 + shift], 0.92f, 1.08f) : 1.0f;
+        input.depth_offset = finite(in[20 + shift]) ? clamp(in[20 + shift], -0.30f, 0.30f) : 0.0f;
+        input.endpoint_bias = finite(in[21 + shift])
+            ? clamp(in[21 + shift], MIN_HEIGHT_ENDPOINT_BIAS, MAX_HEIGHT_ENDPOINT_BIAS)
+            : 0.0f;
+    } else {
+        input.previous_distance = in[9];
+        input.previous_height = in[10];
+        input.floor_bias = finite(in[11]) ? clamp(in[11], -0.20f, 0.20f) : 0.0f;
+        input.depth_scale = finite(in[12]) ? clamp(in[12], 0.92f, 1.08f) : 1.0f;
+        input.depth_offset = finite(in[13]) ? clamp(in[13], -0.30f, 0.30f) : 0.0f;
+        input.endpoint_bias = finite(in[14])
+            ? clamp(in[14], MIN_HEIGHT_ENDPOINT_BIAS, MAX_HEIGHT_ENDPOINT_BIAS)
+            : 0.0f;
+    }
+    return input;
+}
+
