@@ -346,3 +346,11 @@ float stabilize_height(float previous, float measured, bool trusted, float confi
     return clamp(previous + delta * alpha, 1.15f, 2.15f);
 }
 
+int factor_bits(const std::vector<Factor>& factors) {
+    int bits = 0;
+    for (const auto& factor : factors) {
+        if (finite(factor.value) && factor.weight > 0.0f) bits |= factor.bit;
+    }
+    return bits;
+}
+
