@@ -43,3 +43,13 @@ target_compile_definitions(
     POCKET_MOCAP_HAS_CERES=$<BOOL:${POCKET_MOCAP_HAS_CERES}>
 )
 
+target_include_directories(
+    physical_scene_optimizer
+    PRIVATE
+    "${EIGEN_DIR}"
+)
+
+if (POCKET_MOCAP_HAS_CERES)
+    target_link_libraries(physical_scene_optimizer Ceres::ceres)
+endif()
+
