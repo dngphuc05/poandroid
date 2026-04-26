@@ -478,3 +478,13 @@ bool solve_with_ceres(
     add_residual(problem, state, ResidualKind::Bias, STATE_DEPTH_OFFSET, input.depth_offset, 4.0, new ceres::HuberLoss(0.035));
     add_residual(problem, state, ResidualKind::Bias, STATE_ENDPOINT_BIAS, input.endpoint_bias, 4.5, new ceres::HuberLoss(0.025));
 
+    ceres::Solver::Options options;
+    options.max_num_iterations = 28;
+    options.num_threads = 1;
+    options.linear_solver_type = ceres::DENSE_QR;
+    options.minimizer_progress_to_stdout = false;
+    options.logging_type = ceres::SILENT;
+    options.function_tolerance = 1e-6;
+    options.gradient_tolerance = 1e-8;
+    options.parameter_tolerance = 1e-6;
+
