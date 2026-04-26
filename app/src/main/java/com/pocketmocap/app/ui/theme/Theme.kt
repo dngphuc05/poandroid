@@ -104,3 +104,15 @@ private val PocketMocapTypography = Typography(
     ),
     labelLarge = TextStyle(
         fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 14.sp, lineHeight = 20.sp, color = Ink,
+    ),
+    labelMedium = TextStyle(
+        fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 12.sp, lineHeight = 16.sp, letterSpacing = 1.2.sp, color = Slate,
+    ),
+    labelSmall = TextStyle(
+        fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 10.sp, lineHeight = 15.sp, letterSpacing = 1.sp, color = Slate,
+    ),
+)
+
