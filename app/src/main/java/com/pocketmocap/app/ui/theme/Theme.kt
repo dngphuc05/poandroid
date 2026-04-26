@@ -163,3 +163,10 @@ object PocketMocapMotion {
     const val FadeThroughMillis = 280
 
     val EmphasizedEasing = CubicBezierEasing(0.22f, 1.0f, 0.36f, 1.0f)
+
+    val ScreenTween: FiniteAnimationSpec<Float> =
+        tween(durationMillis = ScreenTransitionMillis, easing = EmphasizedEasing)
+
+    val ControlTween: FiniteAnimationSpec<Float> =
+        tween(durationMillis = ControlTransitionMillis, easing = EmphasizedEasing)
+
