@@ -387,3 +387,18 @@ struct SceneResidual {
                 return true;
             case ResidualKind::HipDepth:
                 prediction = state[STATE_DISTANCE] - (T(target) * state[STATE_DEPTH_SCALE] + state[STATE_DEPTH_OFFSET]);
+                residual[0] = T(std::sqrt(weight)) * prediction;
+                return true;
+            case ResidualKind::TopHeight:
+            case ResidualKind::PixelHeight:
+                prediction = state[STATE_HEIGHT];
+                break;
+            case ResidualKind::Bias:
+                prediction = state[variable];
+                break;
+        }
+        residual[0] = T(std::sqrt(weight)) * (prediction - T(target));
+        return true;
+    }
+};
+
