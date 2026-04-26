@@ -220,3 +220,11 @@ float semantic_endpoint_bias_for_factors(
     return raw_top >= max_anchor - MAX_TOP_LOW_BIAS_MASK_GAP ? positive_bias : 0.0f;
 }
 
+bool semantic_height_agreement(float hip_height, float torso_height, float top_height) {
+    const bool has_torso = valid_height(torso_height);
+    const bool has_hip = valid_height(hip_height);
+    // Hip-geometry height is the output of a 2-ray LSQ that enforces the
+    // hip-center:height anthropometric ratio (with a 0.18 ratio-error gate).
+    // When it converges into the valid body-height range, is INDEPENDENT of
+    // torso (not the same torso-ratio seed) and does not strongly conflict
+    // with torso, it is itself multi-evidence and can stand alone — torso
