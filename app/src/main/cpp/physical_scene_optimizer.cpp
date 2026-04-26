@@ -32,3 +32,13 @@ constexpr int FACTOR_GROUNDED_FOOT = 1024;
 constexpr int FACTOR_BONE = 2048;
 constexpr int FACTOR_RELATIVE_SCALE = 4096;
 
+constexpr int STATE_DISTANCE = 0;
+constexpr int STATE_HEIGHT = 1;
+constexpr int STATE_CAMERA_HEIGHT = 2;
+constexpr int STATE_LATERAL = 3;
+constexpr int STATE_FLOOR_BIAS = 4;
+constexpr int STATE_DEPTH_SCALE = 5;
+constexpr int STATE_DEPTH_OFFSET = 6;
+constexpr int STATE_ENDPOINT_BIAS = 7;
+constexpr int STATE_SIZE = 8;
+
