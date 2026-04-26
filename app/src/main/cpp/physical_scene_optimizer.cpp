@@ -176,3 +176,14 @@ float valid_height_factor(float value) {
     return valid_height(value) ? value : std::numeric_limits<float>::quiet_NaN();
 }
 
+bool height_agrees_with_anchor(float candidate, const std::vector<float>& anchors, float max_delta) {
+    if (!valid_height(candidate)) return false;
+    bool has_anchor = false;
+    for (float anchor : anchors) {
+        if (!valid_height(anchor)) continue;
+        has_anchor = true;
+        if (std::fabs(candidate - anchor) <= max_delta) return true;
+    }
+    return !has_anchor;
+}
+
