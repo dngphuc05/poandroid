@@ -156,3 +156,10 @@ private val PocketMocapShapes = Shapes(
     extraLarge = RoundedCornerShape(48.dp),
 )
 
+// ── Motion ─────────────────────────────────────────────────────
+object PocketMocapMotion {
+    const val ScreenTransitionMillis = 300
+    const val ControlTransitionMillis = 160
+    const val FadeThroughMillis = 280
+
+    val EmphasizedEasing = CubicBezierEasing(0.22f, 1.0f, 0.36f, 1.0f)
