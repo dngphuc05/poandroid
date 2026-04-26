@@ -101,3 +101,25 @@ bool strict_candidate_agreement(float a, float b, float max_abs_delta, float max
     return abs_delta <= max_abs_delta && ratio <= max_ratio;
 }
 
+float weighted_pair(float a, float a_weight, float b, float b_weight) {
+    return (a * a_weight + b * b_weight) / (a_weight + b_weight);
+}
+
+float stable_non_hip_reference(
+    float foot,
+    float grounded_foot,
+    float roi,
+    float relative_scale,
+    float previous,
+    bool foot_roi_strict_agreement
+) {
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    const float foot_roi_reference = finite(foot) && finite(roi) && foot_roi_strict_agreement
+        ? weighted_pair(foot, 0.58f, roi, 0.42f)
+        : nan;
+    const float relative_temporal_reference =
+        finite(relative_scale) &&
+            finite(previous) &&
+            strict_candidate_agreement(relative_scale, previous, 0.36f, 0.16f)
+        ? weighted_pair(relative_scale, 0.72f, previous, 0.28f)
+        : nan;
