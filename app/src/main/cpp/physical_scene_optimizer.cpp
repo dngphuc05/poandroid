@@ -18,3 +18,17 @@ constexpr int FLAG_REJECTED_HIP = 4;
 constexpr int FLAG_REJECTED_FOOT = 8;
 constexpr int FLAG_REJECTED_HIP_GEOMETRY = 16;
 
+constexpr int FACTOR_HIP = 1;
+constexpr int FACTOR_FOOT = 2;
+constexpr int FACTOR_RAW_DISTANCE = 4;
+constexpr int FACTOR_ROI = 8;
+constexpr int FACTOR_TOP = 16;
+constexpr int FACTOR_RAW_HEIGHT = 32;
+constexpr int FACTOR_PIXEL = 64;
+constexpr int FACTOR_NATIVE_FALLBACK = 128;
+constexpr int FACTOR_NATIVE_CERES = 256;
+constexpr int FACTOR_TORSO = 512;
+constexpr int FACTOR_GROUNDED_FOOT = 1024;
+constexpr int FACTOR_BONE = 2048;
+constexpr int FACTOR_RELATIVE_SCALE = 4096;
+
