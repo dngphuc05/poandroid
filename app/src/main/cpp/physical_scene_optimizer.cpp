@@ -275,3 +275,21 @@ float robust_weighted_average(const std::vector<Factor>& factors, float fallback
     return total_weight > 1e-5f ? weighted / total_weight : median;
 }
 
+float spread(const std::vector<Factor>& factors) {
+    bool has = false;
+    float lo = 0.0f;
+    float hi = 0.0f;
+    for (const auto& factor : factors) {
+        if (!finite(factor.value)) continue;
+        if (!has) {
+            lo = factor.value;
+            hi = factor.value;
+            has = true;
+        } else {
+            lo = std::min(lo, factor.value);
+            hi = std::max(hi, factor.value);
+        }
+    }
+    return has ? hi - lo : 0.0f;
+}
+
