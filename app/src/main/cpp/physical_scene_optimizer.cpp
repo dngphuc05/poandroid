@@ -565,3 +565,17 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
 ) {
     const OptimizerInputs input = read_inputs(env, values);
 
+    const float corrected_hip = finite(input.raw_hip)
+        ? clamp(input.raw_hip * input.depth_scale + input.depth_offset, 0.35f, 12.0f)
+        : std::numeric_limits<float>::quiet_NaN();
+    const bool foot_roi_strict_agreement = finite(input.foot) && finite(input.roi) &&
+        strict_candidate_agreement(input.foot, input.roi, 0.48f, 0.16f);
+    const float stable_non_hip = stable_non_hip_reference(
+        input.foot,
+        input.grounded_foot,
+        input.roi,
+        input.relative_scale_distance,
+        input.previous_distance,
+        foot_roi_strict_agreement
+    );
+
