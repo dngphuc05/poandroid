@@ -145,3 +145,25 @@ float stable_non_hip_reference(
         return weighted_pair(relative_scale, 0.62f, roi, 0.38f);
     }
     if (
+        finite(previous) &&
+        finite(foot) &&
+        strict_candidate_agreement(previous, foot, 0.55f, 0.22f)
+    ) {
+        return weighted_pair(previous, 0.54f, foot, 0.46f);
+    }
+    if (
+        finite(previous) &&
+        finite(roi) &&
+        strict_candidate_agreement(previous, roi, 0.55f, 0.22f)
+    ) {
+        return weighted_pair(previous, 0.54f, roi, 0.46f);
+    }
+    if (
+        finite(previous) &&
+        finite(grounded_foot) &&
+        strict_candidate_agreement(previous, grounded_foot, 0.55f, 0.22f)
+    ) {
+        return weighted_pair(previous, 0.54f, grounded_foot, 0.46f);
+    }
+    return nan;
+}
