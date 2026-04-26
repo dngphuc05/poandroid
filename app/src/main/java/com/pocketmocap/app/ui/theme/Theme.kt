@@ -44,3 +44,10 @@ val TechnicalGrid = Color(0x332CCFD0)
 /** Backward-compatible aliases used by existing ViewModel / screens. */
 object MocapColors {
     val GreenDark = MintDeep
+    val GreenMid = Color(0xFF007353)
+    val Mint = com.pocketmocap.app.ui.theme.Mint
+    val MintBright = com.pocketmocap.app.ui.theme.MintBright
+    val TextPrimary = Ink
+    val TextSecondary = Slate
+    val BackgroundHeader = Cloud
+    val BackgroundViewport = CloudWarm
