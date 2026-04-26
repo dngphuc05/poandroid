@@ -239,3 +239,17 @@ bool semantic_height_agreement(float hip_height, float torso_height, float top_h
         return true;
     }
 
+    std::vector<float> values;
+    if (has_torso) values.push_back(torso_height);
+    if (has_hip && (!has_torso || std::fabs(hip_height - torso_height) > 0.015f)) values.push_back(hip_height);
+    if (valid_height(top_height)) values.push_back(top_height);
+    if (values.size() < 2) return false;
+    for (size_t i = 0; i < values.size(); ++i) {
+        for (size_t j = i + 1; j < values.size(); ++j) {
+            if (std::fabs(values[i] - values[j]) <= 0.08f) return true;
+        }
+    }
+    const auto bounds = std::minmax_element(values.begin(), values.end());
+    return values.size() >= 3 && (*bounds.second - *bounds.first) <= 0.14f;
+}
+
