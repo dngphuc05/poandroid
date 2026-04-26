@@ -365,3 +365,25 @@ enum class ResidualKind {
     Bias,
 };
 
+struct SceneResidual {
+    ResidualKind kind;
+    int variable;
+    double target;
+    double weight;
+
+    template <typename T>
+    bool operator()(const T* const state, T* residual) const {
+        T prediction = T(0);
+        switch (kind) {
+            case ResidualKind::Distance:
+                prediction = state[STATE_DISTANCE];
+                break;
+            case ResidualKind::Height:
+                prediction = state[STATE_HEIGHT];
+                break;
+            case ResidualKind::CameraHeight:
+                prediction = state[STATE_CAMERA_HEIGHT] - (T(target) + state[STATE_FLOOR_BIAS]);
+                residual[0] = T(std::sqrt(weight)) * prediction;
+                return true;
+            case ResidualKind::HipDepth:
+                prediction = state[STATE_DISTANCE] - (T(target) * state[STATE_DEPTH_SCALE] + state[STATE_DEPTH_OFFSET]);
