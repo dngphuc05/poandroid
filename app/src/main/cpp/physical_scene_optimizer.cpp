@@ -488,3 +488,19 @@ bool solve_with_ceres(
     options.gradient_tolerance = 1e-8;
     options.parameter_tolerance = 1e-6;
 
+    ceres::Solver::Summary summary;
+    ceres::Solve(options, &problem, &summary);
+    if (final_cost != nullptr) *final_cost = summary.final_cost;
+    return summary.IsSolutionUsable();
+}
+#else
+bool solve_with_ceres(
+    const OptimizerInputs&,
+    const std::vector<Factor>&,
+    const std::vector<Factor>&,
+    double*,
+    double*
+) {
+    return false;
+}
+#endif
