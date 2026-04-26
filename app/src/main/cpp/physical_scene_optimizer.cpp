@@ -253,3 +253,25 @@ bool semantic_height_agreement(float hip_height, float torso_height, float top_h
     return values.size() >= 3 && (*bounds.second - *bounds.first) <= 0.14f;
 }
 
+float robust_weighted_average(const std::vector<Factor>& factors, float fallback) {
+    std::vector<float> values;
+    values.reserve(factors.size());
+    for (const auto& factor : factors) {
+        if (finite(factor.value) && factor.weight > 0.0f) values.push_back(factor.value);
+    }
+    if (values.empty()) return fallback;
+    std::sort(values.begin(), values.end());
+    const float median = values[values.size() / 2];
+    float total_weight = 0.0f;
+    float weighted = 0.0f;
+    for (const auto& factor : factors) {
+        if (!finite(factor.value) || factor.weight <= 0.0f) continue;
+        const float residual = std::fabs(factor.value - median);
+        const float scaled = residual / 0.22f;
+        const float robust_weight = factor.weight / (1.0f + scaled * scaled);
+        weighted += factor.value * robust_weight;
+        total_weight += robust_weight;
+    }
+    return total_weight > 1e-5f ? weighted / total_weight : median;
+}
+
