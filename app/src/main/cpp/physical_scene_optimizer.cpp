@@ -167,3 +167,12 @@ float stable_non_hip_reference(
     }
     return nan;
 }
+
+bool valid_height(float value) {
+    return finite(value) && value >= 1.15f && value <= 2.15f;
+}
+
+float valid_height_factor(float value) {
+    return valid_height(value) ? value : std::numeric_limits<float>::quiet_NaN();
+}
+
