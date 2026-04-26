@@ -402,3 +402,21 @@ struct SceneResidual {
     }
 };
 
+void add_residual(
+    ceres::Problem& problem,
+    double* state,
+    ResidualKind kind,
+    int variable,
+    double target,
+    double weight,
+    ceres::LossFunction* loss
+) {
+    if (!std::isfinite(target) || weight <= 0.0) return;
+    auto* functor = new SceneResidual{kind, variable, target, weight};
+    problem.AddResidualBlock(
+        new ceres::AutoDiffCostFunction<SceneResidual, 1, STATE_SIZE>(functor),
+        loss,
+        state
+    );
+}
+
