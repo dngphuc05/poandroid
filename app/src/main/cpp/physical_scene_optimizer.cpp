@@ -228,3 +228,14 @@ bool semantic_height_agreement(float hip_height, float torso_height, float top_h
     // When it converges into the valid body-height range, is INDEPENDENT of
     // torso (not the same torso-ratio seed) and does not strongly conflict
     // with torso, it is itself multi-evidence and can stand alone — torso
+    // has a known low bias and top-ray has a known high bias, so the
+    // pairwise gate alone almost never engages on real captures.
+    const bool hip_independent = has_hip && (!has_torso || std::fabs(hip_height - torso_height) > 0.015f);
+    const bool hip_does_not_conflict = has_hip && (!has_torso || std::fabs(hip_height - torso_height) <= 0.22f);
+    const bool has_top = valid_height(top_height);
+    const bool hip_does_not_mask_low_top = has_hip &&
+        (!has_top || hip_height <= top_height + MAX_HIP_RAW_TOP_STANDALONE_GAP);
+    if (hip_independent && hip_does_not_conflict && hip_does_not_mask_low_top) {
+        return true;
+    }
+
