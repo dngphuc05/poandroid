@@ -76,3 +76,14 @@ struct OptimizerInputs {
     float floor_bias = 0.0f;
     float depth_scale = 1.0f;
     float depth_offset = 0.0f;
+    float endpoint_bias = 0.0f;
+};
+
+bool finite(float v) {
+    return std::isfinite(v);
+}
+
+float clamp(float value, float lo, float hi) {
+    return std::max(lo, std::min(value, hi));
+}
+
