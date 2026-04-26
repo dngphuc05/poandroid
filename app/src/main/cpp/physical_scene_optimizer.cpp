@@ -420,3 +420,13 @@ void add_residual(
     );
 }
 
+bool solve_with_ceres(
+    const OptimizerInputs& input,
+    const std::vector<Factor>& distance_factors,
+    const std::vector<Factor>& height_factors,
+    double* state,
+    double* final_cost
+) {
+    ceres::Problem problem;
+    problem.AddParameterBlock(state, STATE_SIZE);
+
