@@ -38,3 +38,21 @@ class UnityPoseForwarder {
             put("timestampUs", timestampUs)
             put("effectiveViewIds", org.json.JSONArray().put("server"))
 
+            val joints = org.json.JSONArray()
+            for (i in 0 until jointsArr.length()) {
+                val serverJoint = jointsArr.getJSONObject(i)
+                joints.put(JSONObject().apply {
+                    put("index", serverJoint.optInt("index", i))
+                    put("name", serverJoint.optString("name", "joint_${i.toString().padStart(2, '0')}"))
+                    put("position", JSONObject().apply {
+                        put("x", serverJoint.optDouble("x", 0.0))
+                        put("y", serverJoint.optDouble("y", 0.0))
+                        put("z", serverJoint.optDouble("z", 0.0))
+                    })
+                    put("confidence", serverJoint.optDouble("confidence", 0.0))
+                    put("numViews", serverJoint.optInt("num_views", 1))
+                    put("reprojectionError", serverJoint.optDouble("reprojection_error", 0.0))
+                    put("valid", serverJoint.optBoolean("valid", false))
+                })
+            }
+            put("joints", joints)
