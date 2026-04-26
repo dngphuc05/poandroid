@@ -504,3 +504,11 @@ bool solve_with_ceres(
     return false;
 }
 #endif
+
+OptimizerInputs read_inputs(JNIEnv* env, jfloatArray values) {
+    constexpr int kInputSize = 23;
+    jfloat in[kInputSize];
+    const jsize input_len = env->GetArrayLength(values);
+    for (int i = 0; i < kInputSize; ++i) in[i] = std::numeric_limits<float>::quiet_NaN();
+    env->GetFloatArrayRegion(values, 0, std::min(input_len, static_cast<jsize>(kInputSize)), in);
+
