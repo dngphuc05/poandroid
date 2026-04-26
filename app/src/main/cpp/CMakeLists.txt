@@ -23,3 +23,15 @@ if (EXISTS "${CERES_DIR}/CMakeLists.txt" AND EXISTS "${EIGEN_DIR}/Eigen")
     set(BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
     set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 
+    add_subdirectory("${CERES_DIR}" "${CMAKE_BINARY_DIR}/ceres" EXCLUDE_FROM_ALL)
+    set(POCKET_MOCAP_HAS_CERES TRUE)
+else()
+    set(POCKET_MOCAP_HAS_CERES FALSE)
+endif()
+
+add_library(
+    physical_scene_optimizer
+    SHARED
+    physical_scene_optimizer.cpp
+)
+
