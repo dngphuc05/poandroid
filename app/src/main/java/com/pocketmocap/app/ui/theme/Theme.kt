@@ -68,3 +68,21 @@ private val BodyFontFamily = FontFamily(
     Font(R.font.be_vietnam_pro_bold, weight = FontWeight.Bold),
 )
 
+// ── Typography ─────────────────────────────────────────────────
+private val PocketMocapTypography = Typography(
+    headlineLarge = TextStyle(
+        fontFamily = DisplayFontFamily, fontWeight = FontWeight.ExtraBold,
+        fontSize = 56.sp, lineHeight = 56.sp, letterSpacing = (-1.4).sp, color = Ink,
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = DisplayFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.6).sp, color = Ink,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = DisplayFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 20.sp, lineHeight = 28.sp, letterSpacing = (-0.6).sp, color = Ink,
+    ),
+    titleMedium = TextStyle(
+        fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold,
+        fontSize = 16.sp, lineHeight = 24.sp, color = Ink,
+    ),
