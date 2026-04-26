@@ -87,3 +87,17 @@ float clamp(float value, float lo, float hi) {
     return std::max(lo, std::min(value, hi));
 }
 
+bool candidate_agreement(float a, float b) {
+    if (!finite(a) || !finite(b)) return false;
+    const float abs_delta = std::fabs(a - b);
+    const float ratio = abs_delta / std::max(std::max(a, b), 1e-4f);
+    return abs_delta <= 1.25f || ratio <= 0.35f;
+}
+
+bool strict_candidate_agreement(float a, float b, float max_abs_delta, float max_ratio) {
+    if (!finite(a) || !finite(b)) return false;
+    const float abs_delta = std::fabs(a - b);
+    const float ratio = abs_delta / std::max(std::max(a, b), 1e-4f);
+    return abs_delta <= max_abs_delta && ratio <= max_ratio;
+}
+
