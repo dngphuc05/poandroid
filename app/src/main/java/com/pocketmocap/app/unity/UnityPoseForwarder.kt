@@ -72,3 +72,10 @@ class UnityPoseForwarder {
         sendToUnity("PushNativeTrackingState", dto.toString())
     }
 
+    fun setViewMode(mode: String) = sendToUnity("SetViewMode", mode)
+    fun setMirrorDistance(meters: Float) = sendToUnity("SetMirrorDistance", meters.toString())
+    fun beginSetup() = sendToUnity("BeginSetup", "")
+
+    private fun sendToUnity(method: String, message: String) {
+        try {
+            // Unity's UnitySendMessage via reflection (when Unity is embedded as a library)
