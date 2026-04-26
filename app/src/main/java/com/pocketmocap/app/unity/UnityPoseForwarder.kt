@@ -56,3 +56,12 @@ class UnityPoseForwarder {
                 })
             }
             put("joints", joints)
+        }
+
+        sendToUnity("PushPoseFrame3D", dto.toString())
+    }
+
+    /**
+     * Forward tracking state to Unity.
+     */
+    fun forwardTrackingState(state: String, setupProgress: Float) {
