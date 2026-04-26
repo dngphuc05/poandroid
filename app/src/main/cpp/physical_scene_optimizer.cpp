@@ -512,3 +512,25 @@ OptimizerInputs read_inputs(JNIEnv* env, jfloatArray values) {
     for (int i = 0; i < kInputSize; ++i) in[i] = std::numeric_limits<float>::quiet_NaN();
     env->GetFloatArrayRegion(values, 0, std::min(input_len, static_cast<jsize>(kInputSize)), in);
 
+    OptimizerInputs input;
+    const bool versioned = input_len >= 22 && finite(in[0]) && (std::fabs(in[0] - 2.0f) < 0.01f || std::fabs(in[0] - 3.0f) < 0.01f);
+    const bool has_relative_scale = input_len >= 23 && finite(in[0]) && std::fabs(in[0] - 3.0f) < 0.01f;
+    const int o = versioned ? 1 : 0;
+    input.confidence = in[o + 0];
+    input.raw_distance = in[o + 1];
+    input.raw_height = in[o + 2];
+    input.raw_camera_height = in[o + 3];
+    input.raw_hip = in[o + 4];
+    input.foot = in[o + 5];
+    input.roi = in[o + 6];
+    input.top = in[o + 7];
+    input.pixel = in[o + 8];
+    if (versioned) {
+        input.hip_geometry_distance = in[10];
+        input.hip_geometry_height = in[11];
+        input.torso_height = in[12];
+        input.grounded_foot = in[13];
+        input.body_scale_confidence = in[14];
+        input.bone_length_spread = in[15];
+        const int shift = has_relative_scale ? 1 : 0;
+        if (has_relative_scale) input.relative_scale_distance = in[16];
