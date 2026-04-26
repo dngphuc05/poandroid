@@ -555,3 +555,13 @@ OptimizerInputs read_inputs(JNIEnv* env, jfloatArray values) {
     return input;
 }
 
+}  // namespace
+
+extern "C" JNIEXPORT jfloatArray JNICALL
+Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
+    JNIEnv* env,
+    jobject /* thiz */,
+    jfloatArray values
+) {
+    const OptimizerInputs input = read_inputs(env, values);
+
