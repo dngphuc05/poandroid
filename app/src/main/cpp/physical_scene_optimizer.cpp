@@ -430,3 +430,22 @@ bool solve_with_ceres(
     ceres::Problem problem;
     problem.AddParameterBlock(state, STATE_SIZE);
 
+    for (int i = 0; i < STATE_SIZE; ++i) {
+        problem.SetParameterLowerBound(state, i, -10.0);
+        problem.SetParameterUpperBound(state, i, 10.0);
+    }
+    problem.SetParameterLowerBound(state, STATE_DISTANCE, 0.35);
+    problem.SetParameterUpperBound(state, STATE_DISTANCE, 12.0);
+    problem.SetParameterLowerBound(state, STATE_HEIGHT, 1.15);
+    problem.SetParameterUpperBound(state, STATE_HEIGHT, 2.15);
+    problem.SetParameterLowerBound(state, STATE_CAMERA_HEIGHT, 0.20);
+    problem.SetParameterUpperBound(state, STATE_CAMERA_HEIGHT, 2.50);
+    problem.SetParameterLowerBound(state, STATE_FLOOR_BIAS, -0.20);
+    problem.SetParameterUpperBound(state, STATE_FLOOR_BIAS, 0.20);
+    problem.SetParameterLowerBound(state, STATE_DEPTH_SCALE, 0.92);
+    problem.SetParameterUpperBound(state, STATE_DEPTH_SCALE, 1.08);
+    problem.SetParameterLowerBound(state, STATE_DEPTH_OFFSET, -0.30);
+    problem.SetParameterUpperBound(state, STATE_DEPTH_OFFSET, 0.30);
+    problem.SetParameterLowerBound(state, STATE_ENDPOINT_BIAS, MIN_HEIGHT_ENDPOINT_BIAS);
+    problem.SetParameterUpperBound(state, STATE_ENDPOINT_BIAS, MAX_HEIGHT_ENDPOINT_BIAS);
+
