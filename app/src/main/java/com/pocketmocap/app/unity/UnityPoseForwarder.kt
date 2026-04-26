@@ -65,3 +65,10 @@ class UnityPoseForwarder {
      * Forward tracking state to Unity.
      */
     fun forwardTrackingState(state: String, setupProgress: Float) {
+        val dto = JSONObject().apply {
+            put("trackingState", state)
+            put("setupProgress", setupProgress.toDouble())
+        }
+        sendToUnity("PushNativeTrackingState", dto.toString())
+    }
+
