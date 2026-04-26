@@ -30,3 +30,11 @@ class UnityPoseForwarder {
      * }
      */
     fun forwardPose3D(pose3dJson: JSONObject) {
+        val jointsArr = pose3dJson.optJSONArray("joints") ?: return
+        val timestampUs = pose3dJson.optLong("timestamp_us", 0)
+
+        // Build the DTO format Unity expects
+        val dto = JSONObject().apply {
+            put("timestampUs", timestampUs)
+            put("effectiveViewIds", org.json.JSONArray().put("server"))
+
