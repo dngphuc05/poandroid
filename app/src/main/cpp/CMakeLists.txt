@@ -35,3 +35,11 @@ add_library(
     physical_scene_optimizer.cpp
 )
 
+target_compile_features(physical_scene_optimizer PRIVATE cxx_std_17)
+
+target_compile_definitions(
+    physical_scene_optimizer
+    PRIVATE
+    POCKET_MOCAP_HAS_CERES=$<BOOL:${POCKET_MOCAP_HAS_CERES}>
+)
+
