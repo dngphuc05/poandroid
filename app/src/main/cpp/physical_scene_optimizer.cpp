@@ -123,3 +123,25 @@ float stable_non_hip_reference(
             strict_candidate_agreement(relative_scale, previous, 0.36f, 0.16f)
         ? weighted_pair(relative_scale, 0.72f, previous, 0.28f)
         : nan;
+    if (finite(foot_roi_reference) && finite(relative_temporal_reference)) {
+        return strict_candidate_agreement(foot_roi_reference, relative_temporal_reference, 0.45f, 0.18f)
+            ? weighted_pair(relative_temporal_reference, 0.58f, foot_roi_reference, 0.42f)
+            : foot_roi_reference;
+    }
+    if (finite(relative_temporal_reference)) return relative_temporal_reference;
+    if (finite(foot_roi_reference)) return foot_roi_reference;
+    if (
+        finite(relative_scale) &&
+        finite(foot) &&
+        strict_candidate_agreement(relative_scale, foot, 0.42f, 0.18f)
+    ) {
+        return weighted_pair(relative_scale, 0.62f, foot, 0.38f);
+    }
+    if (
+        finite(relative_scale) &&
+        finite(roi) &&
+        strict_candidate_agreement(relative_scale, roi, 0.42f, 0.18f)
+    ) {
+        return weighted_pair(relative_scale, 0.62f, roi, 0.38f);
+    }
+    if (
