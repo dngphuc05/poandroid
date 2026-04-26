@@ -116,3 +116,19 @@ private val PocketMocapTypography = Typography(
     ),
 )
 
+// ── Color Schemes ──────────────────────────────────────────────
+private val LightScheme = lightColorScheme(
+    background = Cloud,
+    surface = CloudWarm,
+    primary = MintDeep,
+    onPrimary = Color.White,
+    secondary = Mint,
+    onSecondary = Ink,
+    tertiary = RoseMist,
+    onTertiary = Ink,
+    surfaceVariant = Fog,
+    onSurfaceVariant = Slate,
+    outline = OutlineSoft,
+    onSurface = Ink,
+)
+
