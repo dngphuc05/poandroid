@@ -305,3 +305,25 @@ float weighted_residual(const std::vector<Factor>& factors, float target) {
     return weight > 1e-5f ? total / weight : 0.0f;
 }
 
+float stabilize_distance(float previous, float measured, float fallback, bool trusted, float factor_spread, float confidence) {
+    if (!finite(measured) || measured < 0.35f || measured > 12.0f) return previous;
+    if (!finite(previous)) {
+        return (!trusted && finite(fallback) && fallback >= 0.70f && fallback <= 12.0f) ? fallback : measured;
+    }
+    if (!trusted) {
+        if (!finite(fallback) || fallback < 0.70f || fallback > 12.0f) return previous;
+        const float raw_delta = fallback - previous;
+        const float max_step = std::fabs(raw_delta) > 0.75f ? 0.55f : 0.24f;
+        const float alpha = std::fabs(raw_delta) > 0.75f ? 0.34f : 0.18f;
+        const float delta = clamp(raw_delta, -max_step, max_step);
+        return clamp(previous + delta * alpha, 0.35f, 12.0f);
+    }
+    float alpha = 0.055f;
+    float max_step = 0.075f;
+    if (factor_spread <= 0.45f && confidence >= 0.62f) {
+        alpha = 0.24f;
+        max_step = 0.22f;
+    } else if (factor_spread <= 0.85f) {
+        alpha = 0.14f;
+        max_step = 0.14f;
+    }
