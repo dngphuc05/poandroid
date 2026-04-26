@@ -42,3 +42,15 @@ constexpr int STATE_DEPTH_OFFSET = 6;
 constexpr int STATE_ENDPOINT_BIAS = 7;
 constexpr int STATE_SIZE = 8;
 
+constexpr float MIN_HEIGHT_ENDPOINT_BIAS = -0.025f;
+constexpr float MAX_HEIGHT_ENDPOINT_BIAS = 0.080f;
+constexpr float MAX_HIP_RAW_TOP_STANDALONE_GAP = 0.100f;
+constexpr float MAX_TOP_LOW_BIAS_MASK_GAP = 0.045f;
+constexpr float MAX_ENDPOINT_BIAS_SUPPORT_GAP = 0.110f;
+
+struct Factor {
+    float value;
+    float weight;
+    int bit;
+};
+
