@@ -449,3 +449,20 @@ bool solve_with_ceres(
     problem.SetParameterLowerBound(state, STATE_ENDPOINT_BIAS, MIN_HEIGHT_ENDPOINT_BIAS);
     problem.SetParameterUpperBound(state, STATE_ENDPOINT_BIAS, MAX_HEIGHT_ENDPOINT_BIAS);
 
+    ceres::LossFunction* distance_loss = new ceres::HuberLoss(0.35);
+    ceres::LossFunction* soft_loss = new ceres::CauchyLoss(0.55);
+    ceres::LossFunction* height_loss = new ceres::HuberLoss(0.16);
+
+    for (const auto& factor : distance_factors) {
+        add_residual(problem, state, ResidualKind::Distance, STATE_DISTANCE, factor.value, factor.weight, soft_loss);
+    }
+    for (const auto& factor : height_factors) {
+        if (factor.bit == FACTOR_TOP) {
+            add_residual(problem, state, ResidualKind::TopHeight, STATE_HEIGHT, factor.value, factor.weight * 1.10, height_loss);
+        } else if (factor.bit == FACTOR_PIXEL) {
+            add_residual(problem, state, ResidualKind::PixelHeight, STATE_HEIGHT, factor.value, factor.weight * 0.85, height_loss);
+        } else {
+            add_residual(problem, state, ResidualKind::Height, STATE_HEIGHT, factor.value, factor.weight, height_loss);
+        }
+    }
+
