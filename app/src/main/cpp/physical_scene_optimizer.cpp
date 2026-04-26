@@ -327,3 +327,22 @@ float stabilize_distance(float previous, float measured, float fallback, bool tr
         alpha = 0.14f;
         max_step = 0.14f;
     }
+    const float delta = clamp(measured - previous, -max_step, max_step);
+    return clamp(previous + delta * alpha, 0.35f, 12.0f);
+}
+
+float stabilize_height(float previous, float measured, bool trusted, float confidence) {
+    if (!finite(measured) || measured < 1.15f || measured > 2.15f) {
+        return finite(previous) ? previous : std::numeric_limits<float>::quiet_NaN();
+    }
+    if (!finite(previous)) return measured;
+    if (!trusted) return previous;
+    const float delta = measured - previous;
+    float alpha = 0.004f;
+    if (confidence < 0.55f) alpha = 0.015f;
+    else if (std::fabs(delta) <= 0.025f) alpha = 0.10f;
+    else if (std::fabs(delta) <= 0.075f) alpha = 0.045f;
+    else if (std::fabs(delta) <= 0.16f) alpha = 0.018f;
+    return clamp(previous + delta * alpha, 1.15f, 2.15f);
+}
+
