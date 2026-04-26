@@ -177,3 +177,13 @@ object PocketMocapMotion {
 // ── Theme composable ───────────────────────────────────────────
 @Composable
 fun PocketMocapTheme(
+    darkTheme: Boolean = isSystemInDarkTheme(),
+    content: @Composable () -> Unit,
+) {
+    MaterialTheme(
+        colorScheme = if (darkTheme) DarkScheme else LightScheme,
+        typography = PocketMocapTypography,
+        shapes = PocketMocapShapes,
+        content = content,
+    )
+}
