@@ -37,3 +37,10 @@ val Glass = Color(0xCCFFFFFF)
 val GlassStrong = Color(0x99D9DDE0)
 val OutlineSoft = Color(0x33BAB9B2)
 val SkeletonBlue = Color(0xFFBEEBFF)
+val SkeletonMint = Color(0xFF7CF4C8)
+val SkeletonPink = Color(0xFFF8D6FF)
+val TechnicalGrid = Color(0x332CCFD0)
+
+/** Backward-compatible aliases used by existing ViewModel / screens. */
+object MocapColors {
+    val GreenDark = MintDeep
