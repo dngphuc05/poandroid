@@ -941,3 +941,14 @@ class CaptureSessionRecorder(private val context: Context) {
         }
     }
 
+    private fun recordTechnical(
+        frame: Int,
+        timestampMs: Long,
+        source: String,
+        x: FloatArray?,
+        y: FloatArray?,
+        z: FloatArray?,
+        confidence: FloatArray?,
+    ) {
+        if (x == null || y == null || z == null || x.size < 33 || y.size < 33 || z.size < 33) return
+        val writer = technicalWriter ?: return
