@@ -601,3 +601,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
             }
         }
     } else if (finite(input.roi)) {
+        hip_reference = input.roi;
+    } else if (finite(input.raw_distance)) {
+        hip_reference = input.raw_distance;
+    } else if (finite(input.relative_scale_distance)) {
+        hip_reference = input.relative_scale_distance;
+    } else if (finite(input.foot)) {
+        hip_reference = input.foot;
+    }
+    const bool hip_geometry_rejected = finite(input.hip_geometry_distance) &&
+        (
+            (finite(stable_non_hip) &&
+                !strict_candidate_agreement(input.hip_geometry_distance, stable_non_hip, 0.32f, 0.16f)) ||
+            (finite(hip_reference) &&
+                input.hip_geometry_distance > hip_reference &&
+                !candidate_agreement(input.hip_geometry_distance, hip_reference) &&
+                (finite(input.previous_distance) || finite(input.roi) || finite(input.relative_scale_distance) || finite(input.foot)))
+        );
+    if (hip_geometry_rejected) flags |= FLAG_REJECTED_HIP_GEOMETRY;
+    const float usable_hip_geometry_distance = hip_geometry_rejected
+        ? std::numeric_limits<float>::quiet_NaN()
+        : input.hip_geometry_distance;
+    const bool raw_distance_rejected = hip_geometry_rejected &&
