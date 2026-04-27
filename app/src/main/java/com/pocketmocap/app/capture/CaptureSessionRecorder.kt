@@ -40,3 +40,10 @@ class CaptureSessionRecorder(private val context: Context) {
     private var visualFrameWriter: FileWriter? = null
     private var frameIndex = 0
 
+    val isRecording: Boolean
+        get() = sessionDir != null
+
+    val currentSessionName: String?
+        get() = sessionDir?.name
+
+    @Synchronized
