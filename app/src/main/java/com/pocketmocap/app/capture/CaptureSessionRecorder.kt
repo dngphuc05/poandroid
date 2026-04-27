@@ -991,3 +991,19 @@ class CaptureSessionRecorder(private val context: Context) {
     }
 }
 
+private fun FileWriter.flushAndClose() {
+    runCatching { flush() }
+    runCatching { close() }
+}
+
+private fun List<Any?>.joinCsv(): String =
+    joinToString(",") { value ->
+        when (value) {
+            null -> ""
+            is Float -> if (value.isFinite()) value.toString() else ""
+            is Double -> if (value.isFinite()) value.toString() else ""
+            is String -> value.csvEscape()
+            else -> value.toString().csvEscape()
+        }
+    }
+
