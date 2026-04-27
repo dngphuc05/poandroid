@@ -146,3 +146,20 @@ class CaptureSessionRecorder(private val context: Context) {
                     "experimental_height_m,experimental_height_sigma_m,experimental_height_confidence," +
                     "experimental_height_state,experimental_distance_m,experimental_distance_sigma_m," +
                     "experimental_distance_confidence,experimental_solver_cost,experimental_solver_status," +
+                    "experimental_factor_summary,baseline_experimental_height_delta_m," +
+                    "baseline_experimental_distance_delta_m,promoted_solver_source," +
+                    RAW_KEYPOINT_GEOMETRY_CSV_COLUMNS.joinToString(",")
+            )
+        }
+        skeletonWriter = FileWriter(File(dir, "skeleton_2d_landmarks.csv")).apply {
+            appendLine("frame,timestamp_ms,joint,x_norm,y_norm,z,visibility")
+        }
+        technicalWriter = FileWriter(File(dir, "technical_3d_landmarks.csv")).apply {
+            appendLine("frame,timestamp_ms,source,joint,x_m,y_m,z_m,confidence")
+        }
+        visualFrameWriter = FileWriter(File(dir, "visual_frames.csv")).apply {
+            appendLine("frame,timestamp_ms,media_path,media_type,width,height")
+        }
+        return dir
+    }
+
