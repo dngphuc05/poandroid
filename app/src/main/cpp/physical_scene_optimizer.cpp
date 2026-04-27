@@ -916,3 +916,5 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     };
     jfloatArray result = env->NewFloatArray(25);
     env->SetFloatArrayRegion(result, 0, 25, out);
+    return result;
+}
