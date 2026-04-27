@@ -74,3 +74,21 @@ class CaptureSessionRecorder(private val context: Context) {
                     "distance_m,height_m,camera_height_m,floor_pitch_deg,lateral_offset_m," +
                     "tracking_source,tracking_state,tracking_confidence,has_ground," +
                     "raw_camera_height_m,tracking_floor_source,floor_lock_state," +
+                    "camera_x,camera_y,camera_z,ground_x,ground_y,ground_z," +
+                    "technical_pose_source,server_stable_frames,accepted_pose_source," +
+                    "server_pose_status,server_correction_reason,rejected_server_reason," +
+                    "server_transport,frames_sent_to_server,pose3d_received_count," +
+                    "last_pose3d_age_ms,last_server_joints_count,server_missing_reason," +
+                    "raw_server_height_m,raw_server_distance_m," +
+                    "pre_skeleton_constrained_height_m,pre_skeleton_constrained_distance_m," +
+                    "constrained_server_height_m,constrained_server_distance_m," +
+                    "ar_target_height_m,ar_target_distance_m," +
+                    "server_scale_applied,server_root_shift_m,constraint_confidence," +
+                    "ml_visual_usable,ml_dlt_metric_bad,ml_height_target_source," +
+                    "ml_distance_target_source,ml_distance_hold_active,ml_dlt_weight_scale," +
+                    "height_target_weight,height_prior_weight,height_smooth_weight," +
+                    "height_target_admission,height_target_admission_reason,height_geometry_suspicious," +
+                    "height_witness_count,height_witness_median_m,height_witness_spread_m," +
+                    "height_corrected_vs_top_delta_m,height_corrected_vs_hip_delta_m," +
+                    "height_corrected_vs_pixel_delta_m,height_corrected_vs_torso_delta_m," +
+                    "height_target_before_gate_m,height_target_after_gate_m," +
