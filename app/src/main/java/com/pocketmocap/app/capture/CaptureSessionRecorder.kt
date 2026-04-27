@@ -968,3 +968,10 @@ class CaptureSessionRecorder(private val context: Context) {
         }
     }
 
+    companion object {
+        private const val PUBLIC_CAPTURE_PATH = "PocketMocap/library/captures"
+
+        fun writableCapturesRoot(context: Context): File {
+            val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+            val publicRoot = File(documents, PUBLIC_CAPTURE_PATH)
+            @Suppress("DEPRECATION")
