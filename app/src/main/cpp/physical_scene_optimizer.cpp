@@ -658,3 +658,24 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         finite(usable_raw_distance) && !candidate_agreement(input.foot, usable_raw_distance) ? 0.05f :
         finite(input.roi) && foot_roi_drift > 0.42f ? 0.06f :
         finite(input.roi) && foot_roi_drift > 0.25f ? 0.10f :
+        finite(input.roi) ? 0.12f : 0.16f;
+    const float hip_geometry_weight = !finite(input.hip_geometry_distance) ? 0.0f :
+        hip_geometry_rejected ? 0.0f :
+        input.confidence >= 0.70f ? 0.72f :
+        input.confidence >= 0.55f ? 0.58f : 0.38f;
+    const float roi_weight = !finite(input.roi) ? 0.0f :
+        foot_roi_strict_agreement && !finite(usable_hip_geometry_distance) ? 0.24f :
+        foot_roi_strict_agreement ? 0.16f :
+        finite(usable_hip_geometry_distance) ? 0.020f :
+        finite(usable_raw_distance) ? 0.030f :
+        !trusted_foot && finite(input.foot) ? 0.10f :
+        trusted_foot ? 0.045f : 0.12f;
+    const float relative_weight = !finite(input.relative_scale_distance) ? 0.0f :
+        foot_roi_strict_agreement ? 0.035f :
+        !finite(usable_hip_geometry_distance) && !trusted_foot ? 0.18f :
+        !finite(usable_hip_geometry_distance) ? 0.10f : 0.045f;
+    const float raw_weight = raw_distance_rejected ? 0.0f :
+        (foot_roi_strict_agreement && !finite(usable_hip_geometry_distance)) ? 0.06f :
+        (flags & FLAG_REJECTED_FOOT) ? (finite(input.roi) ? 0.0f : 0.10f) :
+        (finite(usable_hip_geometry_distance) ? 0.20f : 0.34f);
+
