@@ -744,3 +744,21 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     if (finite(pixel_height)) height_factors.push_back({pixel_height, 0.035f, FACTOR_PIXEL});
     const bool has_height_evidence = !height_factors.empty() || finite(previous_height);
 
+    const float robust_height = robust_weighted_average(
+        height_factors,
+        finite(raw_height) ? raw_height : previous_height
+    );
+
+    double state[STATE_SIZE] = {
+        static_cast<double>(finite(robust_distance) ? robust_distance : 2.5f),
+        static_cast<double>(finite(robust_height) ? robust_height : (finite(previous_height) ? previous_height : 1.65f)),
+        static_cast<double>(finite(input.raw_camera_height) ? input.raw_camera_height + input.floor_bias : 0.68f),
+        0.0,
+        input.floor_bias,
+        input.depth_scale,
+        input.depth_offset,
+        input.endpoint_bias,
+    };
+    double final_cost = 0.0;
+    const bool ceres_ok = solve_with_ceres(input, distance_factors, height_factors, state, &final_cost);
+
