@@ -363,3 +363,21 @@ class CaptureSessionRecorder(private val context: Context) {
                 technicalY.size >= 33 &&
                 technicalZ.size >= 33
         val effectiveTechnicalSource = if (hasTechnicalPose) technicalSource else "none"
+        recordMetrics(
+            frame,
+            timestampMs,
+            uiState,
+            visibleLandmarkCount,
+            sceneMetrics,
+            worldTracking,
+            effectiveTechnicalSource,
+            serverStableFrames,
+            if (hasTechnicalPose) acceptedPoseSource else "none",
+            serverPoseStatus,
+            serverCorrectionReason,
+            rejectedServerReason,
+            serverTransport,
+            framesSentToServer,
+            pose3DReceivedCount,
+            lastPose3DAgeMs,
+            lastServerJointsCount,
