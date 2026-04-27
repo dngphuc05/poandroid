@@ -796,3 +796,20 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         input.confidence
     );
 
+    const float height_spread = spread(height_factors);
+    const float height_residual = weighted_residual(height_factors, measured_height);
+    const bool body_scale_ok = !finite(input.body_scale_confidence) || input.body_scale_confidence >= 0.36f;
+    const bool semantic_height_ok = semantic_height_agreement(
+        hip_height,
+        torso_height,
+        valid_height(raw_top_height) ? raw_top_height : top_height
+    );
+    const bool height_trusted = has_height_evidence &&
+        distance_trusted &&
+        body_scale_ok &&
+        semantic_height_ok &&
+        height_spread <= 0.22f &&
+        height_residual <= 0.45f;
+    if (height_trusted) flags |= FLAG_HEIGHT_TRUSTED;
+    const float corrected_height = stabilize_height(input.previous_height, measured_height, height_trusted, input.confidence);
+
