@@ -196,3 +196,21 @@ class CaptureSessionRecorder(private val context: Context) {
                 mediaType,
                 width,
                 height,
+            ).joinCsv()
+        )
+    }
+
+    @Synchronized
+    fun recordFrame(
+        uiState: PocketMocapViewModel.UiState,
+        visibleLandmarkCount: Int,
+        sceneMetrics: SceneMetricSnapshot?,
+        worldTracking: WorldTrackingSnapshot?,
+        skeletonX: FloatArray?,
+        skeletonY: FloatArray?,
+        skeletonZ: FloatArray?,
+        skeletonVisibility: FloatArray?,
+        technicalX: FloatArray?,
+        technicalY: FloatArray?,
+        technicalZ: FloatArray?,
+        technicalConfidence: FloatArray?,
