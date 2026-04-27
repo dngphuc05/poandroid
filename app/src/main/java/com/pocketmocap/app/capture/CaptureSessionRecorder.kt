@@ -56,3 +56,21 @@ class CaptureSessionRecorder(private val context: Context) {
         sessionDir = dir
         frameIndex = 0
 
+        File(dir, "metadata.txt").writeText(
+            buildString {
+                appendLine("Pocket Mocap capture")
+                appendLine("created_at=$stamp")
+                appendLine("folder=${dir.absolutePath}")
+                appendLine("contents=metrics.csv,skeleton_2d_landmarks.csv,technical_3d_landmarks.csv,visual_frames.csv")
+                appendLine("technical_scene_policy=server_first_ar_constrained")
+                appendLine("fallback_policy=client_33pt_only_when_server_catastrophic_or_missing")
+                appendLine("visual_recording_policy=optional_external_rgb_or_video_with_frame_timestamp_mapping")
+            }
+        )
+        File(dir, "frames").mkdirs()
+        metricsWriter = FileWriter(File(dir, "metrics.csv")).apply {
+            appendLine(
+                "frame,timestamp_ms,pipeline,visible_joints,scene_source,scene_confidence," +
+                    "distance_m,height_m,camera_height_m,floor_pitch_deg,lateral_offset_m," +
+                    "tracking_source,tracking_state,tracking_confidence,has_ground," +
+                    "raw_camera_height_m,tracking_floor_source,floor_lock_state," +
