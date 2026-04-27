@@ -693,3 +693,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     if (finite(input.roi)) raw_distance_factors.push_back({input.roi, 0.04f, FACTOR_ROI});
     if (finite(input.relative_scale_distance)) raw_distance_factors.push_back({input.relative_scale_distance, 0.10f, FACTOR_RELATIVE_SCALE});
 
+    const float robust_distance = robust_weighted_average(
+        distance_factors,
+        finite(usable_raw_distance) ? usable_raw_distance : input.previous_distance
+    );
+
+    const float previous_height = valid_height_factor(input.previous_height);
+    const float raw_height = valid_height_factor(input.raw_height);
+    const float raw_hip_height = valid_height_factor(input.hip_geometry_height);
+    const float torso_height = valid_height_factor(input.torso_height);
+    const float raw_top_height = valid_height_factor(input.top);
+    const float raw_pixel_height = valid_height_factor(input.pixel);
+    const float hip_height = hip_height_conflicts_with_raw_top(
+        raw_hip_height,
+        raw_top_height,
+        torso_height,
+        raw_pixel_height
+    ) ? std::numeric_limits<float>::quiet_NaN() : raw_hip_height;
+    std::vector<float> height_anchors;
+    if (finite(hip_height)) height_anchors.push_back(hip_height);
+    if (finite(torso_height)) height_anchors.push_back(torso_height);
+    if (finite(previous_height)) height_anchors.push_back(previous_height);
+    const float semantic_endpoint_bias = semantic_endpoint_bias_for_factors(
