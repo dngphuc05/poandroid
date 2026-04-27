@@ -658,3 +658,21 @@ class CaptureSessionRecorder(private val context: Context) {
         serverSceneMetricsConfidence: Float?,
     ) {
         val metricEvidenceV2Values = METRIC_EVIDENCE_V2_OUTPUT_NAMES.map { name ->
+            mlEvidenceOutputs?.get(name)
+        }
+        val rawKeypointGeometryValues = RAW_KEYPOINT_GEOMETRY_CSV_COLUMNS.map { name ->
+            scene?.rawKeypointGeometry?.get(name)
+        }
+        metricsWriter?.appendLine(
+            (
+                listOf(
+                frame,
+                timestampMs,
+                uiState.pipelineState,
+                sceneVisibleCount,
+                scene?.source,
+                scene?.confidence,
+                scene?.distanceMeters,
+                scene?.bodyHeightMeters,
+                scene?.cameraHeightMeters,
+                scene?.floorPitchDegrees,
