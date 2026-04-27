@@ -178,3 +178,21 @@ class CaptureSessionRecorder(private val context: Context) {
         return dir
     }
 
+    @Synchronized
+    fun recordVisualFrame(
+        frame: Int,
+        timestampMs: Long,
+        mediaPath: String,
+        mediaType: String = "rgb",
+        width: Int? = null,
+        height: Int? = null,
+    ) {
+        if (!isRecording || mediaPath.isBlank()) return
+        visualFrameWriter?.appendLine(
+            listOf(
+                frame,
+                timestampMs,
+                mediaPath,
+                mediaType,
+                width,
+                height,
