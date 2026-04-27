@@ -340,3 +340,17 @@ class CaptureSessionRecorder(private val context: Context) {
         mlImageCropLeftPx: Int?,
         mlImageCropTopPx: Int?,
         mlImageCropWidthPx: Int?,
+        mlImageCropHeightPx: Int?,
+        mlImageJpegQuality: Int?,
+        mlImageCropPadRatio: Float?,
+        mlEvidenceSchema: String?,
+        mlEvidenceOutputs: Map<String, Float>?,
+        serverSceneMetricsReceived: Boolean?,
+        serverSceneMetricsAccepted: Boolean?,
+        serverSceneMetricsSource: String?,
+        serverSceneMetricsFloorSource: String?,
+        serverSceneMetricsFilterReason: String?,
+        serverSceneMetricsConfidence: Float?,
+    ) {
+        if (!isRecording) return
+        val frame = frameIndex++
