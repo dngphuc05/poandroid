@@ -983,3 +983,11 @@ class CaptureSessionRecorder(private val context: Context) {
         fun capturesRoot(context: Context): File =
             File(context.getExternalFilesDir(null) ?: context.filesDir, "library/captures")
 
+        fun allCaptureRoots(context: Context): List<File> =
+            listOf(
+                writableCapturesRoot(context),
+                capturesRoot(context),
+            ).distinctBy { it.absolutePath }
+    }
+}
+
