@@ -762,3 +762,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     double final_cost = 0.0;
     const bool ceres_ok = solve_with_ceres(input, distance_factors, height_factors, state, &final_cost);
 
+    const float measured_distance = ceres_ok
+        ? static_cast<float>(state[STATE_DISTANCE])
+        : robust_distance;
+    const float measured_height = has_height_evidence
+        ? (ceres_ok ? static_cast<float>(state[STATE_HEIGHT]) : robust_height)
+        : std::numeric_limits<float>::quiet_NaN();
+
+    const float distance_spread = spread(raw_distance_factors);
+    const bool stable_foot_roi_control = foot_roi_strict_agreement && !finite(usable_hip_geometry_distance);
+    const float distance_control_spread = stable_foot_roi_control ? spread(distance_factors) : distance_spread;
+    const float distance_residual = stable_foot_roi_control
+        ? weighted_residual(distance_factors, measured_distance)
+        : weighted_residual(raw_distance_factors, measured_distance);
+    const bool distance_trusted = distance_control_spread <= 1.20f &&
+        distance_residual <= 0.75f;
+    if (distance_trusted) flags |= FLAG_DISTANCE_TRUSTED;
+    const float fallback_distance = finite(usable_hip_geometry_distance) &&
+            usable_hip_geometry_distance >= 0.35f &&
+            usable_hip_geometry_distance <= 12.0f &&
+            (!finite(input.roi) || candidate_agreement(usable_hip_geometry_distance, input.roi)) ? usable_hip_geometry_distance :
+        trusted_foot && finite(input.foot) && input.foot >= 0.35f && input.foot <= 12.0f ? input.foot :
+        finite(input.roi) ? input.roi :
