@@ -47,3 +47,12 @@ class CaptureSessionRecorder(private val context: Context) {
         get() = sessionDir?.name
 
     @Synchronized
+    fun start(): File {
+        stop()
+        val root = writableCapturesRoot(context)
+        root.mkdirs()
+        val stamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+        val dir = File(root, "capture_$stamp").apply { mkdirs() }
+        sessionDir = dir
+        frameIndex = 0
+
