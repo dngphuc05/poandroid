@@ -128,3 +128,21 @@ class CaptureSessionRecorder(private val context: Context) {
                     "local_height_candidate_m,local_height_candidate_confidence,local_height_candidate_source," +
                     "profile_subject_height_m,profile_subject_height_confidence,profile_subject_height_source," +
                     "floor_source,solver_confidence,solver_residual_m," +
+                    "floor_height_bias_m,depth_scale,depth_offset_m,height_endpoint_bias_m," +
+                    "height_lock_state,distance_candidate_spread_m,height_candidate_spread_m," +
+                    "raw_hip_depth_distance_m,foot_plane_distance_m,roi_distance_m," +
+                    "left_foot_ray_floor_distance_m,right_foot_ray_floor_distance_m," +
+                    "feet_midpoint_floor_distance_m,nearest_foot_floor_distance_m,foot_ray_floor_spread_m," +
+                    "top_ray_height_m,top_ray_floor_height_m,visual_top_scan_y_norm," +
+                    "visual_top_scan_confidence,visual_top_lift_norm,pixel_span_height_m," +
+                    "root_hip_ray_floor_distance_m,distance_height_geometry_residual_m,active_factors," +
+                    "hip_geometry_distance_m,hip_geometry_height_m,torso_height_m,torso_residual_m," +
+                    "grounded_foot_distance_m,foot_contact_state,bone_length_spread_m,body_scale_confidence," +
+                    "distance_confidence,height_confidence,floor_confidence,distance_state," +
+                    "w_hip,w_head,w_foot,w_torso,w_bone,w_depth,w_roi,w_temporal," +
+                    "hip_center_x_norm,hip_center_y_norm,shoulder_hip_span_norm,torso_span_norm," +
+                    "body_roi_height_norm,relative_scale_distance_m,rejected_hip_reason,height_seed_trusted," +
+                    "body_clip_risk,top_endpoint_confidence,foot_endpoint_confidence,mask_endpoint_confidence," +
+                    "experimental_height_m,experimental_height_sigma_m,experimental_height_confidence," +
+                    "experimental_height_state,experimental_distance_m,experimental_distance_sigma_m," +
+                    "experimental_distance_confidence,experimental_solver_cost,experimental_solver_status," +
