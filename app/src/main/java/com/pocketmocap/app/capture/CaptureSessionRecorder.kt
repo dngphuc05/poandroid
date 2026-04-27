@@ -926,3 +926,18 @@ class CaptureSessionRecorder(private val context: Context) {
     ) {
         if (x == null || y == null || x.size < 33 || y.size < 33) return
         val writer = skeletonWriter ?: return
+        for (i in 0 until 33) {
+            writer.appendLine(
+                listOf(
+                    frame,
+                    timestampMs,
+                    i,
+                    x[i],
+                    y[i],
+                    z?.getOrNull(i),
+                    visibility?.getOrNull(i),
+                ).joinCsv()
+            )
+        }
+    }
+
