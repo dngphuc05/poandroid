@@ -872,3 +872,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         : input.raw_camera_height;
     const float new_depth_scale = clamp(
         ceres_ok ? static_cast<float>(state[STATE_DEPTH_SCALE]) : input.depth_scale,
+        0.92f,
+        1.08f
+    );
+
+    const int bits = factor_bits(distance_factors) |
+        factor_bits(height_factors) |
+        (finite(input.grounded_foot) ? FACTOR_GROUNDED_FOOT : 0) |
+        (finite(input.body_scale_confidence) ? FACTOR_BONE : 0) |
+        (ceres_ok ? FACTOR_NATIVE_CERES : FACTOR_NATIVE_FALLBACK);
+    const float distance_confidence = clamp(solver_confidence * (distance_trusted ? 1.0f : 0.45f), 0.0f, 1.0f);
+    const float height_confidence = clamp(solver_confidence * (height_trusted ? 1.0f : 0.45f), 0.0f, 1.0f);
+    const float temporal_weight = std::max(
+        (finite(input.previous_height) || finite(input.previous_distance)) ? 1.0f : 0.0f,
+        relative_weight
+    );
+    jfloat out[25] = {
+        corrected_distance,
+        corrected_height,
+        corrected_camera_height,
+        solver_confidence,
+        residual,
+        new_floor_bias,
