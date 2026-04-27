@@ -30,3 +30,13 @@ class CaptureSessionRecorder(private val context: Context) {
             "ml_image_crop_height_px",
             "ml_image_jpeg_quality",
             "ml_image_crop_pad_ratio",
+            "ml_evidence_schema",
+        ) + METRIC_EVIDENCE_V2_OUTPUT_NAMES.map { "ml_$it" }
+
+    private var sessionDir: File? = null
+    private var metricsWriter: FileWriter? = null
+    private var skeletonWriter: FileWriter? = null
+    private var technicalWriter: FileWriter? = null
+    private var visualFrameWriter: FileWriter? = null
+    private var frameIndex = 0
+
