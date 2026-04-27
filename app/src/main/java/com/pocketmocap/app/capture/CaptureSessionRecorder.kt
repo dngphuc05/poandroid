@@ -110,3 +110,21 @@ class CaptureSessionRecorder(private val context: Context) {
                     "metric_root_x_m,metric_root_y_m,metric_root_z_m,metric_root_distance_m," +
                     "metric_foot_midpoint_x_m,metric_foot_midpoint_z_m,metric_body_height_m," +
                     "metric_body_scale_locked,metric_bone_scale_source," +
+                    "metric_pose_jitter_scale_m,metric_pose_jitter_root_m," +
+                    "pose_joints_frame,pose_joints_normalized,pose_joints_normalization_scale," +
+                    "pose_lifter_status,pose_lifter_model_path,pose_lifter_hidden_joint_count," +
+                    "pose_lifter_mean_confidence,pose_lifter_applied_joint_count,pose_lifter_reject_reason," +
+                    "client_motion_overlay_active," +
+                    "stable_skeleton_learning_enabled,stable_skeleton_reset_reason," +
+                    "server_scene_metrics_received,server_scene_metrics_accepted," +
+                    "server_scene_metrics_source,server_scene_metrics_floor_source," +
+                    "server_scene_metrics_filter_reason," +
+                    "server_scene_metrics_confidence," +
+                    "ml_evidence_status,ml_evidence_height_sigma_m,ml_evidence_distance_sigma_m," +
+                    "ml_evidence_mask_endpoint_confidence,ml_evidence_visible_body_fraction," +
+                    "ml_evidence_foot_contact_probability,ml_evidence_image_status,ml_evidence_debug," +
+                    metricEvidenceV2CsvColumns.joinToString(",") + "," +
+                    "corrected_distance_m,corrected_height_m,corrected_camera_height_m," +
+                    "local_height_candidate_m,local_height_candidate_confidence,local_height_candidate_source," +
+                    "profile_subject_height_m,profile_subject_height_confidence,profile_subject_height_source," +
+                    "floor_source,solver_confidence,solver_residual_m," +
