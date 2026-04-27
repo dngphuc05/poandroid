@@ -917,3 +917,12 @@ class CaptureSessionRecorder(private val context: Context) {
     }
 
     private fun recordSkeleton(
+        frame: Int,
+        timestampMs: Long,
+        x: FloatArray?,
+        y: FloatArray?,
+        z: FloatArray?,
+        visibility: FloatArray?,
+    ) {
+        if (x == null || y == null || x.size < 33 || y.size < 33) return
+        val writer = skeletonWriter ?: return
