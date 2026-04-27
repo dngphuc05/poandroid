@@ -784,3 +784,15 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
             (!finite(input.roi) || candidate_agreement(usable_hip_geometry_distance, input.roi)) ? usable_hip_geometry_distance :
         trusted_foot && finite(input.foot) && input.foot >= 0.35f && input.foot <= 12.0f ? input.foot :
         finite(input.roi) ? input.roi :
+        finite(input.relative_scale_distance) ? input.relative_scale_distance :
+        finite(usable_raw_distance) ? usable_raw_distance :
+        std::numeric_limits<float>::quiet_NaN();
+    const float corrected_distance = stabilize_distance(
+        input.previous_distance,
+        measured_distance,
+        fallback_distance,
+        distance_trusted,
+        distance_control_spread,
+        input.confidence
+    );
+
