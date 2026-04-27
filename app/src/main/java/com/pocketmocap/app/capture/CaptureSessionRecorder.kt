@@ -910,3 +910,10 @@ class CaptureSessionRecorder(private val context: Context) {
                 scene?.baselineExperimentalHeightDeltaMeters,
                 scene?.baselineExperimentalDistanceDeltaMeters,
                 scene?.promotedSolverSource,
+                    ) +
+                    rawKeypointGeometryValues
+                ).joinCsv()
+        )
+    }
+
+    private fun recordSkeleton(
