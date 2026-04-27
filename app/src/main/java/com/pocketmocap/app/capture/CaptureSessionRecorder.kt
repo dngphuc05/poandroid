@@ -507,3 +507,21 @@ class CaptureSessionRecorder(private val context: Context) {
             serverSceneMetricsFloorSource,
             serverSceneMetricsFilterReason,
             serverSceneMetricsConfidence,
+        )
+        recordSkeleton(frame, timestampMs, skeletonX, skeletonY, skeletonZ, skeletonVisibility)
+        recordTechnical(frame, timestampMs, effectiveTechnicalSource, technicalX, technicalY, technicalZ, technicalConfidence)
+    }
+
+    private fun recordMetrics(
+        frame: Int,
+        timestampMs: Long,
+        uiState: PocketMocapViewModel.UiState,
+        sceneVisibleCount: Int,
+        scene: SceneMetricSnapshot?,
+        tracking: WorldTrackingSnapshot?,
+        technicalSource: String,
+        serverStableFrames: Int,
+        acceptedPoseSource: String,
+        serverPoseStatus: String,
+        serverCorrectionReason: String?,
+        rejectedServerReason: String,
