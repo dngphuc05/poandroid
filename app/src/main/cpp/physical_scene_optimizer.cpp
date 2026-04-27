@@ -813,3 +813,18 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     if (height_trusted) flags |= FLAG_HEIGHT_TRUSTED;
     const float corrected_height = stabilize_height(input.previous_height, measured_height, height_trusted, input.confidence);
 
+    const float residual = weighted_residual(raw_distance_factors, corrected_distance) +
+        weighted_residual(height_factors, corrected_height) +
+        static_cast<float>(std::min(final_cost, 2.0));
+    const float confidence_penalty = clamp(
+        (distance_control_spread / 1.25f) + (height_spread / 0.65f) + (residual / 0.80f),
+        0.0f,
+        1.2f
+    );
+    const float quality_penalty = (distance_trusted && height_trusted) ? 0.0f : 0.34f;
+    const float solver_confidence = clamp(
+        input.confidence * (1.0f - confidence_penalty * 0.42f - quality_penalty),
+        ceres_ok ? 0.10f : 0.08f,
+        ceres_ok ? 0.98f : 0.72f
+    );
+
