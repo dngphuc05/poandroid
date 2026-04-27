@@ -579,3 +579,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         foot_roi_strict_agreement
     );
 
+    int flags = 0;
+    if (finite(corrected_hip)) flags |= FLAG_REJECTED_HIP;
+
+    float hip_reference = std::numeric_limits<float>::quiet_NaN();
+    if (finite(input.previous_distance)) {
+        float best_delta = std::numeric_limits<float>::infinity();
+        const float refs[] = {
+            input.roi,
+            input.raw_distance,
+            input.relative_scale_distance,
+            input.previous_distance,
+            input.foot,
+        };
+        for (float ref : refs) {
+            if (!finite(ref)) continue;
+            const float delta = std::fabs(ref - input.previous_distance);
+            if (delta < best_delta) {
+                best_delta = delta;
+                hip_reference = ref;
+            }
+        }
+    } else if (finite(input.roi)) {
