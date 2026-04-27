@@ -715,3 +715,19 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     if (finite(torso_height)) height_anchors.push_back(torso_height);
     if (finite(previous_height)) height_anchors.push_back(previous_height);
     const float semantic_endpoint_bias = semantic_endpoint_bias_for_factors(
+        std::max(input.endpoint_bias, 0.0f),
+        raw_top_height,
+        raw_pixel_height,
+        hip_height,
+        torso_height,
+        previous_height
+    );
+    const float biased_top_height = input.top + semantic_endpoint_bias;
+    const float top_height = height_agrees_with_anchor(biased_top_height, height_anchors, 0.18f)
+        ? biased_top_height
+        : std::numeric_limits<float>::quiet_NaN();
+    const float biased_pixel_height = input.pixel + semantic_endpoint_bias;
+    const float pixel_height = height_agrees_with_anchor(biased_pixel_height, height_anchors, 0.22f)
+        ? biased_pixel_height
+        : std::numeric_limits<float>::quiet_NaN();
+
