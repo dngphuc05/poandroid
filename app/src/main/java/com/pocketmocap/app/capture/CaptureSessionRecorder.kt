@@ -163,3 +163,18 @@ class CaptureSessionRecorder(private val context: Context) {
         return dir
     }
 
+    @Synchronized
+    fun stop(): File? {
+        val dir = sessionDir
+        metricsWriter?.flushAndClose()
+        skeletonWriter?.flushAndClose()
+        technicalWriter?.flushAndClose()
+        visualFrameWriter?.flushAndClose()
+        metricsWriter = null
+        skeletonWriter = null
+        technicalWriter = null
+        visualFrameWriter = null
+        sessionDir = null
+        return dir
+    }
+
