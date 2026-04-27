@@ -12,3 +12,21 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+private val RAW_KEYPOINT_GEOMETRY_INDICES = intArrayOf(0, 7, 8, 11, 12, 23, 24, 27, 28, 29, 30, 31, 32)
+private val RAW_KEYPOINT_GEOMETRY_CSV_COLUMNS = RAW_KEYPOINT_GEOMETRY_INDICES.flatMap { index ->
+    listOf("kp_${index}_x_norm", "kp_${index}_y_norm", "kp_${index}_vis")
+}
+
+class CaptureSessionRecorder(private val context: Context) {
+    private val metricEvidenceV2CsvColumns =
+        listOf(
+            "ml_image_width_px",
+            "ml_image_height_px",
+            "ml_image_source_width_px",
+            "ml_image_source_height_px",
+            "ml_image_crop_left_px",
+            "ml_image_crop_top_px",
+            "ml_image_crop_width_px",
+            "ml_image_crop_height_px",
+            "ml_image_jpeg_quality",
+            "ml_image_crop_pad_ratio",
