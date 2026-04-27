@@ -820,3 +820,21 @@ class CaptureSessionRecorder(private val context: Context) {
                 mlImageSourceWidthPx,
                 mlImageSourceHeightPx,
                 mlImageCropLeftPx,
+                mlImageCropTopPx,
+                mlImageCropWidthPx,
+                mlImageCropHeightPx,
+                mlImageJpegQuality,
+                mlImageCropPadRatio,
+                mlEvidenceSchema,
+                ) +
+                    metricEvidenceV2Values +
+                    listOf(
+                scene?.correctedDistanceMeters,
+                scene?.correctedHeightMeters,
+                scene?.correctedCameraHeightMeters,
+                scene?.localHeightCandidateMeters,
+                scene?.localHeightCandidateConfidence,
+                scene?.localHeightCandidateSource,
+                scene?.profileSubjectHeightMeters,
+                scene?.profileSubjectHeightConfidence,
+                scene?.profileSubjectHeightSource,
