@@ -92,3 +92,21 @@ class CaptureSessionRecorder(private val context: Context) {
                     "height_corrected_vs_top_delta_m,height_corrected_vs_hip_delta_m," +
                     "height_corrected_vs_pixel_delta_m,height_corrected_vs_torso_delta_m," +
                     "height_target_before_gate_m,height_target_after_gate_m," +
+                    "height_memory_update,height_memory_reason,height_memory_age_frames,height_memory_target_m," +
+                    "wls_height_m,post_stable_skeleton_height_m,final_smoothed_height_m,height_loss_stage," +
+                    "distance_target_weight,distance_prior_weight,distance_smooth_weight," +
+                    "distance_local_authority," +
+                    "distance_target_admission,distance_target_admission_reason,distance_geometry_suspicious," +
+                    "distance_witness_count,distance_witness_median_m,distance_witness_spread_m," +
+                    "distance_vs_previous_target_delta_m,distance_foot_roi_disagreement_m," +
+                    "distance_foot_relative_disagreement_m,distance_corrected_vs_foot_delta_m," +
+                    "distance_target_before_gate_m,distance_target_after_gate_m," +
+                    "distance_memory_update,distance_memory_reason,distance_memory_age_frames,distance_memory_target_m," +
+                    "factor_graph_active,factor_graph_status,factor_graph_cost_before,factor_graph_cost_after," +
+                    "factor_graph_scale_delta,factor_graph_yaw_deg,factor_graph_root_dx_m,factor_graph_root_dz_m," +
+                    "factor_graph_left_foot_dz_m,factor_graph_right_foot_dz_m," +
+                    "factor_graph_target_distance_m,factor_graph_target_height_m,factor_graph_factor_summary," +
+                    "metric_pose_status,metric_pose_reject_reason,metric_pose_frame," +
+                    "metric_root_x_m,metric_root_y_m,metric_root_z_m,metric_root_distance_m," +
+                    "metric_foot_midpoint_x_m,metric_foot_midpoint_z_m,metric_body_height_m," +
+                    "metric_body_scale_locked,metric_bone_scale_source," +
