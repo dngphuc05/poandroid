@@ -651,3 +651,10 @@ class CaptureSessionRecorder(private val context: Context) {
         mlEvidenceSchema: String?,
         mlEvidenceOutputs: Map<String, Float>?,
         serverSceneMetricsReceived: Boolean?,
+        serverSceneMetricsAccepted: Boolean?,
+        serverSceneMetricsSource: String?,
+        serverSceneMetricsFloorSource: String?,
+        serverSceneMetricsFilterReason: String?,
+        serverSceneMetricsConfidence: Float?,
+    ) {
+        val metricEvidenceV2Values = METRIC_EVIDENCE_V2_OUTPUT_NAMES.map { name ->
