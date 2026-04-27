@@ -679,3 +679,17 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         (flags & FLAG_REJECTED_FOOT) ? (finite(input.roi) ? 0.0f : 0.10f) :
         (finite(usable_hip_geometry_distance) ? 0.20f : 0.34f);
 
+    std::vector<Factor> distance_factors;
+    if (hip_geometry_weight > 0.0f) distance_factors.push_back({usable_hip_geometry_distance, hip_geometry_weight, FACTOR_HIP});
+    if (trusted_foot && foot_weight > 0.0f) distance_factors.push_back({input.foot, foot_weight, FACTOR_FOOT});
+    if (finite(usable_raw_distance) && raw_weight > 0.0f) distance_factors.push_back({usable_raw_distance, raw_weight, FACTOR_RAW_DISTANCE});
+    if (finite(input.roi) && roi_weight > 0.0f) distance_factors.push_back({input.roi, roi_weight, FACTOR_ROI});
+    if (finite(input.relative_scale_distance) && relative_weight > 0.0f) distance_factors.push_back({input.relative_scale_distance, relative_weight, FACTOR_RELATIVE_SCALE});
+
+    std::vector<Factor> raw_distance_factors;
+    if (finite(input.hip_geometry_distance)) raw_distance_factors.push_back({input.hip_geometry_distance, 0.52f, FACTOR_HIP});
+    if (finite(input.foot)) raw_distance_factors.push_back({input.foot, 0.16f, FACTOR_FOOT});
+    if (finite(input.raw_distance)) raw_distance_factors.push_back({input.raw_distance, 0.20f, FACTOR_RAW_DISTANCE});
+    if (finite(input.roi)) raw_distance_factors.push_back({input.roi, 0.04f, FACTOR_ROI});
+    if (finite(input.relative_scale_distance)) raw_distance_factors.push_back({input.relative_scale_distance, 0.10f, FACTOR_RELATIVE_SCALE});
+
