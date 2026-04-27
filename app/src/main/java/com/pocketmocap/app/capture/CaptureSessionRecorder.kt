@@ -354,3 +354,12 @@ class CaptureSessionRecorder(private val context: Context) {
     ) {
         if (!isRecording) return
         val frame = frameIndex++
+        val timestampMs = System.currentTimeMillis()
+        val hasTechnicalPose =
+            technicalX != null &&
+                technicalY != null &&
+                technicalZ != null &&
+                technicalX.size >= 33 &&
+                technicalY.size >= 33 &&
+                technicalZ.size >= 33
+        val effectiveTechnicalSource = if (hasTechnicalPose) technicalSource else "none"
