@@ -828,3 +828,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         ceres_ok ? 0.98f : 0.72f
     );
 
+    float new_depth_offset = ceres_ok ? static_cast<float>(state[STATE_DEPTH_OFFSET]) : input.depth_offset;
+    float new_endpoint_bias = clamp(
+        ceres_ok ? static_cast<float>(state[STATE_ENDPOINT_BIAS]) : input.endpoint_bias,
+        MIN_HEIGHT_ENDPOINT_BIAS,
+        MAX_HEIGHT_ENDPOINT_BIAS
+    );
+    const float candidate_endpoint_bias = std::max(
+        std::max(new_endpoint_bias, 0.0f),
+        clamp(corrected_height - raw_top_height, 0.0f, MAX_HEIGHT_ENDPOINT_BIAS)
+    );
+    const bool endpoint_bias_supported = semantic_endpoint_bias_for_factors(
+        candidate_endpoint_bias,
+        raw_top_height,
+        raw_pixel_height,
+        hip_height,
+        torso_height,
+        previous_height
+    ) > 0.0f;
+    if (!endpoint_bias_supported && new_endpoint_bias > 0.0f) {
+        new_endpoint_bias = clamp(
+            new_endpoint_bias * 0.96f,
+            MIN_HEIGHT_ENDPOINT_BIAS,
