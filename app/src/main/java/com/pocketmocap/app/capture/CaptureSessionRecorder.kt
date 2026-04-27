@@ -975,3 +975,11 @@ class CaptureSessionRecorder(private val context: Context) {
             val documents = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
             val publicRoot = File(documents, PUBLIC_CAPTURE_PATH)
             @Suppress("DEPRECATION")
+            return publicRoot.apply {
+                if (!exists()) mkdirs()
+            }.takeIf { it.exists() && it.canWrite() } ?: capturesRoot(context)
+        }
+
+        fun capturesRoot(context: Context): File =
+            File(context.getExternalFilesDir(null) ?: context.filesDir, "library/captures")
+
