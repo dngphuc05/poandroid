@@ -636,3 +636,25 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         !(finite(input.roi) ? foot_roi_strict_agreement : candidate_agreement(input.foot, foot_reference)) &&
         input.foot > foot_reference;
 
+    const bool trusted_foot = finite(input.foot) && !foot_roi_wild &&
+        ((finite(usable_hip_geometry_distance) && candidate_agreement(input.foot, usable_hip_geometry_distance)) ||
+         (!finite(input.roi) && finite(usable_raw_distance) && candidate_agreement(input.foot, usable_raw_distance)) ||
+         (finite(input.roi) && foot_roi_strict_agreement) ||
+         (!finite(usable_raw_distance) && !finite(input.roi) && finite(input.grounded_foot)));
+    if (finite(input.foot) && !trusted_foot) flags |= FLAG_REJECTED_FOOT;
+
+    const float foot_roi_drift = (finite(input.foot) && finite(input.roi))
+        ? std::fabs(input.foot - input.roi) / std::max(std::max(input.foot, input.roi), 1e-4f)
+        : 0.0f;
+    const bool foot_hip_strict_agreement = finite(input.foot) && finite(usable_hip_geometry_distance) &&
+        std::fabs(input.foot - usable_hip_geometry_distance) <= 0.30f &&
+        (std::fabs(input.foot - usable_hip_geometry_distance) / std::max(std::max(input.foot, usable_hip_geometry_distance), 1e-4f)) <= 0.12f;
+    const float foot_weight = !trusted_foot ? 0.0f :
+        finite(input.grounded_foot) && foot_hip_strict_agreement ? 0.22f :
+        finite(input.grounded_foot) && foot_roi_strict_agreement ? 0.34f :
+        foot_roi_strict_agreement ? 0.30f :
+        finite(input.grounded_foot) ? 0.10f :
+        finite(usable_hip_geometry_distance) && !candidate_agreement(input.foot, usable_hip_geometry_distance) ? 0.04f :
+        finite(usable_raw_distance) && !candidate_agreement(input.foot, usable_raw_distance) ? 0.05f :
+        finite(input.roi) && foot_roi_drift > 0.42f ? 0.06f :
+        finite(input.roi) && foot_roi_drift > 0.25f ? 0.10f :
