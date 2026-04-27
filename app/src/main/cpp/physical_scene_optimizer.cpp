@@ -623,3 +623,16 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         ? std::numeric_limits<float>::quiet_NaN()
         : input.hip_geometry_distance;
     const bool raw_distance_rejected = hip_geometry_rejected &&
+        finite(input.raw_distance) &&
+        finite(stable_non_hip) &&
+        !strict_candidate_agreement(input.raw_distance, stable_non_hip, 0.36f, 0.18f);
+    const float usable_raw_distance = raw_distance_rejected
+        ? std::numeric_limits<float>::quiet_NaN()
+        : input.raw_distance;
+    const float foot_reference = finite(usable_hip_geometry_distance)
+        ? usable_hip_geometry_distance
+        : (finite(input.roi) ? input.roi : usable_raw_distance);
+    const bool foot_roi_wild = finite(input.foot) && finite(foot_reference) &&
+        !(finite(input.roi) ? foot_roi_strict_agreement : candidate_agreement(input.foot, foot_reference)) &&
+        input.foot > foot_reference;
+
