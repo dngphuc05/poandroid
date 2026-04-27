@@ -731,3 +731,16 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
         ? biased_pixel_height
         : std::numeric_limits<float>::quiet_NaN();
 
+    std::vector<Factor> height_factors;
+    const bool hip_height_duplicates_torso = finite(hip_height) &&
+        finite(torso_height) &&
+        std::fabs(hip_height - torso_height) <= 0.015f;
+    if (finite(hip_height) && !hip_height_duplicates_torso) {
+        height_factors.push_back({hip_height, 0.34f, FACTOR_RAW_HEIGHT});
+    }
+    if (finite(top_height)) height_factors.push_back({top_height, 0.32f, FACTOR_TOP});
+    if (finite(torso_height)) height_factors.push_back({torso_height, 0.10f, FACTOR_TORSO});
+    if (finite(raw_height)) height_factors.push_back({raw_height, 0.08f, FACTOR_RAW_HEIGHT});
+    if (finite(pixel_height)) height_factors.push_back({pixel_height, 0.035f, FACTOR_PIXEL});
+    const bool has_height_evidence = !height_factors.empty() || finite(previous_height);
+
