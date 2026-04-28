@@ -348,3 +348,10 @@ class HybridPosePipeline(
             return
         }
         val poseIdx = selectBestPose(result) ?: 0
+        val lms = poses[poseIdx]
+        if (lms.size < JOINT_COUNT) {
+            listener.onNoPoseDetected()
+            return
+        }
+
+        // Reuse pre-allocated arrays — zero allocations on the hot path
