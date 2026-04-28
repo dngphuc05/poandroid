@@ -272,3 +272,10 @@ class HybridPosePipeline(
      * Called after SETUP & CALIBRATE button is pressed.
      */
     fun beginCalibration(imageWidth: Int, imageHeight: Int) {
+        Log.i(TAG, "beginCalibration: ${imageWidth}x${imageHeight}")
+        val json = runCatching { JSONObject(intrinsicsJsonProvider()) }.getOrNull()
+        val fx = json?.optDouble("fx", imageWidth * 1.2) ?: imageWidth * 1.2
+        val fy = json?.optDouble("fy", imageWidth * 1.2) ?: imageWidth * 1.2
+        val cx = json?.optDouble("cx", imageWidth * 0.5) ?: imageWidth * 0.5
+        val cy = json?.optDouble("cy", imageHeight * 0.5) ?: imageHeight * 0.5
+
