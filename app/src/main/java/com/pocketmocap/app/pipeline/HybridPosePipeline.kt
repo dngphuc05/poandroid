@@ -466,3 +466,21 @@ class HybridPosePipeline(
                     listener.onServerFrameQueued(
                         frameIndex = fi,
                         timestampUs = ts,
+                        transportHint = if (serverClient.isRtcReady) "webrtc" else "socketio",
+                    )
+                    enqueueLatestServerFrame(
+                        PendingServerFrame(
+                            frameIndex = fi,
+                            timestampUs = ts,
+                            imageWidth = iw,
+                            imageHeight = ih,
+                            rotationDegrees = frame.rotationDegrees,
+                            landmarks = ArrayList(outboundLandmarks),
+                            worldTracking = frame.worldTracking,
+                            sceneMetrics = sceneMetrics,
+                            mlImage = mlImage,
+                        )
+                    )
+                }
+            }
+            PipelineState.CALIBRATING -> {
