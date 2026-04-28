@@ -191,3 +191,11 @@ class HybridPosePipeline(
     // the server send is due (avoids 33 object allocations on non-send frames).
     private val _landmarks = ArrayList<LandmarkData>(JOINT_COUNT)
 
+    fun start() {
+        // Do NOT eagerly load MediaPipe here — PoseLandmarker.createFromOptions
+        // triggers dlopen of libmediapipe_tasks_vision_jni.so which can SIGSEGV
+        // on some devices.  Defer to the first onCameraFrame() call so the
+        // calibration UI can still appear even if MediaPipe later crashes.
+        emitState(PipelineState.IDLE)
+    }
+
