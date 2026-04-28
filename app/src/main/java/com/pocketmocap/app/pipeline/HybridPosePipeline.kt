@@ -403,3 +403,21 @@ class HybridPosePipeline(
             }
         }
         // Bitmap data fully extracted — release immediately to cut GC pressure
+        val visualTopScan = estimateVisualTopFromSegmentation(
+            result = result,
+            poseIndex = poseIdx,
+            rotationDegrees = frame.rotationDegrees,
+            xNorm = _xNorm,
+            yNorm = _yNorm,
+            visibility = _vis,
+        )
+        listener.onLandmarksDetected(
+            _xNorm,
+            _yNorm,
+            _vis,
+            zWorld,
+            xWorld,
+            yWorld,
+            bw,
+            bh,
+            frame.worldTracking,
