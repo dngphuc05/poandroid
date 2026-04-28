@@ -78,3 +78,21 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             val m = measurements[b]
             if (m.size < MIN_SAMPLES) continue
             val sorted = m.toFloatArray().also { it.sort() }
+            val median = sorted[sorted.size / 2]
+            val std = run {
+                var s = 0f
+                for (v in sorted) s += (v - median) * (v - median)
+                sqrt(s / sorted.size)
+            }
+            med[b] = median
+            mn[b]  = maxOf(median - 2f * std, median * 0.80f)
+            mx[b]  = median + 2f * std
+            readyCount++
+        }
+        if (readyCount >= n / 2) {
+            lengths    = med
+            lengthsMin = mn
+            lengthsMax = mx
+        }
+    }
+
