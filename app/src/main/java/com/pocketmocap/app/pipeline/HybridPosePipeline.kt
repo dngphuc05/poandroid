@@ -552,3 +552,21 @@ class HybridPosePipeline(
         var lowerCoreCount = 0
         for (i in 0 until JOINT_COUNT) {
             val x = xNorm[i]
+            val y = yNorm[i]
+            val v = visibility[i]
+            if (!x.isFinite() || !y.isFinite()) continue
+            if (!v.isFinite() || v < ML_CROP_MIN_VISIBILITY) continue
+            if (requireVisibleLandmarks && v < 0.20f) continue
+            val likelySyntheticClamp =
+                v <= SYNTHETIC_FALLBACK_VISIBILITY + 0.015f &&
+                    (
+                        x <= ML_CROP_CLAMP_EDGE_EPS ||
+                            x >= 1f - ML_CROP_CLAMP_EDGE_EPS ||
+                            y <= ML_CROP_CLAMP_EDGE_EPS ||
+                            y >= 1f - ML_CROP_CLAMP_EDGE_EPS
+                    )
+            if (likelySyntheticClamp) continue
+            minX = min(minX, x.coerceIn(0f, 1f))
+            minY = min(minY, y.coerceIn(0f, 1f))
+            maxX = max(maxX, x.coerceIn(0f, 1f))
+            maxY = max(maxY, y.coerceIn(0f, 1f))
