@@ -254,3 +254,10 @@ class HybridPosePipeline(
         }
     }
 
+    fun setMirrorDistance(distance: Float) {
+        mirrorDistance = distance
+        if (serverClient.isConnected) {
+            serverClient.sendMirrorDistance(distance)
+        }
+    }
+
