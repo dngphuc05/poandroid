@@ -496,3 +496,10 @@ class HybridPosePipeline(
         bitmap.recycle()
     }
 
+    private fun selectBestPose(result: PoseLandmarkerResult): Int? {
+        val poses = result.landmarks()
+        if (poses.isEmpty()) return null
+        if (poses.size == 1) return 0
+
+        var bestIdx = 0
+        var bestScore = Float.NEGATIVE_INFINITY
