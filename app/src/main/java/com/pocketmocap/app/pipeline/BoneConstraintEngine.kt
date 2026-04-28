@@ -96,3 +96,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         }
     }
 
+    /**
+     * Build if enough samples are available. No-op if already ready.
+     * Allows opportunistic build during early CAPTURING frames.
+     */
+    fun tryBuild() {
+        if (isReady) return
+        val enough = measurements.count { it.size >= MIN_SAMPLES }
