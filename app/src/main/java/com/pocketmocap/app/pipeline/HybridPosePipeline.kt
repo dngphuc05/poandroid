@@ -297,3 +297,10 @@ class HybridPosePipeline(
         emitState(PipelineState.BOOTSTRAPPING)
     }
 
+    /**
+     * Called when server confirms bootstrap complete.
+     */
+    fun onBootstrapComplete() {
+        emitState(PipelineState.CAPTURING)
+    }
+
