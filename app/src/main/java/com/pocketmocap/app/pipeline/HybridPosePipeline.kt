@@ -75,3 +75,10 @@ class HybridPosePipeline(
         val xNorm: FloatArray,
         val yNorm: FloatArray,
         val visibility: FloatArray,
+    )
+
+    data class VisualTopScan(
+        val yNorm: Float,
+        val confidence: Float,
+    )
+
