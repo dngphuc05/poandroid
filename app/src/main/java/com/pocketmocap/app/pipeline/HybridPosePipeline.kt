@@ -199,3 +199,14 @@ class HybridPosePipeline(
         emitState(PipelineState.IDLE)
     }
 
+    fun stop() {
+        poseLandmarker?.close()
+        poseLandmarker = null
+        // Drain pending frame — recycle bitmap so it's not leaked
+        _pendingFrame.getAndSet(null)?.bitmap?.recycle()
+        latestServerFrame.set(null)
+        inferenceExecutor.shutdown()
+        serverSendExecutor.shutdown()
+        state = PipelineState.IDLE
+    }
+
