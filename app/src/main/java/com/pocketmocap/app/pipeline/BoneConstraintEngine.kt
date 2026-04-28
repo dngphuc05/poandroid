@@ -166,3 +166,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
     ) {
         for (triplet in HINGE_TRIPLETS) {
             val root = triplet[0]
+            val middle = triplet[1]
+            val end = triplet[2]
+            if (visibility[root] < anchorConf || visibility[end] < anchorConf || visibility[middle] >= targetThreshold) {
+                continue
+            }
+
+            val upperLength = boneLengthFor(root, middle, lengths)
