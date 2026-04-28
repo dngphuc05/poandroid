@@ -319,3 +319,10 @@ class HybridPosePipeline(
         }
     }
 
+    /** All MediaPipe work runs here — on the dedicated inference thread. */
+    private fun processFrame(frame: CapturedCameraFrame) {
+        if (frameIndex % 30 == 0) {
+            Log.d(TAG, "onCameraFrame #$frameIndex state=$state ${frame.width}x${frame.height}")
+        }
+        val landmarker = ensurePoseLandmarker() ?: return
+
