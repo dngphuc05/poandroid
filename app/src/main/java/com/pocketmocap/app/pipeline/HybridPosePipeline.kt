@@ -222,3 +222,21 @@ class HybridPosePipeline(
                 try {
                     while (true) {
                         val next = latestServerFrame.getAndSet(null) ?: break
+                        serverClient.sendFrame(
+                            frameIndex = next.frameIndex,
+                            timestampUs = next.timestampUs,
+                            imageWidth = next.imageWidth,
+                            imageHeight = next.imageHeight,
+                            rotationDegrees = next.rotationDegrees,
+                            landmarks = next.landmarks,
+                            worldTracking = next.worldTracking,
+                            sceneMetrics = next.sceneMetrics,
+                            mlImageBase64 = next.mlImage?.jpegBase64,
+                            mlImageWidth = next.mlImage?.width,
+                            mlImageHeight = next.mlImage?.height,
+                            mlImageSourceWidth = next.mlImage?.sourceWidth,
+                            mlImageSourceHeight = next.mlImage?.sourceHeight,
+                            mlImageCropLeft = next.mlImage?.cropLeft,
+                            mlImageCropTop = next.mlImage?.cropTop,
+                            mlImageCropWidth = next.mlImage?.cropWidth,
+                            mlImageCropHeight = next.mlImage?.cropHeight,
