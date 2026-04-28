@@ -40,3 +40,10 @@ import kotlin.math.min
  * Flow: Camera → MediaPipe → LandmarkData → MocapServerClient → pose_3d
  */
 class HybridPosePipeline(
+    private val context: Context,
+    private val intrinsicsJsonProvider: () -> String,
+    private val serverClient: MocapServerClient,
+    private val listener: Listener,
+) {
+    private data class PendingServerFrame(
+        val frameIndex: Int,
