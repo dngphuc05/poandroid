@@ -55,3 +55,12 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         if (xNorm.size < 33) return
         for (b in BONE_CONNECTIONS.indices) {
             val p = BONE_CONNECTIONS[b][0]
+            val c = BONE_CONNECTIONS[b][1]
+            if (visibility[p] < minConfidence || visibility[c] < minConfidence) continue
+            val dx = xNorm[p] - xNorm[c]
+            val dy = yNorm[p] - yNorm[c]
+            val len = sqrt(dx * dx + dy * dy)
+            if (len > MIN_LENGTH) measurements[b].add(len)
+        }
+    }
+
