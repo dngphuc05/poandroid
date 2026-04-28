@@ -279,3 +279,14 @@ class HybridPosePipeline(
         val cx = json?.optDouble("cx", imageWidth * 0.5) ?: imageWidth * 0.5
         val cy = json?.optDouble("cy", imageHeight * 0.5) ?: imageHeight * 0.5
 
+        Log.i(TAG, "Sending calibration: fx=$fx fy=$fy cx=$cx cy=$cy mirror=$mirrorDistance")
+        serverClient.sendCalibration(
+            fx = fx, fy = fy, cx = cx, cy = cy,
+            imageWidth = imageWidth, imageHeight = imageHeight,
+            mirrorDistance = mirrorDistance,
+        )
+        calibrationSent = true
+        bootstrapFramesSent = 0
+        emitState(PipelineState.CALIBRATING)
+    }
+
