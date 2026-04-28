@@ -123,3 +123,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         val lMin = lengthsMin ?: return
         val lMax = lengthsMax ?: return
         val anchorConf = 0.65f   // anchor must be clearly visible
+
+        for (b in BONE_CONNECTIONS.indices) {
+            if (len[b] == 0f) continue              // no data for this bone
+            val p = BONE_CONNECTIONS[b][0]
+            val c = BONE_CONNECTIONS[b][1]
+
+            val vp = visibility[p] >= anchorConf
