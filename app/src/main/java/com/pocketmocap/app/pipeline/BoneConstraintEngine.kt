@@ -103,3 +103,16 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
     fun tryBuild() {
         if (isReady) return
         val enough = measurements.count { it.size >= MIN_SAMPLES }
+        if (enough >= BONE_CONNECTIONS.size / 2) build()
+    }
+
+    /**
+     * Apply bone-length constraints in-place.
+     * Only adjusts a joint when its partner is confident and it is not.
+     * Visible joints are never moved — this is purely a recovery step.
+     *
+     * @param targetThreshold  visibility below which a joint is treated as occluded/needy.
+     *   Use 0.20f when applied to Kalman state (strict: only truly hidden joints).
+     *   Use 0.35f for output-display copy (broader safety net).
+     */
+    fun apply(
