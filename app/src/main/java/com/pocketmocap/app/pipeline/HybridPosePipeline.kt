@@ -395,3 +395,11 @@ class HybridPosePipeline(
         if (frame.rotationDegrees != 0) {
             for (i in 0 until JOINT_COUNT) {
                 val ox = _xNorm[i]; val oy = _yNorm[i]
+                when (frame.rotationDegrees) {
+                    90  -> { _xNorm[i] = 1f - oy; _yNorm[i] = ox }
+                    180 -> { _xNorm[i] = 1f - ox; _yNorm[i] = 1f - oy }
+                    270 -> { _xNorm[i] = oy;       _yNorm[i] = 1f - ox }
+                }
+            }
+        }
+        // Bitmap data fully extracted — release immediately to cut GC pressure
