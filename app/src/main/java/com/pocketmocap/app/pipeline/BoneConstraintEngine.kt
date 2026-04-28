@@ -33,3 +33,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         )
         private const val MIN_SAMPLES = 3
         // Minimum normalized length to bother recording (avoids degenerate readings)
+        private const val MIN_LENGTH = 0.005f
+    }
+
+    // Accumulate per-bone measurements during bootstrap
+    private val measurements: Array<MutableList<Float>> =
+        Array(BONE_CONNECTIONS.size) { mutableListOf() }
+
