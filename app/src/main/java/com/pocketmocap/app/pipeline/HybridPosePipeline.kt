@@ -47,3 +47,10 @@ class HybridPosePipeline(
 ) {
     private data class PendingServerFrame(
         val frameIndex: Int,
+        val timestampUs: Long,
+        val imageWidth: Int,
+        val imageHeight: Int,
+        val rotationDegrees: Int,
+        val landmarks: List<LandmarkData>,
+        val worldTracking: WorldTrackingSnapshot?,
+        val sceneMetrics: SceneMetricSnapshot?,
