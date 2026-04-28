@@ -116,3 +116,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
      *   Use 0.35f for output-display copy (broader safety net).
      */
     fun apply(
+        xNorm: FloatArray, yNorm: FloatArray, visibility: FloatArray,
+        targetThreshold: Float = 0.35f,
+    ) {
+        val len = lengths    ?: return
+        val lMin = lengthsMin ?: return
+        val lMax = lengthsMax ?: return
+        val anchorConf = 0.65f   // anchor must be clearly visible
