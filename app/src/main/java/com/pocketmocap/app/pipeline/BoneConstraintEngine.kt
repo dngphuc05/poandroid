@@ -64,3 +64,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         }
     }
 
+    /**
+     * Build constraints from collected measurements.
+     * Call once after bootstrap is complete.
+     */
+    fun build() {
+        val n = BONE_CONNECTIONS.size
+        val med = FloatArray(n)
