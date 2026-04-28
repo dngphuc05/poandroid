@@ -196,3 +196,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             val midBaseX = ax + dirX * a
             val midBaseY = ay + dirY * a
             val perpX = -dirY
+            val perpY = dirX
+
+            val cand1X = midBaseX + perpX * h
+            val cand1Y = midBaseY + perpY * h
+            val cand2X = midBaseX - perpX * h
+            val cand2Y = midBaseY - perpY * h
+
