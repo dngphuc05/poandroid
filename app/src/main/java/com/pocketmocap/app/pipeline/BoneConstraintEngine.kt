@@ -40,3 +40,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
     private val measurements: Array<MutableList<Float>> =
         Array(BONE_CONNECTIONS.size) { mutableListOf() }
 
+    // Built constraints (null until build() is called)
+    private var lengths:    FloatArray? = null  // median length per bone
+    private var lengthsMin: FloatArray? = null
+    private var lengthsMax: FloatArray? = null
+
+    val isReady: Boolean get() = lengths != null
+
