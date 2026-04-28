@@ -54,3 +54,10 @@ class HybridPosePipeline(
         val landmarks: List<LandmarkData>,
         val worldTracking: WorldTrackingSnapshot?,
         val sceneMetrics: SceneMetricSnapshot?,
+        val mlImage: MlImagePayload?,
+    )
+
+    private data class MlImagePayload(
+        val jpegBase64: String,
+        val width: Int,
+        val height: Int,
