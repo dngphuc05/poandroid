@@ -510,3 +510,10 @@ class HybridPosePipeline(
             var confSum = 0f
             pose.forEach { confSum += max(readVisibility(it), readPresence(it)) }
             val avgConf = confSum / pose.size
+
+            // Prefer centered, confident poses
+            val cx = (pose[11].x() + pose[12].x() + pose[23].x() + pose[24].x()) * 0.25f
+            val cy = (pose[11].y() + pose[12].y() + pose[23].y() + pose[24].y()) * 0.25f
+            val centerDist = Math.sqrt(((cx - 0.5) * (cx - 0.5) + (cy - 0.58) * (cy - 0.58)).toDouble()).toFloat()
+
+            var score = avgConf - centerDist * 0.75f
