@@ -387,3 +387,11 @@ class HybridPosePipeline(
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             }
+        }
+        // ── Rotate landmark coords from sensor space to display-upright space ─────────
+        // MediaPipe's setRotationDegrees() helps model accuracy but output coords are
+        // always in the ORIGINAL unrotated sensor frame.  We apply a lossless in-place
+        // coord transform (33×2 float ops, ~0μs) to put them in display portrait space.
+        if (frame.rotationDegrees != 0) {
+            for (i in 0 until JOINT_COUNT) {
+                val ox = _xNorm[i]; val oy = _yNorm[i]
