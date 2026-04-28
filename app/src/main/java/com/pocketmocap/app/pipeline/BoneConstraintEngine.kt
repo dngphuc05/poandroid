@@ -146,3 +146,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
 
             // Clamp to [min, max]; nothing to do if already within range
             val desired = current.coerceIn(lMin[b], lMax[b])
+            if (desired == current) continue
+
+            val scale = desired / current
+            xNorm[targetIdx] = xNorm[anchorIdx] + dx * scale
+            yNorm[targetIdx] = yNorm[anchorIdx] + dy * scale
+        }
+
