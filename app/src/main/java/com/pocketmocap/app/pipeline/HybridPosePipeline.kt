@@ -33,3 +33,10 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
+/**
+ * Hybrid pipeline: runs MediaPipe on-device, sends 2D landmarks to server,
+ * receives 3D pose back via Socket.IO.
+ *
+ * Flow: Camera → MediaPipe → LandmarkData → MocapServerClient → pose_3d
+ */
+class HybridPosePipeline(
