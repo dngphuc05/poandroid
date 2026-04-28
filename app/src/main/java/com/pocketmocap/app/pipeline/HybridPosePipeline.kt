@@ -210,3 +210,15 @@ class HybridPosePipeline(
         state = PipelineState.IDLE
     }
 
+    private fun enqueueLatestServerFrame(payload: PendingServerFrame) {
+        latestServerFrame.set(payload)
+        scheduleServerDrain()
+    }
+
+    private fun scheduleServerDrain() {
+        if (!serverDrainScheduled.compareAndSet(false, true)) return
+        runCatching {
+            serverSendExecutor.execute {
+                try {
+                    while (true) {
+                        val next = latestServerFrame.getAndSet(null) ?: break
