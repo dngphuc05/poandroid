@@ -153,3 +153,16 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             yNorm[targetIdx] = yNorm[anchorIdx] + dy * scale
         }
 
+        recoverHinges(xNorm, yNorm, visibility, len, targetThreshold, anchorConf)
+    }
+
+    private fun recoverHinges(
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+        lengths: FloatArray,
+        targetThreshold: Float,
+        anchorConf: Float,
+    ) {
+        for (triplet in HINGE_TRIPLETS) {
+            val root = triplet[0]
