@@ -578,3 +578,13 @@ class HybridPosePipeline(
         if (upperCoreCount < 2 || lowerCoreCount < 2) return null
         if (maxY - minY < ML_CROP_MIN_BODY_HEIGHT_NORM) return null
 
+        val cropSource = bitmap.toDisplayUpright(rotationDegrees)
+        val imageW = cropSource.width
+        val imageH = cropSource.height
+        val bodyW = (maxX - minX) * imageW
+        val bodyH = (maxY - minY) * imageH
+        if (bodyW < 32f || bodyH < 48f) {
+            if (cropSource !== bitmap) cropSource.recycle()
+            return null
+        }
+
