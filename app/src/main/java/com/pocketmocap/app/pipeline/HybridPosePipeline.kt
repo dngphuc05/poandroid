@@ -535,3 +535,12 @@ class HybridPosePipeline(
         return runCatching { lm.presence().orElse(0f) }.getOrDefault(0f)
     }
 
+    private fun buildMlImagePayload(
+        bitmap: Bitmap,
+        rotationDegrees: Int,
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+        requireVisibleLandmarks: Boolean,
+    ): MlImagePayload? {
+        var minX = 1f
