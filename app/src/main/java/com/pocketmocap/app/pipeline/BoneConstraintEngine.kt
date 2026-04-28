@@ -71,3 +71,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
     fun build() {
         val n = BONE_CONNECTIONS.size
         val med = FloatArray(n)
+        val mn  = FloatArray(n)
+        val mx  = FloatArray(n)
+        var readyCount = 0
+        for (b in 0 until n) {
+            val m = measurements[b]
+            if (m.size < MIN_SAMPLES) continue
+            val sorted = m.toFloatArray().also { it.sort() }
