@@ -168,3 +168,12 @@ class HybridPosePipeline(
     private val latestServerFrame = AtomicReference<PendingServerFrame?>(null)
     private val serverDrainScheduled = AtomicBoolean(false)
 
+    // ── Async inference decoupling ─────────────────────────────────────────────────────────────────
+    // Camera analysis thread deposits the latest frame here and returns IMMEDIATELY.
+    // A separate inference thread drains this slot and runs MediaPipe.
+    // If MediaPipe is slower than the camera (rare on GPU), the displaced frame is
+    // recycled and only the newest frame is ever processed — zero queuing latency.
+    private val _pendingFrame = AtomicReference<CapturedCameraFrame?>(null)
+    private val inferenceExecutor: ExecutorService = Executors.newSingleThreadExecutor { r ->
+        Thread {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_DISPLAY)
