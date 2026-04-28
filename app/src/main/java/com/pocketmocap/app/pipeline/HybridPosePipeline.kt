@@ -68,3 +68,10 @@ class HybridPosePipeline(
         val cropWidth: Int,
         val cropHeight: Int,
         val jpegQuality: Int,
+        val cropPadRatio: Float,
+    )
+
+    data class MlCropLandmarks(
+        val xNorm: FloatArray,
+        val yNorm: FloatArray,
+        val visibility: FloatArray,
