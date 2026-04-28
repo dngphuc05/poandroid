@@ -544,3 +544,11 @@ class HybridPosePipeline(
         requireVisibleLandmarks: Boolean,
     ): MlImagePayload? {
         var minX = 1f
+        var minY = 1f
+        var maxX = 0f
+        var maxY = 0f
+        var count = 0
+        var upperCoreCount = 0
+        var lowerCoreCount = 0
+        for (i in 0 until JOINT_COUNT) {
+            val x = xNorm[i]
