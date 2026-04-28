@@ -152,3 +152,10 @@ class HybridPosePipeline(
     private var calibrationSent = false
     private var selectedPoseIndex = 0
     // Send at ~30fps to server — matches camera rate, minimises frame-skip aliasing
+    private var lastServerSendMs = 0L
+    private var lastMlImageSendFrameIndex = -1
+    private var lastMlImageSendMs = 0L
+    private val ML_IMAGE_SEND_INTERVAL_FRAMES = 8
+    private val ML_IMAGE_SEND_INTERVAL_MS = 350L
+    private val SERVER_SEND_INTERVAL_MS = 33L
+
