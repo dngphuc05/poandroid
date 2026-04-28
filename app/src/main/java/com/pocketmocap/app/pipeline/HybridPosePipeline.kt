@@ -441,3 +441,10 @@ class HybridPosePipeline(
             }
             PipelineState.CAPTURING -> {
                 val nowMs = System.currentTimeMillis()
+                if (nowMs - lastServerSendMs >= SERVER_SEND_INTERVAL_MS) {
+                    lastServerSendMs = nowMs
+                    val fi = frameIndex++
+                    val ts = frame.timestampUs
+                    val iw = frame.width
+                    val ih = frame.height
+                    val mlImage = if (shouldAttachMlImage(fi, nowMs)) {
