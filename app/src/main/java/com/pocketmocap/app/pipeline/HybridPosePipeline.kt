@@ -98,3 +98,21 @@ class HybridPosePipeline(
         private val ML_CROP_LOWER_CORE = intArrayOf(23, 24, 25, 26, 27, 28, 31, 32)
     }
 
+    interface Listener {
+        fun onStateChanged(state: PipelineState)
+        fun onPose3DReceived(pose3dJson: JSONObject)
+        /** Called on every processed frame with normalized [0..1] coordinates, optional world XYZ in metres, and visibility. */
+        fun onLandmarksDetected(
+            xNorm: FloatArray, yNorm: FloatArray, visibility: FloatArray,
+            zWorld: FloatArray? = null,
+            xWorld: FloatArray? = null, yWorld: FloatArray? = null,
+            imageWidth: Int = 0, imageHeight: Int = 0,
+            worldTracking: WorldTrackingSnapshot? = null,
+            visualTopYNorm: Float = Float.NaN,
+            visualTopConfidence: Float = Float.NaN,
+        ) {}
+        /**
+         * Gives the client one chance to replace the raw MediaPipe packet before we send it
+         * to the server. This is where we can forward the already-smoothed 33-point set
+         * instead of making the server repeat the same 2D cleanup work.
+         */
