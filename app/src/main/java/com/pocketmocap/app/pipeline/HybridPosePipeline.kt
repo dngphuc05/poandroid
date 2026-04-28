@@ -261,3 +261,14 @@ class HybridPosePipeline(
         }
     }
 
+    private fun shouldAttachMlImage(frameIndex: Int, nowMs: Long): Boolean {
+        return lastMlImageSendFrameIndex < 0 ||
+            frameIndex - lastMlImageSendFrameIndex >= ML_IMAGE_SEND_INTERVAL_FRAMES ||
+            nowMs - lastMlImageSendMs >= ML_IMAGE_SEND_INTERVAL_MS
+    }
+
+    /**
+     * Send camera calibration to server and start bootstrap.
+     * Called after SETUP & CALIBRATE button is pressed.
+     */
+    fun beginCalibration(imageWidth: Int, imageHeight: Int) {
