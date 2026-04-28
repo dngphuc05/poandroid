@@ -82,3 +82,19 @@ class HybridPosePipeline(
         val confidence: Float,
     )
 
+    companion object {
+        private const val TAG = "HybridPosePipeline"
+        private const val MODEL_ASSET_PATH = "pose_landmarker_lite.task"  // 8ms vs full 25ms; fresher results beat marginal accuracy gain for fast motion
+        private const val MAX_TRACKED_POSES = 1
+        private const val JOINT_COUNT = 33
+        private const val ML_TRANSPORT_IMAGE_SIZE = 320
+        private const val ML_JPEG_QUALITY = 92
+        private const val ML_CROP_PAD_RATIO = 0.18f
+        private const val ML_CROP_MIN_VISIBILITY = 0.18f
+        private const val ML_CROP_CLAMP_EDGE_EPS = 0.006f
+        private const val ML_CROP_MIN_BODY_HEIGHT_NORM = 0.30f
+        private const val SYNTHETIC_FALLBACK_VISIBILITY = 0.18f
+        private val ML_CROP_UPPER_CORE = intArrayOf(0, 7, 8, 11, 12)
+        private val ML_CROP_LOWER_CORE = intArrayOf(23, 24, 25, 26, 27, 28, 31, 32)
+    }
+
