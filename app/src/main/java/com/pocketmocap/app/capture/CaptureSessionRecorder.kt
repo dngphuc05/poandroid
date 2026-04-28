@@ -1007,3 +1007,9 @@ private fun List<Any?>.joinCsv(): String =
         }
     }
 
+private fun String.csvEscape(): String =
+    if (any { it == ',' || it == '"' || it == '\n' || it == '\r' }) {
+        "\"" + replace("\"", "\"\"") + "\""
+    } else {
+        this
+    }
