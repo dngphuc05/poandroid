@@ -570,3 +570,11 @@ class HybridPosePipeline(
             minY = min(minY, y.coerceIn(0f, 1f))
             maxX = max(maxX, x.coerceIn(0f, 1f))
             maxY = max(maxY, y.coerceIn(0f, 1f))
+            count++
+            if (ML_CROP_UPPER_CORE.contains(i)) upperCoreCount++
+            if (ML_CROP_LOWER_CORE.contains(i)) lowerCoreCount++
+        }
+        if (count < 8 || maxX <= minX || maxY <= minY) return null
+        if (upperCoreCount < 2 || lowerCoreCount < 2) return null
+        if (maxY - minY < ML_CROP_MIN_BODY_HEIGHT_NORM) return null
+
