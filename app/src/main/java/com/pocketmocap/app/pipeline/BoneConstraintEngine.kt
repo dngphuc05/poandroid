@@ -47,3 +47,11 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
 
     val isReady: Boolean get() = lengths != null
 
+    /**
+     * Collect a single frame of normalized landmarks during bootstrap.
+     * Only records bones where both endpoints have visibility > minConfidence.
+     */
+    fun collectFrame(xNorm: FloatArray, yNorm: FloatArray, visibility: FloatArray) {
+        if (xNorm.size < 33) return
+        for (b in BONE_CONNECTIONS.indices) {
+            val p = BONE_CONNECTIONS[b][0]
