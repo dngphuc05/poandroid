@@ -341,3 +341,10 @@ class HybridPosePipeline(
             return
         }
 
+        // Single pass: build UI arrays + LandmarkData list simultaneously (no second 33-joint iteration)
+        val poses = result.landmarks()
+        if (poses.isEmpty()) {
+            listener.onNoPoseDetected()
+            return
+        }
+        val poseIdx = selectBestPose(result) ?: 0
