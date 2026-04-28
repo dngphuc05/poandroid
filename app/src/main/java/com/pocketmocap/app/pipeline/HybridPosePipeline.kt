@@ -334,3 +334,10 @@ class HybridPosePipeline(
             .setRotationDegrees(frame.rotationDegrees)
             .build()
 
+        val result = runCatching {
+            landmarker.detectForVideo(mpImage, options, frame.timestampUs / 1000L)
+        }.getOrElse {
+            Log.e(TAG, "MediaPipe detection failed", it)
+            return
+        }
+
