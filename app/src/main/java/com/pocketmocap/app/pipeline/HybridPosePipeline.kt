@@ -184,3 +184,10 @@ class HybridPosePipeline(
     // ── Pre-allocated per-frame output arrays ──────────────────────────────────────────────────────
     // FloatArray allocations at 60fps → GC pressure → pauses. Reusing fixed-size arrays
     // eliminates this entirely. Thread-safe: only accessed from the single inferenceExecutor thread.
+    private val _xNorm     = FloatArray(JOINT_COUNT)
+    private val _yNorm     = FloatArray(JOINT_COUNT)
+    private val _vis       = FloatArray(JOINT_COUNT)
+    // LandmarkData list: reused by clearing each frame; a snapshot copy is made only when
+    // the server send is due (avoids 33 object allocations on non-send frames).
+    private val _landmarks = ArrayList<LandmarkData>(JOINT_COUNT)
+
