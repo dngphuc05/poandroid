@@ -503,3 +503,10 @@ class HybridPosePipeline(
 
         var bestIdx = 0
         var bestScore = Float.NEGATIVE_INFINITY
+        for (i in 0 until min(poses.size, MAX_TRACKED_POSES)) {
+            val pose = poses[i]
+            if (pose.size < 25) continue
+
+            var confSum = 0f
+            pose.forEach { confSum += max(readVisibility(it), readPresence(it)) }
+            val avgConf = confSum / pose.size
