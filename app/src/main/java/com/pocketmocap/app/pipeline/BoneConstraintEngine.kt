@@ -173,3 +173,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             }
 
             val upperLength = boneLengthFor(root, middle, lengths)
+            val lowerLength = boneLengthFor(middle, end, lengths)
+            if (upperLength <= MIN_LENGTH || lowerLength <= MIN_LENGTH) continue
+
+            val ax = xNorm[root]
+            val ay = yNorm[root]
+            val cx = xNorm[end]
+            val cy = yNorm[end]
