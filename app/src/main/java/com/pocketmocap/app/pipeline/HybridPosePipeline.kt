@@ -240,3 +240,17 @@ class HybridPosePipeline(
                             mlImageCropTop = next.mlImage?.cropTop,
                             mlImageCropWidth = next.mlImage?.cropWidth,
                             mlImageCropHeight = next.mlImage?.cropHeight,
+                            mlImageJpegQuality = next.mlImage?.jpegQuality,
+                            mlImageCropPadRatio = next.mlImage?.cropPadRatio,
+                        )
+                    }
+                } finally {
+                    serverDrainScheduled.set(false)
+                    if (latestServerFrame.get() != null) scheduleServerDrain()
+                }
+            }
+        }.onFailure {
+            serverDrainScheduled.set(false)
+        }
+    }
+
