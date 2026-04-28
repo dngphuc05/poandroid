@@ -421,3 +421,15 @@ class HybridPosePipeline(
             bw,
             bh,
             frame.worldTracking,
+            visualTopScan?.yNorm ?: Float.NaN,
+            visualTopScan?.confidence ?: Float.NaN,
+        )
+        val rawOutboundLandmarks = ArrayList(_landmarks)
+        val outboundLandmarks = listener.prepareServerLandmarks(
+            rawOutboundLandmarks,
+            frame.width,
+            frame.height,
+            frame.rotationDegrees,
+        )
+            ?: rawOutboundLandmarks
+        val sceneMetrics = listener.prepareServerSceneMetrics(frame.worldTracking)
