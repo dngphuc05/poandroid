@@ -16,3 +16,20 @@ import kotlin.math.sqrt
  * Purely geometric — no extra allocations after startup.
  */
 class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
+
+    // 14 structural bones matching the server's BONE_CONNECTIONS
+    companion object {
+        private val BONE_CONNECTIONS = arrayOf(
+            intArrayOf(11, 12), intArrayOf(11, 23), intArrayOf(12, 24), intArrayOf(23, 24),
+            intArrayOf(11, 13), intArrayOf(13, 15), intArrayOf(12, 14), intArrayOf(14, 16),
+            intArrayOf(23, 25), intArrayOf(25, 27), intArrayOf(24, 26), intArrayOf(26, 28),
+            intArrayOf(0, 11),  intArrayOf(0, 12),
+        )
+        private val HINGE_TRIPLETS = arrayOf(
+            intArrayOf(11, 13, 15), // left shoulder -> elbow -> wrist
+            intArrayOf(12, 14, 16), // right shoulder -> elbow -> wrist
+            intArrayOf(23, 25, 27), // left hip -> knee -> ankle
+            intArrayOf(24, 26, 28), // right hip -> knee -> ankle
+        )
+        private const val MIN_SAMPLES = 3
+        // Minimum normalized length to bother recording (avoids degenerate readings)
