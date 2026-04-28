@@ -218,3 +218,13 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         }
     }
 
+    private fun boneLengthFor(a: Int, b: Int, lengths: FloatArray): Float {
+        for (i in BONE_CONNECTIONS.indices) {
+            val edge = BONE_CONNECTIONS[i]
+            if ((edge[0] == a && edge[1] == b) || (edge[0] == b && edge[1] == a)) {
+                return lengths[i]
+            }
+        }
+        return 0f
+    }
+
