@@ -362,3 +362,10 @@ class HybridPosePipeline(
         val yWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
         val zWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
 
+        _landmarks.clear()
+        val bw = if (frame.rotationDegrees % 180 != 0) bitmap.height else bitmap.width
+        val bh = if (frame.rotationDegrees % 180 != 0) bitmap.width else bitmap.height
+        for (i in 0 until JOINT_COUNT) {
+            val p = lms[i]
+            val v = readVisibility(p)
+            val pres = readPresence(p)
