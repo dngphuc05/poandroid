@@ -177,3 +177,10 @@ class HybridPosePipeline(
     private val inferenceExecutor: ExecutorService = Executors.newSingleThreadExecutor { r ->
         Thread {
             android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_URGENT_DISPLAY)
+            r.run()
+        }.apply { name = "mocap-inference" }
+    }
+
+    // ── Pre-allocated per-frame output arrays ──────────────────────────────────────────────────────
+    // FloatArray allocations at 60fps → GC pressure → pauses. Reusing fixed-size arrays
+    // eliminates this entirely. Thread-safe: only accessed from the single inferenceExecutor thread.
