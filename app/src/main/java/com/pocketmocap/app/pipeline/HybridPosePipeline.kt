@@ -484,3 +484,15 @@ class HybridPosePipeline(
                 }
             }
             PipelineState.CALIBRATING -> {
+                // First frame after calibration → treat as bootstrap
+                if (calibrationSent) {
+                    serverClient.sendBootstrapFrame(outboundLandmarks)
+                    bootstrapFramesSent++
+                    emitState(PipelineState.BOOTSTRAPPING)
+                }
+            }
+            else -> { /* idle, wait */ }
+        }
+        bitmap.recycle()
+    }
+
