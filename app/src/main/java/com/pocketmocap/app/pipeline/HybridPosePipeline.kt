@@ -312,3 +312,10 @@ class HybridPosePipeline(
      * its bitmap recycled, so we always process the freshest available frame.
      */
     fun onCameraFrame(frame: CapturedCameraFrame) {
+        _pendingFrame.getAndSet(frame)?.bitmap?.recycle()
+        inferenceExecutor.execute {
+            val f = _pendingFrame.getAndSet(null) ?: return@execute
+            processFrame(f)
+        }
+    }
+
