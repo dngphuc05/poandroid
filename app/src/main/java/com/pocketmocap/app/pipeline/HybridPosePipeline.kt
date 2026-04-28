@@ -304,3 +304,11 @@ class HybridPosePipeline(
         emitState(PipelineState.CAPTURING)
     }
 
+    /**
+     * Deposit the latest camera frame and return IMMEDIATELY.
+     * The inference thread picks it up asynchronously — the camera analysis thread
+     * is never blocked waiting for MediaPipe GPU inference to complete.
+     * If a frame is already pending (inference is behind), it is displaced and
+     * its bitmap recycled, so we always process the freshest available frame.
+     */
+    fun onCameraFrame(frame: CapturedCameraFrame) {
