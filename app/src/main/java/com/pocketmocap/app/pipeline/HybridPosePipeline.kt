@@ -448,3 +448,21 @@ class HybridPosePipeline(
                     val iw = frame.width
                     val ih = frame.height
                     val mlImage = if (shouldAttachMlImage(fi, nowMs)) {
+                        val mlCropLandmarks = listener.prepareMlImageCropLandmarks(_xNorm, _yNorm, _vis)
+                        buildMlImagePayload(
+                            bitmap = bitmap,
+                            rotationDegrees = frame.rotationDegrees,
+                            xNorm = mlCropLandmarks?.xNorm ?: _xNorm,
+                            yNorm = mlCropLandmarks?.yNorm ?: _yNorm,
+                            visibility = mlCropLandmarks?.visibility ?: _vis,
+                            requireVisibleLandmarks = mlCropLandmarks == null,
+                        )?.also {
+                            lastMlImageSendFrameIndex = fi
+                            lastMlImageSendMs = nowMs
+                        }
+                    } else {
+                        null
+                    }
+                    listener.onServerFrameQueued(
+                        frameIndex = fi,
+                        timestampUs = ts,
