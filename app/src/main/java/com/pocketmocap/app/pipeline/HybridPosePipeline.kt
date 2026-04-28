@@ -159,3 +159,12 @@ class HybridPosePipeline(
     private val ML_IMAGE_SEND_INTERVAL_MS = 350L
     private val SERVER_SEND_INTERVAL_MS = 33L
 
+    // Subject tracking
+    private var lockedCenter: Pair<Float, Float>? = null
+    private var lockedBoundsSize: Pair<Float, Float>? = null
+
+    // Dedicated single thread for server I/O — keeps inference thread free after MediaPipe finishes
+    private val serverSendExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+    private val latestServerFrame = AtomicReference<PendingServerFrame?>(null)
+    private val serverDrainScheduled = AtomicBoolean(false)
+
