@@ -517,3 +517,13 @@ class HybridPosePipeline(
             val centerDist = Math.sqrt(((cx - 0.5) * (cx - 0.5) + (cy - 0.58) * (cy - 0.58)).toDouble()).toFloat()
 
             var score = avgConf - centerDist * 0.75f
+            if (i == selectedPoseIndex) score += 0.15f
+
+            if (score > bestScore) {
+                bestScore = score
+                bestIdx = i
+            }
+        }
+        return bestIdx
+    }
+
