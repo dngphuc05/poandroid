@@ -136,3 +136,19 @@ class HybridPosePipeline(
         fun onServerFrameQueued(frameIndex: Int, timestampUs: Long, transportHint: String) {}
         /** Called when no pose is detected in the frame. */
         fun onNoPoseDetected() {}
+    }
+
+    enum class PipelineState {
+        IDLE, CONNECTING, CALIBRATING, BOOTSTRAPPING, CAPTURING, ERROR
+    }
+
+    private var poseLandmarker: PoseLandmarker? = null
+    private var state = PipelineState.IDLE
+    private var frameIndex = 0
+    private var bootstrapFramesSent = 0
+    private val bootstrapTarget = 15
+    private var sensitivity = 0.55f
+    private var mirrorDistance = 1.0f
+    private var calibrationSent = false
+    private var selectedPoseIndex = 0
+    // Send at ~30fps to server — matches camera rate, minimises frame-skip aliasing
