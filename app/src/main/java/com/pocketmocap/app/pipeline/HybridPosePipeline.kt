@@ -527,3 +527,11 @@ class HybridPosePipeline(
         return bestIdx
     }
 
+    private fun readVisibility(lm: NormalizedLandmark): Float {
+        return runCatching { lm.visibility().orElse(0f) }.getOrDefault(0f)
+    }
+
+    private fun readPresence(lm: NormalizedLandmark): Float {
+        return runCatching { lm.presence().orElse(0f) }.getOrDefault(0f)
+    }
+
