@@ -326,3 +326,11 @@ class HybridPosePipeline(
         }
         val landmarker = ensurePoseLandmarker() ?: return
 
+        val bitmap = frame.bitmap
+        val mpImage = BitmapImageBuilder(bitmap).build()
+        // ARCore owns capture now; let MediaPipe handle any frame rotation metadata.
+        // Output landmarks are in the coordinate space of the rotated (display-upright) image.
+        val options = ImageProcessingOptions.builder()
+            .setRotationDegrees(frame.rotationDegrees)
+            .build()
+
