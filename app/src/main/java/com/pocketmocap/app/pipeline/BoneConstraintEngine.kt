@@ -189,3 +189,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
                 upperLength + lowerLength - 1e-4f,
             )
             val dirX = dcx / distance
+            val dirY = dcy / distance
+            val a = (upperLength * upperLength - lowerLength * lowerLength + clampedDistance * clampedDistance) / (2f * clampedDistance)
+            val hSq = maxOf(upperLength * upperLength - a * a, 0f)
+            val h = sqrt(hSq)
+            val midBaseX = ax + dirX * a
+            val midBaseY = ay + dirY * a
+            val perpX = -dirY
