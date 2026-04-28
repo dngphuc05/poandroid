@@ -116,3 +116,15 @@ class HybridPosePipeline(
          * to the server. This is where we can forward the already-smoothed 33-point set
          * instead of making the server repeat the same 2D cleanup work.
          */
+        fun prepareServerLandmarks(
+            rawLandmarks: List<LandmarkData>,
+            imageWidth: Int,
+            imageHeight: Int,
+            rotationDegrees: Int,
+        ): List<LandmarkData>? = null
+        /**
+         * Supplies the landmark basis for ML image cropping. Prefer observed/smoothed
+         * landmarks over template-completed landmarks so synthetic fallback points do
+         * not drag the V4 crop into the floor or frame edge.
+         */
+        fun prepareMlImageCropLandmarks(
