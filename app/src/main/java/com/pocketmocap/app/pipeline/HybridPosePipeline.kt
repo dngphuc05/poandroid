@@ -128,3 +128,11 @@ class HybridPosePipeline(
          * not drag the V4 crop into the floor or frame edge.
          */
         fun prepareMlImageCropLandmarks(
+            rawXNorm: FloatArray,
+            rawYNorm: FloatArray,
+            rawVisibility: FloatArray,
+        ): MlCropLandmarks? = null
+        fun prepareServerSceneMetrics(worldTracking: WorldTrackingSnapshot?): SceneMetricSnapshot? = null
+        fun onServerFrameQueued(frameIndex: Int, timestampUs: Long, transportHint: String) {}
+        /** Called when no pose is detected in the frame. */
+        fun onNoPoseDetected() {}
