@@ -355,3 +355,10 @@ class HybridPosePipeline(
         }
 
         // Reuse pre-allocated arrays — zero allocations on the hot path
+        val worldPose = result.worldLandmarks().getOrNull(poseIdx)
+        val hasWorld = worldPose != null && worldPose.size >= JOINT_COUNT
+        // World arrays: allocated per-frame because listener stores these references directly
+        val xWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
+        val yWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
+        val zWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
+
