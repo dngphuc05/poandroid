@@ -228,3 +228,10 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
         return 0f
     }
 
+    fun reset() {
+        for (m in measurements) m.clear()
+        lengths    = null
+        lengthsMin = null
+        lengthsMax = null
+    }
+}
