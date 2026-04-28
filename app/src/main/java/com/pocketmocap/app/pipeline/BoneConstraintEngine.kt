@@ -180,3 +180,12 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             val ay = yNorm[root]
             val cx = xNorm[end]
             val cy = yNorm[end]
+            val dcx = cx - ax
+            val dcy = cy - ay
+            val distance = sqrt(dcx * dcx + dcy * dcy).coerceAtLeast(MIN_LENGTH)
+
+            val clampedDistance = distance.coerceIn(
+                kotlin.math.abs(upperLength - lowerLength) + 1e-4f,
+                upperLength + lowerLength - 1e-4f,
+            )
+            val dirX = dcx / distance
