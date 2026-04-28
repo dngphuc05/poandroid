@@ -290,3 +290,10 @@ class HybridPosePipeline(
         emitState(PipelineState.CALIBRATING)
     }
 
+    /**
+     * Called when server confirms calibration.
+     */
+    fun onCalibrationConfirmed() {
+        emitState(PipelineState.BOOTSTRAPPING)
+    }
+
