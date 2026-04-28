@@ -433,3 +433,11 @@ class HybridPosePipeline(
         )
             ?: rawOutboundLandmarks
         val sceneMetrics = listener.prepareServerSceneMetrics(frame.worldTracking)
+
+        when (state) {
+            PipelineState.BOOTSTRAPPING -> {
+                serverClient.sendBootstrapFrame(outboundLandmarks)
+                bootstrapFramesSent++
+            }
+            PipelineState.CAPTURING -> {
+                val nowMs = System.currentTimeMillis()
