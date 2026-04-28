@@ -130,3 +130,12 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             val c = BONE_CONNECTIONS[b][1]
 
             val vp = visibility[p] >= anchorConf
+            val vc = visibility[c] >= anchorConf
+
+            // Only act when exactly one endpoint is a confident anchor and the other needs help
+            val (anchorIdx, targetIdx) = when {
+                vp && visibility[c] < targetThreshold -> p to c
+                vc && visibility[p] < targetThreshold -> c to p
+                else -> continue
+            }
+
