@@ -203,3 +203,18 @@ class BoneConstraintEngine(private val minConfidence: Float = 0.5f) {
             val cand2X = midBaseX - perpX * h
             val cand2Y = midBaseY - perpY * h
 
+            val priorX = xNorm[middle]
+            val priorY = yNorm[middle]
+            val dist1 = (cand1X - priorX) * (cand1X - priorX) + (cand1Y - priorY) * (cand1Y - priorY)
+            val dist2 = (cand2X - priorX) * (cand2X - priorX) + (cand2Y - priorY) * (cand2Y - priorY)
+            if (dist1 <= dist2) {
+                xNorm[middle] = cand1X
+                yNorm[middle] = cand1Y
+            } else {
+                xNorm[middle] = cand2X
+                yNorm[middle] = cand2Y
+            }
+            visibility[middle] = maxOf(visibility[middle], 0.55f)
+        }
+    }
+
