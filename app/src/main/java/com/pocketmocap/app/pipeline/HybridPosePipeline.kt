@@ -369,3 +369,21 @@ class HybridPosePipeline(
             val p = lms[i]
             val v = readVisibility(p)
             val pres = readPresence(p)
+            _xNorm[i] = p.x()
+            _yNorm[i] = p.y()
+            _vis[i]   = v
+            if (hasWorld) {
+                val w = worldPose!![i]
+                xWorld!![i] = w.x(); yWorld!![i] = w.y(); zWorld!![i] = w.z()
+                _landmarks.add(LandmarkData(
+                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
+                    xMetric = w.x(), yMetric = w.y(), zMetric = w.z(),
+                    visibility = v, presence = pres, confidence = min(v, pres),
+                ))
+            } else {
+                _landmarks.add(LandmarkData(
+                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
+                    xMetric = 0f, yMetric = 0f, zMetric = 0f,
+                    visibility = v, presence = pres, confidence = min(v, pres),
+                ))
+            }
