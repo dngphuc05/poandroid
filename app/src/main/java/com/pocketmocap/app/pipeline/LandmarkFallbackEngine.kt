@@ -172,3 +172,12 @@ class LandmarkFallbackEngine {
             dy: Float,
         ): Pair<Float, Float> {
             val defaultOffset = anchorOffsetForFrame(frame, jointIndex, anchorIndex)
+            val defaultLen = sqrt(
+                defaultOffset.first * defaultOffset.first + defaultOffset.second * defaultOffset.second
+            )
+            val maxLen = maxOf(defaultLen * 1.35f, frame.scale * 0.04f)
+            val currentLen = sqrt(dx * dx + dy * dy)
+            if (currentLen <= maxLen || currentLen <= 1e-4f) {
+                return Pair(dx, dy)
+            }
+            val scale = maxLen / currentLen
