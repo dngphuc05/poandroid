@@ -283,3 +283,10 @@ class LandmarkFallbackEngine {
             if (bodyFrame.isValid && hasReliablePose[i]) {
                 val previousFrame = lastReliableFrame[i]
                 val axisSimilarity = if (previousFrame != null) {
+                    val xSimilarity = bodyFrame.xAxisX * previousFrame.xAxisX + bodyFrame.xAxisY * previousFrame.xAxisY
+                    val ySimilarity = bodyFrame.yAxisX * previousFrame.yAxisX + bodyFrame.yAxisY * previousFrame.yAxisY
+                    (xSimilarity + ySimilarity) * 0.5f
+                } else {
+                    1f
+                }
+                val scaleRatio = if (previousFrame != null && previousFrame.scale > 1e-4f) {
