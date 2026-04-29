@@ -700,3 +700,12 @@ class HybridPosePipeline(
         }
         if (visibleHead.isEmpty()) return null
         val headCenterX = visibleHead.map { it.first }.average().toFloat().coerceIn(0f, 1f)
+        val headTopY = visibleHead.minOf { it.second }
+        val shoulderSpan = normalizedSpanForScan(xNorm, yNorm, visibility, 11, 12)
+        val headSpan = normalizedSpanForScan(xNorm, yNorm, visibility, 7, 8)
+            ?: normalizedSpanForScan(xNorm, yNorm, visibility, 9, 10)
+        val halfBand = max(
+            0.050f,
+            max((shoulderSpan ?: 0f) * 0.58f, (headSpan ?: 0f) * 1.35f),
+        ).coerceIn(0.045f, 0.150f)
+        val minX = (headCenterX - halfBand).coerceIn(0f, 1f)
