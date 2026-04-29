@@ -227,3 +227,21 @@ class LandmarkFallbackEngine {
                     lastReliableFrame[i] = bodyFrame
                     occludedFrameCount[i] = 0
                     val anchorIndex = ANCHOR_PARENT[i]
+                    if (anchorIndex >= 0 && outVisibility[anchorIndex] >= OBSERVED_THRESHOLD) {
+                        val clamped = clampAnchorOffset(
+                            frame = anchorFrame,
+                            jointIndex = i,
+                            anchorIndex = anchorIndex,
+                            dx = outX[i] - outX[anchorIndex],
+                            dy = outY[i] - outY[anchorIndex],
+                        )
+                        lastReliableAnchorDx[i] = clamped.first
+                        lastReliableAnchorDy[i] = clamped.second
+                        hasReliableAnchorOffset[i] = true
+                    }
+                } else {
+                    occludedFrameCount[i] += 1
+                }
+            }
+        } else {
+            for (i in 0 until JOINT_COUNT) {
