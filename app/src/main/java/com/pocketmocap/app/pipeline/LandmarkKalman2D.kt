@@ -64,3 +64,10 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
 
     private val dt = 1f / fps
 
+    // Precomputed Q terms (standard CV model)
+    private val Q00 = 0.25f * dt * dt * dt * dt * qScale
+    private val Q01 = 0.50f * dt * dt * dt        * qScale
+    private val Q11 =         dt * dt              * qScale
+    private val R   = rNoise
+
+    // State
