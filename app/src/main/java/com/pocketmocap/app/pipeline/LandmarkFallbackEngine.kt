@@ -315,3 +315,18 @@ class LandmarkFallbackEngine {
                     (fallbackU * bodyFrame.xAxisY + fallbackV * bodyFrame.yAxisY) * bodyFrame.scale
             } else {
                 val defaultPoint = defaultJointPoint(i)
+                fallbackX = defaultPoint.first
+                fallbackY = defaultPoint.second
+            }
+
+            val blend = when {
+                usingHeldPose -> 0.06f
+                visibility < HARD_FALLBACK_THRESHOLD -> 1f
+                else -> 0.62f
+            }
+            outX[i] = (outX[i] * (1f - blend) + fallbackX * blend).coerceIn(0f, 1f)
+            outY[i] = (outY[i] * (1f - blend) + fallbackY * blend).coerceIn(0f, 1f)
+            outVisibility[i] = maxOf(visibility, FALLBACK_VISIBILITY)
+        }
+    }
+
