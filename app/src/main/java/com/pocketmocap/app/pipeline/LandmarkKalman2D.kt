@@ -104,3 +104,10 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
             return position
         }
 
+        // ── Update ────────────────────────────────────────────────────────────
+        val Reff = R / trust.coerceAtLeast(0.01f)   // low trust → inflate R
+        val S  = P00p + Reff
+        val K0 = P00p / S
+        val K1 = P01p / S
+        val innov = z - pPred
+
