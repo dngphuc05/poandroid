@@ -624,3 +624,10 @@ class HybridPosePipeline(
         }.getOrNull()
     }
 
+    private fun Bitmap.toDisplayUpright(rotationDegrees: Int): Bitmap {
+        val normalized = ((rotationDegrees % 360) + 360) % 360
+        if (normalized == 0) return this
+        val matrix = Matrix().apply { postRotate(normalized.toFloat()) }
+        return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
