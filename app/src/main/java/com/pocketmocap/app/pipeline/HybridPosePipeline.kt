@@ -691,3 +691,12 @@ class HybridPosePipeline(
         val visibleHead = buildList<Pair<Float, Float>> {
             for (idx in headIndices) {
                 val v = visibility.getOrNull(idx) ?: 0f
+                val x = xNorm.getOrNull(idx) ?: Float.NaN
+                val y = yNorm.getOrNull(idx) ?: Float.NaN
+                if (v > 0.28f && x.isFinite() && y.isFinite()) {
+                    add(Pair(x.coerceIn(0f, 1f), y.coerceIn(0f, 1f)))
+                }
+            }
+        }
+        if (visibleHead.isEmpty()) return null
+        val headCenterX = visibleHead.map { it.first }.average().toFloat().coerceIn(0f, 1f)
