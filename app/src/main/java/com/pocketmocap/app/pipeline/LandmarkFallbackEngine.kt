@@ -220,3 +220,10 @@ class LandmarkFallbackEngine {
             for (i in 0 until JOINT_COUNT) {
                 if (outVisibility[i] >= OBSERVED_THRESHOLD) {
                     val dx = outX[i] - bodyFrame.centerX
+                    val dy = outY[i] - bodyFrame.centerY
+                    lastReliableU[i] = (dx * bodyFrame.xAxisX + dy * bodyFrame.xAxisY) / bodyFrame.scale
+                    lastReliableV[i] = (dx * bodyFrame.yAxisX + dy * bodyFrame.yAxisY) / bodyFrame.scale
+                    hasReliablePose[i] = true
+                    lastReliableFrame[i] = bodyFrame
+                    occludedFrameCount[i] = 0
+                    val anchorIndex = ANCHOR_PARENT[i]
