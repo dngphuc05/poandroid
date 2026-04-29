@@ -120,3 +120,11 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
         return position
     }
 
+    /** Predict-only step: advances state without a measurement (joint occluded).
+     *  Velocity decays each frame — prevents indefinite drift when joint stays hidden. */
+    fun predictOnly(): Float {
+        if (!initialized) return position
+        // Advance state; velocity decays toward zero (half-life ≈ 4 frames at 60fps)
+        position += velocity * dt
+        velocity *= 0.85f
+        // Advance covariance (grows with Q — uncertainty increases each frame)
