@@ -86,3 +86,10 @@ class LandmarkFallbackEngine {
             this[32] = 28
         }
 
+        private fun midpoint(
+            x: FloatArray,
+            y: FloatArray,
+            a: Int,
+            b: Int,
+        ): Pair<Float, Float> = Pair((x[a] + x[b]) * 0.5f, (y[a] + y[b]) * 0.5f)
+
