@@ -776,3 +776,11 @@ class HybridPosePipeline(
         b: Int,
     ): Float? {
         val va = visibility.getOrNull(a) ?: 0f
+        val vb = visibility.getOrNull(b) ?: 0f
+        if (va <= 0.25f || vb <= 0.25f) return null
+        val ax = xNorm.getOrNull(a) ?: return null
+        val ay = yNorm.getOrNull(a) ?: return null
+        val bx = xNorm.getOrNull(b) ?: return null
+        val by = yNorm.getOrNull(b) ?: return null
+        if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
+        val dx = ax - bx
