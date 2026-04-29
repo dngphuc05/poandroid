@@ -119,3 +119,14 @@ class LandmarkFallbackEngine {
             var xAxisY = yAxisX
 
             val leftSideX = (x[11] + x[23]) * 0.5f
+            val leftSideY = (y[11] + y[23]) * 0.5f
+            val rightSideX = (x[12] + x[24]) * 0.5f
+            val rightSideY = (y[12] + y[24]) * 0.5f
+            val sideDx = rightSideX - leftSideX
+            val sideDy = rightSideY - leftSideY
+
+            if (sideDx * xAxisX + sideDy * xAxisY < 0f) {
+                xAxisX = -xAxisX
+                xAxisY = -xAxisY
+            }
+
