@@ -709,3 +709,11 @@ class HybridPosePipeline(
             max((shoulderSpan ?: 0f) * 0.58f, (headSpan ?: 0f) * 1.35f),
         ).coerceIn(0.045f, 0.150f)
         val minX = (headCenterX - halfBand).coerceIn(0f, 1f)
+        val maxX = (headCenterX + halfBand).coerceIn(0f, 1f)
+        val scanBottomY = (headTopY + 0.20f).coerceIn(0f, 0.82f)
+        val buffer = runCatching {
+            ByteBufferExtractor.extract(mask, MPImage.IMAGE_FORMAT_VEC32F1)
+        }.getOrNull() ?: runCatching {
+            ByteBufferExtractor.extract(mask)
+        }.getOrNull() ?: return null
+        val pixelCount = width * height
