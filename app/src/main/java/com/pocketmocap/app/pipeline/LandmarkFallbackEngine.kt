@@ -245,3 +245,11 @@ class LandmarkFallbackEngine {
             }
         } else {
             for (i in 0 until JOINT_COUNT) {
+                if (outVisibility[i] < OBSERVED_THRESHOLD) occludedFrameCount[i] += 1
+            }
+        }
+
+        for (i in 0 until JOINT_COUNT) {
+            val visibility = outVisibility[i]
+            if (visibility >= OBSERVED_THRESHOLD) continue
+
