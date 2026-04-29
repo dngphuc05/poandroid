@@ -741,3 +741,10 @@ class HybridPosePipeline(
             }
         }
         var bestY = Float.POSITIVE_INFINITY
+        var support = 0
+        val step = if (width * height > 180_000) 2 else 1
+        for (py in 0 until height step step) {
+            for (px in 0 until width step step) {
+                val value = maskValue(py * width + px)
+                if (value < 0.38f) continue
+                val (dx, dy) = toDisplayNorm(px, py)
