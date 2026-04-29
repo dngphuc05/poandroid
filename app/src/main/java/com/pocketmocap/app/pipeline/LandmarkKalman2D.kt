@@ -88,3 +88,10 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
             return position
         }
 
+        // ── Predict ──────────────────────────────────────────────────────────
+        val pPred = position + velocity * dt
+        val vPred = velocity
+        val P00p = P00 + 2f * dt * P01 + dt * dt * P11 + Q00
+        val P01p = P01 + dt * P11 + Q01
+        val P11p = P11 + Q11
+
