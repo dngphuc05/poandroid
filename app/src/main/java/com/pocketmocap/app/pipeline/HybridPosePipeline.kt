@@ -683,3 +683,11 @@ class HybridPosePipeline(
     ): VisualTopScan? {
         if (xNorm.size < JOINT_COUNT || yNorm.size < JOINT_COUNT || visibility.size < JOINT_COUNT) return null
         val masks = result.segmentationMasks().orElse(null) ?: return null
+        val mask = masks.getOrNull(poseIndex) ?: masks.firstOrNull() ?: return null
+        val width = mask.width
+        val height = mask.height
+        if (width <= 4 || height <= 4) return null
+        val headIndices = intArrayOf(0, 7, 8, 9, 10)
+        val visibleHead = buildList<Pair<Float, Float>> {
+            for (idx in headIndices) {
+                val v = visibility.getOrNull(idx) ?: 0f
