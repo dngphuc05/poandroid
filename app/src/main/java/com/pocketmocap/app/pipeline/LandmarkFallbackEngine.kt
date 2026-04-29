@@ -130,3 +130,15 @@ class LandmarkFallbackEngine {
                 xAxisY = -xAxisY
             }
 
+            return BodyFrame(
+                centerX = (shoulderMid.first + hipMid.first) * 0.5f,
+                centerY = (shoulderMid.second + hipMid.second) * 0.5f,
+                xAxisX = xAxisX,
+                xAxisY = xAxisY,
+                yAxisX = yAxisX,
+                yAxisY = yAxisY,
+                scale = torsoLen,
+                isValid = true,
+            )
+        }
+
