@@ -759,3 +759,12 @@ class HybridPosePipeline(
         }
         if (!bestY.isFinite() || bestY >= headTopY + 0.030f || support < 3) return null
         val liftFromHead = headTopY - bestY
+        if (liftFromHead < -0.015f || liftFromHead > 0.140f) return null
+        val confidence = (
+            0.42f +
+                (support / 26f).coerceIn(0f, 0.46f) +
+                (liftFromHead / 0.10f).coerceIn(0f, 0.12f)
+            ).coerceIn(0f, 1f)
+        return VisualTopScan(bestY.coerceIn(0f, 1f), confidence)
+    }
+
