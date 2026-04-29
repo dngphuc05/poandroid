@@ -102,3 +102,13 @@ class LandmarkFallbackEngine {
                 return fallback ?: DEFAULT_BODY_FRAME.copy(isValid = false)
             }
 
+            val shoulderMid = midpoint(x, y, 11, 12)
+            val hipMid = midpoint(x, y, 23, 24)
+            val torsoDx = shoulderMid.first - hipMid.first
+            val torsoDy = shoulderMid.second - hipMid.second
+            val torsoLen = sqrt(torsoDx * torsoDx + torsoDy * torsoDy)
+
+            if (torsoLen < MIN_TORSO_SCALE) {
+                return fallback ?: DEFAULT_BODY_FRAME.copy(isValid = false)
+            }
+
