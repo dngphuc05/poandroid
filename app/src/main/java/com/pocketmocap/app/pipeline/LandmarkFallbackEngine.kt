@@ -206,3 +206,10 @@ class LandmarkFallbackEngine {
         if (sourceX.size < JOINT_COUNT || sourceY.size < JOINT_COUNT || sourceVisibility.size < JOINT_COUNT) return
         if (outX.size < JOINT_COUNT || outY.size < JOINT_COUNT || outVisibility.size < JOINT_COUNT) return
 
+        for (i in 0 until JOINT_COUNT) {
+            outX[i] = sourceX[i].coerceIn(0f, 1f)
+            outY[i] = sourceY[i].coerceIn(0f, 1f)
+            outVisibility[i] = sourceVisibility[i].coerceIn(0f, 1f)
+        }
+
+        val bodyFrame = buildBodyFrame(sourceX, sourceY, lastBodyFrame)
