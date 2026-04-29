@@ -181,3 +181,17 @@ class LandmarkFallbackEngine {
                 return Pair(dx, dy)
             }
             val scale = maxLen / currentLen
+            return Pair(dx * scale, dy * scale)
+        }
+    }
+
+    private var lastBodyFrame: BodyFrame? = null
+    private val lastReliableU = FloatArray(JOINT_COUNT)
+    private val lastReliableV = FloatArray(JOINT_COUNT)
+    private val hasReliablePose = BooleanArray(JOINT_COUNT)
+    private val lastReliableFrame = arrayOfNulls<BodyFrame>(JOINT_COUNT)
+    private val occludedFrameCount = IntArray(JOINT_COUNT)
+    private val lastReliableAnchorDx = FloatArray(JOINT_COUNT)
+    private val lastReliableAnchorDy = FloatArray(JOINT_COUNT)
+    private val hasReliableAnchorOffset = BooleanArray(JOINT_COUNT)
+
