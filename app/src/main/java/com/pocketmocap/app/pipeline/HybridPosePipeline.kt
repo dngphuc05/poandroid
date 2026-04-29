@@ -748,3 +748,14 @@ class HybridPosePipeline(
                 val value = maskValue(py * width + px)
                 if (value < 0.38f) continue
                 val (dx, dy) = toDisplayNorm(px, py)
+                if (dx < minX || dx > maxX || dy > scanBottomY) continue
+                if (dy < bestY - 0.0025f) {
+                    bestY = dy
+                    support = 1
+                } else if (abs(dy - bestY) <= 0.014f) {
+                    support += 1
+                }
+            }
+        }
+        if (!bestY.isFinite() || bestY >= headTopY + 0.030f || support < 3) return null
+        val liftFromHead = headTopY - bestY
