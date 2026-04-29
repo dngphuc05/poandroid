@@ -30,3 +30,12 @@ class LandmarkFallbackEngine {
         val xAxisY: Float,
         val yAxisX: Float,
         val yAxisY: Float,
+        val scale: Float,
+        val isValid: Boolean,
+    )
+
+    companion object {
+        private const val JOINT_COUNT = 33
+        private const val OBSERVED_THRESHOLD = 0.50f
+        private const val HARD_FALLBACK_THRESHOLD = 0.20f
+        // Synthetic 2D fallback points are useful as a weak visual/temporal hint, but
