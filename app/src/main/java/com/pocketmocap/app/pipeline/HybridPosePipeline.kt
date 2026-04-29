@@ -599,3 +599,21 @@ class HybridPosePipeline(
             return null
         }
 
+        return runCatching {
+            val crop = Bitmap.createBitmap(cropSource, cropRect.left, cropRect.top, cropRect.width(), cropRect.height())
+            val resized = Bitmap.createScaledBitmap(crop, ML_TRANSPORT_IMAGE_SIZE, ML_TRANSPORT_IMAGE_SIZE, true)
+            if (crop !== resized) crop.recycle()
+            val out = ByteArrayOutputStream(ML_TRANSPORT_IMAGE_SIZE * ML_TRANSPORT_IMAGE_SIZE)
+            resized.compress(Bitmap.CompressFormat.JPEG, ML_JPEG_QUALITY, out)
+            resized.recycle()
+            MlImagePayload(
+                jpegBase64 = Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP),
+                width = ML_TRANSPORT_IMAGE_SIZE,
+                height = ML_TRANSPORT_IMAGE_SIZE,
+                sourceWidth = imageW,
+                sourceHeight = imageH,
+                cropLeft = cropRect.left,
+                cropTop = cropRect.top,
+                cropWidth = cropRect.width(),
+                cropHeight = cropRect.height(),
+                jpegQuality = ML_JPEG_QUALITY,
