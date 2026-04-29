@@ -276,3 +276,10 @@ class LandmarkFallbackEngine {
                 continue
             }
 
+            var fallbackU = DEFAULT_TEMPLATE_U[i]
+            var fallbackV = DEFAULT_TEMPLATE_V[i]
+            var usingHeldPose = false
+
+            if (bodyFrame.isValid && hasReliablePose[i]) {
+                val previousFrame = lastReliableFrame[i]
+                val axisSimilarity = if (previousFrame != null) {
