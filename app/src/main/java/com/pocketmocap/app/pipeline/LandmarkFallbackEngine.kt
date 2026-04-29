@@ -93,3 +93,12 @@ class LandmarkFallbackEngine {
             b: Int,
         ): Pair<Float, Float> = Pair((x[a] + x[b]) * 0.5f, (y[a] + y[b]) * 0.5f)
 
+        private fun buildBodyFrame(
+            x: FloatArray,
+            y: FloatArray,
+            fallback: BodyFrame?,
+        ): BodyFrame {
+            if (x.size < JOINT_COUNT || y.size < JOINT_COUNT) {
+                return fallback ?: DEFAULT_BODY_FRAME.copy(isValid = false)
+            }
+
