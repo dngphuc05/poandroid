@@ -57,3 +57,10 @@ class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 
     fun reset() { kx.reset(); ky.reset() }
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// Scalar 1D Kalman  (constant-velocity model, state = [p, v])
+// ────────────────────────────────────────────────────────────────────────────
+private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
+
+    private val dt = 1f / fps
+
