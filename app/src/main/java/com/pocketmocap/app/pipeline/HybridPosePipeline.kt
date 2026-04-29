@@ -645,3 +645,10 @@ class HybridPosePipeline(
     }
 
     private fun tryCreateLandmarker(delegate: Delegate): PoseLandmarker? {
+        val baseOptions = runCatching {
+            BaseOptions.builder()
+                .setModelAssetPath(MODEL_ASSET_PATH)
+                .setDelegate(delegate)
+                .build()
+        }.getOrNull() ?: return null
+
