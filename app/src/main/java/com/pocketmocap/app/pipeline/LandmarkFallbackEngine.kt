@@ -290,3 +290,12 @@ class LandmarkFallbackEngine {
                     1f
                 }
                 val scaleRatio = if (previousFrame != null && previousFrame.scale > 1e-4f) {
+                    bodyFrame.scale / previousFrame.scale
+                } else {
+                    1f
+                }
+                val bodyFrameCompatible =
+                    axisSimilarity >= MIN_BODY_FRAME_SIMILARITY &&
+                        scaleRatio in MIN_SCALE_RATIO..MAX_SCALE_RATIO &&
+                        occludedFrameCount[i] <= MAX_HELD_OCCLUSION_FRAMES
+
