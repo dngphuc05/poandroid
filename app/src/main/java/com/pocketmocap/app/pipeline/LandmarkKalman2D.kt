@@ -49,3 +49,11 @@ class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 
             Pair(kx.predictOnly(), ky.predictOnly())
         }
 
+    fun getState(): Pair<Float, Float> = Pair(kx.position, ky.position)
+
+    /** Snap position without introducing velocity — use after bone-constraint anchoring. */
+    fun setPosition(x: Float, y: Float) { kx.setPosition(x); ky.setPosition(y) }
+
+    fun reset() { kx.reset(); ky.reset() }
+}
+
