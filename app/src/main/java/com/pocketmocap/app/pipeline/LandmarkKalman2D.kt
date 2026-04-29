@@ -79,3 +79,12 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
     private var P01 = 0f
     private var P11 = 1f
 
+    private var initialized = false
+
+    fun update(z: Float, trust: Float = 1f, maxInnovation: Float = 0f): Float {
+        if (!initialized) {
+            position = z
+            initialized = true
+            return position
+        }
+
