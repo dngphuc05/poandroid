@@ -213,3 +213,10 @@ class LandmarkFallbackEngine {
         }
 
         val bodyFrame = buildBodyFrame(sourceX, sourceY, lastBodyFrame)
+        if (bodyFrame.isValid) lastBodyFrame = bodyFrame
+
+        if (bodyFrame.isValid) {
+            val anchorFrame = bodyFrame
+            for (i in 0 until JOINT_COUNT) {
+                if (outVisibility[i] >= OBSERVED_THRESHOLD) {
+                    val dx = outX[i] - bodyFrame.centerX
