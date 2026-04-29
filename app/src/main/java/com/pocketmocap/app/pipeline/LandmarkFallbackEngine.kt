@@ -73,3 +73,16 @@ class LandmarkFallbackEngine {
             -0.50f, -0.50f, -1.50f, -1.50f, -2.45f, -2.45f, -2.58f, -2.58f, -2.52f, -2.52f,
         )
 
+        private val ANCHOR_PARENT = IntArray(JOINT_COUNT) { -1 }.apply {
+            this[17] = 15
+            this[18] = 16
+            this[19] = 15
+            this[20] = 16
+            this[21] = 15
+            this[22] = 16
+            this[29] = 27
+            this[30] = 28
+            this[31] = 27
+            this[32] = 28
+        }
+
