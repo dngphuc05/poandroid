@@ -588,3 +588,14 @@ class HybridPosePipeline(
             return null
         }
 
+        val pad = max(bodyW, bodyH) * ML_CROP_PAD_RATIO
+        val left = ((minX * imageW) - pad).toInt().coerceIn(0, imageW - 1)
+        val top = ((minY * imageH) - pad).toInt().coerceIn(0, imageH - 1)
+        val right = ((maxX * imageW) + pad).toInt().coerceIn(left + 1, imageW)
+        val bottom = ((maxY * imageH) + pad).toInt().coerceIn(top + 1, imageH)
+        val cropRect = Rect(left, top, right, bottom)
+        if (cropRect.width() < 16 || cropRect.height() < 16) {
+            if (cropSource !== bitmap) cropSource.recycle()
+            return null
+        }
+
