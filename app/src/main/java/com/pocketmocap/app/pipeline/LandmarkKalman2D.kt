@@ -95,3 +95,12 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
         val P01p = P01 + dt * P11 + Q01
         val P11p = P11 + Q11
 
+        // ── Fast-motion bypass ────────────────────────────────────────────────
+        // Genuine fast limb swing → snap to raw measurement; reset covariance.
+        if (maxInnovation > 0f && abs(z - pPred) > maxInnovation) {
+            position = z
+            velocity = (z - position) / dt
+            P00 = R;  P01 = 0f;  P11 = Q11
+            return position
+        }
+
