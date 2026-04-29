@@ -768,3 +768,11 @@ class HybridPosePipeline(
         return VisualTopScan(bestY.coerceIn(0f, 1f), confidence)
     }
 
+    private fun normalizedSpanForScan(
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+        a: Int,
+        b: Int,
+    ): Float? {
+        val va = visibility.getOrNull(a) ?: 0f
