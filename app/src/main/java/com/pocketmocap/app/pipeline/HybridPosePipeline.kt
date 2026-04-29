@@ -661,3 +661,15 @@ class HybridPosePipeline(
             .setMinPoseDetectionConfidence(0.3f)
             .setMinPosePresenceConfidence(0.3f)
             // Tracking confidence low → almost never triggers full re-detection.
+            // Re-detection is the expensive path; tracking is cheap interpolation.
+            .setMinTrackingConfidence(0.2f)
+            // Segmentation gives us a visual crown/top cue when landmarks sit below the hair/head silhouette.
+            .setOutputSegmentationMasks(true)
+            .build()
+        return runCatching {
+            PoseLandmarker.createFromOptions(context, options)
+        }.onFailure {
+            Log.w(TAG, "PoseLandmarker failed with delegate=$delegate: ${it.message}")
+        }.getOrNull()
+    }
+
