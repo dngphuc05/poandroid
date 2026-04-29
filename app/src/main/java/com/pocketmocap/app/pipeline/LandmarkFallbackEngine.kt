@@ -158,3 +158,10 @@ class LandmarkFallbackEngine {
         ): Pair<Float, Float> {
             val du = DEFAULT_TEMPLATE_U[jointIndex] - DEFAULT_TEMPLATE_U[anchorIndex]
             val dv = DEFAULT_TEMPLATE_V[jointIndex] - DEFAULT_TEMPLATE_V[anchorIndex]
+            return Pair(
+                (du * frame.xAxisX + dv * frame.yAxisX) * frame.scale,
+                (du * frame.xAxisY + dv * frame.yAxisY) * frame.scale,
+            )
+        }
+
+        private fun clampAnchorOffset(
