@@ -23,3 +23,10 @@ import kotlin.math.sqrt
  */
 class LandmarkFallbackEngine {
 
+    private data class BodyFrame(
+        val centerX: Float,
+        val centerY: Float,
+        val xAxisX: Float,
+        val xAxisY: Float,
+        val yAxisX: Float,
+        val yAxisY: Float,
