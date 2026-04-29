@@ -71,3 +71,11 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
     private val R   = rNoise
 
     // State
+    var position = 0f; private set
+    private var velocity = 0f
+
+    // Covariance (upper-triangle of symmetric 2×2)
+    private var P00 = 1f
+    private var P01 = 0f
+    private var P11 = 1f
+
