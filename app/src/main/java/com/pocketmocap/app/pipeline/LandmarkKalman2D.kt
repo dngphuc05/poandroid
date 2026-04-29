@@ -36,3 +36,16 @@ class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 
      *                       0.12 ≈ 38px at 320 — handles genuine fast limb swings.
      */
     fun update(
+        x: Float, y: Float,
+        visible: Boolean,
+        maxInnovation: Float = 0.12f,
+    ): Pair<Float, Float> =
+        if (visible) {
+            Pair(
+                kx.update(x, trust = 1f, maxInnovation = maxInnovation),
+                ky.update(y, trust = 1f, maxInnovation = maxInnovation),
+            )
+        } else {
+            Pair(kx.predictOnly(), ky.predictOnly())
+        }
+
