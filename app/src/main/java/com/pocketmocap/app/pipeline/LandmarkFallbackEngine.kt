@@ -330,3 +330,11 @@ class LandmarkFallbackEngine {
         }
     }
 
+    fun reset() {
+        lastBodyFrame = null
+        hasReliablePose.fill(false)
+        hasReliableAnchorOffset.fill(false)
+        lastReliableFrame.fill(null)
+        occludedFrameCount.fill(0)
+    }
+}
