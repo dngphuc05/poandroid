@@ -111,3 +111,12 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
         val K1 = P01p / S
         val innov = z - pPred
 
+        position  = pPred + K0 * innov
+        velocity  = vPred + K1 * innov
+        P00 = (1f - K0) * P00p
+        P01 = (1f - K0) * P01p
+        P11 = P11p - K1 * P01p
+
+        return position
+    }
+
