@@ -57,3 +57,12 @@ class LandmarkFallbackEngine {
             isValid = true,
         )
 
+        // Neutral standing pose in torso-local coordinates:
+        // shoulders and hips define the body frame, arms hang down, and legs drop straight below hips.
+        private val DEFAULT_TEMPLATE_U = floatArrayOf(
+            0.00f,
+            -0.05f, -0.08f, -0.11f, 0.05f, 0.08f, 0.11f, -0.17f, 0.17f, -0.04f, 0.04f,
+            -0.34f, 0.34f, -0.38f, 0.38f, -0.40f, 0.40f, -0.42f, 0.42f, -0.39f, 0.39f, -0.36f, 0.36f,
+            -0.18f, 0.18f, -0.18f, 0.18f, -0.18f, 0.18f, -0.18f, 0.18f, -0.10f, 0.10f,
+        )
+
