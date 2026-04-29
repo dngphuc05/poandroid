@@ -23,3 +23,16 @@ import kotlin.math.sqrt
  */
 class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 3e-6f) {
 
+    private val kx = KalmanFilter1D(fps, qScale, rNoise)
+    private val ky = KalmanFilter1D(fps, qScale, rNoise)
+
+    /**
+     * Update with a new measurement.
+     *
+     * @param visible        Whether MediaPipe returned a confident landmark.
+     *                       false → predict-only step (extrapolate from velocity).
+     * @param maxInnovation  Fast-motion bypass threshold in normalized units.
+     *                       If the measurement jumps further than this, snap immediately.
+     *                       0.12 ≈ 38px at 320 — handles genuine fast limb swings.
+     */
+    fun update(
