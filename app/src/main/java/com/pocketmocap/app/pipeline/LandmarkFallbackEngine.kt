@@ -16,3 +16,10 @@ import kotlin.math.sqrt
  * - no learned per-user template
  * - short torso-relative holds for major joints
  * - wrist/ankle-local holds for finger/toe detail so they stay attached
+ *
+ * Hidden joints first try to stay near their most recent believable local pose.
+ * If the torso has turned too much or the occlusion lasts too long, we fall back
+ * to the neutral droop-down template aligned to the current torso.
+ */
+class LandmarkFallbackEngine {
+
