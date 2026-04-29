@@ -731,3 +731,13 @@ class HybridPosePipeline(
                 0f
             }
         fun toDisplayNorm(px: Int, py: Int): Pair<Float, Float> {
+            val x = (px + 0.5f) / width.toFloat()
+            val y = (py + 0.5f) / height.toFloat()
+            return when (((rotationDegrees % 360) + 360) % 360) {
+                90 -> Pair((1f - y).coerceIn(0f, 1f), x.coerceIn(0f, 1f))
+                180 -> Pair((1f - x).coerceIn(0f, 1f), (1f - y).coerceIn(0f, 1f))
+                270 -> Pair(y.coerceIn(0f, 1f), (1f - x).coerceIn(0f, 1f))
+                else -> Pair(x.coerceIn(0f, 1f), y.coerceIn(0f, 1f))
+            }
+        }
+        var bestY = Float.POSITIVE_INFINITY
