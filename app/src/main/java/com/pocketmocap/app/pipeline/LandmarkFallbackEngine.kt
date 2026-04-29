@@ -195,3 +195,14 @@ class LandmarkFallbackEngine {
     private val lastReliableAnchorDy = FloatArray(JOINT_COUNT)
     private val hasReliableAnchorOffset = BooleanArray(JOINT_COUNT)
 
+    fun complete(
+        sourceX: FloatArray,
+        sourceY: FloatArray,
+        sourceVisibility: FloatArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (sourceX.size < JOINT_COUNT || sourceY.size < JOINT_COUNT || sourceVisibility.size < JOINT_COUNT) return
+        if (outX.size < JOINT_COUNT || outY.size < JOINT_COUNT || outVisibility.size < JOINT_COUNT) return
+
