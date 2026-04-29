@@ -306,3 +306,12 @@ class LandmarkFallbackEngine {
                 }
             }
 
+            val fallbackX: Float
+            val fallbackY: Float
+            if (bodyFrame.isValid) {
+                fallbackX = bodyFrame.centerX +
+                    (fallbackU * bodyFrame.xAxisX + fallbackV * bodyFrame.yAxisX) * bodyFrame.scale
+                fallbackY = bodyFrame.centerY +
+                    (fallbackU * bodyFrame.xAxisY + fallbackV * bodyFrame.yAxisY) * bodyFrame.scale
+            } else {
+                val defaultPoint = defaultJointPoint(i)
