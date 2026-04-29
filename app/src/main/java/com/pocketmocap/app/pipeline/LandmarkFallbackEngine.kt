@@ -253,3 +253,14 @@ class LandmarkFallbackEngine {
             val visibility = outVisibility[i]
             if (visibility >= OBSERVED_THRESHOLD) continue
 
+            val anchorFrame = if (bodyFrame.isValid) bodyFrame else (lastBodyFrame ?: DEFAULT_BODY_FRAME)
+            val anchorIndex = ANCHOR_PARENT[i]
+            if (anchorIndex >= 0) {
+                val anchorX = outX[anchorIndex]
+                val anchorY = outY[anchorIndex]
+                val baseOffset = if (hasReliableAnchorOffset[i]) {
+                    Pair(lastReliableAnchorDx[i], lastReliableAnchorDy[i])
+                } else {
+                    anchorOffsetForFrame(anchorFrame, i, anchorIndex)
+                }
+                val clamped = clampAnchorOffset(
