@@ -784,3 +784,12 @@ class HybridPosePipeline(
         val by = yNorm.getOrNull(b) ?: return null
         if (!ax.isFinite() || !ay.isFinite() || !bx.isFinite() || !by.isFinite()) return null
         val dx = ax - bx
+        val dy = ay - by
+        return kotlin.math.sqrt(dx * dx + dy * dy).takeIf { it.isFinite() && it > 1e-4f }
+    }
+
+    private fun emitState(newState: PipelineState) {
+        state = newState
+        listener.onStateChanged(newState)
+    }
+}
