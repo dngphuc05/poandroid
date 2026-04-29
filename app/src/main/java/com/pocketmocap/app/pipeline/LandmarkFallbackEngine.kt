@@ -299,3 +299,10 @@ class LandmarkFallbackEngine {
                         scaleRatio in MIN_SCALE_RATIO..MAX_SCALE_RATIO &&
                         occludedFrameCount[i] <= MAX_HELD_OCCLUSION_FRAMES
 
+                if (bodyFrameCompatible) {
+                    fallbackU = lastReliableU[i]
+                    fallbackV = lastReliableV[i]
+                    usingHeldPose = true
+                }
+            }
+
