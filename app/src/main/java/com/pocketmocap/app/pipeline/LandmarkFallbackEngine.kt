@@ -264,3 +264,15 @@ class LandmarkFallbackEngine {
                     anchorOffsetForFrame(anchorFrame, i, anchorIndex)
                 }
                 val clamped = clampAnchorOffset(
+                    frame = anchorFrame,
+                    jointIndex = i,
+                    anchorIndex = anchorIndex,
+                    dx = baseOffset.first,
+                    dy = baseOffset.second,
+                )
+                outX[i] = (anchorX + clamped.first).coerceIn(0f, 1f)
+                outY[i] = (anchorY + clamped.second).coerceIn(0f, 1f)
+                outVisibility[i] = maxOf(visibility, FALLBACK_VISIBILITY)
+                continue
+            }
+
