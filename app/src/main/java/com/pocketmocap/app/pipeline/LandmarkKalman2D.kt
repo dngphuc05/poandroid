@@ -16,3 +16,10 @@ import kotlin.math.sqrt
  * Measurement: z = p
  *
  * Tuning knobs (normalized coord space, 0–1):
+ *   qScale  — process noise scale. Higher→more responsive/jittery.
+ *             Default 8e-4 ≈ "allow 0.028/frame velocity change".
+ *   rNoise  — measurement noise variance. Lower→trust MediaPipe more.
+ *             Default 3e-6 ≈ ~0.0017 std (~0.55px at 320 resolution).
+ */
+class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 3e-6f) {
+
