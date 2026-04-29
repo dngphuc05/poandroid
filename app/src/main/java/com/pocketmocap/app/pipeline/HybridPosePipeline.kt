@@ -717,3 +717,17 @@ class HybridPosePipeline(
             ByteBufferExtractor.extract(mask)
         }.getOrNull() ?: return null
         val pixelCount = width * height
+        val floatBuffer = if (buffer.capacity() >= pixelCount * 4) {
+            buffer.order(ByteOrder.nativeOrder()).asFloatBuffer()
+        } else {
+            null
+        }
+        fun maskValue(offset: Int): Float =
+            if (floatBuffer != null && floatBuffer.capacity() > offset) {
+                floatBuffer.get(offset)
+            } else if (buffer.capacity() > offset) {
+                (buffer.get(offset).toInt() and 0xff) / 255f
+            } else {
+                0f
+            }
+        fun toDisplayNorm(px: Int, py: Int): Pair<Float, Float> {
