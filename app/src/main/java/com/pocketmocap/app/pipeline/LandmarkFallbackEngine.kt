@@ -39,3 +39,21 @@ class LandmarkFallbackEngine {
         private const val OBSERVED_THRESHOLD = 0.50f
         private const val HARD_FALLBACK_THRESHOLD = 0.20f
         // Synthetic 2D fallback points are useful as a weak visual/temporal hint, but
+        // they must not be counted as real observed body bounds or trusted DLT input.
+        private const val FALLBACK_VISIBILITY = 0.18f
+        private const val MIN_TORSO_SCALE = 0.08f
+        private const val MAX_HELD_OCCLUSION_FRAMES = 18
+        private const val MIN_BODY_FRAME_SIMILARITY = 0.74f
+        private const val MIN_SCALE_RATIO = 0.72f
+        private const val MAX_SCALE_RATIO = 1.38f
+        private val DEFAULT_BODY_FRAME = BodyFrame(
+            centerX = 0.5f,
+            centerY = 0.43f,
+            xAxisX = 1f,
+            xAxisY = 0f,
+            yAxisX = 0f,
+            yAxisY = -1f,
+            scale = 0.18f,
+            isValid = true,
+        )
+
