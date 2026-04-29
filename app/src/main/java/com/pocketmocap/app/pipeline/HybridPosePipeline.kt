@@ -631,3 +631,10 @@ class HybridPosePipeline(
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
     }
 
+    @Synchronized
+    private fun ensurePoseLandmarker(): PoseLandmarker? {
+        poseLandmarker?.let { return it }
+        Log.i(TAG, "Creating PoseLandmarker (thread=${Thread.currentThread().name})")
+
+        // Try GPU delegate first — 3-5ms vs CPU's 15-20ms on device
+        // Falls back to CPU if GPU init fails (old device / no GLES3.1)
