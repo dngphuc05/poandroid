@@ -652,3 +652,12 @@ class HybridPosePipeline(
                 .build()
         }.getOrNull() ?: return null
 
+        val options = PoseLandmarker.PoseLandmarkerOptions.builder()
+            .setBaseOptions(baseOptions)
+            .setRunningMode(RunningMode.VIDEO)
+            .setNumPoses(MAX_TRACKED_POSES)
+            // Lower thresholds: model computes fewer internal classification passes.
+            // 0.3 still reliably detects a single person in frame; 0.5 was conservative.
+            .setMinPoseDetectionConfidence(0.3f)
+            .setMinPosePresenceConfidence(0.3f)
+            // Tracking confidence low → almost never triggers full re-detection.
