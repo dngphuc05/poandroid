@@ -638,3 +638,10 @@ class HybridPosePipeline(
 
         // Try GPU delegate first — 3-5ms vs CPU's 15-20ms on device
         // Falls back to CPU if GPU init fails (old device / no GLES3.1)
+        poseLandmarker = tryCreateLandmarker(Delegate.GPU)
+            ?: tryCreateLandmarker(Delegate.CPU)
+        Log.i(TAG, "PoseLandmarker ready: ${poseLandmarker != null}")
+        return poseLandmarker
+    }
+
+    private fun tryCreateLandmarker(delegate: Delegate): PoseLandmarker? {
