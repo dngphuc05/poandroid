@@ -143,3 +143,9 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
 
     /** Snap to position with zero velocity — covariance reset to measurement noise. */
     fun setPosition(z: Float) {
+        position = z
+        velocity = 0f
+        P00 = R;  P01 = 0f;  P11 = Q11
+        initialized = true
+    }
+}
