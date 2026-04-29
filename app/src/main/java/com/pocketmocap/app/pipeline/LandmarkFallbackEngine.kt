@@ -142,3 +142,12 @@ class LandmarkFallbackEngine {
             )
         }
 
+        private fun defaultJointPoint(index: Int): Pair<Float, Float> = Pair(
+            DEFAULT_BODY_FRAME.centerX +
+                (DEFAULT_TEMPLATE_U[index] * DEFAULT_BODY_FRAME.xAxisX + DEFAULT_TEMPLATE_V[index] * DEFAULT_BODY_FRAME.yAxisX) *
+                DEFAULT_BODY_FRAME.scale,
+            DEFAULT_BODY_FRAME.centerY +
+                (DEFAULT_TEMPLATE_U[index] * DEFAULT_BODY_FRAME.xAxisY + DEFAULT_TEMPLATE_V[index] * DEFAULT_BODY_FRAME.yAxisY) *
+                DEFAULT_BODY_FRAME.scale,
+        )
+
