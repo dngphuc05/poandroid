@@ -112,3 +112,10 @@ class LandmarkFallbackEngine {
                 return fallback ?: DEFAULT_BODY_FRAME.copy(isValid = false)
             }
 
+            val yAxisX = torsoDx / torsoLen
+            val yAxisY = torsoDy / torsoLen
+
+            var xAxisX = -yAxisY
+            var xAxisY = yAxisX
+
+            val leftSideX = (x[11] + x[23]) * 0.5f
