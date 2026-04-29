@@ -673,3 +673,13 @@ class HybridPosePipeline(
         }.getOrNull()
     }
 
+    private fun estimateVisualTopFromSegmentation(
+        result: PoseLandmarkerResult,
+        poseIndex: Int,
+        rotationDegrees: Int,
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+    ): VisualTopScan? {
+        if (xNorm.size < JOINT_COUNT || yNorm.size < JOINT_COUNT || visibility.size < JOINT_COUNT) return null
+        val masks = result.segmentationMasks().orElse(null) ?: return null
