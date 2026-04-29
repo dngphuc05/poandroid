@@ -165,3 +165,10 @@ class LandmarkFallbackEngine {
         }
 
         private fun clampAnchorOffset(
+            frame: BodyFrame,
+            jointIndex: Int,
+            anchorIndex: Int,
+            dx: Float,
+            dy: Float,
+        ): Pair<Float, Float> {
+            val defaultOffset = anchorOffsetForFrame(frame, jointIndex, anchorIndex)
