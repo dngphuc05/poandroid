@@ -617,3 +617,10 @@ class HybridPosePipeline(
                 cropWidth = cropRect.width(),
                 cropHeight = cropRect.height(),
                 jpegQuality = ML_JPEG_QUALITY,
+                cropPadRatio = ML_CROP_PAD_RATIO,
+            )
+        }.also {
+            if (cropSource !== bitmap) cropSource.recycle()
+        }.getOrNull()
+    }
+
