@@ -128,3 +128,10 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
         position += velocity * dt
         velocity *= 0.85f
         // Advance covariance (grows with Q — uncertainty increases each frame)
+        val P00p = P00 + 2f * dt * P01 + dt * dt * P11 + Q00
+        val P01p = P01 + dt * P11 + Q01
+        val P11p = P11 + Q11
+        P00 = P00p;  P01 = P01p;  P11 = P11p
+        return position
+    }
+
