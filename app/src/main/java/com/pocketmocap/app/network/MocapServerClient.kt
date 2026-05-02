@@ -219,3 +219,13 @@ class MocapServerClient(
         Log.i(TAG, "Sent calibration: ${imageWidth}x${imageHeight} fx=$fx fy=$fy")
     }
 
+    /**
+     * Send a bootstrap frame (2D landmarks for bone constraint learning).
+     */
+    fun sendBootstrapFrame(landmarks: List<LandmarkData>) {
+        val data = JSONObject().apply {
+            put("landmarks", landmarksToJson(landmarks))
+        }
+        socket?.emit("bootstrap", data)
+    }
+
