@@ -126,3 +126,19 @@ class MocapServerClient(
                 }
                 on("pose_3d") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
+                    deliverPose3DIfFresh(data)
+                }
+                on("error") { args ->
+                    val data = args.firstOrNull() as? JSONObject
+                    val msg = data?.optString("message", "Server error") ?: "Server error"
+                    Log.e(TAG, "Server error: $msg")
+                    listener.onError(msg)
+                }
+                connect()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to connect", e)
+            listener.onError("Failed to connect: ${e.message}")
+        }
+    }
+
