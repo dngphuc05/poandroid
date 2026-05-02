@@ -74,3 +74,14 @@ class MocapServerClient(
                     rtcFramesSinceLastPose = 0
                     emit("register")
                 }
+                on(Socket.EVENT_DISCONNECT) {
+                    Log.i(TAG, "Disconnected")
+                    listener.onDisconnected()
+                }
+                on(Socket.EVENT_CONNECT_ERROR) { args ->
+                    val err = args.firstOrNull()?.toString() ?: "unknown"
+                    Log.e(TAG, "Connection error: $err")
+                    listener.onError("Connection failed: $err")
+                }
+                on("session_created") { args ->
+                    val data = args.firstOrNull() as? JSONObject
