@@ -229,3 +229,11 @@ class MocapServerClient(
         socket?.emit("bootstrap", data)
     }
 
+    /**
+     * Send a capture frame (2D landmarks → server returns 3D pose).
+     *
+     * Routing:
+     *  • WebRTC DataChannel (isRtcReady=true) → compact array JSON, UDP-like, low latency
+     *  • Socket.IO fallback                   → named-object JSON over TCP
+     */
+    fun sendFrame(
