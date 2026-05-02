@@ -112,3 +112,10 @@ class MocapServerClient(
                 }
                 on("calibration_ack") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
+                    val status = data.optString("status", "")
+                    val state = data.optString("state", "")
+                    listener.onCalibrationAck(status == "ok", state)
+                }
+                on("bootstrap_ack") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
+                    val progress = data.optJSONObject("bootstrap_progress")
