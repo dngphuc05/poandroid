@@ -85,3 +85,12 @@ class MocapServerClient(
                 }
                 on("session_created") { args ->
                     val data = args.firstOrNull() as? JSONObject
+                    if (data == null) {
+                        Log.w(TAG, "session_created: no JSONObject in args (${args.map { it?.javaClass?.name }})")
+                        return@on
+                    }
+                    val sid = data.optString("session_id", "")
+                    Log.i(TAG, "Session created: $sid")
+                    sessionId.set(sid)
+                    listener.onConnected(sid)
+                    // Kick off WebRTC negotiation immediately after session is confirmed
