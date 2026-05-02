@@ -23,3 +23,10 @@ import java.util.concurrent.atomic.AtomicReference
  * alive only for session lifecycle events and as a fallback.
  */
 class MocapServerClient(
+    private val context: Context,
+    private val listener: Listener,
+) {
+    interface Listener {
+        fun onConnected(sessionId: String)
+        fun onDisconnected()
+        fun onCalibrationAck(success: Boolean, state: String)
