@@ -255,3 +255,21 @@ class MocapServerClient(
         mlImageCropWidth: Int? = null,
         mlImageCropHeight: Int? = null,
         mlImageJpegQuality: Int? = null,
+        mlImageCropPadRatio: Float? = null,
+    ) {
+        if (isRtcReady) {
+            val json = buildCompactFrameJson(
+                frameIndex,
+                timestampUs,
+                imageWidth,
+                imageHeight,
+                rotationDegrees,
+                landmarks,
+                worldTracking,
+                sceneMetrics,
+                mlImageBase64,
+                mlImageWidth,
+                mlImageHeight,
+                mlImageSourceWidth,
+                mlImageSourceHeight,
+                mlImageCropLeft,
