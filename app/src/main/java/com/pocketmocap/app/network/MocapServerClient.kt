@@ -56,3 +56,21 @@ class MocapServerClient(
     val isConnected: Boolean get() = socket?.connected() == true
     val isRtcReady: Boolean get() = !rtcDisabledForFrames && rtcChannel?.isReady == true
 
+    fun connect(url: String) {
+        serverUrl = url
+        try {
+            val opts = IO.Options.builder()
+                .setReconnection(true)
+                .setReconnectionAttempts(10)
+                .setReconnectionDelay(1000)
+                .setTimeout(10000)
+                .build()
+            socket = IO.socket(URI.create(url), opts).apply {
+                on(Socket.EVENT_CONNECT) {
+                    Log.i(TAG, "Connected to $url, sending register")
+                    latestPoseFrameIndex = -1
+                    latestPoseTimestampUs = 0L
+                    rtcDisabledForFrames = false
+                    rtcFramesSinceLastPose = 0
+                    emit("register")
+                }
