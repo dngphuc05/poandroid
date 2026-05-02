@@ -142,3 +142,16 @@ class MocapServerClient(
         }
     }
 
+    fun disconnect() {
+        rtcChannel?.dispose()
+        rtcChannel = null
+        socket?.disconnect()
+        socket?.off()
+        socket = null
+        sessionId.set(null)
+        latestPoseFrameIndex = -1
+        latestPoseTimestampUs = 0L
+        rtcDisabledForFrames = false
+        rtcFramesSinceLastPose = 0
+    }
+
