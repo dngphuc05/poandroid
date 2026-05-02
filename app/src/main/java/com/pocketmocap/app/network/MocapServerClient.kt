@@ -155,3 +155,21 @@ class MocapServerClient(
         rtcFramesSinceLastPose = 0
     }
 
+    /** Create the WebRTC channel and fire the offer over Socket.IO. */
+    private fun initiateRtc() {
+        if (rtcChannel != null) return
+        rtcChannel = WebRtcPoseChannel(
+            context = context,
+            onOffer = { sdp, type ->
+                socket?.emit("rtc_offer", JSONObject().apply {
+                    put("sdp", sdp)
+                    put("type", type)
+                })
+                Log.i(TAG, "Sent rtc_offer")
+            },
+            onIceCandidate = { candidate, sdpMid, sdpMLineIndex ->
+                socket?.emit("rtc_ice", JSONObject().apply {
+                    put("candidate", candidate)
+                    put("sdpMid", sdpMid)
+                    put("sdpMLineIndex", sdpMLineIndex)
+                })
