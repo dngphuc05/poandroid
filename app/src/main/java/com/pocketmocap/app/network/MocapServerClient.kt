@@ -196,3 +196,14 @@ class MocapServerClient(
         runCatching { rtcChannel?.close() }
     }
 
+    /**
+     * Send camera intrinsics for calibration.
+     */
+    fun sendCalibration(
+        fx: Double, fy: Double, cx: Double, cy: Double,
+        imageWidth: Int, imageHeight: Int,
+        mirrorDistance: Float,
+    ) {
+        latestPoseFrameIndex = -1
+        latestPoseTimestampUs = 0L
+        val data = JSONObject().apply {
