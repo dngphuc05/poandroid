@@ -187,3 +187,12 @@ class MocapServerClient(
         rtcChannel!!.createOffer()
     }
 
+    private fun disableRtcFrameTransport(reason: String) {
+        if (!rtcDisabledForFrames) {
+            Log.w(TAG, "Disabling WebRTC frame transport; Socket.IO fallback active. reason=$reason")
+        }
+        rtcDisabledForFrames = true
+        rtcFramesSinceLastPose = 0
+        runCatching { rtcChannel?.close() }
+    }
+
