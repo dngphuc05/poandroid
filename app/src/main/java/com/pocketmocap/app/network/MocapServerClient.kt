@@ -173,3 +173,17 @@ class MocapServerClient(
                     put("sdpMid", sdpMid)
                     put("sdpMLineIndex", sdpMLineIndex)
                 })
+            },
+            onPose3D = { json -> deliverPose3DIfFresh(json) },
+            onChannelReady = {
+                Log.i(TAG, "WebRTC DataChannel OPEN — low-latency path active")
+                listener.onRtcChannelReady()
+            },
+            onError = { msg ->
+                Log.w(TAG, "WebRTC error (will fall back to Socket.IO): $msg")
+                disableRtcFrameTransport(msg)
+            },
+        )
+        rtcChannel!!.createOffer()
+    }
+
