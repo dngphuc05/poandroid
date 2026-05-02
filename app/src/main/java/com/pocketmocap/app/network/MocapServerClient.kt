@@ -237,3 +237,21 @@ class MocapServerClient(
      *  • Socket.IO fallback                   → named-object JSON over TCP
      */
     fun sendFrame(
+        frameIndex: Int,
+        timestampUs: Long,
+        imageWidth: Int,
+        imageHeight: Int,
+        rotationDegrees: Int = 0,
+        landmarks: List<LandmarkData>,
+        worldTracking: WorldTrackingSnapshot? = null,
+        sceneMetrics: SceneMetricSnapshot? = null,
+        mlImageBase64: String? = null,
+        mlImageWidth: Int? = null,
+        mlImageHeight: Int? = null,
+        mlImageSourceWidth: Int? = null,
+        mlImageSourceHeight: Int? = null,
+        mlImageCropLeft: Int? = null,
+        mlImageCropTop: Int? = null,
+        mlImageCropWidth: Int? = null,
+        mlImageCropHeight: Int? = null,
+        mlImageJpegQuality: Int? = null,
