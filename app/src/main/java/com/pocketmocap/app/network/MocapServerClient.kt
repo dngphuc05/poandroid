@@ -119,3 +119,10 @@ class MocapServerClient(
                 on("bootstrap_ack") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
                     val progress = data.optJSONObject("bootstrap_progress")
+                    val collected = progress?.optInt("collected", 0) ?: 0
+                    val target = progress?.optInt("target", 15) ?: 15
+                    val complete = data.optString("status") == "complete"
+                    listener.onBootstrapProgress(collected, target, complete)
+                }
+                on("pose_3d") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
