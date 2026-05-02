@@ -42,3 +42,10 @@ class MocapServerClient(
         private const val RTC_MAX_FRAME_BYTES = 180_000
     }
 
+    private var socket: Socket? = null
+    private val sessionId = AtomicReference<String?>(null)
+    private var serverUrl: String = ""
+    @Volatile private var latestPoseFrameIndex = -1
+    @Volatile private var latestPoseTimestampUs = 0L
+
+    // WebRTC DataChannel — replaces Socket.IO for frame transport once open
