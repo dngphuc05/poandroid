@@ -94,3 +94,14 @@ class MocapServerClient(
                     sessionId.set(sid)
                     listener.onConnected(sid)
                     // Kick off WebRTC negotiation immediately after session is confirmed
+                    initiateRtc()
+                }
+                on("rtc_answer") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
+                    val sdp = data.optString("sdp")
+                    val type = data.optString("type")
+                    Log.i(TAG, "Received rtc_answer")
+                    rtcChannel?.setRemoteAnswer(sdp, type)
+                }
+                on("rtc_ice") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
