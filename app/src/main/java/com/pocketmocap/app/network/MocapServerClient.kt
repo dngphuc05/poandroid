@@ -105,3 +105,10 @@ class MocapServerClient(
                 }
                 on("rtc_ice") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
+                    val candidate = data.optString("candidate")
+                    val sdpMid = data.optString("sdpMid", "0")
+                    val sdpMLineIndex = data.optInt("sdpMLineIndex", 0)
+                    rtcChannel?.addRemoteIceCandidate(candidate, sdpMid, sdpMLineIndex)
+                }
+                on("calibration_ack") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
