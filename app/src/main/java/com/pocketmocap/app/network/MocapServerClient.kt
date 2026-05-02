@@ -30,3 +30,15 @@ class MocapServerClient(
         fun onConnected(sessionId: String)
         fun onDisconnected()
         fun onCalibrationAck(success: Boolean, state: String)
+        fun onBootstrapProgress(collected: Int, target: Int, complete: Boolean)
+        fun onPose3DReceived(pose3dJson: JSONObject)
+        fun onRtcChannelReady()          // WebRTC DataChannel is open — low-latency path active
+        fun onError(message: String)
+    }
+
+    companion object {
+        private const val TAG = "MocapServerClient"
+        private const val RTC_NO_POSE_FRAME_LIMIT = 18
+        private const val RTC_MAX_FRAME_BYTES = 180_000
+    }
+
