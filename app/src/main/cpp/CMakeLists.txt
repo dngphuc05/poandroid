@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.22.1)
+
+project(physical_scene_optimizer)
+
+set(THIRD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party")
+set(EIGEN_DIR "${THIRD_PARTY_DIR}/eigen")
+set(CERES_DIR "${THIRD_PARTY_DIR}/ceres-solver")
+
+if (EXISTS "${CERES_DIR}/CMakeLists.txt" AND EXISTS "${EIGEN_DIR}/Eigen")
+    set(Eigen3_DIR "${THIRD_PARTY_DIR}/eigen3-cmake" CACHE PATH "Vendored Eigen config dir" FORCE)
+    set(EIGEN3_INCLUDE_DIR "${EIGEN_DIR}" CACHE PATH "Vendored Eigen include dir" FORCE)
+    set(EIGEN_INCLUDE_DIR "${EIGEN_DIR}" CACHE PATH "Vendored Eigen include dir" FORCE)
+
+    set(MINIGLOG ON CACHE BOOL "" FORCE)
+    set(MINIGLOG_MAX_LOG_LEVEL 2 CACHE STRING "" FORCE)
+    set(SUITESPARSE OFF CACHE BOOL "" FORCE)
+    set(CXSPARSE OFF CACHE BOOL "" FORCE)
+    set(LAPACK OFF CACHE BOOL "" FORCE)
+    set(EIGENSPARSE OFF CACHE BOOL "" FORCE)
+    set(ACCELERATESPARSE OFF CACHE BOOL "" FORCE)
+    set(BUILD_TESTING OFF CACHE BOOL "" FORCE)
+    set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(BUILD_BENCHMARKS OFF CACHE BOOL "" FORCE)
+    set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+
+    add_subdirectory("${CERES_DIR}" "${CMAKE_BINARY_DIR}/ceres" EXCLUDE_FROM_ALL)
+    set(POCKET_MOCAP_HAS_CERES TRUE)
+else()
+    set(POCKET_MOCAP_HAS_CERES FALSE)
+endif()
+
+add_library(
+    physical_scene_optimizer
+    SHARED
+    physical_scene_optimizer.cpp
+)
+
+target_compile_features(physical_scene_optimizer PRIVATE cxx_std_17)
+
+target_compile_definitions(
+    physical_scene_optimizer
+    PRIVATE
+    POCKET_MOCAP_HAS_CERES=$<BOOL:${POCKET_MOCAP_HAS_CERES}>
+)
+
+target_include_directories(
+    physical_scene_optimizer
+    PRIVATE
+    "${EIGEN_DIR}"
+)
+
+if (POCKET_MOCAP_HAS_CERES)
+    target_link_libraries(physical_scene_optimizer Ceres::ceres)
+endif()
+
+target_link_libraries(
+    physical_scene_optimizer
+    android
+    log
+)
