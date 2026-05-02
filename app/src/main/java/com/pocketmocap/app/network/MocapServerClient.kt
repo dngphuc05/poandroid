@@ -49,3 +49,10 @@ class MocapServerClient(
     @Volatile private var latestPoseTimestampUs = 0L
 
     // WebRTC DataChannel — replaces Socket.IO for frame transport once open
+    private var rtcChannel: WebRtcPoseChannel? = null
+    @Volatile private var rtcDisabledForFrames = false
+    @Volatile private var rtcFramesSinceLastPose = 0
+
+    val isConnected: Boolean get() = socket?.connected() == true
+    val isRtcReady: Boolean get() = !rtcDisabledForFrames && rtcChannel?.isReady == true
+
