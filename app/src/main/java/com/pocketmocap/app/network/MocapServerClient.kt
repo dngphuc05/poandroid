@@ -273,3 +273,10 @@ class MocapServerClient(
                 mlImageSourceWidth,
                 mlImageSourceHeight,
                 mlImageCropLeft,
+                mlImageCropTop,
+                mlImageCropWidth,
+                mlImageCropHeight,
+                mlImageJpegQuality,
+                mlImageCropPadRatio,
+            )
+            val payloadBytes = json.toByteArray(Charsets.UTF_8).size
