@@ -207,3 +207,15 @@ class MocapServerClient(
         latestPoseFrameIndex = -1
         latestPoseTimestampUs = 0L
         val data = JSONObject().apply {
+            put("fx", fx)
+            put("fy", fy)
+            put("cx", cx)
+            put("cy", cy)
+            put("image_width", imageWidth)
+            put("image_height", imageHeight)
+            put("mirror_distance", mirrorDistance.toDouble())
+        }
+        socket?.emit("calibrate", data)
+        Log.i(TAG, "Sent calibration: ${imageWidth}x${imageHeight} fx=$fx fy=$fy")
+    }
+
