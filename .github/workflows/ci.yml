@@ -1,0 +1,8 @@
+name: poandroid CI
+
+on:
+  push:
+    branches: [main, develop, "feature/**", "hotfix/**"]
+  pull_request:
+    branches: [main, develop]
+
