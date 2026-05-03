@@ -389,3 +389,21 @@ class MocapServerClient(
         mlImageCropWidth: Int?,
         mlImageCropHeight: Int?,
         mlImageJpegQuality: Int?,
+        mlImageCropPadRatio: Float?,
+    ): String {
+        // Use simple %.4f formatting — avoids 198 BigDecimal heap allocations per frame
+        val sb = StringBuilder(landmarks.size * 45 + 60)
+        sb.append("{\"fi\":").append(frameIndex)
+        sb.append(",\"ts\":").append(timestampUs)
+        sb.append(",\"iw\":").append(imageWidth)
+        sb.append(",\"ih\":").append(imageHeight)
+        sb.append(",\"rd\":").append(rotationDegrees)
+        sb.append(",\"lm\":[")
+        landmarks.forEachIndexed { i, lm ->
+            if (i > 0) sb.append(',')
+            sb.append('[')
+            sb.append(String.format(Locale.US, "%.4f", lm.x)).append(',')
+            sb.append(String.format(Locale.US, "%.4f", lm.y)).append(',')
+            sb.append(String.format(Locale.US, "%.5f", lm.z)).append(',')
+            sb.append(String.format(Locale.US, "%.5f", lm.xMetric)).append(',')
+            sb.append(String.format(Locale.US, "%.5f", lm.yMetric)).append(',')
