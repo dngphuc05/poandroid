@@ -70,3 +70,15 @@ class BodyTurnTransitionDetectorTest {
         assertFalse(detector.update(pose.x, pose.y, pose.visibility).fastUpdateActive)
     }
 
+    private class Pose2D {
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val visibility = FloatArray(33) { 0.95f }
+
+        init {
+            y[11] = 0.35f
+            y[12] = 0.35f
+            y[23] = 0.58f
+            y[24] = 0.58f
+        }
+
