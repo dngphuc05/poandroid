@@ -35,3 +35,9 @@ jobs:
           name: lint-results
           path: app/build/reports/lint-results*.html
 
+  test:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
