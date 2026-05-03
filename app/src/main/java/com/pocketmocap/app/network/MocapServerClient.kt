@@ -299,3 +299,21 @@ class MocapServerClient(
                 }
             }
             // Fall through to Socket.IO if DataChannel is unhealthy or unsafe for this payload.
+        }
+        val data = JSONObject().apply {
+            put("frame_index", frameIndex)
+            put("timestamp_us", timestampUs)
+            put("image_width", imageWidth)
+            put("image_height", imageHeight)
+            put("rotation_degrees", rotationDegrees)
+            put("landmarks", landmarksToNamedJson(landmarks))
+            worldTracking?.let { put("world_tracking", it.toJson()) }
+            sceneMetrics?.let { put("scene_metrics", it.toJson()) }
+            putMlImagePayload(
+                mlImageBase64,
+                mlImageWidth,
+                mlImageHeight,
+                mlImageSourceWidth,
+                mlImageSourceHeight,
+                mlImageCropLeft,
+                mlImageCropTop,
