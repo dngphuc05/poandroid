@@ -87,3 +87,10 @@ class WebRtcPoseChannel(
         // Reliable + ordered: SCTP over UDP still beats Socket.IO/TCP for latency on LAN,
         // but we don't drop frames — the GRU and Kalman filter need sequential input.
         val dcInit = DataChannel.Init().apply {
+            ordered = true
+            // maxRetransmits / maxRetransmitTimeMs left at default (-1 = unlimited retransmits)
+        }
+        dataChannel = pc!!.createDataChannel(DATA_CHANNEL_LABEL, dcInit)
+            ?.also { it.registerObserver(dcObserver) }
+            ?: run { onError("DataChannel creation failed"); return }
+
