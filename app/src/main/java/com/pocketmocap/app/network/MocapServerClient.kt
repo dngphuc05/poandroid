@@ -371,3 +371,21 @@ class MocapServerClient(
      *   {"fi":42,"ts":1234,"iw":1080,"ih":1920,"lm":[[x,y,z,xm,ym,zm,vis,pres,conf],...]}
      */
     private fun buildCompactFrameJson(
+        frameIndex: Int,
+        timestampUs: Long,
+        imageWidth: Int,
+        imageHeight: Int,
+        rotationDegrees: Int,
+        landmarks: List<LandmarkData>,
+        worldTracking: WorldTrackingSnapshot?,
+        sceneMetrics: SceneMetricSnapshot?,
+        mlImageBase64: String?,
+        mlImageWidth: Int?,
+        mlImageHeight: Int?,
+        mlImageSourceWidth: Int?,
+        mlImageSourceHeight: Int?,
+        mlImageCropLeft: Int?,
+        mlImageCropTop: Int?,
+        mlImageCropWidth: Int?,
+        mlImageCropHeight: Int?,
+        mlImageJpegQuality: Int?,
