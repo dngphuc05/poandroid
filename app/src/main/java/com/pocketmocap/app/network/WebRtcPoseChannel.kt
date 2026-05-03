@@ -44,3 +44,17 @@ class WebRtcPoseChannel(
                 .createIceServer()
         )
 
+        @Volatile
+        private var factoryInitialized = false
+
+        fun initializeFactory(context: Context) {
+            if (factoryInitialized) return
+            PeerConnectionFactory.initialize(
+                PeerConnectionFactory.InitializationOptions.builder(context.applicationContext)
+                    .setEnableInternalTracer(false)
+                    .createInitializationOptions()
+            )
+            factoryInitialized = true
+        }
+    }
+
