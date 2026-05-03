@@ -13,3 +13,10 @@ class BodyTurnTransitionDetectorTest {
         pose.setShoulders(leftX = 0.38f, rightX = 0.62f)
         pose.setHips(leftX = 0.42f, rightX = 0.58f)
 
+        val state = detector.update(pose.x, pose.y, pose.visibility)
+
+        assertFalse(state.fastUpdateActive)
+        assertEquals("stable", state.reason)
+    }
+
+    @Test
