@@ -58,3 +58,11 @@ class WebRtcPoseChannel(
         }
     }
 
+    private val factory: PeerConnectionFactory
+    private var pc: PeerConnection? = null
+    private var dataChannel: DataChannel? = null
+
+    @Volatile
+    var isReady: Boolean = false
+        private set
+
