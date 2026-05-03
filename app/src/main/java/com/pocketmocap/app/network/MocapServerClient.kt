@@ -291,3 +291,11 @@ class MocapServerClient(
                     }
                     disableRtcFrameTransport("no_pose_response_after_${rtcFramesSinceLastPose}_rtc_frames")
                     // Fall through and send this same frame via Socket.IO.
+                    // If the RTC copy eventually arrives, frame-index/timestamp
+                    // freshness gates on both sides will discard the duplicate.
+                }
+                else -> {
+                    disableRtcFrameTransport("datachannel_send_failed")
+                }
+            }
+            // Fall through to Socket.IO if DataChannel is unhealthy or unsafe for this payload.
