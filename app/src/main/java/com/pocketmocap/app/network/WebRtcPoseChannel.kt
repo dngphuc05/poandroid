@@ -106,3 +106,15 @@ class WebRtcPoseChannel(
         }, desc)
     }
 
+    /** Called for each trickle ICE candidate from the server (via Socket.IO `rtc_ice` event). */
+    fun addRemoteIceCandidate(candidateSdp: String, sdpMid: String, sdpMLineIndex: Int) {
+        pc?.addIceCandidate(IceCandidate(sdpMid, sdpMLineIndex, candidateSdp))
+    }
+
+    /**
+     * Send one pose frame over the DataChannel.
+     * @param json Compact frame JSON using short keys:
+     *   {"fi":42,"ts":1234,"iw":1080,"ih":1920,"lm":[[x,y,xm,ym,zm,vis],...]}
+     * @return true if the message was queued successfully.
+     */
+    fun sendFrame(json: String): Boolean {
