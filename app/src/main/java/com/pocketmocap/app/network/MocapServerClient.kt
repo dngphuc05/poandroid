@@ -407,3 +407,11 @@ class MocapServerClient(
             sb.append(String.format(Locale.US, "%.5f", lm.z)).append(',')
             sb.append(String.format(Locale.US, "%.5f", lm.xMetric)).append(',')
             sb.append(String.format(Locale.US, "%.5f", lm.yMetric)).append(',')
+            sb.append(String.format(Locale.US, "%.5f", lm.zMetric)).append(',')
+            sb.append(String.format(Locale.US, "%.4f", lm.visibility)).append(',')
+            sb.append(String.format(Locale.US, "%.4f", lm.presence)).append(',')
+            sb.append(String.format(Locale.US, "%.4f", lm.confidence))
+            sb.append(']')
+        }
+        sb.append("]}")
+        val base = JSONObject(sb.toString())
