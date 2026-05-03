@@ -49,3 +49,10 @@ class BodyTurnTransitionDetectorTest {
         pose.setShoulders(leftX = 0.48f, rightX = 0.52f)
         pose.setHips(leftX = 0.42f, rightX = 0.58f)
 
+        val state = detector.update(pose.x, pose.y, pose.visibility)
+
+        assertTrue(state.fastUpdateActive)
+        assertEquals("axis_collapse", state.reason)
+    }
+
+    @Test
