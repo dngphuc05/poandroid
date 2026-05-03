@@ -66,3 +66,10 @@ class WebRtcPoseChannel(
     var isReady: Boolean = false
         private set
 
+    init {
+        initializeFactory(context)
+        factory = PeerConnectionFactory.builder()
+            .setOptions(PeerConnectionFactory.Options())
+            .createPeerConnectionFactory()
+    }
+
