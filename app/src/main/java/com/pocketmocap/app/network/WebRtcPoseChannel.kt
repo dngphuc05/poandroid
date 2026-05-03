@@ -218,3 +218,11 @@ class WebRtcPoseChannel(
         override fun onCreateFailure(error: String) { onError("create$tag failed: $error") }
     }
 
+    /** Minimal SdpObserver with no-op implementations. */
+    private abstract inner class SimpleSdpObserver : SdpObserver {
+        override fun onCreateSuccess(desc: SessionDescription) {}
+        override fun onSetSuccess() {}
+        override fun onCreateFailure(error: String) {}
+        override fun onSetFailure(error: String) {}
+    }
+}
