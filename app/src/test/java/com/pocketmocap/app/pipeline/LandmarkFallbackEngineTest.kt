@@ -28,3 +28,10 @@ class LandmarkFallbackEngineTest {
         y[24] = 0.58f
         v[24] = 0.95f
 
+        engine.complete(x, y, v, outX, outY, outV)
+
+        assertTrue("missing wrist fallback must stay below observed-ROI threshold", outV[15] < 0.20f)
+        assertTrue("missing ankle fallback must stay below observed-ROI threshold", outV[27] < 0.20f)
+        assertTrue("observed shoulder remains trusted", outV[11] > 0.90f)
+    }
+}
