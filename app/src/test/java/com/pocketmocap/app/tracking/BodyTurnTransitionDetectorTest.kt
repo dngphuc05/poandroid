@@ -20,3 +20,10 @@ class BodyTurnTransitionDetectorTest {
     }
 
     @Test
+    fun shoulderAxisFlipTriggersAndHoldsFastUpdate() {
+        val detector = BodyTurnTransitionDetector(fastFrames = 4)
+        val pose = Pose2D()
+        pose.setShoulders(leftX = 0.38f, rightX = 0.62f)
+        pose.setHips(leftX = 0.42f, rightX = 0.58f)
+        detector.update(pose.x, pose.y, pose.visibility)
+
