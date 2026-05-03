@@ -24,3 +24,16 @@ import java.nio.ByteBuffer
  *   [DataChannel OPEN]
  *   → DataChannel.send(compact frame JSON)
  *   ← DataChannel.onMessage (pose_3d JSON)
+ */
+class WebRtcPoseChannel(
+    context: Context,
+    private val onOffer: (sdp: String, type: String) -> Unit,
+    private val onIceCandidate: (candidate: String, sdpMid: String, sdpMLineIndex: Int) -> Unit,
+    private val onPose3D: (JSONObject) -> Unit,
+    private val onChannelReady: () -> Unit,
+    private val onError: (String) -> Unit,
+) {
+    companion object {
+        private const val TAG = "WebRtcPoseChannel"
+        private const val DATA_CHANNEL_LABEL = "pose"
+
