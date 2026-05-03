@@ -189,3 +189,15 @@ class WebRtcPoseChannel(
             }
         }
 
+        override fun onMessage(buffer: DataChannel.Buffer) {
+            try {
+                val bytes = ByteArray(buffer.data.remaining())
+                buffer.data.get(bytes)
+                val json = JSONObject(String(bytes, Charsets.UTF_8))
+                onPose3D(json)
+            } catch (e: Exception) {
+                Log.e(TAG, "DataChannel message parse error", e)
+            }
+        }
+    }
+
