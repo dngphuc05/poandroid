@@ -280,3 +280,14 @@ class MocapServerClient(
                 mlImageCropPadRatio,
             )
             val payloadBytes = json.toByteArray(Charsets.UTF_8).size
+            when {
+                payloadBytes > RTC_MAX_FRAME_BYTES -> {
+                    disableRtcFrameTransport("rtc_payload_too_large:${payloadBytes}B")
+                }
+                rtcChannel!!.sendFrame(json) -> {
+                    rtcFramesSinceLastPose += 1
+                    if (rtcFramesSinceLastPose < RTC_NO_POSE_FRAME_LIMIT) {
+                        return
+                    }
+                    disableRtcFrameTransport("no_pose_response_after_${rtcFramesSinceLastPose}_rtc_frames")
+                    // Fall through and send this same frame via Socket.IO.
