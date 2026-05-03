@@ -82,3 +82,14 @@ class BodyTurnTransitionDetectorTest {
             y[24] = 0.58f
         }
 
+        fun setShoulders(leftX: Float, rightX: Float) {
+            x[11] = leftX
+            x[12] = rightX
+        }
+
+        fun setHips(leftX: Float, rightX: Float) {
+            x[23] = leftX
+            x[24] = rightX
+        }
+    }
+}
