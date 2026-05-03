@@ -56,3 +56,10 @@ class BodyTurnTransitionDetectorTest {
     }
 
     @Test
+    fun resetClearsHeldFastUpdate() {
+        val detector = BodyTurnTransitionDetector(fastFrames = 4)
+        val pose = Pose2D()
+        pose.setShoulders(leftX = 0.48f, rightX = 0.52f)
+        pose.setHips(leftX = 0.42f, rightX = 0.58f)
+        assertTrue(detector.update(pose.x, pose.y, pose.visibility).fastUpdateActive)
+
