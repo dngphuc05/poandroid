@@ -86,3 +86,11 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 14
 
+  build-release:
+    name: Build release APK (signed)
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
