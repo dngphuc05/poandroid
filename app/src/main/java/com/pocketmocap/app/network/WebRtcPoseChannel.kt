@@ -201,3 +201,20 @@ class WebRtcPoseChannel(
         }
     }
 
+    // ── SDP helpers ─────────────────────────────────────────────────────────
+
+    private fun sdpObserverFor(tag: String) = object : SimpleSdpObserver() {
+        override fun onCreateSuccess(desc: SessionDescription) {
+            Log.i(TAG, "SDP $tag created")
+            pc?.setLocalDescription(object : SimpleSdpObserver() {
+                override fun onSetSuccess() {
+                    onOffer(desc.description, desc.type.canonicalForm())
+                }
+                override fun onSetFailure(error: String) {
+                    onError("setLocalDescription ($tag) failed: $error")
+                }
+            }, desc)
+        }
+        override fun onCreateFailure(error: String) { onError("create$tag failed: $error") }
+    }
+
