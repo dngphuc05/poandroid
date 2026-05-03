@@ -345,3 +345,21 @@ class MocapServerClient(
         listener.onPose3DReceived(pose3dJson)
     }
 
+    private fun landmarksToJson(landmarks: List<LandmarkData>): JSONArray = landmarksToNamedJson(landmarks)
+
+    /** Named-object format used by Socket.IO fallback path. */
+    private fun landmarksToNamedJson(landmarks: List<LandmarkData>): JSONArray {
+        val arr = JSONArray()
+        landmarks.forEach { lm ->
+            arr.put(JSONObject().apply {
+                put("x", lm.x.toDouble())
+                put("y", lm.y.toDouble())
+                put("z", lm.z.toDouble())
+                put("x_metric", lm.xMetric.toDouble())
+                put("y_metric", lm.yMetric.toDouble())
+                put("z_metric", lm.zMetric.toDouble())
+                put("visibility", lm.visibility.toDouble())
+                put("presence", lm.presence.toDouble())
+                put("confidence", lm.confidence.toDouble())
+            })
+        }
