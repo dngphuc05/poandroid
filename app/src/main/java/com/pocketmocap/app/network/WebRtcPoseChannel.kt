@@ -139,3 +139,21 @@ class WebRtcPoseChannel(
 
     // ── PeerConnection observer ──────────────────────────────────────────────
 
+    private val pcObserver = object : PeerConnection.Observer {
+        override fun onIceCandidate(candidate: IceCandidate) {
+            // Trickle: send each candidate as it's gathered
+            onIceCandidate(candidate.sdp, candidate.sdpMid ?: "0", candidate.sdpMLineIndex)
+        }
+
+        override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+            Log.i(TAG, "PeerConnection state: $newState")
+            when (newState) {
+                PeerConnection.PeerConnectionState.FAILED -> {
+                    isReady = false
+                    onError("WebRTC connection failed - falling back to Socket.IO")
+                }
+                PeerConnection.PeerConnectionState.DISCONNECTED,
+                PeerConnection.PeerConnectionState.CLOSED -> isReady = false
+                else -> Unit
+            }
+        }
