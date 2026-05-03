@@ -42,3 +42,10 @@ class BodyTurnTransitionDetectorTest {
         assertTrue(held.reason.startsWith("held_"))
     }
 
+    @Test
+    fun collapsedShoulderAxisTriggersTurnFastUpdate() {
+        val detector = BodyTurnTransitionDetector()
+        val pose = Pose2D()
+        pose.setShoulders(leftX = 0.48f, rightX = 0.52f)
+        pose.setHips(leftX = 0.42f, rightX = 0.58f)
+
