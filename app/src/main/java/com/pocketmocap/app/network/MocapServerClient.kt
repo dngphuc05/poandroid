@@ -326,3 +326,10 @@ class MocapServerClient(
         socket?.emit("frame", data)
     }
 
+    fun sendMirrorDistance(distance: Float) {
+        socket?.emit("set_mirror_distance", JSONObject().put("distance", distance.toDouble()))
+    }
+
+    @Synchronized
+    private fun deliverPose3DIfFresh(pose3dJson: JSONObject) {
+        val frameIndex = pose3dJson.optInt("frame_index", -1)
