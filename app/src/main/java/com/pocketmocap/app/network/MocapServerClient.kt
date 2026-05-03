@@ -317,3 +317,12 @@ class MocapServerClient(
                 mlImageSourceHeight,
                 mlImageCropLeft,
                 mlImageCropTop,
+                mlImageCropWidth,
+                mlImageCropHeight,
+                mlImageJpegQuality,
+                mlImageCropPadRatio,
+            )
+        }
+        socket?.emit("frame", data)
+    }
+
