@@ -415,3 +415,21 @@ class MocapServerClient(
         }
         sb.append("]}")
         val base = JSONObject(sb.toString())
+        worldTracking?.let { base.put("wt", it.toJson()) }
+        sceneMetrics?.let { base.put("sm", it.toJson()) }
+        base.putMlImagePayload(
+            mlImageBase64,
+            mlImageWidth,
+            mlImageHeight,
+            mlImageSourceWidth,
+            mlImageSourceHeight,
+            mlImageCropLeft,
+            mlImageCropTop,
+            mlImageCropWidth,
+            mlImageCropHeight,
+            mlImageJpegQuality,
+            mlImageCropPadRatio,
+            compactKeys = true,
+        )
+        return base.toString()
+    }
