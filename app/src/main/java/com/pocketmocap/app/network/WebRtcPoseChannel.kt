@@ -73,3 +73,10 @@ class WebRtcPoseChannel(
             .createPeerConnectionFactory()
     }
 
+    /** Call once after Socket.IO session is confirmed to start the WebRTC handshake. */
+    fun createOffer() {
+        val config = PeerConnection.RTCConfiguration(ICE_SERVERS).apply {
+            sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
+            continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
+        }
+
