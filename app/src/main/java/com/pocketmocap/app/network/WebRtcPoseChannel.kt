@@ -178,3 +178,14 @@ class WebRtcPoseChannel(
 
         override fun onStateChange() {
             val state = dataChannel?.state()
+            Log.i(TAG, "DataChannel state: $state")
+            when (state) {
+                DataChannel.State.OPEN -> {
+                    isReady = true
+                    onChannelReady()
+                }
+                DataChannel.State.CLOSED, DataChannel.State.CLOSING -> isReady = false
+                else -> Unit
+            }
+        }
+
