@@ -157,3 +157,17 @@ class WebRtcPoseChannel(
                 else -> Unit
             }
         }
+
+        // Unused – no audio/video tracks
+        override fun onSignalingChange(s: PeerConnection.SignalingState) {}
+        override fun onIceConnectionChange(s: PeerConnection.IceConnectionState) {}
+        override fun onIceConnectionReceivingChange(b: Boolean) {}
+        override fun onIceGatheringChange(s: PeerConnection.IceGatheringState) {}
+        override fun onIceCandidatesRemoved(c: Array<IceCandidate>) {}
+        override fun onAddStream(s: MediaStream) {}
+        override fun onRemoveStream(s: MediaStream) {}
+        override fun onDataChannel(dc: DataChannel) {}   // we're the offerer, we own the DC
+        override fun onRenegotiationNeeded() {}
+        override fun onAddTrack(r: RtpReceiver, streams: Array<MediaStream>) {}
+    }
+
