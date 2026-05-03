@@ -490,3 +490,10 @@ data class LandmarkData(
     val x: Float,           // pixel x
     val y: Float,           // pixel y
     val z: Float = 0f,      // MediaPipe relative z
+    val xMetric: Float = 0f,
+    val yMetric: Float = 0f,
+    val zMetric: Float = 0f,
+    val visibility: Float = 0f,
+    val presence: Float = 0f,
+    val confidence: Float = 0f,
+)
