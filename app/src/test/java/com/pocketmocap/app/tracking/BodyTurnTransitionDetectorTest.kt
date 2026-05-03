@@ -63,3 +63,10 @@ class BodyTurnTransitionDetectorTest {
         pose.setHips(leftX = 0.42f, rightX = 0.58f)
         assertTrue(detector.update(pose.x, pose.y, pose.visibility).fastUpdateActive)
 
+        detector.reset()
+        pose.setShoulders(leftX = 0.38f, rightX = 0.62f)
+        pose.setHips(leftX = 0.42f, rightX = 0.58f)
+
+        assertFalse(detector.update(pose.x, pose.y, pose.visibility).fastUpdateActive)
+    }
+
