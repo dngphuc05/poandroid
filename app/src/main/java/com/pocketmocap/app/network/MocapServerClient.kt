@@ -483,3 +483,10 @@ class MocapServerClient(
     }
 }
 
+/**
+ * Lightweight landmark data to send to server.
+ */
+data class LandmarkData(
+    val x: Float,           // pixel x
+    val y: Float,           // pixel y
+    val z: Float = 0f,      // MediaPipe relative z
