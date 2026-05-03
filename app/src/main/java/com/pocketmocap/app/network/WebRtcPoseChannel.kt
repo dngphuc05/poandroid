@@ -132,3 +132,10 @@ class WebRtcPoseChannel(
         pc = null
     }
 
+    fun dispose() {
+        close()
+        factory.dispose()
+    }
+
+    // ── PeerConnection observer ──────────────────────────────────────────────
+
