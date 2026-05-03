@@ -94,3 +94,15 @@ class WebRtcPoseChannel(
             ?.also { it.registerObserver(dcObserver) }
             ?: run { onError("DataChannel creation failed"); return }
 
+        pc!!.createOffer(sdpObserverFor("offer"), MediaConstraints())
+    }
+
+    /** Called when the server's answer arrives via Socket.IO `rtc_answer` event. */
+    fun setRemoteAnswer(sdp: String, type: String) {
+        val desc = SessionDescription(SessionDescription.Type.fromCanonicalForm(type), sdp)
+        pc?.setRemoteDescription(object : SimpleSdpObserver() {
+            override fun onSetSuccess() { Log.i(TAG, "Remote description set OK") }
+            override fun onSetFailure(error: String) { onError("setRemoteDescription failed: $error") }
+        }, desc)
+    }
+
