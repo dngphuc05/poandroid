@@ -469,3 +469,17 @@ class MocapServerClient(
                 put("format", "jpeg_base64")
                 put("jpeg_base64", jpegBase64)
                 width?.let { put("width", it) }
+                height?.let { put("height", it) }
+                sourceWidth?.let { put("source_width", it) }
+                sourceHeight?.let { put("source_height", it) }
+                cropLeft?.let { put("crop_left", it) }
+                cropTop?.let { put("crop_top", it) }
+                cropWidth?.let { put("crop_width", it) }
+                cropHeight?.let { put("crop_height", it) }
+                jpegQuality?.let { put("jpeg_quality", it) }
+                cropPadRatio?.let { put("crop_pad_ratio", it.toDouble()) }
+            })
+        }
+    }
+}
+
