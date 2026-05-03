@@ -37,3 +37,10 @@ class WebRtcPoseChannel(
         private const val TAG = "WebRtcPoseChannel"
         private const val DATA_CHANNEL_LABEL = "pose"
 
+        // Single STUN server for host-candidate refinement on non-LAN networks.
+        // On the same WiFi the host candidate will succeed anyway.
+        private val ICE_SERVERS = listOf(
+            PeerConnection.IceServer.builder("stun:stun.l.google.com:19302")
+                .createIceServer()
+        )
+
