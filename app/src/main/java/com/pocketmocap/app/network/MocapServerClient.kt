@@ -433,3 +433,21 @@ class MocapServerClient(
         )
         return base.toString()
     }
+
+    private fun JSONObject.putMlImagePayload(
+        jpegBase64: String?,
+        width: Int?,
+        height: Int?,
+        sourceWidth: Int?,
+        sourceHeight: Int?,
+        cropLeft: Int?,
+        cropTop: Int?,
+        cropWidth: Int?,
+        cropHeight: Int?,
+        jpegQuality: Int?,
+        cropPadRatio: Float?,
+        compactKeys: Boolean = false,
+    ) {
+        if (jpegBase64.isNullOrBlank()) return
+        if (compactKeys) {
+            put("mi", JSONObject().apply {
