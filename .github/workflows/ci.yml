@@ -109,3 +109,11 @@ jobs:
           SIGNING_KEYSTORE: ${{ secrets.SIGNING_KEYSTORE }}
         run: echo "$SIGNING_KEYSTORE" | base64 --decode > keystore.jks
 
+      - name: Assemble release APK
+        env:
+          KEYSTORE_FILE: ${{ github.workspace }}/keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew assembleRelease --no-daemon
+
