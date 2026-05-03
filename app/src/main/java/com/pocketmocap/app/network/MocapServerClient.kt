@@ -333,3 +333,15 @@ class MocapServerClient(
     @Synchronized
     private fun deliverPose3DIfFresh(pose3dJson: JSONObject) {
         val frameIndex = pose3dJson.optInt("frame_index", -1)
+        val timestampUs = pose3dJson.optLong("timestamp_us", 0L)
+
+        val staleByFrame = frameIndex >= 0 && latestPoseFrameIndex >= 0 && frameIndex <= latestPoseFrameIndex
+        val staleByTimestamp = timestampUs > 0L && latestPoseTimestampUs > 0L && timestampUs <= latestPoseTimestampUs
+        if (staleByFrame || staleByTimestamp) return
+
+        if (frameIndex >= 0) latestPoseFrameIndex = frameIndex
+        if (timestampUs > 0L) latestPoseTimestampUs = timestampUs
+        rtcFramesSinceLastPose = 0
+        listener.onPose3DReceived(pose3dJson)
+    }
+
