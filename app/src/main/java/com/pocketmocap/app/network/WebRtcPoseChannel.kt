@@ -171,3 +171,10 @@ class WebRtcPoseChannel(
         override fun onAddTrack(r: RtpReceiver, streams: Array<MediaStream>) {}
     }
 
+    // ── DataChannel observer ─────────────────────────────────────────────────
+
+    private val dcObserver = object : DataChannel.Observer {
+        override fun onBufferedAmountChange(previousAmount: Long) {}
+
+        override fun onStateChange() {
+            val state = dataChannel?.state()
