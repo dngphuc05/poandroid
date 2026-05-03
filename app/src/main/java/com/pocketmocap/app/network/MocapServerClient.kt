@@ -363,3 +363,11 @@ class MocapServerClient(
                 put("confidence", lm.confidence.toDouble())
             })
         }
+        return arr
+    }
+
+    /**
+     * Compact WebRTC DataChannel frame format — ~60% smaller than named-object JSON.
+     *   {"fi":42,"ts":1234,"iw":1080,"ih":1920,"lm":[[x,y,z,xm,ym,zm,vis,pres,conf],...]}
+     */
+    private fun buildCompactFrameJson(
