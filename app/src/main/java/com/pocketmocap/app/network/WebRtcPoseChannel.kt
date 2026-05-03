@@ -80,3 +80,10 @@ class WebRtcPoseChannel(
             continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         }
 
+        pc = factory.createPeerConnection(config, pcObserver)
+            ?: run { onError("PeerConnection creation failed"); return }
+
+        // DataChannel must be created BEFORE the offer so it's included in the SDP.
+        // Reliable + ordered: SCTP over UDP still beats Socket.IO/TCP for latency on LAN,
+        // but we don't drop frames — the GRU and Kalman filter need sequential input.
+        val dcInit = DataChannel.Init().apply {
