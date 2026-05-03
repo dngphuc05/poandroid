@@ -451,3 +451,21 @@ class MocapServerClient(
         if (jpegBase64.isNullOrBlank()) return
         if (compactKeys) {
             put("mi", JSONObject().apply {
+                put("fmt", "jpeg_base64")
+                put("jpg", jpegBase64)
+                width?.let { put("w", it) }
+                height?.let { put("h", it) }
+                sourceWidth?.let { put("sw", it) }
+                sourceHeight?.let { put("sh", it) }
+                cropLeft?.let { put("x", it) }
+                cropTop?.let { put("y", it) }
+                cropWidth?.let { put("cw", it) }
+                cropHeight?.let { put("ch", it) }
+                jpegQuality?.let { put("q", it) }
+                cropPadRatio?.let { put("pad", it.toDouble()) }
+            })
+        } else {
+            put("ml_image", JSONObject().apply {
+                put("format", "jpeg_base64")
+                put("jpeg_base64", jpegBase64)
+                width?.let { put("width", it) }
