@@ -125,3 +125,10 @@ class WebRtcPoseChannel(
     }
 
     fun close() {
+        isReady = false
+        dataChannel?.close()
+        dataChannel = null
+        pc?.close()
+        pc = null
+    }
+
