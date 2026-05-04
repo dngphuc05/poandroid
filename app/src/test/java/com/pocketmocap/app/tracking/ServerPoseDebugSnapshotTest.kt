@@ -76,3 +76,14 @@ class ServerPoseDebugSnapshotTest {
             put("ml_top_ray_error_m", -0.08)
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertEquals("metric_v2", snapshot.mlEvidenceSchema)
+        assertEquals(3, snapshot.mlEvidenceOutputs.size)
+        assertEquals(0.91f, snapshot.mlEvidenceOutputs["height_reliability"] ?: Float.NaN, 1e-6f)
+        assertEquals(0.82f, snapshot.mlEvidenceOutputs["distance_reliability"] ?: Float.NaN, 1e-6f)
+        assertEquals(-0.08f, snapshot.mlEvidenceOutputs["top_ray_error_m"] ?: Float.NaN, 1e-6f)
+    }
+
