@@ -188,3 +188,15 @@ class CanonicalEndpointEnforcerTest {
         x[28] = x[26]
         y[28] = y[26] - shin
         z[28] = z[26]
+        for (child in intArrayOf(29, 31)) {
+            x[child] = x[27]
+            y[child] = y[27]
+            z[child] = z[27] - foot
+        }
+        for (child in intArrayOf(30, 32)) {
+            x[child] = x[28]
+            y[child] = y[28]
+            z[child] = z[28] - foot
+        }
+    }
+}
