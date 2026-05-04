@@ -128,3 +128,10 @@ class CanonicalEndpointEnforcerTest {
         }
     }
 
+    private fun seedCanonicalLimbs(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        targetHeightMeters: Float,
+    ) {
+        val upperArm = targetHeightMeters * 0.185f
