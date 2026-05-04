@@ -57,3 +57,10 @@ class CanonicalEndpointEnforcerTest {
             targetHeightMeters = 1.82f,
         )
 
+        assertEquals(0, result.clampedCount)
+        assertEquals(0, result.lowTrustCount)
+        assertEquals(0.88f, confidence[20], 1e-6f)
+    }
+
+    @Test
+    fun clampsElongatedForearmWithoutMovingShoulderAnchor() {
