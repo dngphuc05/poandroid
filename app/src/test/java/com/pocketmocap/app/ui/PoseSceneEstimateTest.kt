@@ -152,3 +152,13 @@ class PoseSceneEstimateTest {
             spreads += solved.distanceCandidateSpreadMeters
         }
 
+        assertTrue(
+            "without hip depth, a drifting foot ray should not pull distance far away from ROI support",
+            solved.distanceMeters < 2.85f,
+        )
+        assertTrue(
+            "large foot/ROI disagreement should be visible in diagnostics",
+            spreads.maxOrNull()!! > 1.0f,
+        )
+    }
+
