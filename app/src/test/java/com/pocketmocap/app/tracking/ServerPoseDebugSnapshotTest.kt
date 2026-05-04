@@ -101,3 +101,11 @@ class ServerPoseDebugSnapshotTest {
 
         val snapshot = ServerPoseDebugSnapshot.fromJson(json = null, mlEvidenceJson = mlEvidence)
 
+        assertNotNull(snapshot)
+        snapshot!!
+        assertEquals("unknown", snapshot.poseStatus)
+        assertEquals("metric_v2", snapshot.mlEvidenceSchema)
+        assertEquals(0.88f, snapshot.mlEvidenceOutputs["height_reliability"] ?: Float.NaN, 1e-6f)
+        assertEquals(0.06f, snapshot.mlEvidenceOutputs["height_correction_delta_m"] ?: Float.NaN, 1e-6f)
+    }
+
