@@ -119,3 +119,10 @@ internal object ReplayScorer {
         val exportedHeights = stable.mapNotNull { it.correctedHeightMeters ?: it.heightMeters }
         val distances = stable.mapNotNull { it.correctedDistanceMeters ?: it.distanceMeters }
         val heightErrors = truth.expectedHeightMeters?.let { expected ->
+            exportedHeights.map { abs(it - expected) }
+        }.orEmpty()
+        val distanceMidpoint = truth.expectedDistanceRangeMeters?.let { (it.start + it.endInclusive) * 0.5f }
+        val distanceErrors = distanceMidpoint?.let { expected ->
+            distances.map { abs(it - expected) }
+        }.orEmpty()
+        val distanceOutOfRangeRate = truth.expectedDistanceRangeMeters?.let { range ->
