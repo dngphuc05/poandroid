@@ -12,3 +12,10 @@ import org.junit.Test
 import kotlin.math.cos
 import kotlin.math.sin
 
+class PoseSceneEstimateTest {
+
+    @Test
+    fun computePoseRoiReturnsBoundsForVisibleLandmarks() {
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 1f }
