@@ -202,3 +202,12 @@ class ServerPoseDebugSnapshotTest {
             put("metric_root_distance_m", 2.55)
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertFalse(snapshot.hasCanonicalMetricPose())
+        assertNull(snapshot.authoritativeHeightMetersOrNull())
+        assertNull(snapshot.authoritativeDistanceMetersOrNull())
+    }
+
