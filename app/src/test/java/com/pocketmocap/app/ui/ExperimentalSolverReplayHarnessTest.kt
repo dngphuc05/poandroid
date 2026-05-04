@@ -140,3 +140,11 @@ internal object ReplayScorer {
         )
     }
 
+    private fun percentile(values: List<Float>, p: Float): Float? {
+        if (values.isEmpty()) return null
+        val sorted = values.sorted()
+        val index = (sorted.lastIndex * p).toInt().coerceIn(0, sorted.lastIndex)
+        return sorted[index]
+    }
+}
+
