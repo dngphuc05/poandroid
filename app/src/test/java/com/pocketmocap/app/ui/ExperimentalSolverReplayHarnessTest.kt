@@ -80,3 +80,10 @@ internal object CsvReplayLoader {
         }
     }
 
+    private fun List<String>.floatAt(index: Int?): Float? =
+        index
+            ?.takeIf { it >= 0 }
+            ?.let { getOrNull(it) }
+            ?.toFloatOrNull()
+            ?.takeIf { it.isFinite() }
+
