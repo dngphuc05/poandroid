@@ -14,3 +14,21 @@ internal data class ReplayTruth(
     val stableMiddleWindow: IntRange,
     val knownGoodBaseline: Boolean = false,
     val notes: String = "",
+)
+
+internal object ReplayTruthRegistry {
+    val captures: Map<Int, ReplayTruth> = (54..73).associateWith { id ->
+        when (id) {
+            54 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 110..680, notes = "metrics_54 physical-scene regression")
+            60 -> ReplayTruth(id, 1.83f, 2.1f..2.8f, 110..128, notes = "short good window called out by capture notes")
+            61 -> ReplayTruth(id, 1.83f, 2.1f..2.8f, 80..620, notes = "2.1m to 2.8m walking range")
+            65 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "tall subject degraded")
+            66 -> ReplayTruth(id, 1.67f, 1.4f..2.8f, 80..620, knownGoodBaseline = true, notes = "shorter subject known good")
+            67 -> ReplayTruth(id, 1.67f, 1.4f..2.8f, 80..620, knownGoodBaseline = true, notes = "shorter subject known good")
+            68 -> ReplayTruth(id, 1.82f, 1.4f..2.8f, 80..620, notes = "taller subject comparison")
+            69 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "height stabilizes after startup")
+            70 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "slow true-height lock")
+            71 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "bad high startup lock")
+            72 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "slow stabilization")
+            73 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "height and distance regressed")
+            else -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "capture note pending; default tall-subject target")
