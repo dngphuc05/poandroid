@@ -293,3 +293,17 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(1.80f, snapshot.authoritativeHeightMetersOrNull(1.80f) ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun v2DistanceAuthorityPrefersHeldTargetWhenActive() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("constraint_confidence", 0.72)
+            put("scale_applied", 1.10)
+            put("root_translation_m", 0.42)
+            put("constrained_distance_m", 3.20)
+            put("ar_target_distance_m", 2.40)
+            put("ml_visual_usable", true)
+            put("ml_dlt_metric_bad", true)
+            put("ml_distance_hold_active", true)
+        }
+
