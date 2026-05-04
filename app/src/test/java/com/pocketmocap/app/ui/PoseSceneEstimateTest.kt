@@ -50,3 +50,21 @@ class PoseSceneEstimateTest {
         assertTrue(estimate.bodyHeightMeters.isFinite())
     }
 
+    @Test
+    fun deriveOverlayPoseEstimateUsesArcoreFloorWithHipDepthPatch() {
+        val (x, y, v) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v)
+        val tracking = buildTrackingSnapshot()
+        val estimate = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = 1.78f,
+            screenX = x,
+            screenY = y,
+            visibility = v,
+            worldTracking = tracking,
+            intrinsics = tracking.intrinsics,
+        )
+        assertNotNull(estimate)
+        assertEquals("arcore_floor", estimate!!.source)
+        assertTrue(estimate.confidence >= 0.5f)
+        assertTrue(estimate.distanceMeters in 0.35f..12.0f)
