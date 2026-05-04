@@ -135,3 +135,21 @@ class CanonicalEndpointEnforcerTest {
         targetHeightMeters: Float,
     ) {
         val upperArm = targetHeightMeters * 0.185f
+        val forearm = targetHeightMeters * 0.160f
+        val thigh = targetHeightMeters * 0.245f
+        val shin = targetHeightMeters * 0.246f
+        val foot = targetHeightMeters * 0.105f
+        val hand = targetHeightMeters * 0.050f
+
+        x[11] = -0.22f
+        y[11] = 1.38f
+        z[11] = -2.5f
+        x[12] = 0.22f
+        y[12] = 1.38f
+        z[12] = -2.5f
+        x[13] = x[11] - upperArm
+        y[13] = y[11]
+        z[13] = z[11]
+        x[15] = x[13] - forearm
+        y[15] = y[13]
+        z[15] = z[13]
