@@ -336,3 +336,16 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(2.40f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun v2DistanceAuthorityKeepsConstrainedDistanceWhenNearTarget() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("constraint_confidence", 0.72)
+            put("scale_applied", 1.10)
+            put("root_translation_m", 0.42)
+            put("constrained_distance_m", 2.52)
+            put("ar_target_distance_m", 2.40)
+            put("ml_visual_usable", true)
+            put("ml_dlt_metric_bad", true)
+        }
+
