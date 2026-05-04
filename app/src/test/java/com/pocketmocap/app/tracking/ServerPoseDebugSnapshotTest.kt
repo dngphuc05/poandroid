@@ -357,3 +357,15 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(2.52f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun oldServerDebugDoesNotOverrideDisplayMetricsWithoutV2Authority() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("correction_reason", "height_and_root_constrained")
+            put("constraint_confidence", 0.90)
+            put("scale_applied", 1.20)
+            put("root_translation_m", 0.30)
+            put("constrained_height_m", 1.82)
+            put("constrained_distance_m", 2.36)
+        }
+
