@@ -273,3 +273,15 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(1.79f, snapshot.authoritativeHeightMetersOrNull() ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun v2HeightAuthorityFallsBackToSceneCorrectedHeight() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("constraint_confidence", 0.72)
+            put("scale_applied", 1.18)
+            put("root_translation_m", 0.42)
+            put("constrained_height_m", 1.70)
+            put("ml_visual_usable", true)
+            put("ml_dlt_metric_bad", true)
+        }
+
