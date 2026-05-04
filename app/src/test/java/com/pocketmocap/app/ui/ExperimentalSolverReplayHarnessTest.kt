@@ -112,3 +112,10 @@ internal object CsvReplayLoader {
         return out
     }
 }
+
+internal object ReplayScorer {
+    fun score(rows: List<ReplayMetricRow>, truth: ReplayTruth): ReplayScore {
+        val stable = rows.filter { it.frame in truth.stableMiddleWindow }
+        val exportedHeights = stable.mapNotNull { it.correctedHeightMeters ?: it.heightMeters }
+        val distances = stable.mapNotNull { it.correctedDistanceMeters ?: it.distanceMeters }
+        val heightErrors = truth.expectedHeightMeters?.let { expected ->
