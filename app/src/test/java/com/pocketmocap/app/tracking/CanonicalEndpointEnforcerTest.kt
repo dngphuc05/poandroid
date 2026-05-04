@@ -28,3 +28,10 @@ class CanonicalEndpointEnforcerTest {
             targetHeightMeters = 1.82f,
         )
 
+        val length = distance(x, y, z, 15, 19)
+        assertEquals(1, result.clampedCount)
+        assertEquals(1, result.lowTrustCount)
+        assertEquals(1.82f * 0.050f, length, 1e-4f)
+        assertTrue(confidence[19] <= 0.46f)
+    }
+
