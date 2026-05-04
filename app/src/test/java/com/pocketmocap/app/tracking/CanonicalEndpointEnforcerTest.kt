@@ -170,3 +170,21 @@ class CanonicalEndpointEnforcerTest {
             z[child] = z[16]
         }
 
+        x[23] = -0.12f
+        y[23] = 0.92f
+        z[23] = -2.5f
+        x[24] = 0.12f
+        y[24] = 0.92f
+        z[24] = -2.5f
+        x[25] = x[23]
+        y[25] = y[23] - thigh
+        z[25] = z[23]
+        x[27] = x[25]
+        y[27] = y[25] - shin
+        z[27] = z[25]
+        x[26] = x[24]
+        y[26] = y[24] - thigh
+        z[26] = z[24]
+        x[28] = x[26]
+        y[28] = y[26] - shin
+        z[28] = z[26]
