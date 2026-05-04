@@ -231,3 +231,16 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(2.55f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun v2HeightAuthorityPrefersTargetWhenConstrainedHeightDriftsLow() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("constraint_confidence", 0.72)
+            put("scale_applied", 1.18)
+            put("root_translation_m", 0.42)
+            put("constrained_height_m", 1.71)
+            put("ar_target_height_m", 1.81)
+            put("ml_visual_usable", true)
+            put("ml_dlt_metric_bad", true)
+        }
+
