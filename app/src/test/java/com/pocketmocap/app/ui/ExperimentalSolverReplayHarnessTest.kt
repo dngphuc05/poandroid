@@ -157,3 +157,14 @@ class ExperimentalSolverReplayHarnessTest {
         assertEquals(1.82f, ReplayTruthRegistry.captures.getValue(68).expectedHeightMeters)
     }
 
+    @Test
+    fun csvReplayParserScoresMedianP90AndDistanceRange() {
+        val rows = CsvReplayLoader.parse(
+            """
+            frame,height_m,corrected_height_m,distance_m,corrected_distance_m,height_lock_state
+            100,1.80,1.81,2.00,2.05,locked
+            101,1.82,1.83,2.10,2.10,locked
+            102,1.84,1.85,2.90,2.90,locked
+            """.trimIndent()
+        )
+
