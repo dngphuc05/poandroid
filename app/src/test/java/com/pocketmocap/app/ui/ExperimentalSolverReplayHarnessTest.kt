@@ -69,3 +69,14 @@ internal object CsvReplayLoader {
         return lines.drop(1).mapNotNull { line ->
             val values = splitCsvLine(line)
             val frame = values.getOrNull(index["frame"] ?: -1)?.toIntOrNull() ?: return@mapNotNull null
+            ReplayMetricRow(
+                frame = frame,
+                heightMeters = values.floatAt(index["height_m"]),
+                correctedHeightMeters = values.floatAt(index["corrected_height_m"]),
+                distanceMeters = values.floatAt(index["distance_m"]),
+                correctedDistanceMeters = values.floatAt(index["corrected_distance_m"]),
+                heightLockState = values.getOrNull(index["height_lock_state"] ?: -1).orEmpty(),
+            )
+        }
+    }
+
