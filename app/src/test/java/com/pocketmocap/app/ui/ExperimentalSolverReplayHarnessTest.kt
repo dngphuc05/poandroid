@@ -148,3 +148,12 @@ internal object ReplayScorer {
     }
 }
 
+class ExperimentalSolverReplayHarnessTest {
+    @Test
+    fun replayTruthRegistryCoversMetrics54Through73() {
+        assertEquals((54..73).toSet(), ReplayTruthRegistry.captures.keys)
+        assertEquals(1.67f, ReplayTruthRegistry.captures.getValue(67).expectedHeightMeters)
+        assertTrue(ReplayTruthRegistry.captures.getValue(67).knownGoodBaseline)
+        assertEquals(1.82f, ReplayTruthRegistry.captures.getValue(68).expectedHeightMeters)
+    }
+
