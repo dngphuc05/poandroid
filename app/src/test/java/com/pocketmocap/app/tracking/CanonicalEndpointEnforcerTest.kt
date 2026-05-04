@@ -49,3 +49,11 @@ class CanonicalEndpointEnforcerTest {
         y[20] = 1.1f
         z[20] = -2.2f
 
+        val result = enforceCanonicalHandEndpoints(
+            x = x,
+            y = y,
+            z = z,
+            confidence = confidence,
+            targetHeightMeters = 1.82f,
+        )
+
