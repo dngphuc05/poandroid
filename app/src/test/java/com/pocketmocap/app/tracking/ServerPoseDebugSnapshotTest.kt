@@ -24,3 +24,10 @@ class ServerPoseDebugSnapshotTest {
             localHeightCandidateSource = "local_display_top_supported",
         )
 
+        val json = scene.toJson()
+
+        assertEquals(1.82f, json.optDouble("local_height_candidate_m", Double.NaN).toFloat(), 1e-6f)
+        assertEquals(0.66f, json.optDouble("local_height_candidate_confidence", Double.NaN).toFloat(), 1e-6f)
+        assertEquals("local_display_top_supported", json.optString("local_height_candidate_source"))
+    }
+
