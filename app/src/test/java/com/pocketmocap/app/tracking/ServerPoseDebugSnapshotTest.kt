@@ -401,3 +401,15 @@ class ServerPoseDebugSnapshotTest {
         assertNull(snapshot.authoritativeDistanceMetersOrNull())
     }
 
+    @Test
+    fun parsesPoseLifterDebugFields() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("pose_lifter_status", "ok")
+            put("pose_lifter_model_path", "D:/models/pose_lifter.pt")
+            put("pose_lifter_hidden_joint_count", 6)
+            put("pose_lifter_mean_confidence", 0.74)
+            put("pose_lifter_applied_joint_count", 4)
+            put("pose_lifter_reject_reason", "")
+        }
+
