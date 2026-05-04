@@ -87,3 +87,10 @@ internal object CsvReplayLoader {
             ?.toFloatOrNull()
             ?.takeIf { it.isFinite() }
 
+    private fun splitCsvLine(line: String): List<String> {
+        val out = mutableListOf<String>()
+        val current = StringBuilder()
+        var quoted = false
+        var i = 0
+        while (i < line.length) {
+            val c = line[i]
