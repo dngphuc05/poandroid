@@ -285,3 +285,11 @@ class ServerPoseDebugSnapshotTest {
             put("ml_dlt_metric_bad", true)
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertTrue(snapshot.hasV2MetricAuthority())
+        assertEquals(1.80f, snapshot.authoritativeHeightMetersOrNull(1.80f) ?: Float.NaN, 1e-6f)
+    }
+
