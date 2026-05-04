@@ -119,3 +119,12 @@ class CanonicalEndpointEnforcerTest {
         for (child in intArrayOf(17, 19, 21)) {
             x[child] = x[leftWrist] - 0.091f
             y[child] = y[leftWrist]
+            z[child] = z[leftWrist]
+        }
+        for (child in intArrayOf(18, 20, 22)) {
+            x[child] = x[rightWrist] + 0.091f
+            y[child] = y[rightWrist]
+            z[child] = z[rightWrist]
+        }
+    }
+
