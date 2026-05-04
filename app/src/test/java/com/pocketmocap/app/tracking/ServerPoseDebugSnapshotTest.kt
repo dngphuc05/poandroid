@@ -127,3 +127,10 @@ class ServerPoseDebugSnapshotTest {
             put("ml_dlt_weight_scale", 0.25)
             put("height_target_weight", 72.0)
             put("height_prior_weight", 0.24)
+            put("height_smooth_weight", 0.50)
+            put("distance_target_weight", 8.0)
+            put("distance_prior_weight", 0.20)
+            put("distance_smooth_weight", 0.70)
+            put("distance_local_authority", 0.83)
+        }
+
