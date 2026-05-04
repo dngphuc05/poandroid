@@ -31,3 +31,11 @@ class ServerPoseDebugSnapshotTest {
         assertEquals("local_display_top_supported", json.optString("local_height_candidate_source"))
     }
 
+    @Test
+    fun fromJsonPreservesFullMetricEvidenceOutputs() {
+        val outputs = JSONObject().apply {
+            METRIC_EVIDENCE_V2_OUTPUT_NAMES.forEachIndexed { index, name ->
+                put(name, index + 0.25)
+            }
+        }
+        val mlEvidence = JSONObject().apply {
