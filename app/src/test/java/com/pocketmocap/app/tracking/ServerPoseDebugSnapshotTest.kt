@@ -378,3 +378,17 @@ class ServerPoseDebugSnapshotTest {
         assertNull(snapshot.authoritativeDistanceMetersOrNull())
     }
 
+    @Test
+    fun visuallyUnusableFrameDoesNotClaimV2MetricAuthority() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("correction_reason", "height_and_root_constrained")
+            put("constraint_confidence", 0.90)
+            put("scale_applied", 1.20)
+            put("root_translation_m", 0.30)
+            put("constrained_height_m", 1.82)
+            put("constrained_distance_m", 2.36)
+            put("ml_visual_usable", false)
+            put("ml_dlt_metric_bad", true)
+        }
+
