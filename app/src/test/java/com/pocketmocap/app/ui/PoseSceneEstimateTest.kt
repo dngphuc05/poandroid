@@ -125,3 +125,10 @@ class PoseSceneEstimateTest {
             heights += solved.bodyHeightMeters
         }
 
+        val heightSpan = heights.maxOrNull()!! - heights.minOrNull()!!
+        assertTrue("height should stay locked while distance moves", heightSpan < 0.10f)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphDoesNotChaseFootPlaneWhenHipDepthMissing() {
+        val graph = PhysicalSceneFactorGraph()
