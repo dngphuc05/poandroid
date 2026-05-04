@@ -168,3 +168,14 @@ class ExperimentalSolverReplayHarnessTest {
             """.trimIndent()
         )
 
+        val truth = ReplayTruth(99, 1.83f, 2.0f..2.8f, 100..102)
+        val score = ReplayScorer.score(rows, truth)
+
+        assertEquals(3, score.rows)
+        assertEquals(1f, score.exportRate, 0f)
+        assertEquals(0.02f, score.medianHeightErrorMeters ?: -1f, 1e-4f)
+        assertEquals(0.02f, score.p90HeightErrorMeters ?: -1f, 1e-4f)
+        assertEquals(1f / 3f, score.distanceOutOfRangeRate ?: -1f, 1e-4f)
+        assertFalse(score.heightJitterP90Meters == null)
+    }
+
