@@ -139,3 +139,16 @@ class PoseSceneEstimateTest {
             height = 1.80f,
         )
         val driftingFoot = listOf(2.55f, 2.80f, 3.25f, 3.80f, 4.20f, 3.70f, 3.20f)
+        val spreads = mutableListOf<Float>()
+        for (foot in driftingFoot) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = foot,
+                    roiDistance = 2.56f,
+                    height = 1.80f,
+                )
+            )
+            spreads += solved.distanceCandidateSpreadMeters
+        }
+
