@@ -132,3 +132,10 @@ class PoseSceneEstimateTest {
     @Test
     fun physicalSceneFactorGraphDoesNotChaseFootPlaneWhenHipDepthMissing() {
         val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.46f,
+            roiDistance = 2.52f,
+            height = 1.80f,
+        )
+        val driftingFoot = listOf(2.55f, 2.80f, 3.25f, 3.80f, 4.20f, 3.70f, 3.20f)
