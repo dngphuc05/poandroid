@@ -159,3 +159,21 @@ class ServerPoseDebugSnapshotTest {
     @Test
     fun canonicalMetricPoseIsPreferredForAuthoritativeDisplayMetrics() {
         val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("correction_reason", "height_and_root_constrained")
+            put("constrained_height_m", 1.70)
+            put("constrained_distance_m", 3.20)
+            put("metric_pose_status", "ok")
+            put("metric_pose_reject_reason", "none")
+            put("metric_pose_frame", "camera_floor_metric_v1")
+            put("metric_root_x_m", 0.12)
+            put("metric_root_y_m", 0.92)
+            put("metric_root_z_m", -2.54)
+            put("metric_root_distance_m", 2.55)
+            put("metric_foot_midpoint_x_m", 0.10)
+            put("metric_foot_midpoint_z_m", -2.48)
+            put("metric_body_height_m", 1.82)
+            put("metric_body_scale_locked", true)
+            put("metric_bone_scale_source", "stable_skeleton")
+            put("metric_pose_jitter_scale_m", 0.012)
+            put("metric_pose_jitter_root_m", 0.045)
