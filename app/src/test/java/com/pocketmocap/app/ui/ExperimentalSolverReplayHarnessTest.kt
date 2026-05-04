@@ -126,3 +126,17 @@ internal object ReplayScorer {
             distances.map { abs(it - expected) }
         }.orEmpty()
         val distanceOutOfRangeRate = truth.expectedDistanceRangeMeters?.let { range ->
+            if (distances.isEmpty()) null else distances.count { it !in range }.toFloat() / distances.size.toFloat()
+        }
+        val heightDiffs = exportedHeights.zipWithNext { a, b -> abs(b - a) }
+        return ReplayScore(
+            rows = stable.size,
+            exportRate = if (stable.isEmpty()) 0f else exportedHeights.size.toFloat() / stable.size.toFloat(),
+            medianHeightErrorMeters = percentile(heightErrors, 0.50f),
+            p90HeightErrorMeters = percentile(heightErrors, 0.90f),
+            medianDistanceErrorMeters = percentile(distanceErrors, 0.50f),
+            distanceOutOfRangeRate = distanceOutOfRangeRate,
+            heightJitterP90Meters = percentile(heightDiffs, 0.90f),
+        )
+    }
+
