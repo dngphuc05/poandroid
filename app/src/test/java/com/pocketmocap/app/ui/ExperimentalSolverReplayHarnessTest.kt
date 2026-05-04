@@ -32,3 +32,10 @@ internal object ReplayTruthRegistry {
             72 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "slow stabilization")
             73 -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "height and distance regressed")
             else -> ReplayTruth(id, 1.83f, 1.4f..2.8f, 80..620, notes = "capture note pending; default tall-subject target")
+        }
+    }
+}
+
+internal data class ReplayMetricRow(
+    val frame: Int,
+    val heightMeters: Float?,
