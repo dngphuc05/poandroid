@@ -191,3 +191,14 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(2.55f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun rejectedCanonicalMetricPoseDoesNotClaimCanonicalAuthority() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("metric_pose_status", "rejected")
+            put("metric_pose_reject_reason", "upper_body_missing")
+            put("metric_pose_frame", "camera_floor_metric_v1")
+            put("metric_body_height_m", 1.82)
+            put("metric_root_distance_m", 2.55)
+        }
+
