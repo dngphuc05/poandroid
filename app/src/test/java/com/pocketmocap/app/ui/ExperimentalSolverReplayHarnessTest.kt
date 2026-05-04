@@ -55,3 +55,10 @@ internal data class ReplayScore(
     val heightJitterP90Meters: Float?,
 )
 
+internal object CsvReplayLoader {
+    fun loadLocalMetrics(captureId: Int): List<ReplayMetricRow>? {
+        val file = File("C:\\Users\\Asus\\Downloads\\metrics_$captureId.csv")
+        return if (file.isFile) parse(file.readText()) else null
+    }
+
+    fun parse(csv: String): List<ReplayMetricRow> {
