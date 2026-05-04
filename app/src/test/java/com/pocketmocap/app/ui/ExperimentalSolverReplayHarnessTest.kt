@@ -47,3 +47,11 @@ internal data class ReplayMetricRow(
 
 internal data class ReplayScore(
     val rows: Int,
+    val exportRate: Float,
+    val medianHeightErrorMeters: Float?,
+    val p90HeightErrorMeters: Float?,
+    val medianDistanceErrorMeters: Float?,
+    val distanceOutOfRangeRate: Float?,
+    val heightJitterP90Meters: Float?,
+)
+
