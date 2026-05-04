@@ -153,3 +153,20 @@ class CanonicalEndpointEnforcerTest {
         x[15] = x[13] - forearm
         y[15] = y[13]
         z[15] = z[13]
+        x[14] = x[12] + upperArm
+        y[14] = y[12]
+        z[14] = z[12]
+        x[16] = x[14] + forearm
+        y[16] = y[14]
+        z[16] = z[14]
+        for (child in intArrayOf(17, 19, 21)) {
+            x[child] = x[15] - hand
+            y[child] = y[15]
+            z[child] = z[15]
+        }
+        for (child in intArrayOf(18, 20, 22)) {
+            x[child] = x[16] + hand
+            y[child] = y[16]
+            z[child] = z[16]
+        }
+
