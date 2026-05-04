@@ -94,3 +94,21 @@ internal object CsvReplayLoader {
         var i = 0
         while (i < line.length) {
             val c = line[i]
+            when {
+                c == '"' && quoted && i + 1 < line.length && line[i + 1] == '"' -> {
+                    current.append('"')
+                    i++
+                }
+                c == '"' -> quoted = !quoted
+                c == ',' && !quoted -> {
+                    out += current.toString()
+                    current.clear()
+                }
+                else -> current.append(c)
+            }
+            i++
+        }
+        out += current.toString()
+        return out
+    }
+}
