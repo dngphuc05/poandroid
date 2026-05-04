@@ -369,3 +369,12 @@ class ServerPoseDebugSnapshotTest {
             put("constrained_distance_m", 2.36)
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertFalse(snapshot.hasV2MetricAuthority())
+        assertNull(snapshot.authoritativeHeightMetersOrNull())
+        assertNull(snapshot.authoritativeDistanceMetersOrNull())
+    }
+
