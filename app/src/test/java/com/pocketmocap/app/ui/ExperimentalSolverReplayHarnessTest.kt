@@ -39,3 +39,11 @@ internal object ReplayTruthRegistry {
 internal data class ReplayMetricRow(
     val frame: Int,
     val heightMeters: Float?,
+    val correctedHeightMeters: Float?,
+    val distanceMeters: Float?,
+    val correctedDistanceMeters: Float?,
+    val heightLockState: String,
+)
+
+internal data class ReplayScore(
+    val rows: Int,
