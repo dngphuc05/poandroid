@@ -211,3 +211,14 @@ class ServerPoseDebugSnapshotTest {
         assertNull(snapshot.authoritativeDistanceMetersOrNull())
     }
 
+    @Test
+    fun heldCanonicalMetricPoseStillClaimsCanonicalAuthority() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("metric_pose_status", "hold_previous")
+            put("metric_pose_reject_reason", "root_distance_no_target")
+            put("metric_pose_frame", "camera_floor_metric_v1")
+            put("metric_body_height_m", 1.82)
+            put("metric_root_distance_m", 2.55)
+        }
+
