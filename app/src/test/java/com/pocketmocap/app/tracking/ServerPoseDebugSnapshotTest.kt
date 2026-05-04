@@ -134,3 +134,21 @@ class ServerPoseDebugSnapshotTest {
             put("distance_local_authority", 0.83)
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertEquals(true, snapshot.mlVisualUsable)
+        assertEquals(true, snapshot.mlDltMetricBad)
+        assertEquals("ml_corrected_witnesses", snapshot.mlHeightTargetSource)
+        assertEquals("held_distance_target", snapshot.mlDistanceTargetSource)
+        assertEquals(false, snapshot.mlDistanceHoldActive)
+        assertEquals(0.25f, snapshot.mlDltWeightScale, 1e-6f)
+        assertEquals(72.0f, snapshot.heightTargetWeight, 1e-6f)
+        assertEquals(0.24f, snapshot.heightPriorWeight, 1e-6f)
+        assertEquals(0.50f, snapshot.heightSmoothWeight, 1e-6f)
+        assertEquals(8.0f, snapshot.distanceTargetWeight, 1e-6f)
+        assertEquals(0.20f, snapshot.distancePriorWeight, 1e-6f)
+        assertEquals(0.70f, snapshot.distanceSmoothWeight, 1e-6f)
+        assertEquals(0.83f, snapshot.distanceLocalAuthority, 1e-6f)
+        assertTrue(snapshot.hasV2MetricAuthority())
