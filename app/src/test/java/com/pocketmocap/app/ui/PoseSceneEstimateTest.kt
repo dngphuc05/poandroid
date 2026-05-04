@@ -98,3 +98,17 @@ class PoseSceneEstimateTest {
     }
 
     @Test
+    fun physicalSceneFactorGraphKeepsHeightStableWhenDistanceChanges() {
+        val graph = PhysicalSceneFactorGraph()
+        repeat(12) {
+            graph.solve(
+                rawSceneMetric(
+                    hipDepth = 2.45f,
+                    footPlane = 2.48f,
+                    roiDistance = 2.50f,
+                    height = 1.82f,
+                    topRayHeight = 1.83f,
+                )
+            )
+        }
+        val heights = mutableListOf<Float>()
