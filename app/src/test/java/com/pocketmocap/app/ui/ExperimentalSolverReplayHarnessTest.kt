@@ -179,3 +179,15 @@ class ExperimentalSolverReplayHarnessTest {
         assertFalse(score.heightJitterP90Meters == null)
     }
 
+    @Test
+    fun optionalLocalDownloadsLoaderIsNonFatal() {
+        val rows = CsvReplayLoader.loadLocalMetrics(67)
+        if (rows != null) {
+            assertTrue(rows.isNotEmpty())
+            val score = ReplayScorer.score(rows, ReplayTruthRegistry.captures.getValue(67))
+            assertTrue(score.rows >= 0)
+        } else {
+            assertTrue(true)
+        }
+    }
+}
