@@ -64,3 +64,10 @@ class CanonicalEndpointEnforcerTest {
 
     @Test
     fun clampsElongatedForearmWithoutMovingShoulderAnchor() {
+        val x = FloatArray(33)
+        val y = FloatArray(33)
+        val z = FloatArray(33)
+        val confidence = FloatArray(33) { 0.91f }
+        seedCanonicalLimbs(x, y, z, targetHeightMeters = 1.82f)
+        val shoulderX = x[11]
+        val shoulderY = y[11]
