@@ -75,3 +75,19 @@ class PoseSceneEstimateTest {
     fun physicalSceneFactorGraphKeepsHipDepthDiagnosticOnly() {
         val graph = PhysicalSceneFactorGraph()
         var solved = rawSceneMetric(
+            hipDepth = 2.82f,
+            footPlane = 2.62f,
+            roiDistance = 2.64f,
+            height = 1.80f,
+        )
+        repeat(80) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = 2.82f,
+                    footPlane = 2.62f,
+                    roiDistance = 2.64f,
+                    height = 1.80f,
+                )
+            )
+        }
+
