@@ -94,3 +94,10 @@ class ServerPoseDebugSnapshotTest {
             put("height_correction_delta_m", 0.06)
         }
         val mlEvidence = JSONObject().apply {
+            put("status", "ok")
+            put("schema", "metric_v2")
+            put("outputs", outputs)
+        }
+
+        val snapshot = ServerPoseDebugSnapshot.fromJson(json = null, mlEvidenceJson = mlEvidence)
+
