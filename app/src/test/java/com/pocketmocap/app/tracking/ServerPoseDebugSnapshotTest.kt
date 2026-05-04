@@ -39,3 +39,10 @@ class ServerPoseDebugSnapshotTest {
             }
         }
         val mlEvidence = JSONObject().apply {
+            put("status", "ok")
+            put("schema", "metric_v2")
+            put("height_sigma_m", 0.12)
+            put("distance_sigma_m", 0.34)
+            put("outputs", outputs)
+        }
+        val debug = JSONObject().apply {
