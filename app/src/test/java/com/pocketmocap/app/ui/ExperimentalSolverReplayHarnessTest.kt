@@ -62,3 +62,10 @@ internal object CsvReplayLoader {
     }
 
     fun parse(csv: String): List<ReplayMetricRow> {
+        val lines = csv.lineSequence().filter { it.isNotBlank() }.toList()
+        if (lines.size < 2) return emptyList()
+        val headers = splitCsvLine(lines.first())
+        val index = headers.withIndex().associate { it.value to it.index }
+        return lines.drop(1).mapNotNull { line ->
+            val values = splitCsvLine(line)
+            val frame = values.getOrNull(index["frame"] ?: -1)?.toIntOrNull() ?: return@mapNotNull null
