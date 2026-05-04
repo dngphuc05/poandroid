@@ -71,3 +71,16 @@ class CanonicalEndpointEnforcerTest {
         seedCanonicalLimbs(x, y, z, targetHeightMeters = 1.82f)
         val shoulderX = x[11]
         val shoulderY = y[11]
+        val shoulderZ = z[11]
+        x[15] = x[13] - 0.72f
+        y[15] = y[13]
+        z[15] = z[13]
+
+        val result = enforceCanonicalLimbEndpoints(
+            x = x,
+            y = y,
+            z = z,
+            confidence = confidence,
+            targetHeightMeters = 1.82f,
+        )
+
