@@ -101,3 +101,21 @@ class CanonicalEndpointEnforcerTest {
         b: Int,
     ): Float {
         val dx = x[b] - x[a]
+        val dy = y[b] - y[a]
+        val dz = z[b] - z[a]
+        return sqrt(dx * dx + dy * dy + dz * dz)
+    }
+
+    private fun seedNormalHandEndpoints(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        leftWrist: Int,
+        rightWrist: Int,
+    ) {
+        x[rightWrist] = 0.0f
+        y[rightWrist] = 1.1f
+        z[rightWrist] = -2.2f
+        for (child in intArrayOf(17, 19, 21)) {
+            x[child] = x[leftWrist] - 0.091f
+            y[child] = y[leftWrist]
