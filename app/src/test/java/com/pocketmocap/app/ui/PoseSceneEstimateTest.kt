@@ -32,3 +32,21 @@ class PoseSceneEstimateTest {
         assertTrue(roi.maxY >= 0.93f)
     }
 
+    @Test
+    fun deriveOverlayPoseEstimateFallsBackToRoiWithoutTracking() {
+        val (x, y, v) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v)
+        val estimate = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = 1.80f,
+            screenX = x,
+            screenY = y,
+            visibility = v,
+            worldTracking = null,
+        )
+        assertNotNull(estimate)
+        assertEquals("roi_fallback", estimate!!.source)
+        assertTrue(estimate.distanceMeters.isFinite())
+        assertTrue(estimate.bodyHeightMeters.isFinite())
+    }
+
