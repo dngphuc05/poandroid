@@ -177,3 +177,17 @@ class ServerPoseDebugSnapshotTest {
             put("metric_bone_scale_source", "stable_skeleton")
             put("metric_pose_jitter_scale_m", 0.012)
             put("metric_pose_jitter_root_m", 0.045)
+        }
+
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertTrue(snapshot.hasCanonicalMetricPose())
+        assertEquals("camera_floor_metric_v1", snapshot.metricPoseFrame)
+        assertEquals(true, snapshot.metricBodyScaleLocked)
+        assertEquals("stable_skeleton", snapshot.metricBoneScaleSource)
+        assertEquals(1.82f, snapshot.authoritativeHeightMetersOrNull() ?: Float.NaN, 1e-6f)
+        assertEquals(2.55f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
+    }
+
