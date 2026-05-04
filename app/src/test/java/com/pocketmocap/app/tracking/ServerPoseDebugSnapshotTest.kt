@@ -109,3 +109,21 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(0.06f, snapshot.mlEvidenceOutputs["height_correction_delta_m"] ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun fromJsonPreservesServerFirstV2MetricAuthorityFields() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("correction_reason", "height_and_root_constrained")
+            put("constraint_confidence", 0.72)
+            put("scale_applied", 1.18)
+            put("root_translation_m", 0.42)
+            put("constrained_height_m", 1.82)
+            put("constrained_distance_m", 2.36)
+            put("ml_visual_usable", 1)
+            put("ml_dlt_metric_bad", "true")
+            put("ml_height_target_source", "ml_corrected_witnesses")
+            put("ml_distance_target_source", "held_distance_target")
+            put("ml_distance_hold_active", 0)
+            put("ml_dlt_weight_scale", 0.25)
+            put("height_target_weight", 72.0)
+            put("height_prior_weight", 0.24)
