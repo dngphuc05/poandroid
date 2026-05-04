@@ -84,3 +84,12 @@ class CanonicalEndpointEnforcerTest {
             targetHeightMeters = 1.82f,
         )
 
+        assertTrue(result.clampedCount >= 1)
+        assertTrue(result.lowTrustCount >= 1)
+        assertEquals(shoulderX, x[11], 1e-6f)
+        assertEquals(shoulderY, y[11], 1e-6f)
+        assertEquals(shoulderZ, z[11], 1e-6f)
+        assertEquals(1.82f * 0.160f, distance(x, y, z, 13, 15), 1e-4f)
+        assertTrue(confidence[15] <= 0.56f)
+    }
+
