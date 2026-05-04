@@ -413,3 +413,15 @@ class ServerPoseDebugSnapshotTest {
             put("pose_lifter_reject_reason", "")
         }
 
+        val snapshot = ServerPoseDebugSnapshot.fromJson(debug)
+
+        assertNotNull(snapshot)
+        snapshot!!
+        assertEquals("ok", snapshot.poseLifterStatus)
+        assertEquals("D:/models/pose_lifter.pt", snapshot.poseLifterModelPath)
+        assertEquals(6.0f, snapshot.poseLifterHiddenJointCount, 1e-6f)
+        assertEquals(0.74f, snapshot.poseLifterMeanConfidence, 1e-6f)
+        assertEquals(4.0f, snapshot.poseLifterAppliedJointCount, 1e-6f)
+        assertEquals("", snapshot.poseLifterRejectReason)
+    }
+}
