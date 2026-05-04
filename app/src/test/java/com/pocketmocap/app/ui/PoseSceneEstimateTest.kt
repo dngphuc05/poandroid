@@ -112,3 +112,16 @@ class PoseSceneEstimateTest {
             )
         }
         val heights = mutableListOf<Float>()
+        val distances = listOf(2.25f, 2.55f, 2.95f, 3.20f, 2.70f, 2.35f)
+        for (distance in distances) {
+            val solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = distance,
+                    footPlane = distance + 0.03f,
+                    roiDistance = distance - 0.02f,
+                    height = 1.82f + if (distance > 3.0f) -0.10f else 0.02f,
+                )
+            )
+            heights += solved.bodyHeightMeters
+        }
+
