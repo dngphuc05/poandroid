@@ -63,3 +63,16 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(22.25f, snapshot.mlEvidenceOutputs["height_reliability"] ?: Float.NaN, 1e-6f)
     }
 
+    @Test
+    fun fromJsonFallsBackToServerDebugMetricEvidenceOutputs() {
+        val debug = JSONObject().apply {
+            put("pose_status", "ok")
+            put("correction_reason", "root_constrained")
+            put("ml_evidence_status", "ok")
+            put("ml_evidence_schema", "metric_v2")
+            put("ml_evidence_image_status", "provided")
+            put("ml_height_reliability", 0.91)
+            put("ml_distance_reliability", 0.82)
+            put("ml_top_ray_error_m", -0.08)
+        }
+
