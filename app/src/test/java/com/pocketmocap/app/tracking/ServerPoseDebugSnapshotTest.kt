@@ -152,3 +152,10 @@ class ServerPoseDebugSnapshotTest {
         assertEquals(0.70f, snapshot.distanceSmoothWeight, 1e-6f)
         assertEquals(0.83f, snapshot.distanceLocalAuthority, 1e-6f)
         assertTrue(snapshot.hasV2MetricAuthority())
+        assertEquals(1.82f, snapshot.authoritativeHeightMetersOrNull() ?: Float.NaN, 1e-6f)
+        assertEquals(2.36f, snapshot.authoritativeDistanceMetersOrNull() ?: Float.NaN, 1e-6f)
+    }
+
+    @Test
+    fun canonicalMetricPoseIsPreferredForAuthoritativeDisplayMetrics() {
+        val debug = JSONObject().apply {
