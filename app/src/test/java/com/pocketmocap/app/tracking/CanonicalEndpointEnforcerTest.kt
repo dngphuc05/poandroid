@@ -35,3 +35,17 @@ class CanonicalEndpointEnforcerTest {
         assertTrue(confidence[19] <= 0.46f)
     }
 
+    @Test
+    fun leavesNormalHandEndpointsTrusted() {
+        val x = FloatArray(33)
+        val y = FloatArray(33)
+        val z = FloatArray(33)
+        val confidence = FloatArray(33) { 0.88f }
+        x[16] = 0.0f
+        y[16] = 1.1f
+        z[16] = -2.2f
+        seedNormalHandEndpoints(x, y, z, leftWrist = 15, rightWrist = 16)
+        x[20] = 0.091f
+        y[20] = 1.1f
+        z[20] = -2.2f
+
