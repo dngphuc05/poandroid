@@ -93,3 +93,11 @@ class CanonicalEndpointEnforcerTest {
         assertTrue(confidence[15] <= 0.56f)
     }
 
+    private fun distance(
+        x: FloatArray,
+        y: FloatArray,
+        z: FloatArray,
+        a: Int,
+        b: Int,
+    ): Float {
+        val dx = x[b] - x[a]
