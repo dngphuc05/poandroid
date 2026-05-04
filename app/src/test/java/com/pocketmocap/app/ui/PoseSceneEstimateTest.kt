@@ -91,3 +91,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue("distance should move toward supporting foot/ROI factors", solved.distanceMeters < 2.76f)
+        assertEquals("hip depth must not train a physical depth offset", 0f, graph.currentBias.depthOffsetMeters, 1e-5f)
+        assertEquals("hip depth must not train a physical depth scale", 1f, graph.currentBias.depthScale, 1e-5f)
+        assertTrue("solver confidence should remain usable", solved.solverConfidence > 0.45f)
+    }
+
+    @Test
