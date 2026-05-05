@@ -1067,3 +1067,17 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue(
+            "stable top envelope final state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked",
+        )
+        assertTrue(
+            "stable startup top envelope should lift away from the low hip startup before the low lock hardens; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters > 1.72f,
+        )
+        assertTrue(
+            "startup top-envelope lift should export instead of staying pinned near 1.64m; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters > 1.72f,
+        )
+    }
+
