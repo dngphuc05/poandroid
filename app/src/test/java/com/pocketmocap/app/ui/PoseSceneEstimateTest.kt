@@ -1279,3 +1279,21 @@ class PoseSceneEstimateTest {
                 ).copy(confidence = 0.72f, bodyScaleConfidence = 0.90f)
             )
         }
+        val badStartupLock = solved.bodyHeightMeters
+        assertTrue("test setup should export a high startup lock", solved.correctedHeightMeters.isFinite())
+        assertTrue("test setup should create a high startup lock", badStartupLock > 1.91f)
+
+        var correctionSuppressedExport = false
+        repeat(12) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.12f + (index % 2) * 0.006f,
+                    roiDistance = 2.14f + (index % 3) * 0.006f,
+                    height = 1.94f,
+                    topRayHeight = 1.828f + (index % 3) * 0.004f,
+                    hipGeometryDistance = 2.12f,
+                    hipGeometryHeight = 1.946f + (index % 3) * 0.004f,
+                    torsoHeight = 1.22f + (index % 4) * 0.012f,
+                    pixelSpanHeight = 1.26f + (index % 5) * 0.010f,
+                    groundedFootDistance = 2.12f,
