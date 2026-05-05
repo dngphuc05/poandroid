@@ -655,3 +655,17 @@ class PoseSceneEstimateTest {
                     hipDepth = Float.NaN,
                     footPlane = 2.08f,
                     roiDistance = 2.10f,
+                    height = 1.83f,
+                    topRayHeight = 1.84f,
+                    hipGeometryDistance = 2.10f,
+                    hipGeometryHeight = 1.83f,
+                    torsoHeight = 1.82f,
+                    pixelSpanHeight = 1.84f,
+                )
+            )
+        }
+        assertTrue(
+            "bracket recovery should leave the graph locked or acquiring a trusted retarget; state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked" || solved.heightLockState == "acquiring",
+        )
+
