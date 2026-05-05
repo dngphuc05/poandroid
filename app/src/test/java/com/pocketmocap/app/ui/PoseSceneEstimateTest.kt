@@ -637,3 +637,21 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphKeepsLockedHeightExportThroughMildCandidateGaps() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.08f,
+            roiDistance = 2.10f,
+            height = 1.83f,
+            topRayHeight = 1.84f,
+            hipGeometryDistance = 2.10f,
+            hipGeometryHeight = 1.83f,
+            torsoHeight = 1.82f,
+            pixelSpanHeight = 1.84f,
+        )
+        repeat(14) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.08f,
+                    roiDistance = 2.10f,
