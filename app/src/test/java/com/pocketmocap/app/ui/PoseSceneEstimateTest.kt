@@ -315,3 +315,17 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneOptimizerRejectsLowHipGeometryAgainstGroundedFootRoiSupport() {
+        val solved = PhysicalSceneOptimizer.optimize(
+            optimizerInput(
+                previousDistance = 2.10f,
+                previousHeight = 1.83f,
+                rawDistance = 1.52f,
+                rawHeight = 1.83f,
+                hipGeometryDistance = 1.24f,
+                footDistance = 2.18f,
+                relativeScaleDistance = 2.08f,
+                roiDistance = 2.20f,
+                groundedFootDistance = 2.18f,
+            )
+        )
+
