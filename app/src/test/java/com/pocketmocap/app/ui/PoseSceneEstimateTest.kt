@@ -1148,3 +1148,21 @@ class PoseSceneEstimateTest {
                     torsoHeight = if (iteration % 2 == 0) 1.42f else 1.55f,
                     pixelSpanHeight = if (iteration % 3 == 0) 1.50f else 1.62f,
                     groundedFootDistance = 2.31f,
+                    footContactState = "grounded_roi_supported",
+                )
+            )
+        }
+
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "rolling top-envelope should lift the immature low lock above 1.78 m; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters > 1.78f,
+        )
+        assertTrue(
+            "raised lock should land near the metrics_64 true band, not stay pinned at 1.75 m; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters in 1.78f..1.86f,
+        )
+        assertTrue(
+            "lifted lock should export a corrected height; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters in 1.78f..1.86f,
+        )
