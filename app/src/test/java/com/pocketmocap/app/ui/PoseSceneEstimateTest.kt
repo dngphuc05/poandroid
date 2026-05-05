@@ -1088,3 +1088,21 @@ class PoseSceneEstimateTest {
         // SubjectHeightEstimator the lock pins at ~1.75 m because hip-geometry
         // dominates the per-frame retarget. The latent estimator should accumulate
         // top-envelope evidence and lift the immature low lock toward 1.83 m.
+        val graph = PhysicalSceneFactorGraph()
+        // Phase 1: clean witnesses agree closely so the optimizer trusts height.
+        // The startup top-envelope gate may already lift the old hip-dominated
+        // ~1.745 m acquisition, but it must not overshoot the true-height band.
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.31f,
+            roiDistance = 2.30f,
+            height = 1.78f,
+            topRayHeight = 1.83f,
+            hipGeometryDistance = 2.30f,
+            hipGeometryHeight = 1.745f,
+            torsoHeight = 1.77f,
+            pixelSpanHeight = 1.74f,
+            groundedFootDistance = 2.31f,
+            footContactState = "grounded_roi_supported",
+        )
+        repeat(20) { iteration ->
