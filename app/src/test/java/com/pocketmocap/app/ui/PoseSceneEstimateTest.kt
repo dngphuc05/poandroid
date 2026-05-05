@@ -308,3 +308,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue("exploded hip geometry should be diagnosed", solved.activeFactors.contains("rejected_hip_geometry"))
+        assertTrue("rejected hip geometry should not pull the fallback to 8m", solved.distanceMeters < 3.20f)
+        assertFalse("bad untrusted 2.06m height should not become an exported trusted solve", solved.heightTrusted)
+    }
+
+    @Test
+    fun physicalSceneOptimizerRejectsLowHipGeometryAgainstGroundedFootRoiSupport() {
