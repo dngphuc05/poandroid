@@ -516,3 +516,15 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("acquiring_untrusted", solved.heightLockState)
+        // Diagnostic body-height may surface for the UI, but the server
+        // constraint export must remain gated when hip and torso heights are
+        // numerically duplicated (i.e., the same torso-ratio seed counted
+        // twice does not constitute independent semantic agreement).
+        assertFalse(
+            "duplicated torso/hip height must not constrain the server",
+            solved.correctedHeightMeters.isFinite(),
+        )
+        assertTrue(solved.activeFactors.contains("rejected_height_semantic_agreement"))
+    }
+
