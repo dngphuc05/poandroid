@@ -1235,3 +1235,11 @@ class PoseSceneEstimateTest {
                 ).copy(confidence = 0.66f, bodyScaleConfidence = 0.88f)
             )
         }
+
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "after the bad startup clears, stable evidence should lock near true height; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters in 1.79f..1.87f,
+        )
+    }
+
