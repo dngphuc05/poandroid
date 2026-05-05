@@ -832,3 +832,21 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphDoesNotInventMetrics63HeightFromTopRayMargin() {
+        val graph = PhysicalSceneFactorGraph(
+            PhysicalSceneBias(heightEndpointBiasMeters = -0.09f)
+        )
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.21f,
+            roiDistance = 2.24f,
+            height = 1.67f,
+            topRayHeight = 1.74f,
+            hipGeometryDistance = 2.22f,
+            hipGeometryHeight = 1.67f,
+            torsoHeight = 1.03f,
+            pixelSpanHeight = 1.12f,
+            groundedFootDistance = 2.21f,
+            footContactState = "grounded_roi_supported",
+        )
+        repeat(18) {
+            solved = graph.solve(
