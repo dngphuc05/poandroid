@@ -586,3 +586,21 @@ class PoseSceneEstimateTest {
         assertTrue("raw foot should remain visible as a rejected diagnostic", solved.activeFactors.contains("rejected_foot_plane"))
     }
 
+    @Test
+    fun physicalSceneFactorGraphHoldsGoodHeightThroughLaterBadCandidates() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.58f,
+            roiDistance = 2.60f,
+            height = 1.67f,
+            topRayHeight = 1.67f,
+            hipGeometryHeight = 1.67f,
+            torsoHeight = 1.67f,
+            pixelSpanHeight = 1.72f,
+        )
+        repeat(14) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.58f,
