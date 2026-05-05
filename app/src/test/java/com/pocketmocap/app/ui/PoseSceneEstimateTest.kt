@@ -268,3 +268,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue(solved.distanceCandidateSpreadMeters > 1.0f)
+        assertTrue(solved.heightCandidateSpreadMeters > 0.7f)
+        assertTrue(solved.solverConfidence < 0.55f)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphRejectsWildHipAndFootAgainstRoi() {
