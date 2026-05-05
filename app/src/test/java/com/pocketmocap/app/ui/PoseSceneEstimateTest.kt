@@ -487,3 +487,17 @@ class PoseSceneEstimateTest {
         assertTrue(solved.activeFactors.contains("rejected_torso_fallback_lock"))
     }
 
+    @Test
+    fun physicalSceneFactorGraphDoesNotTrustDuplicatedTorsoHipHeight() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.56f,
+            roiDistance = Float.NaN,
+            height = 1.846f,
+            topRayHeight = 1.97f,
+            hipGeometryHeight = 1.846f,
+            torsoHeight = 1.846f,
+            pixelSpanHeight = 2.15f,
+        )
+
