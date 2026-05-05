@@ -528,3 +528,20 @@ class PoseSceneEstimateTest {
         assertTrue(solved.activeFactors.contains("rejected_height_semantic_agreement"))
     }
 
+    @Test
+    fun physicalSceneFactorGraphBuildsRelativeMotionAnchorFromTrustedDistanceOnly() {
+        val graph = PhysicalSceneFactorGraph()
+        graph.solve(
+            rawSceneMetric(
+                hipDepth = Float.NaN,
+                footPlane = 2.80f,
+                roiDistance = 2.80f,
+                height = 1.846f,
+                topRayHeight = 1.97f,
+                hipGeometryHeight = 1.846f,
+                torsoHeight = 1.846f,
+                torsoSpanNorm = 0.10f,
+                pixelSpanHeight = 2.15f,
+            )
+        )
+
