@@ -945,3 +945,20 @@ class PoseSceneEstimateTest {
                 currentLocked = Float.NaN,
                 lowerAnchor = Float.NaN,
             )
+        }
+
+        repeat(12) {
+            retarget = estimator.update(
+                topRayHeight = 1.746f + (it % 3) * 0.003f,
+                hipGeometryHeight = Float.NaN,
+                torsoHeight = Float.NaN,
+                pixelSpanHeight = Float.NaN,
+                bodyScaleConfidence = 0.84f,
+                endpointBias = 0f,
+                distanceTrusted = true,
+                sceneConfidence = 0.84f,
+                currentLocked = Float.NaN,
+                lowerAnchor = Float.NaN,
+            )
+        }
+
