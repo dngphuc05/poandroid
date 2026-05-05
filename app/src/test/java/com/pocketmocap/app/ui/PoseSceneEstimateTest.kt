@@ -501,3 +501,18 @@ class PoseSceneEstimateTest {
             pixelSpanHeight = 2.15f,
         )
 
+        repeat(12) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.56f,
+                    roiDistance = Float.NaN,
+                    height = 1.846f,
+                    topRayHeight = 1.97f,
+                    hipGeometryHeight = 1.846f,
+                    torsoHeight = 1.846f,
+                    pixelSpanHeight = 2.15f,
+                )
+            )
+        }
+
