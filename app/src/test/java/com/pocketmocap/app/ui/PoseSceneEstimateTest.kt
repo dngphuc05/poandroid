@@ -740,3 +740,15 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue(
+            "semantic retarget final state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked",
+        )
+        assertTrue("semantic witnesses should pull a low acquisition upward", solved.bodyHeightMeters > initialLockedHeight + 0.025f)
+        assertTrue(
+            "retargeted height should approach the 1.83m capture truth without overriding the acquired anchor; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters in 1.805f..1.85f,
+        )
+        assertTrue("retargeted export should keep usable height confidence", solved.heightConfidence >= 0.56f)
+    }
+
