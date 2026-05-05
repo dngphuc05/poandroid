@@ -1408,3 +1408,21 @@ class PoseSceneEstimateTest {
             distance = 2.82f,
         )
 
+        repeat(72) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.28f + (index % 5) * 0.004f,
+                    roiDistance = Float.NaN,
+                    height = 1.70f + (index % 4) * 0.006f,
+                    topRayHeight = 1.84f + (index % 6) * 0.010f,
+                    hipGeometryDistance = 1.18f + (index % 4) * 0.020f,
+                    hipGeometryHeight = Float.NaN,
+                    torsoHeight = 1.00f + (index % 7) * 0.025f,
+                    pixelSpanHeight = 1.18f + (index % 5) * 0.018f,
+                    footContactState = "moving_or_uncertain",
+                    distance = 2.82f,
+                )
+            )
+        }
+
