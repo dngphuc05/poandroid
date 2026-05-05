@@ -336,3 +336,21 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneOptimizerUsesGroundedFootRoiWhenHipGeometryCollapses() {
+        var previousDistance = 2.08f
+        var solved = PhysicalSceneOptimizer.optimize(
+            optimizerInput(
+                previousDistance = previousDistance,
+                previousHeight = 1.83f,
+                rawDistance = 2.05f,
+                rawHeight = 1.83f,
+                hipGeometryDistance = 1.66f,
+                footDistance = 2.34f,
+                relativeScaleDistance = 2.05f,
+                roiDistance = 2.29f,
+                groundedFootDistance = 2.34f,
+                topHeight = 1.84f,
+                hipGeometryHeight = 1.83f,
+                torsoHeight = 1.82f,
+                pixelHeight = 1.85f,
+            )
+        )
