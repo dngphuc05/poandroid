@@ -241,3 +241,10 @@ class PoseSceneEstimateTest {
                     torsoHeight = 1.82f,
                     groundedFootDistance = foot,
                     footContactState = "grounded_roi_supported",
+                    distance = hip * 0.78f + foot * 0.22f,
+                )
+            )
+            distances += solved.distanceMeters
+        }
+
+        val distanceSpan = distances.maxOrNull()!! - distances.minOrNull()!!
