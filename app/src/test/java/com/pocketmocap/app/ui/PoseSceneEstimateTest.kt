@@ -1081,3 +1081,10 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphLiftsMetrics64ImmatureLowLockTowardTopEnvelope() {
+        // metrics_64 pattern: hip-geometry persistently low (~1.745 m), top-ray
+        // around the true 1.83 m band, torso/pixel noisy and low. Without the
+        // SubjectHeightEstimator the lock pins at ~1.75 m because hip-geometry
+        // dominates the per-frame retarget. The latent estimator should accumulate
+        // top-envelope evidence and lift the immature low lock toward 1.83 m.
