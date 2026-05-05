@@ -162,3 +162,15 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphRetargetsAfterBadStartupDistance() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = 1.68f,
+                footPlane = 1.32f,
+                roiDistance = 2.26f,
+                height = 1.80f,
+            )
+        )
+
