@@ -630,3 +630,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("holding_untrusted", solved.heightLockState)
+        assertTrue("locked height should move less than 2cm", kotlin.math.abs(solved.bodyHeightMeters - lockedHeight) < 0.02f)
+        assertFalse("held untrusted height must not be sent as a constraint", solved.correctedHeightMeters.isFinite())
+    }
+
+    @Test
+    fun physicalSceneFactorGraphKeepsLockedHeightExportThroughMildCandidateGaps() {
