@@ -927,3 +927,21 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun subjectHeightEstimatorLearnsTopRayOffsetFromIndependentWitnesses() {
+        val estimator = SubjectHeightEstimator()
+        var retarget: Float? = null
+
+        repeat(14) {
+            retarget = estimator.update(
+                topRayHeight = 1.745f + (it % 2) * 0.004f,
+                hipGeometryHeight = 1.830f + (it % 3) * 0.002f,
+                torsoHeight = 1.825f + (it % 2) * 0.003f,
+                pixelSpanHeight = Float.NaN,
+                bodyScaleConfidence = 0.84f,
+                endpointBias = 0f,
+                distanceTrusted = true,
+                sceneConfidence = 0.84f,
+                currentLocked = Float.NaN,
+                lowerAnchor = Float.NaN,
+            )
