@@ -1297,3 +1297,10 @@ class PoseSceneEstimateTest {
                     torsoHeight = 1.22f + (index % 4) * 0.012f,
                     pixelSpanHeight = 1.26f + (index % 5) * 0.010f,
                     groundedFootDistance = 2.12f,
+                    footContactState = "grounded_roi_supported",
+                    distance = 2.12f,
+                ).copy(confidence = 0.64f, bodyScaleConfidence = 0.88f)
+            )
+            correctionSuppressedExport = correctionSuppressedExport || !solved.correctedHeightMeters.isFinite()
+        }
+
