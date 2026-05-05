@@ -1002,3 +1002,21 @@ class PoseSceneEstimateTest {
             )
         }
         val initialLockedHeight = solved.bodyHeightMeters
+
+        repeat(96) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.18f + (index % 3) * 0.006f,
+                    roiDistance = 2.20f + (index % 2) * 0.006f,
+                    height = 1.799f,
+                    topRayHeight = 1.816f + (index % 4) * 0.002f,
+                    hipGeometryDistance = 2.20f,
+                    hipGeometryHeight = 1.788f + (index % 3) * 0.002f,
+                    torsoHeight = 1.822f + (index % 3) * 0.002f,
+                    pixelSpanHeight = 1.94f,
+                    groundedFootDistance = 2.18f,
+                    footContactState = "grounded_roi_supported",
+                )
+            )
+        }
