@@ -275,3 +275,14 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphRejectsWildHipAndFootAgainstRoi() {
+        val graph = PhysicalSceneFactorGraph()
+        val solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = 8.0f,
+                footPlane = 7.0f,
+                roiDistance = 3.5f,
+                height = 1.92f,
+                topRayHeight = 2.45f,
+            )
+        )
+
