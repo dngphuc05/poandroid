@@ -476,3 +476,14 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("acquiring_untrusted", solved.heightLockState)
+        // The factor graph publishes a diagnostic body-height during the
+        // untrusted state so the UI does not blank out, but it must not
+        // export a constraint to the server.
+        assertFalse(
+            "untrusted fallback must not export server height constraint",
+            solved.correctedHeightMeters.isFinite(),
+        )
+        assertTrue(solved.activeFactors.contains("rejected_torso_fallback_lock"))
+    }
+
