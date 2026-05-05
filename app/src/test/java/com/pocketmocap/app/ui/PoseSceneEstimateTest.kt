@@ -1166,3 +1166,11 @@ class PoseSceneEstimateTest {
             "lifted lock should export a corrected height; actual=${solved.correctedHeightMeters}",
             solved.correctedHeightMeters in 1.78f..1.86f,
         )
+    }
+
+    @Test
+    fun physicalSceneFactorGraphQuarantinesMetrics72BadStartupHighHipLock() {
+        val graph = PhysicalSceneFactorGraph(
+            PhysicalSceneBias(heightEndpointBiasMeters = 0.041f)
+        )
+        var solved = rawSceneMetric(
