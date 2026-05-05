@@ -752,3 +752,18 @@ class PoseSceneEstimateTest {
         assertTrue("retargeted export should keep usable height confidence", solved.heightConfidence >= 0.56f)
     }
 
+    @Test
+    fun physicalSceneFactorGraphAcquiresAnthropometricHeightDespiteHighSilhouette() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.18f,
+            roiDistance = 2.20f,
+            height = 1.88f,
+            topRayHeight = 1.94f,
+            hipGeometryDistance = 2.18f,
+            hipGeometryHeight = 1.82f,
+            torsoHeight = 1.845f,
+            pixelSpanHeight = 1.98f,
+        )
+
