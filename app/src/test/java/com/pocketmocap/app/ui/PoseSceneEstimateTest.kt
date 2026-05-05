@@ -1032,3 +1032,20 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphDelaysLowStartupLockForStableTopEnvelope() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.10f,
+            roiDistance = 2.12f,
+            height = 1.64f,
+            topRayHeight = 1.80f,
+            hipGeometryDistance = 2.12f,
+            hipGeometryHeight = 1.64f,
+            torsoHeight = 2.28f,
+            pixelSpanHeight = 2.38f,
+            groundedFootDistance = 2.10f,
+            footContactState = "grounded_roi_supported",
+        )
+
