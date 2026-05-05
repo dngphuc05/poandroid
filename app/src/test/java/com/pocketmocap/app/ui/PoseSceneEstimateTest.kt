@@ -1351,3 +1351,21 @@ class PoseSceneEstimateTest {
                 ).copy(confidence = 0.56f, bodyScaleConfidence = 0.88f)
             )
         }
+        val lowLock = solved.bodyHeightMeters
+        assertTrue("test setup should reproduce the metrics_73 low lock; actual=$lowLock", lowLock in 1.45f..1.56f)
+
+        repeat(120) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 1.88f + (index % 3) * 0.002f,
+                    roiDistance = 1.88f + (index % 2) * 0.003f,
+                    height = 1.49f,
+                    topRayHeight = 1.59f + (index % 5) * 0.003f,
+                    hipGeometryDistance = 0.52f,
+                    hipGeometryHeight = 1.497f,
+                    torsoHeight = 2.04f + (index % 7) * 0.010f,
+                    pixelSpanHeight = 2.15f + (index % 6) * 0.010f,
+                    groundedFootDistance = 1.88f,
+                    footContactState = "grounded_roi_supported",
+                    distance = 1.88f,
