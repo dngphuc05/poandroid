@@ -1304,3 +1304,14 @@ class PoseSceneEstimateTest {
             correctionSuppressedExport = correctionSuppressedExport || !solved.correctedHeightMeters.isFinite()
         }
 
+        assertTrue("startup correction should suppress export while undoing the bad lock", correctionSuppressedExport)
+        assertTrue(
+            "bad startup lock should be corrected quickly from unsupported high hip evidence; initial=$badStartupLock final=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters < badStartupLock - 0.055f,
+        )
+        assertTrue(
+            "correction should move toward the top witness instead of staying around 1.91m; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters < 1.89f,
+        )
+    }
+
