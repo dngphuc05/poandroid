@@ -423,3 +423,21 @@ class PoseSceneEstimateTest {
         assertTrue("height rejection should be visible", solved.activeFactors.contains("untrusted_height_spread"))
     }
 
+    @Test
+    fun physicalSceneOptimizerDropsOutOfRangeTopAndPixelHeightFactors() {
+        val solved = PhysicalSceneOptimizer.optimize(
+            optimizerInput(
+                previousDistance = 2.10f,
+                previousHeight = 1.83f,
+                rawDistance = 2.10f,
+                rawHeight = 1.83f,
+                hipGeometryDistance = 2.10f,
+                footDistance = Float.NaN,
+                relativeScaleDistance = Float.NaN,
+                topHeight = 2.72f,
+                hipGeometryHeight = 1.84f,
+                torsoHeight = 1.82f,
+                pixelHeight = 2.78f,
+            )
+        )
+
