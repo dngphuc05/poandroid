@@ -566,3 +566,16 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphDoesNotSeedDistanceFromUngroundedFootOnly() {
+        val graph = PhysicalSceneFactorGraph()
+        val solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = Float.NaN,
+                footPlane = 8.40f,
+                roiDistance = Float.NaN,
+                height = 1.83f,
+                topRayHeight = 1.84f,
+                hipGeometryDistance = Float.NaN,
+                distance = Float.NaN,
+            )
+        )
+
