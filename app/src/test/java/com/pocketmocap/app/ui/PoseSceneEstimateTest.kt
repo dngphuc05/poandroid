@@ -1020,3 +1020,15 @@ class PoseSceneEstimateTest {
                 )
             )
         }
+
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "stable top+torso consensus should keep retargeting instead of stopping 2cm low: initial=$initialLockedHeight final=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters > initialLockedHeight + 0.010f,
+        )
+        assertTrue(
+            "metrics_69-like final height should land near the upper-body consensus, not the low hip witness; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters in 1.807f..1.825f,
+        )
+    }
+
