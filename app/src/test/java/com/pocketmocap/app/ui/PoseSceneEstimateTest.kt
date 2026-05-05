@@ -866,3 +866,15 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "top-ray evidence should not receive a fixed stature margin; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters in 1.66f..1.78f,
+        )
+        assertTrue(
+            "shorter top-supported lock should still export as a usable corrected height; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters in 1.66f..1.78f,
+        )
+        assertTrue("old negative endpoint bias should be clamped instead of pulling top-ray down", graph.currentBias.heightEndpointBiasMeters >= -0.025f)
+    }
+
