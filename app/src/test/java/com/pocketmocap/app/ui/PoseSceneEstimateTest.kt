@@ -1315,3 +1315,21 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphRecoversMetrics73LowLockFromBracketedSpanEvidence() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 1.88f,
+            roiDistance = 1.88f,
+            height = 1.49f,
+            topRayHeight = 1.56f,
+            hipGeometryDistance = 0.52f,
+            hipGeometryHeight = 1.49f,
+            torsoHeight = Float.NaN,
+            pixelSpanHeight = Float.NaN,
+            groundedFootDistance = 1.88f,
+            footContactState = "grounded_roi_supported",
+            distance = 1.88f,
+        )
+
