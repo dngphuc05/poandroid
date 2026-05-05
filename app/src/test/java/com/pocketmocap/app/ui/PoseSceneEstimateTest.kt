@@ -1243,3 +1243,21 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphCorrectsBadStartupLockWhenTopContradictsUnsupportedHip() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.12f,
+            roiDistance = 2.14f,
+            height = 1.94f,
+            topRayHeight = 1.94f,
+            hipGeometryDistance = 2.12f,
+            hipGeometryHeight = 1.94f,
+            torsoHeight = 1.94f,
+            pixelSpanHeight = 1.94f,
+            groundedFootDistance = 2.12f,
+            footContactState = "grounded_roi_supported",
+            distance = 2.12f,
+        )
+
