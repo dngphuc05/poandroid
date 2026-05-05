@@ -1123,3 +1123,10 @@ class PoseSceneEstimateTest {
             )
         }
         val initialLockedHeight = solved.bodyHeightMeters
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "phase 1 should avoid both the old 1.745m pin and high overshoot; actual=$initialLockedHeight",
+            initialLockedHeight in 1.74f..1.81f,
+        )
+
+        // Phase 2: top-ray sweeps the true 1.83 m band while torso/pixel turn
