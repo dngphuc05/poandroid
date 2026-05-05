@@ -1387,3 +1387,10 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphQuarantinesTallTopEnvelopeWhenTorsoPixelCollapse() {
+        // metrics_65 pattern: the true/tall top-ray witness is stable, but
+        // hip-height is absent and torso/pixel collapse low. The quarantine
+        // must not export a first lock from top-only evidence while the
+        // optimizer is reporting a huge height-candidate spread.
+        val graph = PhysicalSceneFactorGraph()
