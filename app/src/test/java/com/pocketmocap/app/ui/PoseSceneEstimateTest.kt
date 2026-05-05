@@ -969,3 +969,21 @@ class PoseSceneEstimateTest {
     }
 
     @Test
+    fun physicalSceneFactorGraphUsesStableTopTorsoConsensusAboveLowHip() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.18f,
+            roiDistance = 2.20f,
+            height = 1.798f,
+            topRayHeight = 1.799f,
+            hipGeometryDistance = 2.20f,
+            hipGeometryHeight = 1.796f,
+            torsoHeight = 1.800f,
+            pixelSpanHeight = 1.81f,
+            groundedFootDistance = 2.18f,
+            footContactState = "grounded_roi_supported",
+        )
+        repeat(18) {
+            solved = graph.solve(
+                rawSceneMetric(
