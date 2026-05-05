@@ -416,3 +416,10 @@ class PoseSceneEstimateTest {
                 hipGeometryHeight = 2.20f,
                 torsoHeight = 1.80f,
                 pixelHeight = 2.55f,
+            )
+        )
+
+        assertFalse("high-spread semantic height should not be trusted", solved.heightTrusted)
+        assertTrue("height rejection should be visible", solved.activeFactors.contains("untrusted_height_spread"))
+    }
+
