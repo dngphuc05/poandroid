@@ -448,3 +448,21 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphDoesNotAcquireUntrustedTorsoFallback() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = Float.NaN,
+                footPlane = 2.60f,
+                roiDistance = 2.62f,
+                height = 2.10f,
+                topRayHeight = 2.00f,
+                hipGeometryHeight = 2.20f,
+                torsoHeight = 1.80f,
+                pixelSpanHeight = 2.55f,
+            )
+        )
+        repeat(14) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.60f,
