@@ -683,3 +683,13 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue(
+            "bracket recovery should leave the graph locked or acquiring a trusted retarget; state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked" || solved.heightLockState == "acquiring",
+        )
+        assertTrue("mild candidate gaps should keep exporting the acquired height", solved.correctedHeightMeters.isFinite())
+        assertTrue(kotlin.math.abs(solved.correctedHeightMeters - 1.83f) < 0.06f)
+        assertTrue("exported locked height should carry usable confidence", solved.heightConfidence >= 0.56f)
+        assertFalse("trusted lock export should suppress stale spread diagnostics", solved.activeFactors.contains("untrusted_height_spread"))
+    }
+
