@@ -380,3 +380,21 @@ class PoseSceneEstimateTest {
         assertTrue(solved.activeFactors.contains("rejected_hip_geometry"))
     }
 
+    @Test
+    fun physicalSceneOptimizerUsesRelativeScaleAsWeakRepeatedMotionCue() {
+        var previousDistance = 2.80f
+        repeat(36) {
+            val solved = PhysicalSceneOptimizer.optimize(
+                optimizerInput(
+                    previousDistance = previousDistance,
+                    previousHeight = 1.67f,
+                    rawDistance = Float.NaN,
+                    rawHeight = 1.67f,
+                    hipGeometryDistance = Float.NaN,
+                    footDistance = Float.NaN,
+                    relativeScaleDistance = 2.10f,
+                )
+            )
+            previousDistance = solved.distanceMeters
+        }
+
