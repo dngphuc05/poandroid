@@ -294,3 +294,17 @@ class PoseSceneEstimateTest {
         assertTrue("distance should stay near ROI support instead of bad AR/depth factors", solved.distanceMeters in 3.0f..4.0f)
     }
 
+    @Test
+    fun physicalSceneOptimizerRejectsHipGeometryExplosionAgainstTemporalSupport() {
+        val solved = PhysicalSceneOptimizer.optimize(
+            optimizerInput(
+                previousDistance = 2.80f,
+                previousHeight = 1.67f,
+                rawDistance = 8.10f,
+                rawHeight = 2.06f,
+                hipGeometryDistance = 8.25f,
+                footDistance = 3.48f,
+                relativeScaleDistance = 2.10f,
+            )
+        )
+
