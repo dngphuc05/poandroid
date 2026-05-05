@@ -441,3 +441,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue("out-of-range top/pixel must not inflate height spread", solved.heightCandidateSpreadMeters < 0.04f)
+        assertFalse("top-ray outlier should be excluded from trusted height factors", solved.activeFactors.contains("top_ray"))
+        assertFalse("pixel outlier should be excluded from trusted height factors", solved.activeFactors.contains("pixel_span"))
+    }
+
+    @Test
+    fun physicalSceneFactorGraphDoesNotAcquireUntrustedTorsoFallback() {
