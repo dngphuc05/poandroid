@@ -878,3 +878,10 @@ class PoseSceneEstimateTest {
         assertTrue("old negative endpoint bias should be clamped instead of pulling top-ray down", graph.currentBias.heightEndpointBiasMeters >= -0.025f)
     }
 
+    @Test
+    fun physicalSceneFactorGraphDoesNotAcquireMetrics67FromTopMarginWithoutHipWitness() {
+        // metrics_67 pattern: early top-ray is close to the 1.67m subject, but
+        // hip-height is absent. The old low-height rescue added a fixed head
+        // margin to top-ray during first acquisition and locked near 1.79m.
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
