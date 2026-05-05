@@ -885,3 +885,16 @@ class PoseSceneEstimateTest {
         // margin to top-ray during first acquisition and locked near 1.79m.
         val graph = PhysicalSceneFactorGraph()
         var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.31f,
+            roiDistance = Float.NaN,
+            height = 1.54f,
+            topRayHeight = 1.70f,
+            hipGeometryDistance = 1.90f,
+            hipGeometryHeight = Float.NaN,
+            torsoHeight = 1.34f,
+            pixelSpanHeight = 1.52f,
+            footContactState = "moving_or_uncertain",
+            distance = 1.95f,
+        )
+
