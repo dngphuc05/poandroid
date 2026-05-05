@@ -1130,3 +1130,21 @@ class PoseSceneEstimateTest {
         )
 
         // Phase 2: top-ray sweeps the true 1.83 m band while torso/pixel turn
+        // noisy and low (the steady-state metrics_64 pattern). The optimizer
+        // can no longer trust height per frame, but the rolling top-envelope
+        // should accumulate sustained 1.80-1.85 m evidence and lift the lock.
+        repeat(80) { iteration ->
+            val topRay = 1.80f + (iteration % 5) * 0.012f
+            val hip = 1.742f + (iteration % 4) * 0.003f
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.31f + (iteration % 3) * 0.01f,
+                    roiDistance = 2.30f + (iteration % 2) * 0.01f,
+                    height = 1.78f,
+                    topRayHeight = topRay,
+                    hipGeometryDistance = 2.30f,
+                    hipGeometryHeight = hip,
+                    torsoHeight = if (iteration % 2 == 0) 1.42f else 1.55f,
+                    pixelSpanHeight = if (iteration % 3 == 0) 1.50f else 1.62f,
+                    groundedFootDistance = 2.31f,
