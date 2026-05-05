@@ -669,3 +669,17 @@ class PoseSceneEstimateTest {
             solved.heightLockState == "locked" || solved.heightLockState == "acquiring",
         )
 
+        solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = Float.NaN,
+                footPlane = 2.09f,
+                roiDistance = 2.12f,
+                height = 1.83f,
+                topRayHeight = 2.04f,
+                hipGeometryDistance = 2.10f,
+                hipGeometryHeight = 1.84f,
+                torsoHeight = 2.10f,
+                pixelSpanHeight = 2.12f,
+            )
+        )
+
