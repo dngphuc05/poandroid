@@ -398,3 +398,21 @@ class PoseSceneEstimateTest {
             previousDistance = solved.distanceMeters
         }
 
+        assertTrue("repeated relative torso scale should retarget toward the closer step", previousDistance in 1.95f..2.25f)
+    }
+
+    @Test
+    fun physicalSceneOptimizerRejectsHighSpreadSemanticHeight() {
+        val solved = PhysicalSceneOptimizer.optimize(
+            optimizerInput(
+                previousDistance = 2.60f,
+                previousHeight = Float.NaN,
+                rawDistance = 2.62f,
+                rawHeight = 2.10f,
+                hipGeometryDistance = 2.64f,
+                footDistance = 2.60f,
+                relativeScaleDistance = Float.NaN,
+                topHeight = 2.00f,
+                hipGeometryHeight = 2.20f,
+                torsoHeight = 1.80f,
+                pixelHeight = 2.55f,
