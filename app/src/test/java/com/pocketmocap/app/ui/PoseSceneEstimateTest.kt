@@ -1174,3 +1174,17 @@ class PoseSceneEstimateTest {
             PhysicalSceneBias(heightEndpointBiasMeters = 0.041f)
         )
         var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 1.27f,
+            roiDistance = 1.29f,
+            height = 1.94f,
+            topRayHeight = 1.83f,
+            hipGeometryDistance = 1.26f,
+            hipGeometryHeight = 1.95f,
+            torsoHeight = 1.22f,
+            pixelSpanHeight = 1.27f,
+            groundedFootDistance = 1.27f,
+            footContactState = "grounded_roi_supported",
+            distance = 1.27f,
+        ).copy(confidence = 0.48f, bodyScaleConfidence = 0.87f)
+
