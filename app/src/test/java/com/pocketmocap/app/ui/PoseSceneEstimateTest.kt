@@ -1369,3 +1369,21 @@ class PoseSceneEstimateTest {
                     groundedFootDistance = 1.88f,
                     footContactState = "grounded_roi_supported",
                     distance = 1.88f,
+                ).copy(confidence = 0.56f, bodyScaleConfidence = 0.89f)
+            )
+        }
+
+        assertTrue(
+            "bracket recovery should leave the graph locked or acquiring a trusted retarget; state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked" || solved.heightLockState == "acquiring",
+        )
+        assertTrue(
+            "bracketed span evidence should lift the low metrics_73 lock instead of staying pinned: initial=$lowLock final=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters > lowLock + 0.060f,
+        )
+        assertTrue(
+            "bracket recovery should remain inside plausible subject-height bounds; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters in 1.60f..1.92f,
+        )
+    }
+
