@@ -223,3 +223,21 @@ class PoseSceneEstimateTest {
             )
         }
 
+        val distances = mutableListOf<Float>()
+        val noisyHipDistances = listOf(1.82f, 1.48f, 1.28f, 1.36f, 1.70f, 1.56f, 1.90f, 1.42f)
+        repeat(48) { index ->
+            val hip = noisyHipDistances[index % noisyHipDistances.size]
+            val foot = 2.10f + if (index % 2 == 0) 0.03f else -0.02f
+            val roi = 2.12f + if (index % 3 == 0) 0.03f else -0.01f
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = foot,
+                    roiDistance = roi,
+                    height = 1.83f,
+                    topRayHeight = 1.84f,
+                    hipGeometryDistance = hip,
+                    hipGeometryHeight = 1.84f,
+                    torsoHeight = 1.82f,
+                    groundedFootDistance = foot,
+                    footContactState = "grounded_roi_supported",
