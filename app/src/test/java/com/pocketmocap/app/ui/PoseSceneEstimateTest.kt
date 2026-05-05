@@ -372,3 +372,11 @@ class PoseSceneEstimateTest {
                     torsoHeight = 1.82f,
                     pixelHeight = 1.85f,
                 )
+            )
+        }
+
+        assertTrue("grounded foot+ROI agreement should pull distance back into the 2.1m+ capture range", solved.distanceMeters > 2.16f)
+        assertTrue("stable foot+ROI support should not overshoot the user's 2.8m range", solved.distanceMeters < 2.80f)
+        assertTrue(solved.activeFactors.contains("rejected_hip_geometry"))
+    }
+
