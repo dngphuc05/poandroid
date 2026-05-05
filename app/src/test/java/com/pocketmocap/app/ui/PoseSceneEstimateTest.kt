@@ -1206,3 +1206,14 @@ class PoseSceneEstimateTest {
                 ).copy(confidence = 0.48f, bodyScaleConfidence = 0.87f)
             )
             assertFalse(
+                "metrics_72-style high-spread startup must not export a first height lock at frame $index",
+                solved.correctedHeightMeters.isFinite(),
+            )
+        }
+
+        assertTrue(
+            "bad startup evidence should be diagnosed as a wide height spread; spread=${solved.heightCandidateSpreadMeters}",
+            solved.heightCandidateSpreadMeters > 0.30f,
+        )
+        assertFalse("quarantined startup must not report a locked state", solved.heightLockState == "locked")
+
