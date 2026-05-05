@@ -962,3 +962,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue(
+            "stable independent hip+torso witnesses should learn a session top-ray correction; actual=$retarget",
+            retarget != null && retarget!! in 1.80f..1.86f,
+        )
+    }
+
+    @Test
