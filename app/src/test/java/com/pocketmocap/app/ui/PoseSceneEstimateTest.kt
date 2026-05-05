@@ -783,3 +783,11 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue(
+            "anthropometric acquisition final state=${solved.heightLockState} height=${solved.bodyHeightMeters} corrected=${solved.correctedHeightMeters}",
+            solved.heightLockState == "locked",
+        )
+        assertTrue("top/pixel silhouette bias should not define subject height", solved.bodyHeightMeters in 1.81f..1.85f)
+        assertTrue("locked anthropometric height should export", solved.correctedHeightMeters.isFinite())
+    }
+
