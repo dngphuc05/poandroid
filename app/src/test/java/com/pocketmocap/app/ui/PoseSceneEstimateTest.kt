@@ -185,3 +185,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertTrue("distance should recover after sustained stable evidence", solved.distanceMeters > 2.25f)
+        assertTrue("distance recovery should not overshoot the supported range", solved.distanceMeters < 2.75f)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphKeepsDistanceStableDuringSideHandMotion() {
+        val graph = PhysicalSceneFactorGraph()
