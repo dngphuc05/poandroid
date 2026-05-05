@@ -1049,3 +1049,21 @@ class PoseSceneEstimateTest {
             footContactState = "grounded_roi_supported",
         )
 
+        repeat(64) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.10f + (index % 3) * 0.004f,
+                    roiDistance = 2.12f + (index % 2) * 0.004f,
+                    height = 1.64f + (index % 2) * 0.002f,
+                    topRayHeight = 1.795f + (index % 5) * 0.003f,
+                    hipGeometryDistance = 2.12f,
+                    hipGeometryHeight = 1.64f + (index % 3) * 0.002f,
+                    torsoHeight = 2.24f + (index % 4) * 0.012f,
+                    pixelSpanHeight = 2.36f + (index % 4) * 0.018f,
+                    groundedFootDistance = 2.10f,
+                    footContactState = "grounded_roi_supported",
+                )
+            )
+        }
+
