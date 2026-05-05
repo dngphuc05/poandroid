@@ -579,3 +579,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue(
+            "an unreferenced moving foot hit must not become the primary distance lock",
+            !solved.distanceMeters.isFinite() || solved.distanceMeters < 4.0f,
+        )
+        assertTrue("raw foot should remain visible as a rejected diagnostic", solved.activeFactors.contains("rejected_foot_plane"))
+    }
+
