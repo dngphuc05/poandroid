@@ -1394,3 +1394,17 @@ class PoseSceneEstimateTest {
         // must not export a first lock from top-only evidence while the
         // optimizer is reporting a huge height-candidate spread.
         val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.28f,
+            roiDistance = Float.NaN,
+            height = 1.72f,
+            topRayHeight = 1.86f,
+            hipGeometryDistance = 1.20f,
+            hipGeometryHeight = Float.NaN,
+            torsoHeight = 1.05f,
+            pixelSpanHeight = 1.20f,
+            footContactState = "moving_or_uncertain",
+            distance = 2.82f,
+        )
+
