@@ -1217,3 +1217,21 @@ class PoseSceneEstimateTest {
         )
         assertFalse("quarantined startup must not report a locked state", solved.heightLockState == "locked")
 
+        repeat(48) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.18f + (index % 3) * 0.006f,
+                    roiDistance = 2.20f + (index % 2) * 0.006f,
+                    height = 1.83f,
+                    topRayHeight = 1.824f + (index % 4) * 0.003f,
+                    hipGeometryDistance = 2.19f,
+                    hipGeometryHeight = 1.828f + (index % 3) * 0.003f,
+                    torsoHeight = 1.818f + (index % 2) * 0.004f,
+                    pixelSpanHeight = 1.835f + (index % 3) * 0.003f,
+                    groundedFootDistance = 2.18f,
+                    footContactState = "grounded_roi_supported",
+                    distance = 2.19f,
+                ).copy(confidence = 0.66f, bodyScaleConfidence = 0.88f)
+            )
+        }
