@@ -248,3 +248,10 @@ class PoseSceneEstimateTest {
         }
 
         val distanceSpan = distances.maxOrNull()!! - distances.minOrNull()!!
+        assertTrue("hand-driven hip distance noise should be rejected", solved.activeFactors.contains("rejected_hip_geometry"))
+        assertTrue("distance should stay near the stable 2.1m working position", distances.minOrNull()!! > 1.95f)
+        assertTrue("side hand motion should not create large distance flicker", distanceSpan < 0.18f)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphReportsLowConfidenceForDisagreeingFactors() {
