@@ -286,3 +286,11 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertFalse("hip depth should not be an active physical factor", solved.activeFactors.contains("hip_depth"))
+        assertTrue("bad foot plane should be visible as rejected", solved.activeFactors.contains("rejected_foot_plane"))
+        assertTrue("wild disagreement should lower solver confidence", solved.solverConfidence < 0.45f)
+        assertEquals("height must not lock from untrusted evidence", "acquiring_untrusted", solved.heightLockState)
+        assertFalse("untrusted first frame should not export corrected height", solved.correctedHeightMeters.isFinite())
+        assertTrue("distance should stay near ROI support instead of bad AR/depth factors", solved.distanceMeters in 3.0f..4.0f)
+    }
+
