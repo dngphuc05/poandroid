@@ -329,3 +329,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue("low hip geometry should be diagnosed", solved.activeFactors.contains("rejected_hip_geometry"))
+        assertEquals("rejected hip geometry must not be a distance factor", 0f, solved.weightHip, 1e-5f)
+        assertTrue("stable non-hip evidence should keep distance near the 2.1m anchor", solved.distanceMeters in 2.05f..2.22f)
+    }
+
+    @Test
+    fun physicalSceneOptimizerUsesGroundedFootRoiWhenHipGeometryCollapses() {
