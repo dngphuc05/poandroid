@@ -825,3 +825,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("locked", solved.heightLockState)
+        assertTrue("low hip geometry should not define metrics_61 subject height by itself", solved.bodyHeightMeters in 1.81f..1.86f)
+        assertTrue("corrected height should export near the 1.83m capture truth", solved.correctedHeightMeters in 1.81f..1.86f)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphDoesNotInventMetrics63HeightFromTopRayMargin() {
