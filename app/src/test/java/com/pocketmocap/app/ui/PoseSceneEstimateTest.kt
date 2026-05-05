@@ -559,3 +559,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue("relative torso scale should become available even while height is untrusted", closer.relativeScaleDistanceMeters.isFinite())
+        assertTrue("larger torso span should imply moving closer", closer.relativeScaleDistanceMeters < 2.35f)
+        assertEquals("acquiring_untrusted", closer.heightLockState)
+    }
+
+    @Test
+    fun physicalSceneFactorGraphDoesNotSeedDistanceFromUngroundedFootOnly() {
