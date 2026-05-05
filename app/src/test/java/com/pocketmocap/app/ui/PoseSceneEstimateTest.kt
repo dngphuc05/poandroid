@@ -255,3 +255,16 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphReportsLowConfidenceForDisagreeingFactors() {
+        val graph = PhysicalSceneFactorGraph()
+        val solved = graph.solve(
+            rawSceneMetric(
+                hipDepth = 5.20f,
+                footPlane = 2.10f,
+                roiDistance = 3.40f,
+                height = 1.20f,
+                topRayHeight = 2.05f,
+                hipGeometryHeight = 2.05f,
+                pixelSpanHeight = 2.05f,
+            )
+        )
+
