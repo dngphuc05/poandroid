@@ -916,3 +916,14 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "initial lock must not add a fixed top-ray margin without a lower hip witness; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters < 1.74f,
+        )
+        assertTrue(
+            "top-supported shorter subject should still export a usable lock; actual=${solved.correctedHeightMeters}",
+            solved.correctedHeightMeters in 1.64f..1.74f,
+        )
+    }
+
