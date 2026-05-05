@@ -604,3 +604,13 @@ class PoseSceneEstimateTest {
                 rawSceneMetric(
                     hipDepth = Float.NaN,
                     footPlane = 2.58f,
+                    roiDistance = 2.60f,
+                    height = 1.67f,
+                    topRayHeight = 1.67f,
+                    hipGeometryHeight = 1.67f,
+                    torsoHeight = 1.67f,
+                    pixelSpanHeight = 1.72f,
+                )
+            )
+        }
+        val lockedHeight = solved.bodyHeightMeters
