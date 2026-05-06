@@ -1904,3 +1904,14 @@ class PoseSceneEstimateTest {
         assertEquals("roi_fallback", estimate!!.source)
     }
 
+    @Test
+    fun evaluateServerPoseHealthAcceptsFullBodyCatastropheSafePose() {
+        val x = FloatArray(33) { Float.NaN }
+        val y = FloatArray(33) { Float.NaN }
+        val z = FloatArray(33) { Float.NaN }
+        for ((n, idx) in intArrayOf(0, 7, 8, 11, 12, 13, 14, 23, 24, 25, 26, 27, 28).withIndex()) {
+            x[idx] = 0.1f + n * 0.01f
+            y[idx] = 0.2f + n * 0.01f
+            z[idx] = 0.3f + n * 0.01f
+        }
+
