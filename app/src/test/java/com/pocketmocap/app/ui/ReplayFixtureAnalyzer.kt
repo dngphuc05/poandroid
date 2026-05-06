@@ -20,3 +20,11 @@ internal data class ReplayFrame(
     val distanceMeters: Float,
     val heightMeters: Float,
     val technicalPoseSource: String,
+    val serverPoseStatus: String,
+    val rejectedServerReason: String,
+    val arTargetDistanceMeters: Float?,
+    val arTargetHeightMeters: Float?,
+    val constrainedServerDistanceMeters: Float?,
+    val constrainedServerHeightMeters: Float?,
+)
+
