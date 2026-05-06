@@ -13,3 +13,10 @@ internal data class ReplayFixtureMetadata(
     val maxDistanceStepP95Meters: Float,
     val maxHeightStepP95Meters: Float,
     val analysisWindow: IntRange?,
+)
+
+internal data class ReplayFrame(
+    val frame: Int,
+    val distanceMeters: Float,
+    val heightMeters: Float,
+    val technicalPoseSource: String,
