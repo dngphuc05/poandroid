@@ -1729,3 +1729,13 @@ class PoseSceneEstimateTest {
                     topRayHeight = 1.83f,
                 )
             )
+        }
+
+        assertFalse(solved.activeFactors.contains("rejected_hip_depth"))
+        assertFalse(solved.activeFactors.contains("rejected_foot_plane"))
+        assertTrue("consistent geometry should keep usable confidence", solved.solverConfidence > 0.55f)
+        assertTrue(solved.heightLockState == "locked" || solved.heightLockState == "acquiring")
+        assertTrue(solved.correctedHeightMeters.isFinite())
+        assertTrue(solved.distanceMeters in 3.3f..3.8f)
+    }
+
