@@ -1975,3 +1975,15 @@ class PoseSceneEstimateTest {
         assertEquals("missing_root_joints", health.reason)
     }
 
+    @Test
+    fun evaluateServerPoseHealthRejectsMissingArrays() {
+        val health = evaluateServerPoseHealth(
+            poseX = null,
+            poseY = null,
+            poseZ = null,
+            poseVisibility = null,
+        )
+        assertFalse(health.usable)
+        assertEquals("missing_server_pose", health.reason)
+    }
+
