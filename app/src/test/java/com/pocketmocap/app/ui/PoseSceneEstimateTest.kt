@@ -1779,3 +1779,10 @@ class PoseSceneEstimateTest {
     }
 
     @Test
+    fun deriveOverlayPoseEstimateIgnoresDepthSpikesButKeepsHeightStable() {
+        val (x, y, v) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v)
+        var previousHeight = 1.80f
+        val distances = mutableListOf<Float>()
+        val heights = mutableListOf<Float>()
+        val depthSeries = listOf(2.25f, 2.75f, 2.45f, 3.10f, 2.60f, 2.95f, 2.38f, 2.84f)
