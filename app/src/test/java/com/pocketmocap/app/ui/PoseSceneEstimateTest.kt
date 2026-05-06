@@ -2199,3 +2199,7 @@ class PoseSceneEstimateTest {
             previousHeightMeters = previousHeight,
             floorHeightBiasMeters = 0f,
             depthScale = 1f,
+            depthOffsetMeters = 0f,
+            heightEndpointBiasMeters = 0f,
+        )
+}
