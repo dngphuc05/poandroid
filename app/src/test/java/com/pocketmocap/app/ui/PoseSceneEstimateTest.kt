@@ -1804,3 +1804,10 @@ class PoseSceneEstimateTest {
             heights += estimate.bodyHeightMeters
             previousHeight = estimate.bodyHeightMeters
         }
+
+        val heightSpan = (heights.maxOrNull()!! - heights.minOrNull()!!)
+        val distanceSpan = (distances.maxOrNull()!! - distances.minOrNull()!!)
+        assertTrue("hip-depth spikes must not dominate subject distance", distanceSpan < 0.30f)
+        assertTrue(heightSpan <= 0.22f)
+    }
+
