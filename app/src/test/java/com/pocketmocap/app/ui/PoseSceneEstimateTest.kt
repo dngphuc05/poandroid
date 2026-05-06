@@ -2143,3 +2143,11 @@ class PoseSceneEstimateTest {
             footContactState = footContactState,
             bodyScaleConfidence = 0.82f,
             boneLengthSpreadMeters = 0.04f,
+            torsoSpanNorm = torsoSpanNorm,
+        )
+
+    private fun weightedDistanceForTest(
+        footPlane: Float,
+        roiDistance: Float,
+    ): Float {
+        var total = 0f
