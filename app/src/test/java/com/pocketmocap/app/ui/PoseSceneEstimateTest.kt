@@ -2005,3 +2005,21 @@ class PoseSceneEstimateTest {
                 lastServerParseReason = "pose3d_without_joints",
                 serverHealth = missing,
             ),
+        )
+        assertEquals(
+            "too_few_valid_server_joints",
+            classifyServerPoseMissingReason(
+                pose3DReceivedCount = 4,
+                lastServerParseReason = "too_few_valid_server_joints",
+                serverHealth = ServerPoseHealth(false, "too_few_valid_joints", 3, 1),
+            ),
+        )
+        assertEquals(
+            "none",
+            classifyServerPoseMissingReason(
+                pose3DReceivedCount = 4,
+                lastServerParseReason = "ok",
+                serverHealth = ServerPoseHealth(true, "ok", 33, 4),
+            ),
+        )
+    }
