@@ -230,3 +230,11 @@ internal object ReplayFixtureAnalyzer {
                 start..end
             },
         )
+    }
+
+    private fun parseCsvRows(csvText: String): List<Map<String, String>> {
+        val lines = csvText.lineSequence().map { it.trim() }.filter { it.isNotEmpty() }.toList()
+        require(lines.size >= 2) { "csv requires header + rows" }
+        val header = parseCsvLine(lines.first())
+        return lines.drop(1).map { line ->
+            val cells = parseCsvLine(line)
