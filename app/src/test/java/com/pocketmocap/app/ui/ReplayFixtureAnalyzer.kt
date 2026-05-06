@@ -179,3 +179,11 @@ internal object ReplayFixtureAnalyzer {
     }
 
     fun evaluateStrictGate(
+        metadata: ReplayFixtureMetadata,
+        analysis: ReplayAnalysis,
+    ): ReplayGateResult {
+        val failures = mutableListOf<String>()
+        if (analysis.arFrameCount <= 0) {
+            failures += "no_arcore_floor_frames"
+        }
+
