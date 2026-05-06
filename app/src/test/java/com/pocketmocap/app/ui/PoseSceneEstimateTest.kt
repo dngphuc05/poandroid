@@ -1828,3 +1828,12 @@ class PoseSceneEstimateTest {
             intrinsics = nearTracking.intrinsics,
         )
         val far = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = near?.bodyHeightMeters ?: 1.80f,
+            screenX = x,
+            screenY = y,
+            visibility = v,
+            worldTracking = farTracking,
+            intrinsics = farTracking.intrinsics,
+        )
+
