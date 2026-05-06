@@ -110,3 +110,10 @@ internal object ReplayFixtureAnalyzer {
         val heights = frames.map { it.heightMeters }
         val distanceSteps = mutableListOf<Float>()
         val heightSteps = mutableListOf<Float>()
+        var sourceSwitches = 0
+        var contradictionCount = 0
+        var arSceneMismatchCount = 0
+        var constrainedTargetMismatchCount = 0
+
+        for (i in frames.indices) {
+            val frame = frames[i]
