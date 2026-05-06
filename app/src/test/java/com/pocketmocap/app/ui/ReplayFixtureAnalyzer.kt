@@ -144,3 +144,13 @@ internal object ReplayFixtureAnalyzer {
                 arSceneMismatchCount += 1
             }
 
+            val constrainedDistance = frame.constrainedServerDistanceMeters
+            val constrainedHeight = frame.constrainedServerHeightMeters
+            if (arDistance != null && constrainedDistance != null && abs(constrainedDistance - arDistance) > 1.50f) {
+                constrainedTargetMismatchCount += 1
+            }
+            if (arHeight != null && constrainedHeight != null && abs(constrainedHeight - arHeight) > 1.20f) {
+                constrainedTargetMismatchCount += 1
+            }
+        }
+
