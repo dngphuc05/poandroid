@@ -1606,3 +1606,16 @@ class PoseSceneEstimateTest {
                 )
             )
         }
+
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "metrics_71 pattern should not let high hip geometry plus learned endpoint bias ratchet the lock: locked=$lockedHeight final=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters < lockedHeight + 0.040f,
+        )
+        assertTrue(
+            "unsupported positive endpoint bias should decay instead of masking the low raw top-ray; bias=${graph.currentBias.heightEndpointBiasMeters}",
+            graph.currentBias.heightEndpointBiasMeters < 0.035f,
+        )
+        assertTrue("held height should remain exportable", solved.correctedHeightMeters.isFinite())
+    }
+
