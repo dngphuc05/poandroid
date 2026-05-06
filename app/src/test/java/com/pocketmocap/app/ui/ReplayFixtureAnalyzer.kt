@@ -42,3 +42,10 @@ internal data class ReplayAnalysis(
     val arSceneMismatchCount: Int,
     val constrainedTargetMismatchCount: Int,
     val distanceMinMeters: Float,
+    val distanceMaxMeters: Float,
+    val heightMinMeters: Float,
+    val heightMaxMeters: Float,
+)
+
+internal data class ReplayGateResult(
+    val pass: Boolean,
