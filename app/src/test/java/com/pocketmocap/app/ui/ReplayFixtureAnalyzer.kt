@@ -205,3 +205,10 @@ internal object ReplayFixtureAnalyzer {
             if (analysis.heightMinMeters < range.start || analysis.heightMaxMeters > range.endInclusive) {
                 failures += "height_range_out_of_band:[${analysis.heightMinMeters},${analysis.heightMaxMeters}]"
             }
+        }
+        if (analysis.contradictionCount > 0) {
+            failures += "technical_source_contradictions:${analysis.contradictionCount}"
+        }
+        return ReplayGateResult(pass = failures.isEmpty(), failures = failures)
+    }
+
