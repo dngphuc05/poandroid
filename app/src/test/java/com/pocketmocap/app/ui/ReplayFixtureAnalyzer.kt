@@ -187,3 +187,21 @@ internal object ReplayFixtureAnalyzer {
             failures += "no_arcore_floor_frames"
         }
 
+        if (analysis.missingServerPoseRatio > metadata.maxMissingServerPoseRatio) {
+            failures += "missing_server_pose_ratio_exceeded:${analysis.missingServerPoseRatio}"
+        }
+        if (analysis.distanceStepP95Meters > metadata.maxDistanceStepP95Meters) {
+            failures += "distance_step_p95_exceeded:${analysis.distanceStepP95Meters}"
+        }
+        if (analysis.heightStepP95Meters > metadata.maxHeightStepP95Meters) {
+            failures += "height_step_p95_exceeded:${analysis.heightStepP95Meters}"
+        }
+        metadata.expectedDistanceRangeMeters?.let { range ->
+            if (analysis.distanceMinMeters < range.start || analysis.distanceMaxMeters > range.endInclusive) {
+                failures += "distance_range_out_of_band:[${analysis.distanceMinMeters},${analysis.distanceMaxMeters}]"
+            }
+        }
+        metadata.expectedHeightRangeMeters?.let { range ->
+            if (analysis.heightMinMeters < range.start || analysis.heightMaxMeters > range.endInclusive) {
+                failures += "height_range_out_of_band:[${analysis.heightMinMeters},${analysis.heightMaxMeters}]"
+            }
