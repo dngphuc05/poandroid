@@ -1554,3 +1554,21 @@ class PoseSceneEstimateTest {
         assertTrue("fresh lock should keep exporting while high geometry is constrained", solved.correctedHeightMeters.isFinite())
     }
 
+    @Test
+    fun physicalSceneFactorGraphDoesNotLetMetrics71HighHipTeachEndpointBias() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.22f,
+            roiDistance = 2.30f,
+            height = 1.84f,
+            topRayHeight = 1.82f,
+            hipGeometryDistance = 2.20f,
+            hipGeometryHeight = 1.84f,
+            torsoHeight = 1.82f,
+            pixelSpanHeight = 1.84f,
+            groundedFootDistance = 2.22f,
+            footContactState = "grounded_roi_supported",
+        )
+        repeat(24) {
+            solved = graph.solve(
