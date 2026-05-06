@@ -1546,3 +1546,11 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("locked", solved.heightLockState)
+        assertTrue(
+            "good metrics_60 startup lock should not ratchet upward from later high hip geometry: locked=$lockedHeight final=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters < lockedHeight + 0.032f,
+        )
+        assertTrue("fresh lock should keep exporting while high geometry is constrained", solved.correctedHeightMeters.isFinite())
+    }
+
