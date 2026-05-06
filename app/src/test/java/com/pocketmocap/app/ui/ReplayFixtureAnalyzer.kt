@@ -56,3 +56,10 @@ internal object ReplayFixtureAnalyzer {
     fun loadFixture(resourceFixtureJson: String): Pair<ReplayFixtureMetadata, String> {
         val metadataText = readResourceText("replay/$resourceFixtureJson")
         val meta = parseMetadata(metadataText)
+        val csvText = readResourceText("replay/${meta.csvFile}")
+        return meta to csvText
+    }
+
+    fun analyze(csvText: String, metadata: ReplayFixtureMetadata): ReplayAnalysis {
+        val rows = parseCsvRows(csvText)
+        val frames = mutableListOf<ReplayFrame>()
