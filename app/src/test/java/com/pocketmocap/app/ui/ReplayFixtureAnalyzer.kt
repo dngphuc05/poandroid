@@ -238,3 +238,11 @@ internal object ReplayFixtureAnalyzer {
         val header = parseCsvLine(lines.first())
         return lines.drop(1).map { line ->
             val cells = parseCsvLine(line)
+            buildMap(header.size) {
+                for (i in header.indices) {
+                    put(header[i], cells.getOrElse(i) { "" })
+                }
+            }
+        }
+    }
+
