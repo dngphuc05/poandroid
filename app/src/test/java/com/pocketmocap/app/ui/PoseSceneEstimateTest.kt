@@ -1786,3 +1786,21 @@ class PoseSceneEstimateTest {
         val distances = mutableListOf<Float>()
         val heights = mutableListOf<Float>()
         val depthSeries = listOf(2.25f, 2.75f, 2.45f, 3.10f, 2.60f, 2.95f, 2.38f, 2.84f)
+
+        for (depth in depthSeries) {
+            val tracking = buildTrackingSnapshot(depthMeters = depth)
+            val estimate = deriveOverlayPoseEstimate(
+                roi = roi,
+                rawSubjectHeightMeters = previousHeight,
+                screenX = x,
+                screenY = y,
+                visibility = v,
+                worldTracking = tracking,
+                intrinsics = tracking.intrinsics,
+            )
+            assertNotNull(estimate)
+            assertEquals("arcore_floor", estimate!!.source)
+            distances += estimate.distanceMeters
+            heights += estimate.bodyHeightMeters
+            previousHeight = estimate.bodyHeightMeters
+        }
