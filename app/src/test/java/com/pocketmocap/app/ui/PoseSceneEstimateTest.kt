@@ -1927,3 +1927,12 @@ class PoseSceneEstimateTest {
         assertEquals(4, health.rootJointCount)
     }
 
+    @Test
+    fun evaluateServerPoseHealthRejectsTooFewValidJoints() {
+        val x = FloatArray(33) { Float.NaN }
+        val y = FloatArray(33) { Float.NaN }
+        val z = FloatArray(33) { Float.NaN }
+        x[0] = 0.1f; y[0] = 0.2f; z[0] = 0.3f
+        x[1] = 0.2f; y[1] = 0.2f; z[1] = 0.3f
+        x[23] = 0.4f; y[23] = 0.5f; z[23] = 0.6f
+
