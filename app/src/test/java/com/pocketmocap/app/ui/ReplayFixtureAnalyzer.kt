@@ -246,3 +246,10 @@ internal object ReplayFixtureAnalyzer {
         }
     }
 
+    private fun parseCsvLine(line: String): List<String> {
+        val cells = mutableListOf<String>()
+        val sb = StringBuilder()
+        var i = 0
+        var quoted = false
+        while (i < line.length) {
+            val c = line[i]
