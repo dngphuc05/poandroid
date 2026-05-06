@@ -2095,3 +2095,15 @@ class PoseSceneEstimateTest {
                 fx = 800f,
                 fy = 800f,
                 cx = 80f,
+                cy = 60f,
+                imageWidth = 160,
+                imageHeight = 120,
+            ),
+            depthMap = DepthMapSnapshot(
+                width = depthWidth,
+                height = depthHeight,
+                depthMm = depth,
+            ),
+        )
+    }
+
