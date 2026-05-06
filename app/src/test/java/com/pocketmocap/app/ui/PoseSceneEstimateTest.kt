@@ -2163,3 +2163,21 @@ class PoseSceneEstimateTest {
         return if (weight > 0f) total / weight else Float.NaN
     }
 
+    private fun optimizerInput(
+        previousDistance: Float,
+        previousHeight: Float,
+        rawDistance: Float,
+        rawHeight: Float,
+        hipGeometryDistance: Float,
+        footDistance: Float,
+        relativeScaleDistance: Float,
+        roiDistance: Float = Float.NaN,
+        groundedFootDistance: Float = Float.NaN,
+        topHeight: Float = rawHeight,
+        hipGeometryHeight: Float = rawHeight,
+        torsoHeight: Float = rawHeight,
+        pixelHeight: Float = rawHeight,
+    ): PhysicalSceneOptimizerInput =
+        PhysicalSceneOptimizerInput(
+            confidence = 0.84f,
+            rawDistanceMeters = rawDistance,
