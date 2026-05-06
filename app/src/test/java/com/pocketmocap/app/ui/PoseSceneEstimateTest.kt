@@ -1946,3 +1946,10 @@ class PoseSceneEstimateTest {
         assertEquals("too_few_valid_joints", health.reason)
     }
 
+    @Test
+    fun evaluateServerPoseHealthRejectsMissingRootJointsEvenWithValidCount() {
+        val x = FloatArray(33) { Float.NaN }
+        val y = FloatArray(33) { Float.NaN }
+        val z = FloatArray(33) { Float.NaN }
+        val v = FloatArray(33) { 1f }
+        // Enough non-root joints are valid, so this should fail specifically
