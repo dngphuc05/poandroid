@@ -1844,3 +1844,10 @@ class PoseSceneEstimateTest {
         // The depth-patch source produced unreliable values on real captures
         // (mean 3.19 m vs 2.10 m truth in metrics_52, all-NaN in metrics_53),
         // so it is intentionally disabled — the optimizer already gated it
+        // behind FLAG_REJECTED_HIP and the sampling cost was pure overhead.
+        assertFalse("disabled depth patch must not surface a finite distance", far.rawHipDepthDistanceMeters.isFinite())
+        assertTrue("depth patch must not pull physical distance by itself", kotlin.math.abs(far.distanceMeters - near.distanceMeters) < 0.20f)
+        assertTrue(kotlin.math.abs(far.bodyHeightMeters - near.bodyHeightMeters) < 0.25f)
+    }
+
+    @Test
