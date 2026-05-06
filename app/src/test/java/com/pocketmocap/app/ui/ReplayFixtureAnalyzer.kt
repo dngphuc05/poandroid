@@ -117,3 +117,15 @@ internal object ReplayFixtureAnalyzer {
 
         for (i in frames.indices) {
             val frame = frames[i]
+            if (i > 0) {
+                val previous = frames[i - 1]
+                distanceSteps += abs(frame.distanceMeters - previous.distanceMeters)
+                heightSteps += abs(frame.heightMeters - previous.heightMeters)
+                if (frame.technicalPoseSource.isNotBlank() &&
+                    previous.technicalPoseSource.isNotBlank() &&
+                    frame.technicalPoseSource != previous.technicalPoseSource
+                ) {
+                    sourceSwitches += 1
+                }
+            }
+
