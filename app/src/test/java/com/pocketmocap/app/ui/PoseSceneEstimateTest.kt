@@ -1426,3 +1426,14 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("acquiring", solved.heightLockState)
+        assertTrue(
+            "stable tall top-envelope may surface diagnostically while quarantined; actual=${solved.bodyHeightMeters}",
+            solved.bodyHeightMeters in 1.80f..1.90f,
+        )
+        assertFalse(
+            "top-only startup with collapsed torso/pixel must not export a first height constraint",
+            solved.correctedHeightMeters.isFinite(),
+        )
+    }
+
