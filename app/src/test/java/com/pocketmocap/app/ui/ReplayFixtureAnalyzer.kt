@@ -63,3 +63,10 @@ internal object ReplayFixtureAnalyzer {
     fun analyze(csvText: String, metadata: ReplayFixtureMetadata): ReplayAnalysis {
         val rows = parseCsvRows(csvText)
         val frames = mutableListOf<ReplayFrame>()
+
+        for (row in rows) {
+            val frame = row["frame"]?.toIntOrNull() ?: continue
+            if (metadata.analysisWindow != null && frame !in metadata.analysisWindow) continue
+            if (row["scene_source"] != "arcore_floor") continue
+            val distance = row["distance_m"]?.toFiniteFloatOrNull() ?: continue
+            val height = row["height_m"]?.toFiniteFloatOrNull() ?: continue
