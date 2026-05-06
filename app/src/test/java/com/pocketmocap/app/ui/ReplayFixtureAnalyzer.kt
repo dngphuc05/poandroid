@@ -271,3 +271,10 @@ internal object ReplayFixtureAnalyzer {
         return cells
     }
 
+    private fun readResourceText(path: String): String {
+        val stream = ReplayFixtureAnalyzer::class.java.classLoader?.getResourceAsStream(path)
+            ?: error("missing test resource: $path")
+        return stream.bufferedReader().use { it.readText() }
+    }
+
+    private fun percentile(values: List<Float>, p: Float): Float {
