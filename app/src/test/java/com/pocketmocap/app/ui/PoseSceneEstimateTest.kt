@@ -1772,3 +1772,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertEquals("holding_untrusted", bad.heightLockState)
+        assertTrue(kotlin.math.abs(bad.bodyHeightMeters - lockedHeight) < 0.02f)
+        assertFalse("untrusted held height must not export as a server constraint", bad.correctedHeightMeters.isFinite())
+        assertTrue(bad.solverConfidence < 0.45f)
+    }
+
+    @Test
