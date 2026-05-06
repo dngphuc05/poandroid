@@ -2107,3 +2107,21 @@ class PoseSceneEstimateTest {
         )
     }
 
+    private fun rawSceneMetric(
+        hipDepth: Float,
+        footPlane: Float,
+        roiDistance: Float,
+        height: Float,
+        topRayHeight: Float = height,
+        hipGeometryDistance: Float = Float.NaN,
+        hipGeometryHeight: Float = height,
+        torsoHeight: Float = height,
+        torsoSpanNorm: Float = 0.12f,
+        pixelSpanHeight: Float = height * 0.96f,
+        groundedFootDistance: Float = Float.NaN,
+        footContactState: String = "",
+        distance: Float = weightedDistanceForTest(footPlane, roiDistance),
+    ): SceneMetricSnapshot =
+        SceneMetricSnapshot(
+            source = "arcore_floor",
+            confidence = 0.84f,
