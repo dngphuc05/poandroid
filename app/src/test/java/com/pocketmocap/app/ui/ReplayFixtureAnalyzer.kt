@@ -212,3 +212,21 @@ internal object ReplayFixtureAnalyzer {
         return ReplayGateResult(pass = failures.isEmpty(), failures = failures)
     }
 
+    private fun parseMetadata(text: String): ReplayFixtureMetadata {
+        val id = jsonString(text, "id") ?: error("metadata missing id")
+        val csvFile = jsonString(text, "csv_file") ?: error("metadata missing csv_file")
+        return ReplayFixtureMetadata(
+            id = id,
+            csvFile = csvFile,
+            expectedDistanceRangeMeters = jsonFloatRange(text, "expected_distance_range_m"),
+            expectedHeightRangeMeters = jsonFloatRange(text, "expected_height_range_m"),
+            maxMissingServerPoseRatio = jsonFloat(text, "max_missing_server_pose_ratio")
+                ?: error("metadata missing max_missing_server_pose_ratio"),
+            maxDistanceStepP95Meters = jsonFloat(text, "max_distance_step_p95_m")
+                ?: error("metadata missing max_distance_step_p95_m"),
+            maxHeightStepP95Meters = jsonFloat(text, "max_height_step_p95_m")
+                ?: error("metadata missing max_height_step_p95_m"),
+            analysisWindow = jsonWindow(text)?.let { (start, end) ->
+                start..end
+            },
+        )
