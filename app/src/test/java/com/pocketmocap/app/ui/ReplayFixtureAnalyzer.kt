@@ -103,3 +103,10 @@ internal object ReplayFixtureAnalyzer {
                 distanceMaxMeters = Float.POSITIVE_INFINITY,
                 heightMinMeters = Float.POSITIVE_INFINITY,
                 heightMaxMeters = Float.POSITIVE_INFINITY,
+            )
+        }
+
+        val distances = frames.map { it.distanceMeters }
+        val heights = frames.map { it.heightMeters }
+        val distanceSteps = mutableListOf<Float>()
+        val heightSteps = mutableListOf<Float>()
