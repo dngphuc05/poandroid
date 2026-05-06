@@ -1485,3 +1485,17 @@ class PoseSceneEstimateTest {
             )
             heights += solved.bodyHeightMeters
         }
+
+        val heightSpan = heights.maxOrNull()!! - heights.minOrNull()!!
+        assertEquals("locked", solved.heightLockState)
+        assertTrue("limb motion should keep exporting locked subject height", solved.correctedHeightMeters.isFinite())
+        assertTrue(
+            "human height should not chase hand/leg silhouette noise: locked=$lockedHeight final=${solved.bodyHeightMeters} span=$heightSpan",
+            heightSpan < 0.035f,
+        )
+        assertTrue(
+            "locked height should remain near the acquired anthropometric value: locked=$lockedHeight final=${solved.bodyHeightMeters}",
+            kotlin.math.abs(solved.bodyHeightMeters - lockedHeight) < 0.035f,
+        )
+    }
+
