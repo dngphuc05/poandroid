@@ -1886,3 +1886,21 @@ class PoseSceneEstimateTest {
         assertTrue(second.distanceMeters in 0.35f..12.0f)
     }
 
+    @Test
+    fun deriveOverlayPoseEstimateFallsBackWhenGroundPlaneMissing() {
+        val (x, y, v) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v)
+        val tracking = buildTrackingSnapshot(hasGroundPlane = false, source = "arcore")
+        val estimate = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = 1.80f,
+            screenX = x,
+            screenY = y,
+            visibility = v,
+            worldTracking = tracking,
+            intrinsics = tracking.intrinsics,
+        )
+        assertNotNull(estimate)
+        assertEquals("roi_fallback", estimate!!.source)
+    }
+
