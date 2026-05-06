@@ -2151,3 +2151,15 @@ class PoseSceneEstimateTest {
         roiDistance: Float,
     ): Float {
         var total = 0f
+        var weight = 0f
+        if (footPlane.isFinite()) {
+            total += footPlane * 0.70f
+            weight += 0.70f
+        }
+        if (roiDistance.isFinite()) {
+            total += roiDistance * 0.30f
+            weight += 0.30f
+        }
+        return if (weight > 0f) total / weight else Float.NaN
+    }
+
