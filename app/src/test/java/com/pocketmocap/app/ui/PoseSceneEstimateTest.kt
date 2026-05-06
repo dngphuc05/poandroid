@@ -1704,3 +1704,10 @@ class PoseSceneEstimateTest {
             )
         )
 
+        assertTrue("trusted distance may seed relative motion even while height is untrusted", solved.relativeScaleDistanceMeters.isFinite())
+        assertEquals("acquiring_untrusted", solved.heightLockState)
+        assertFalse("distance-only relative anchor must not export a height constraint", solved.correctedHeightMeters.isFinite())
+    }
+
+    @Test
+    fun physicalSceneFactorGraphAcceptsConsistentHipFootRoiFactors() {
