@@ -1673,3 +1673,20 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphAllowsDistanceOnlyRelativeScaleWithoutHeightConstraint() {
+        val graph = PhysicalSceneFactorGraph()
+        repeat(8) {
+            graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 3.20f,
+                    roiDistance = 3.15f,
+                    height = 2.10f,
+                    topRayHeight = 2.00f,
+                    hipGeometryHeight = 2.20f,
+                    torsoHeight = 1.80f,
+                    torsoSpanNorm = 0.10f,
+                    pixelSpanHeight = 2.55f,
+                )
+            )
+        }
+
