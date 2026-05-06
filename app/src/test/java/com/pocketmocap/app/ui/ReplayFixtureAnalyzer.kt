@@ -70,3 +70,18 @@ internal object ReplayFixtureAnalyzer {
             if (row["scene_source"] != "arcore_floor") continue
             val distance = row["distance_m"]?.toFiniteFloatOrNull() ?: continue
             val height = row["height_m"]?.toFiniteFloatOrNull() ?: continue
+
+            frames += ReplayFrame(
+                frame = frame,
+                distanceMeters = distance,
+                heightMeters = height,
+                technicalPoseSource = row["technical_pose_source"].orEmpty(),
+                serverPoseStatus = row["server_pose_status"].orEmpty(),
+                rejectedServerReason = row["rejected_server_reason"].orEmpty(),
+                arTargetDistanceMeters = row["ar_target_distance_m"]?.toFiniteFloatOrNull(),
+                arTargetHeightMeters = row["ar_target_height_m"]?.toFiniteFloatOrNull(),
+                constrainedServerDistanceMeters = row["constrained_server_distance_m"]?.toFiniteFloatOrNull(),
+                constrainedServerHeightMeters = row["constrained_server_height_m"]?.toFiniteFloatOrNull(),
+            )
+        }
+
