@@ -2070,3 +2070,10 @@ class PoseSceneEstimateTest {
         for (yy in (cy - 2)..(cy + 2)) {
             for (xx in (cx - 2)..(cx + 2)) {
                 val i = yy * depthWidth + xx
+                depth[i] = depthMm
+            }
+        }
+        val halfPitchRad = Math.toRadians((pitchDegrees * 0.5f).toDouble()).toFloat()
+        val qx = sin(halfPitchRad)
+        val qw = cos(halfPitchRad)
+
