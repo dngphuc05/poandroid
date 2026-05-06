@@ -286,3 +286,11 @@ internal object ReplayFixtureAnalyzer {
         val high = min(low + 1, sorted.lastIndex)
         if (low == high) return sorted[low]
         val t = rank - low.toFloat()
+        return sorted[low] * (1f - t) + sorted[high] * t
+    }
+
+    private fun String.toFiniteFloatOrNull(): Float? {
+        val value = toFloatOrNull() ?: return null
+        return if (value.isFinite()) value else null
+    }
+
