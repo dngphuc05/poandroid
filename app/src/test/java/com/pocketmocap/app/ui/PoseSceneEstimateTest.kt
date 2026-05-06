@@ -1818,3 +1818,13 @@ class PoseSceneEstimateTest {
         val nearTracking = buildTrackingSnapshot(depthMeters = 2.10f)
         val farTracking = buildTrackingSnapshot(depthMeters = 3.40f)
 
+        val near = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = 1.80f,
+            screenX = x,
+            screenY = y,
+            visibility = v,
+            worldTracking = nearTracking,
+            intrinsics = nearTracking.intrinsics,
+        )
+        val far = deriveOverlayPoseEstimate(
