@@ -136,3 +136,11 @@ internal object ReplayFixtureAnalyzer {
             }
 
             val arDistance = frame.arTargetDistanceMeters
+            val arHeight = frame.arTargetHeightMeters
+            if (arDistance != null && abs(frame.distanceMeters - arDistance) > 0.35f) {
+                arSceneMismatchCount += 1
+            }
+            if (arHeight != null && abs(frame.heightMeters - arHeight) > 0.30f) {
+                arSceneMismatchCount += 1
+            }
+
