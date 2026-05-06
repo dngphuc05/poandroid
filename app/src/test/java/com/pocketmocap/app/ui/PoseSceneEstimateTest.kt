@@ -1619,3 +1619,21 @@ class PoseSceneEstimateTest {
         assertTrue("held height should remain exportable", solved.correctedHeightMeters.isFinite())
     }
 
+    @Test
+    fun physicalSceneFactorGraphDoesNotRaiseMatureHeightForHighHipGeometryRun() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.10f,
+            roiDistance = 2.12f,
+            height = 1.83f,
+            topRayHeight = 1.84f,
+            hipGeometryDistance = 2.10f,
+            hipGeometryHeight = 1.82f,
+            torsoHeight = 1.83f,
+            pixelSpanHeight = 1.84f,
+        )
+        repeat(70) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
