@@ -1467,3 +1467,21 @@ class PoseSceneEstimateTest {
             )
         }
         val lockedHeight = solved.bodyHeightMeters
+
+        val heights = mutableListOf<Float>()
+        repeat(48) { index ->
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
+                    footPlane = 2.08f + (index % 5) * 0.03f,
+                    roiDistance = 2.16f + (index % 3) * 0.02f,
+                    height = 1.90f,
+                    topRayHeight = 1.90f + (index % 4) * 0.035f,
+                    hipGeometryDistance = 2.12f,
+                    hipGeometryHeight = 1.82f + (index % 3) * 0.006f,
+                    torsoHeight = if (index % 2 == 0) 1.28f else 1.86f,
+                    pixelSpanHeight = if (index % 2 == 0) 1.14f else 2.12f,
+                )
+            )
+            heights += solved.bodyHeightMeters
+        }
