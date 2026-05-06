@@ -2030,3 +2030,10 @@ class PoseSceneEstimateTest {
         val v = FloatArray(33) { 1f }
 
         // Head
+        x[0] = 0.44f; y[0] = 0.20f
+        x[7] = 0.41f; y[7] = 0.23f
+        x[8] = 0.48f; y[8] = 0.23f
+        x[9] = 0.40f; y[9] = 0.24f
+        x[10] = 0.49f; y[10] = 0.24f
+
+        // Shoulders + hips
