@@ -28,3 +28,10 @@ internal data class ReplayFrame(
     val constrainedServerHeightMeters: Float?,
 )
 
+internal data class ReplayAnalysis(
+    val fixtureId: String,
+    val rowCount: Int,
+    val arFrameCount: Int,
+    val missingServerPoseRatio: Float,
+    val distanceSpanMeters: Float,
+    val heightSpanMeters: Float,
