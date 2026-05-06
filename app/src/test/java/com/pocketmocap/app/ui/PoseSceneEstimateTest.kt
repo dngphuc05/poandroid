@@ -1666,3 +1666,10 @@ class PoseSceneEstimateTest {
             )
         }
 
+        assertEquals("locked", solved.heightLockState)
+        assertTrue("mature subject height should not climb to a high hip/top silhouette run", solved.bodyHeightMeters < lockedHeight + 0.030f)
+        assertTrue("high run should still keep exporting the held subject height", solved.correctedHeightMeters.isFinite())
+    }
+
+    @Test
+    fun physicalSceneFactorGraphAllowsDistanceOnlyRelativeScaleWithoutHeightConstraint() {
