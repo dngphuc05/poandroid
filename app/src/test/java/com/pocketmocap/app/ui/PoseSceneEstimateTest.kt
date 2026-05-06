@@ -1868,3 +1868,21 @@ class PoseSceneEstimateTest {
         assertTrue(first!!.learnedHipVectorXNorm.isFinite())
         assertTrue(first.learnedHipVectorYNorm.isFinite())
 
+        val v1 = v0.copyOf()
+        v1[24] = 0.0f
+        val second = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = first.bodyHeightMeters,
+            screenX = x,
+            screenY = y,
+            visibility = v1,
+            worldTracking = tracking,
+            intrinsics = tracking.intrinsics,
+            previousHipVectorXNorm = first.learnedHipVectorXNorm,
+            previousHipVectorYNorm = first.learnedHipVectorYNorm,
+        )
+        assertNotNull(second)
+        assertEquals("arcore_floor", second!!.source)
+        assertTrue(second.distanceMeters in 0.35f..12.0f)
+    }
+
