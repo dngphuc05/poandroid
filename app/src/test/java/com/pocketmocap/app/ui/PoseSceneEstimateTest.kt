@@ -1711,3 +1711,21 @@ class PoseSceneEstimateTest {
 
     @Test
     fun physicalSceneFactorGraphAcceptsConsistentHipFootRoiFactors() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = 3.4f,
+            footPlane = 3.5f,
+            roiDistance = 3.7f,
+            height = 1.82f,
+            topRayHeight = 1.83f,
+        )
+        repeat(9) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = 3.4f,
+                    footPlane = 3.5f,
+                    roiDistance = 3.7f,
+                    height = 1.82f,
+                    topRayHeight = 1.83f,
+                )
+            )
