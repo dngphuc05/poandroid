@@ -2052,3 +2052,13 @@ class PoseSceneEstimateTest {
         x[31] = 0.34f; y[31] = 0.93f
         x[32] = 0.49f; y[32] = 0.93f
 
+        return Triple(x, y, v)
+    }
+
+    private fun buildTrackingSnapshot(
+        depthMeters: Float = 2.85f,
+        hasGroundPlane: Boolean = true,
+        source: String = "arcore_floor",
+        pitchDegrees: Float = 0f,
+    ): WorldTrackingSnapshot {
+        val depthWidth = 160
