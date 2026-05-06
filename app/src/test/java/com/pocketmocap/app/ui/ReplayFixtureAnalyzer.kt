@@ -278,3 +278,11 @@ internal object ReplayFixtureAnalyzer {
     }
 
     private fun percentile(values: List<Float>, p: Float): Float {
+        if (values.isEmpty()) return 0f
+        val sorted = values.sorted()
+        val clampedP = p.coerceIn(0f, 1f)
+        val rank = clampedP * sorted.lastIndex.toFloat()
+        val low = rank.toInt().coerceIn(0, sorted.lastIndex)
+        val high = min(low + 1, sorted.lastIndex)
+        if (low == high) return sorted[low]
+        val t = rank - low.toFloat()
