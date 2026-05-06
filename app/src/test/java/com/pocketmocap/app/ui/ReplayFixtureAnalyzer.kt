@@ -85,3 +85,21 @@ internal object ReplayFixtureAnalyzer {
             )
         }
 
+        if (frames.isEmpty()) {
+            return ReplayAnalysis(
+                fixtureId = metadata.id,
+                rowCount = rows.size,
+                arFrameCount = 0,
+                missingServerPoseRatio = 1f,
+                distanceSpanMeters = Float.POSITIVE_INFINITY,
+                heightSpanMeters = Float.POSITIVE_INFINITY,
+                distanceStepP95Meters = Float.POSITIVE_INFINITY,
+                heightStepP95Meters = Float.POSITIVE_INFINITY,
+                sourceSwitchCount = 0,
+                contradictionCount = 0,
+                arSceneMismatchCount = 0,
+                constrainedTargetMismatchCount = 0,
+                distanceMinMeters = Float.POSITIVE_INFINITY,
+                distanceMaxMeters = Float.POSITIVE_INFINITY,
+                heightMinMeters = Float.POSITIVE_INFINITY,
+                heightMaxMeters = Float.POSITIVE_INFINITY,
