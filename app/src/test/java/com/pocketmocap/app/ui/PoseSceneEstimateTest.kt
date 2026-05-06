@@ -1837,3 +1837,10 @@ class PoseSceneEstimateTest {
             intrinsics = farTracking.intrinsics,
         )
 
+        assertNotNull(near)
+        assertNotNull(far)
+        assertEquals("arcore_floor", near!!.source)
+        assertEquals("arcore_floor", far!!.source)
+        // The depth-patch source produced unreliable values on real captures
+        // (mean 3.19 m vs 2.10 m truth in metrics_52, all-NaN in metrics_53),
+        // so it is intentionally disabled — the optimizer already gated it
