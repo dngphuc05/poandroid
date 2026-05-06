@@ -2023,3 +2023,10 @@ class PoseSceneEstimateTest {
             ),
         )
     }
+
+    private fun buildPoseLandmarks(): Triple<FloatArray, FloatArray, FloatArray> {
+        val x = FloatArray(33) { 0.46f }
+        val y = FloatArray(33) { 0.58f }
+        val v = FloatArray(33) { 1f }
+
+        // Head
