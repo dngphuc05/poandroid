@@ -2062,3 +2062,11 @@ class PoseSceneEstimateTest {
         pitchDegrees: Float = 0f,
     ): WorldTrackingSnapshot {
         val depthWidth = 160
+        val depthHeight = 120
+        val depth = ShortArray(depthWidth * depthHeight) { 0 }
+        val cx = 72
+        val cy = 70
+        val depthMm = (depthMeters * 1000f).toInt().coerceIn(200, 12000).toShort()
+        for (yy in (cy - 2)..(cy + 2)) {
+            for (xx in (cx - 2)..(cx + 2)) {
+                val i = yy * depthWidth + xx
