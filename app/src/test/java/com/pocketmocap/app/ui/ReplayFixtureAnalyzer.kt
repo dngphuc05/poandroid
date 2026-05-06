@@ -49,3 +49,10 @@ internal data class ReplayAnalysis(
 
 internal data class ReplayGateResult(
     val pass: Boolean,
+    val failures: List<String>,
+)
+
+internal object ReplayFixtureAnalyzer {
+    fun loadFixture(resourceFixtureJson: String): Pair<ReplayFixtureMetadata, String> {
+        val metadataText = readResourceText("replay/$resourceFixtureJson")
+        val meta = parseMetadata(metadataText)
