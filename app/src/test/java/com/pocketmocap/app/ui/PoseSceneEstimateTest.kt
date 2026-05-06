@@ -1851,3 +1851,20 @@ class PoseSceneEstimateTest {
     }
 
     @Test
+    fun deriveOverlayPoseEstimateKeepsHipAnchorWhenOneHipIsHidden() {
+        val (x, y, v0) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v0)
+        val tracking = buildTrackingSnapshot()
+        val first = deriveOverlayPoseEstimate(
+            roi = roi,
+            rawSubjectHeightMeters = 1.80f,
+            screenX = x,
+            screenY = y,
+            visibility = v0,
+            worldTracking = tracking,
+            intrinsics = tracking.intrinsics,
+        )
+        assertNotNull(first)
+        assertTrue(first!!.learnedHipVectorXNorm.isFinite())
+        assertTrue(first.learnedHipVectorYNorm.isFinite())
+
