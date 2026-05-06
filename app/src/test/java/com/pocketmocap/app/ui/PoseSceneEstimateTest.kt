@@ -1757,3 +1757,18 @@ class PoseSceneEstimateTest {
                     roiDistance = 2.55f,
                     height = 1.82f,
                     topRayHeight = 1.83f,
+                )
+            )
+        }
+        val lockedHeight = solved.bodyHeightMeters
+
+        val bad = graph.solve(
+            rawSceneMetric(
+                hipDepth = 9.2f,
+                footPlane = 7.5f,
+                roiDistance = 3.3f,
+                height = 2.05f,
+                topRayHeight = 2.70f,
+            )
+        )
+
