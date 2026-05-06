@@ -2077,3 +2077,21 @@ class PoseSceneEstimateTest {
         val qx = sin(halfPitchRad)
         val qw = cos(halfPitchRad)
 
+        return WorldTrackingSnapshot(
+            timestampUs = 10_000,
+            source = source,
+            trackingState = "tracking",
+            cameraPosition = floatArrayOf(0f, 1.35f, 0f),
+            cameraRotation = floatArrayOf(qx, 0f, 0f, qw),
+            groundPoint = if (hasGroundPlane) floatArrayOf(0f, 0f, 0f) else null,
+            groundNormal = if (hasGroundPlane) floatArrayOf(0f, 1f, 0f) else null,
+            cameraHeightMeters = 1.35f,
+            subjectDistanceMeters = Float.NaN,
+            subjectHeightMeters = Float.NaN,
+            lateralOffsetMeters = Float.NaN,
+            floorPitchDegrees = 9f,
+            confidence = 0.90f,
+            intrinsics = CameraIntrinsics(
+                fx = 800f,
+                fy = 800f,
+                cx = 80f,
