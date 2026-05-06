@@ -1499,3 +1499,21 @@ class PoseSceneEstimateTest {
         )
     }
 
+    @Test
+    fun physicalSceneFactorGraphDoesNotRaiseFreshMetrics60LockForHighHipGeometryRun() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = Float.NaN,
+            footPlane = 2.00f,
+            roiDistance = 2.02f,
+            height = 1.84f,
+            topRayHeight = 1.95f,
+            hipGeometryDistance = 2.02f,
+            hipGeometryHeight = 1.84f,
+            torsoHeight = 1.78f,
+            pixelSpanHeight = 1.91f,
+        )
+        repeat(18) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = Float.NaN,
