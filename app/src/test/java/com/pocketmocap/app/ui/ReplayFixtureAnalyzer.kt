@@ -154,3 +154,21 @@ internal object ReplayFixtureAnalyzer {
             }
         }
 
+        val missingCount = frames.count {
+            it.serverPoseStatus == "missing_server_pose" || it.rejectedServerReason == "missing_server_pose"
+        }
+
+        return ReplayAnalysis(
+            fixtureId = metadata.id,
+            rowCount = rows.size,
+            arFrameCount = frames.size,
+            missingServerPoseRatio = missingCount.toFloat() / frames.size.toFloat(),
+            distanceSpanMeters = distances.maxOrNull()!! - distances.minOrNull()!!,
+            heightSpanMeters = heights.maxOrNull()!! - heights.minOrNull()!!,
+            distanceStepP95Meters = percentile(distanceSteps, 0.95f),
+            heightStepP95Meters = percentile(heightSteps, 0.95f),
+            sourceSwitchCount = sourceSwitches,
+            contradictionCount = contradictionCount,
+            arSceneMismatchCount = arSceneMismatchCount,
+            constrainedTargetMismatchCount = constrainedTargetMismatchCount,
+            distanceMinMeters = distances.minOrNull()!!,
