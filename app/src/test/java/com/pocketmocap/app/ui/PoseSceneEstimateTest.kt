@@ -1987,3 +1987,21 @@ class PoseSceneEstimateTest {
         assertEquals("missing_server_pose", health.reason)
     }
 
+    @Test
+    fun classifyServerPoseMissingReasonSeparatesTransportAndPayloadFailures() {
+        val missing = ServerPoseHealth(false, "missing_server_pose", 0, 0)
+        assertEquals(
+            "no_pose3d_received",
+            classifyServerPoseMissingReason(
+                pose3DReceivedCount = 0,
+                lastServerParseReason = "no_pose3d_received",
+                serverHealth = missing,
+            ),
+        )
+        assertEquals(
+            "pose3d_without_joints",
+            classifyServerPoseMissingReason(
+                pose3DReceivedCount = 4,
+                lastServerParseReason = "pose3d_without_joints",
+                serverHealth = missing,
+            ),
