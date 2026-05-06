@@ -1739,3 +1739,21 @@ class PoseSceneEstimateTest {
         assertTrue(solved.distanceMeters in 3.3f..3.8f)
     }
 
+    @Test
+    fun physicalSceneFactorGraphHoldsLockedHeightDuringBadSpread() {
+        val graph = PhysicalSceneFactorGraph()
+        var solved = rawSceneMetric(
+            hipDepth = 2.45f,
+            footPlane = 2.50f,
+            roiDistance = 2.55f,
+            height = 1.82f,
+            topRayHeight = 1.83f,
+        )
+        repeat(10) {
+            solved = graph.solve(
+                rawSceneMetric(
+                    hipDepth = 2.45f,
+                    footPlane = 2.50f,
+                    roiDistance = 2.55f,
+                    height = 1.82f,
+                    topRayHeight = 1.83f,
