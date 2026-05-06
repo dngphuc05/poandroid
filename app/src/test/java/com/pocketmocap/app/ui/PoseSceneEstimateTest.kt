@@ -1915,3 +1915,15 @@ class PoseSceneEstimateTest {
             z[idx] = 0.3f + n * 0.01f
         }
 
+        val health = evaluateServerPoseHealth(
+            poseX = x,
+            poseY = y,
+            poseZ = z,
+            poseVisibility = null,
+        )
+        assertTrue(health.usable)
+        assertEquals("ok", health.reason)
+        assertEquals(13, health.validJointCount)
+        assertEquals(4, health.rootJointCount)
+    }
+
