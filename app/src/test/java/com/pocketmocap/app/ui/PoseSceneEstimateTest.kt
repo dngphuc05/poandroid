@@ -1961,3 +1961,17 @@ class PoseSceneEstimateTest {
             z[idx] = 0.3f + n * 0.01f
         }
         // Root joints present but hidden by visibility gate.
+        for (idx in intArrayOf(11, 12, 23, 24)) {
+            x[idx] = 0.5f; y[idx] = 0.6f; z[idx] = 0.7f
+            v[idx] = 0.0f
+        }
+        val health = evaluateServerPoseHealth(
+            poseX = x,
+            poseY = y,
+            poseZ = z,
+            poseVisibility = v,
+        )
+        assertFalse(health.usable)
+        assertEquals("missing_root_joints", health.reason)
+    }
+
