@@ -1953,3 +1953,11 @@ class PoseSceneEstimateTest {
         val z = FloatArray(33) { Float.NaN }
         val v = FloatArray(33) { 1f }
         // Enough non-root joints are valid, so this should fail specifically
+        // because root/torso anchors are hidden rather than because the pose is
+        // generally too sparse.
+        for ((n, idx) in intArrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 13, 14, 15, 16, 25, 26, 27, 28).withIndex()) {
+            x[idx] = 0.1f + n * 0.01f
+            y[idx] = 0.2f + n * 0.01f
+            z[idx] = 0.3f + n * 0.01f
+        }
+        // Root joints present but hidden by visibility gate.
