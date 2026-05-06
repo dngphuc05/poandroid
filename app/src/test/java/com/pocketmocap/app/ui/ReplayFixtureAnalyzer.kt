@@ -129,3 +129,10 @@ internal object ReplayFixtureAnalyzer {
                 }
             }
 
+            val missing = frame.serverPoseStatus == "missing_server_pose" ||
+                frame.rejectedServerReason == "missing_server_pose"
+            if (frame.technicalPoseSource == "server_dlt" && missing) {
+                contradictionCount += 1
+            }
+
+            val arDistance = frame.arTargetDistanceMeters
