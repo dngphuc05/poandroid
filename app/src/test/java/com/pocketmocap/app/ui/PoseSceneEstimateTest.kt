@@ -1811,3 +1811,10 @@ class PoseSceneEstimateTest {
         assertTrue(heightSpan <= 0.22f)
     }
 
+    @Test
+    fun deriveOverlayPoseEstimateKeepsDepthPatchAsDebugOnly() {
+        val (x, y, v) = buildPoseLandmarks()
+        val roi = computePoseRoi(x, y, v)
+        val nearTracking = buildTrackingSnapshot(depthMeters = 2.10f)
+        val farTracking = buildTrackingSnapshot(depthMeters = 3.40f)
+
