@@ -172,3 +172,10 @@ internal object ReplayFixtureAnalyzer {
             arSceneMismatchCount = arSceneMismatchCount,
             constrainedTargetMismatchCount = constrainedTargetMismatchCount,
             distanceMinMeters = distances.minOrNull()!!,
+            distanceMaxMeters = distances.maxOrNull()!!,
+            heightMinMeters = heights.minOrNull()!!,
+            heightMaxMeters = heights.maxOrNull()!!,
+        )
+    }
+
+    fun evaluateStrictGate(
