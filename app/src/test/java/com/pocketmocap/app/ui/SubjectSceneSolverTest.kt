@@ -84,3 +84,20 @@ class SubjectSceneSolverTest {
         assertEquals(0f, solved.baselineExperimentalDistanceDeltaMeters, 1e-4f)
     }
 
+    @Test
+    fun slidingWindowLearnsHighHipHeightBiasAndStaysNearStableTopRay() {
+        val solver = SubjectSceneSolver(windowSize = 30)
+        var solved = rawScene(
+            distance = 2.10f,
+            height = 1.88f,
+            footPlaneDistance = 2.22f,
+            roiDistance = 2.38f,
+            topRayHeight = 1.83f,
+            pixelSpanHeight = 1.68f,
+            hipGeometryDistance = 1.92f,
+            hipGeometryHeight = 1.88f,
+            torsoHeight = 1.47f,
+            groundedFootDistance = 2.22f,
+        )
+        repeat(35) {
+            val raw = rawScene(
