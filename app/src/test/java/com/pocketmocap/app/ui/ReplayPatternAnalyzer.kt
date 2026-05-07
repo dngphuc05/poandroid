@@ -147,3 +147,10 @@ internal object ReplayPatternAnalyzer {
         spec: ReplayPatternSpec,
     ): Set<String> {
         val diagnoses = mutableSetOf<String>()
+        val distanceScore = scores.firstOrNull { it.column == "distance_m" }
+        val hipScore = scores.firstOrNull { it.column == "hip_geometry_distance_m" }
+        val footScore = scores.firstOrNull { it.column == "foot_plane_distance_m" }
+        val best = scores.firstOrNull()
+        val heightValues = rows.mapNotNull { it["height_m"]?.toFiniteFloatOrNull() }
+        val serverPoseOkCount = rows.count { it["server_pose_status"] == "ok" }
+        val serverDltCount = rows.count { it["technical_pose_source"] == "server_dlt" }
