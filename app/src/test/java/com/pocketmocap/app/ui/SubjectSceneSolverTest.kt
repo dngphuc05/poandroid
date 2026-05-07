@@ -50,3 +50,10 @@ class SubjectSceneSolverTest {
         assertEquals(2.14f, input.relativeScaleDistanceMeters, 0f)
         assertEquals(2.10f, input.previousDistanceMeters, 0f)
         assertEquals(1.81f, input.previousHeightMeters, 0f)
+        assertEquals(0.02f, input.floorHeightBiasMeters, 0f)
+        assertEquals(1.01f, input.depthScale, 0f)
+        assertEquals(-0.03f, input.depthOffsetMeters, 0f)
+        assertEquals(0.04f, input.heightEndpointBiasMeters, 0f)
+    }
+
+    @Test
