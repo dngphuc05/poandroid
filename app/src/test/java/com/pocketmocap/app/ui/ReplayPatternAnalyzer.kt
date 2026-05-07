@@ -13,3 +13,10 @@ internal data class ReplayPatternSpec(
     val minSegmentFrames: Int,
 )
 
+internal data class PlateauScore(
+    val column: String,
+    val medians: List<Float>,
+    val deltas: List<Float>,
+    val medianError: Float,
+    val deltaError: Float,
+    val jitter: Float,
