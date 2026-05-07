@@ -71,3 +71,16 @@ internal object ReplayPatternAnalyzer {
         val heightP10 = percentile(heightValues, 0.10f)
         val heightP90 = percentile(heightValues, 0.90f)
         val diagnoses = classify(trimmed, scores, heightMedian, heightP10, heightP90, spec)
+        return ReplayPatternAnalysis(
+            specId = spec.id,
+            rowCount = rows.size,
+            trimmedRowCount = trimmed.size,
+            bestDistanceScore = scores.firstOrNull(),
+            distanceScores = scores,
+            heightMedian = heightMedian,
+            heightP10 = heightP10,
+            heightP90 = heightP90,
+            diagnoses = diagnoses,
+        )
+    }
+
