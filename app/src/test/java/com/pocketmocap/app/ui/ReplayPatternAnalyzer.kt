@@ -84,3 +84,11 @@ internal object ReplayPatternAnalyzer {
         )
     }
 
+    private fun scoreColumn(
+        rows: List<Map<String, String>>,
+        column: String,
+        expected: List<Float>,
+        minSegmentFrames: Int,
+    ): PlateauScore? {
+        if (rows.size < minSegmentFrames * 3 || expected.size != 3) return null
+        val values = rows.map { it[column]?.toFiniteFloatOrNull() }
