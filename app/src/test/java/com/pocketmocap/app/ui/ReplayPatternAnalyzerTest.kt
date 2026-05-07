@@ -152,3 +152,17 @@ class ReplayPatternAnalyzerTest {
         val header = lines.first().split(",")
         return lines.drop(1).map { line ->
             val cells = line.split(",")
+            header.indices.associate { index -> header[index] to cells.getOrElse(index) { "" } }
+        }
+    }
+
+    private fun threeStepSpec(id: String): ReplayPatternSpec =
+        ReplayPatternSpec(
+            id = id,
+            csvFile = "",
+            expectedDistancePlateausMeters = listOf(2.8f, 2.1f, 1.4f),
+            expectedHeightRangeMeters = 1.65f..1.69f,
+            trimFraction = 0f,
+            minSegmentFrames = 24,
+        )
+
