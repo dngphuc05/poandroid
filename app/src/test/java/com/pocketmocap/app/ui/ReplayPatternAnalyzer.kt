@@ -20,3 +20,10 @@ internal data class PlateauScore(
     val medianError: Float,
     val deltaError: Float,
     val jitter: Float,
+    val missingRatio: Float,
+    val monotonic: Boolean,
+    val score: Float,
+)
+
+internal data class ReplayPatternAnalysis(
+    val specId: String,
