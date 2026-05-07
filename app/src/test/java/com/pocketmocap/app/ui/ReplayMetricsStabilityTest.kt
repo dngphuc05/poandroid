@@ -38,3 +38,21 @@ class ReplayMetricsStabilityTest {
         assertTrue("occlusion fixture should not thrash source switching", analysis.sourceSwitchCount <= 2)
     }
 
+    @Test
+    fun degradedFixture_isDetectedAsUnstableByStrictGate() {
+        val (meta, csv) = ReplayFixtureAnalyzer.loadFixture("degraded_metrics_12_f0_19.json")
+        val analysis = ReplayFixtureAnalyzer.analyze(csv, meta)
+        val gate = ReplayFixtureAnalyzer.evaluateStrictGate(meta, analysis)
+
+        assertFalse("degraded fixture must fail strict gate", gate.pass)
+        assertTrue(
+            "degraded fixture should fail by geometry instability or missing ratio: ${gate.failures}",
+            gate.failures.any { reason ->
+                reason.startsWith("distance_range_out_of_band") ||
+                    reason.startsWith("height_range_out_of_band") ||
+                    reason.startsWith("distance_step_p95_exceeded") ||
+                    reason.startsWith("missing_server_pose_ratio_exceeded")
+            }
+        )
+    }
+
