@@ -115,3 +115,17 @@ internal object ReplayPatternAnalyzer {
                         medianAbsoluteDeviation(segment.filterNotNull()).toDouble()
                     }.toFloat()
                     val monotonic = deltas.all { it < -0.15f }
+                    val monotonicPenalty = if (monotonic) 0f else 2.0f
+                    val score = medianError + deltaError + jitter + missingRatio * 3f + monotonicPenalty
+                    val candidate = PlateauScore(
+                        column = column,
+                        medians = medians,
+                        deltas = deltas,
+                        medianError = medianError,
+                        deltaError = deltaError,
+                        jitter = jitter,
+                        missingRatio = missingRatio,
+                        monotonic = monotonic,
+                        score = score,
+                    )
+                    val currentBest = best
