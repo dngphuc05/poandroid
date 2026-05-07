@@ -161,3 +161,15 @@ internal object ReplayPatternAnalyzer {
         val nearTruthHeightCount = heightValues.count { it in spec.expectedHeightRangeMeters }
         val expectedDistanceMin = spec.expectedDistancePlateausMeters.minOrNull() ?: Float.NaN
         val expectedDistanceMax = spec.expectedDistancePlateausMeters.maxOrNull() ?: Float.NaN
+        val distanceValues = rows.mapNotNull { it["distance_m"]?.toFiniteFloatOrNull() }
+        val distanceOutsideRatio = if (
+            distanceValues.isNotEmpty() &&
+            expectedDistanceMin.isFinite() &&
+            expectedDistanceMax.isFinite()
+        ) {
+            distanceValues.count { it < expectedDistanceMin || it > expectedDistanceMax }
+                .toFloat() / distanceValues.size.toFloat()
+        } else {
+            0f
+        }
+
