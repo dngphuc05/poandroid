@@ -65,3 +65,20 @@ class ReplayMetricsStabilityTest {
         )
         for (fixture in fixtures) {
             val (meta, csv) = ReplayFixtureAnalyzer.loadFixture(fixture)
+            val analysis = ReplayFixtureAnalyzer.analyze(csv, meta)
+            assertTrue(
+                "$fixture has contradictory state: server_dlt while missing_server_pose",
+                analysis.contradictionCount == 0
+            )
+            assertTrue(
+                "$fixture has too many AR target mismatches",
+                analysis.arSceneMismatchCount <= 2
+            )
+            assertTrue(
+                "$fixture has too many constrained-vs-target outliers",
+                analysis.constrainedTargetMismatchCount <= 6
+            )
+        }
+    }
+}
+
