@@ -313,3 +313,9 @@ internal object ReplayPatternAnalyzer {
         return body.split(",").mapNotNull { it.trim().toFloatOrNull() }
     }
 
+    private fun jsonFloatRange(text: String, key: String): ClosedFloatingPointRange<Float>? {
+        val values = jsonFloatArray(text, key)
+        if (values.size != 2) return null
+        return min(values[0], values[1])..max(values[0], values[1])
+    }
+}
