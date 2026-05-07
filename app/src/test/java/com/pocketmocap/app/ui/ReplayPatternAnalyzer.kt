@@ -92,3 +92,11 @@ internal object ReplayPatternAnalyzer {
     ): PlateauScore? {
         if (rows.size < minSegmentFrames * 3 || expected.size != 3) return null
         val values = rows.map { it[column]?.toFiniteFloatOrNull() }
+        val missingRatio = values.count { it == null }.toFloat() / values.size.toFloat()
+        if (missingRatio > 0.82f) return null
+
+        val step = max(12, rows.size / 42)
+        var best: PlateauScore? = null
+        var c1 = minSegmentFrames
+        while (c1 <= rows.size - minSegmentFrames * 2) {
+            var c2 = c1 + minSegmentFrames
