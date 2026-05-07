@@ -301,3 +301,10 @@ internal object ReplayFixtureAnalyzer {
 
     private fun jsonFloat(text: String, key: String): Float? {
         val pattern = Regex("""\"$key\"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)""")
+        return pattern.find(text)?.groupValues?.getOrNull(1)?.toFloatOrNull()
+    }
+
+    private fun jsonFloatRange(text: String, key: String): ClosedFloatingPointRange<Float>? {
+        val pattern = Regex("""\"$key\"\s*:\s*\[\s*(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\s*,\s*(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)\s*\]""")
+        val match = pattern.find(text) ?: return null
+        val low = match.groupValues.getOrNull(1)?.toFloatOrNull() ?: return null
