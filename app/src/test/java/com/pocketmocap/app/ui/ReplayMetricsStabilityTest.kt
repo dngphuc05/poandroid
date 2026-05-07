@@ -27,3 +27,14 @@ class ReplayMetricsStabilityTest {
         assertTrue("height should stay bounded while distance moves", analysis.heightSpanMeters <= 0.35f)
     }
 
+    @Test
+    fun occlusionFixture_toleratesSmallDropoutWithoutCatastrophicLoss() {
+        val (meta, csv) = ReplayFixtureAnalyzer.loadFixture("occlusion_metrics_12_f20_39.json")
+        val analysis = ReplayFixtureAnalyzer.analyze(csv, meta)
+        val gate = ReplayFixtureAnalyzer.evaluateStrictGate(meta, analysis)
+
+        assertTrue("occlusion fixture should pass strict gate: ${gate.failures}", gate.pass)
+        assertTrue("occlusion fixture should keep server pose mostly present", analysis.missingServerPoseRatio <= 0.06f)
+        assertTrue("occlusion fixture should not thrash source switching", analysis.sourceSwitchCount <= 2)
+    }
+
