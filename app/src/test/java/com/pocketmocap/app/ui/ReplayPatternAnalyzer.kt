@@ -275,3 +275,10 @@ internal object ReplayPatternAnalyzer {
     }
 
     private fun median(values: List<Float>): Float {
+        if (values.isEmpty()) return Float.NaN
+        val sorted = values.sorted()
+        val mid = sorted.size / 2
+        return if (sorted.size % 2 == 0) (sorted[mid - 1] + sorted[mid]) * 0.5f else sorted[mid]
+    }
+
+    private fun medianAbsoluteDeviation(values: List<Float>): Float {
