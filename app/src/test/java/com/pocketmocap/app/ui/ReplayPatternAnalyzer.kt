@@ -173,3 +173,18 @@ internal object ReplayPatternAnalyzer {
             0f
         }
 
+        val earlyDistanceMedian = median(
+            rows.take((rows.size / 4).coerceAtLeast(1))
+                .mapNotNull { it["distance_m"]?.toFiniteFloatOrNull() }
+        )
+        val earlyExpectedDistance = spec.expectedDistancePlateausMeters.firstOrNull() ?: Float.NaN
+        if (
+            distanceScore != null &&
+            (
+                distanceScore.medians.firstOrNull()?.let { it > 3.8f } == true ||
+                    (earlyDistanceMedian.isFinite() && earlyExpectedDistance.isFinite() && earlyDistanceMedian > earlyExpectedDistance + 0.85f)
+                )
+        ) {
+            diagnoses += "stale_distance_hold"
+        }
+        val hipValues = rows.mapNotNull { it["hip_geometry_distance_m"]?.toFiniteFloatOrNull() }
