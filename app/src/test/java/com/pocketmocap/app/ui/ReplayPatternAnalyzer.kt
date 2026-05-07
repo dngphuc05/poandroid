@@ -34,3 +34,19 @@ internal data class ReplayPatternAnalysis(
     val heightMedian: Float,
     val heightP10: Float,
     val heightP90: Float,
+    val diagnoses: Set<String>,
+)
+
+internal object ReplayPatternAnalyzer {
+    private val distanceColumns = listOf(
+        "distance_m",
+        "corrected_distance_m",
+        "ar_target_distance_m",
+        "hip_geometry_distance_m",
+        "foot_plane_distance_m",
+        "grounded_foot_distance_m",
+        "raw_hip_depth_distance_m",
+        "roi_distance_m",
+        "relative_scale_distance_m",
+    )
+
