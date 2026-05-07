@@ -25,3 +25,12 @@ class ReplayPatternAnalyzerTest {
         assertTrue("height should stay in the expected band", "wrong_height_lock" !in analysis.diagnoses)
     }
 
+    @Test
+    fun metrics45_classifiesWrongHeightAndMissingMotionCandidate() {
+        val analysis = analyzeFixture("metrics_45_three_step.json")
+
+        assertTrue("metrics45 should expose wrong height: ${analysis.diagnoses}", "wrong_height_lock" in analysis.diagnoses)
+        assertTrue("metrics45 should expose missing distance truth candidate: ${analysis.diagnoses}", "missing_truth_candidate" in analysis.diagnoses)
+        assertTrue("server pose should not be the diagnosed issue", analysis.rowCount > 0)
+    }
+
