@@ -282,3 +282,11 @@ internal object ReplayPatternAnalyzer {
     }
 
     private fun medianAbsoluteDeviation(values: List<Float>): Float {
+        if (values.size < 2) return 0f
+        val m = median(values)
+        return median(values.map { abs(it - m) })
+    }
+
+    private fun percentile(values: List<Float>, p: Float): Float {
+        if (values.isEmpty()) return Float.NaN
+        val sorted = values.sorted()
