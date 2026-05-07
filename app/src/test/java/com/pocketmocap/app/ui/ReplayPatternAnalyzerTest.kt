@@ -188,3 +188,21 @@ class ReplayPatternAnalyzerTest {
         }
         appendLine(header.joinToString(","))
         var frame = 0
+        for (segment in distances.indices) {
+            repeat(framesPerSegment) { i ->
+                val wobble = if (i % 2 == 0) 0.015f else -0.015f
+                val row = mutableListOf(
+                    frame++,
+                    "arcore_floor",
+                    distances[segment] + wobble,
+                    heights[segment].takeIf { it.isFinite() } ?: "",
+                    distances[segment] + wobble * 0.8f,
+                    distances[segment] + 0.03f,
+                    distances[segment] + 0.08f,
+                    if (heights[segment].isFinite()) "locked" else "acquiring_untrusted",
+                )
+                if (includeServerColumns) {
+                    row += "ok"
+                    row += "server_dlt"
+                }
+                appendLine(row.joinToString(","))
