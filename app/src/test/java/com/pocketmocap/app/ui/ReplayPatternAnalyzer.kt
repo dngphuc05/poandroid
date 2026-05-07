@@ -206,3 +206,16 @@ internal object ReplayPatternAnalyzer {
         }
         if (heightValues.isEmpty() || nearTruthHeightCount < max(3, (heightValues.size * 0.05f).toInt())) {
             diagnoses += "missing_truth_height_candidate"
+        }
+        if (distanceOutsideRatio > 0.18f) {
+            diagnoses += "distance_outside_expected_band"
+        }
+        if (footScore != null && (!footScore.monotonic || footScore.medianError > 1.2f)) {
+            diagnoses += "foot_plane_not_motion_correlated"
+        }
+        if (best == null || best.score > 3.0f || best.medianError > 1.15f) {
+            diagnoses += "missing_truth_candidate"
+        }
+        return diagnoses
+    }
+
