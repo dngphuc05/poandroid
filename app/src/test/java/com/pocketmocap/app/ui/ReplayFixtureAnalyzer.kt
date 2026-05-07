@@ -294,3 +294,10 @@ internal object ReplayFixtureAnalyzer {
         return if (value.isFinite()) value else null
     }
 
+    private fun jsonString(text: String, key: String): String? {
+        val pattern = Regex("""\"$key\"\s*:\s*\"([^\"]*)\"""")
+        return pattern.find(text)?.groupValues?.getOrNull(1)
+    }
+
+    private fun jsonFloat(text: String, key: String): Float? {
+        val pattern = Regex("""\"$key\"\s*:\s*(-?\d+(?:\.\d+)?(?:[eE][+\-]?\d+)?)""")
