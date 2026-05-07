@@ -154,3 +154,10 @@ internal object ReplayPatternAnalyzer {
         val heightValues = rows.mapNotNull { it["height_m"]?.toFiniteFloatOrNull() }
         val serverPoseOkCount = rows.count { it["server_pose_status"] == "ok" }
         val serverDltCount = rows.count { it["technical_pose_source"] == "server_dlt" }
+        val serverPosePresent = rows.isNotEmpty() &&
+            serverPoseOkCount >= rows.size * 0.85f &&
+            serverDltCount >= rows.size * 0.85f
+        val heightMissingRatio = if (rows.isEmpty()) 0f else 1f - (heightValues.size.toFloat() / rows.size.toFloat())
+        val nearTruthHeightCount = heightValues.count { it in spec.expectedHeightRangeMeters }
+        val expectedDistanceMin = spec.expectedDistancePlateausMeters.minOrNull() ?: Float.NaN
+        val expectedDistanceMax = spec.expectedDistancePlateausMeters.maxOrNull() ?: Float.NaN
