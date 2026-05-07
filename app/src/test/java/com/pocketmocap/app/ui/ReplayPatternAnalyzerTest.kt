@@ -34,3 +34,12 @@ class ReplayPatternAnalyzerTest {
         assertTrue("server pose should not be the diagnosed issue", analysis.rowCount > 0)
     }
 
+    @Test
+    fun metrics46_classifiesStaleDistanceAndHipExplosion() {
+        val analysis = analyzeFixture("metrics_46_three_step.json")
+
+        assertTrue("metrics46 should expose stale distance hold: ${analysis.diagnoses}", "stale_distance_hold" in analysis.diagnoses)
+        assertTrue("metrics46 should expose hip geometry explosion: ${analysis.diagnoses}", "hip_geometry_explosion" in analysis.diagnoses)
+        assertTrue("metrics46 should expose untrusted height feedback: ${analysis.diagnoses}", "untrusted_height_feedback" in analysis.diagnoses)
+    }
+
