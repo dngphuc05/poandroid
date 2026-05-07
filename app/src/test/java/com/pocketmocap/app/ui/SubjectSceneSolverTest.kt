@@ -115,3 +115,13 @@ class SubjectSceneSolverTest {
             solved = solver.solveShadow(raw, SceneMeasurementExtractor.extract(raw, Float.NaN))
         }
 
+        assertEquals("shadow_sliding_window", solved.experimentalSolverStatus)
+        assertTrue(solved.promotedSolverSource in setOf("baseline", "experimental_distance"))
+        assertTrue(solved.experimentalHeightState == "shadow_window_ready")
+        assertTrue(
+            "expected ${solved.experimentalHeightMeters} near stable top ray, not high hip geometry",
+            solved.experimentalHeightMeters in 1.81f..1.85f,
+        )
+        assertTrue(solved.experimentalFactorSummary.contains("hip_bias=0."))
+    }
+
