@@ -315,3 +315,10 @@ internal object ReplayFixtureAnalyzer {
     private fun jsonWindow(text: String): Pair<Int, Int>? {
         val windowPattern = Regex("""\"analysis_window\"\s*:\s*\{([^}]*)\}""")
         val body = windowPattern.find(text)?.groupValues?.getOrNull(1) ?: return null
+        val startPattern = Regex("""\"start_frame\"\s*:\s*(-?\d+)""")
+        val endPattern = Regex("""\"end_frame\"\s*:\s*(-?\d+)""")
+        val start = startPattern.find(body)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: return null
+        val end = endPattern.find(body)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: return null
+        return start to end
+    }
+}
