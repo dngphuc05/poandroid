@@ -138,3 +138,12 @@ internal object ReplayPatternAnalyzer {
         return best
     }
 
+    private fun classify(
+        rows: List<Map<String, String>>,
+        scores: List<PlateauScore>,
+        heightMedian: Float,
+        heightP10: Float,
+        heightP90: Float,
+        spec: ReplayPatternSpec,
+    ): Set<String> {
+        val diagnoses = mutableSetOf<String>()
