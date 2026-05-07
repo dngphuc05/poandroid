@@ -129,3 +129,12 @@ internal object ReplayPatternAnalyzer {
                         score = score,
                     )
                     val currentBest = best
+                    if (currentBest == null || candidate.score < currentBest.score) best = candidate
+                }
+                c2 += step
+            }
+            c1 += step
+        }
+        return best
+    }
+
