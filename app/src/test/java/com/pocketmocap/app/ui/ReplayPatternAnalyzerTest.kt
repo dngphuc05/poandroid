@@ -14,3 +14,14 @@ class ReplayPatternAnalyzerTest {
             heights = listOf(1.67f, 1.67f, 1.67f),
         )
         val analysis = ReplayPatternAnalyzer.analyze(csv, threeStepSpec("synthetic"))
+        val best = analysis.bestDistanceScore
+
+        assertNotNull(best)
+        assertTrue("synthetic pattern should be monotonic", best!!.monotonic)
+        assertTrue("synthetic pattern should fit ground truth tightly: $best", best.score < 0.22f)
+        val finalDistanceScore = analysis.distanceScores.firstOrNull { it.column == "distance_m" }
+        assertNotNull(finalDistanceScore)
+        assertTrue("final distance should also fit ground truth tightly: $finalDistanceScore", finalDistanceScore!!.score < 0.28f)
+        assertTrue("height should stay in the expected band", "wrong_height_lock" !in analysis.diagnoses)
+    }
+
