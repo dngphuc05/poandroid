@@ -243,3 +243,10 @@ internal object ReplayPatternAnalyzer {
         }
     }
 
+    private fun parseCsvLine(line: String): List<String> {
+        val cells = mutableListOf<String>()
+        val sb = StringBuilder()
+        var quoted = false
+        var i = 0
+        while (i < line.length) {
+            val c = line[i]
