@@ -137,3 +137,10 @@ class ReplayPatternAnalyzerTest {
             )
         )
 
+        assertTrue("height missing should be diagnosed even when server pose is ok", "height_missing_with_server_pose" in analysis.diagnoses)
+        assertTrue("missing truth height candidate should be diagnosed", "missing_truth_height_candidate" in analysis.diagnoses)
+        assertTrue("skeleton dropout should not be conflated with missing height", analysis.rowCount > 0)
+    }
+
+    private fun analyzeFixture(fixture: String): ReplayPatternAnalysis {
+        val (spec, csv) = ReplayPatternAnalyzer.loadSpec(fixture)
