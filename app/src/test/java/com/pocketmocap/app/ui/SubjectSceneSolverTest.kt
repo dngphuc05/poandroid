@@ -57,3 +57,20 @@ class SubjectSceneSolverTest {
     }
 
     @Test
+    fun physicalSceneFactorGraphLogsNoopExperimentalShadowFields() {
+        val graph = PhysicalSceneFactorGraph()
+        val solved = graph.solve(
+            rawScene(
+                distance = 2.12f,
+                height = 1.82f,
+                footPlaneDistance = 2.11f,
+                roiDistance = 2.15f,
+                topRayHeight = 1.83f,
+                pixelSpanHeight = 1.81f,
+                hipGeometryDistance = 2.12f,
+                hipGeometryHeight = 1.82f,
+                torsoHeight = 1.81f,
+                groundedFootDistance = 2.11f,
+            )
+        )
+
