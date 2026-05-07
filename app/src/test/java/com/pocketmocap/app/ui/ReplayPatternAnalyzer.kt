@@ -250,3 +250,21 @@ internal object ReplayPatternAnalyzer {
         var i = 0
         while (i < line.length) {
             val c = line[i]
+            when {
+                quoted && c == '"' && i + 1 < line.length && line[i + 1] == '"' -> {
+                    sb.append('"')
+                    i += 1
+                }
+                c == '"' -> quoted = !quoted
+                c == ',' && !quoted -> {
+                    cells += sb.toString()
+                    sb.clear()
+                }
+                else -> sb.append(c)
+            }
+            i += 1
+        }
+        cells += sb.toString()
+        return cells
+    }
+
