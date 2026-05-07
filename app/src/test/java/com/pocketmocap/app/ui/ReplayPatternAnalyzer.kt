@@ -219,3 +219,15 @@ internal object ReplayPatternAnalyzer {
         return diagnoses
     }
 
+    private fun parseSpec(text: String): ReplayPatternSpec =
+        ReplayPatternSpec(
+            id = jsonString(text, "id") ?: error("pattern spec missing id"),
+            csvFile = jsonString(text, "csv_file") ?: error("pattern spec missing csv_file"),
+            expectedDistancePlateausMeters = jsonFloatArray(text, "expected_distance_plateaus_m")
+                .takeIf { it.size == 3 } ?: error("pattern spec requires 3 expected distance plateaus"),
+            expectedHeightRangeMeters = jsonFloatRange(text, "expected_height_range_m")
+                ?: error("pattern spec missing expected_height_range_m"),
+            trimFraction = jsonFloat(text, "trim_fraction") ?: 0.08f,
+            minSegmentFrames = jsonInt(text, "min_segment_frames") ?: 40,
+        )
+
