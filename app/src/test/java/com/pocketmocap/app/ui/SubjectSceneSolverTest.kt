@@ -21,3 +21,14 @@ class SubjectSceneSolverTest {
             groundedFootDistance = 2.17f,
         )
 
+        val input = SceneMeasurementExtractor.optimizerInput(
+            raw = raw,
+            relativeScaleDistance = 2.14f,
+            previousDistanceMeters = 2.10f,
+            previousHeightMeters = 1.81f,
+            floorHeightBiasMeters = 0.02f,
+            depthScale = 1.01f,
+            depthOffsetMeters = -0.03f,
+            heightEndpointBiasMeters = 0.04f,
+        )
+
