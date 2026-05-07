@@ -52,3 +52,11 @@ class ReplayPatternAnalyzerTest {
         assertTrue("metrics47 should expose missing truth candidate: ${analysis.diagnoses}", "missing_truth_candidate" in analysis.diagnoses)
     }
 
+    @Test
+    fun metrics48_classifiesHeightRatchetingWhileServerPoseIsPresent() {
+        val (spec, csv) = ReplayPatternAnalyzer.loadSpec("metrics_48_height_lock.json")
+        val analysis = ReplayPatternAnalyzer.analyze(csv, spec)
+        val rows = csv.lineSequence()
+            .filter { it.isNotBlank() }
+            .toList()
+        val header = rows.first().split(",")
