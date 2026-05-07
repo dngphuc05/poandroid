@@ -306,3 +306,10 @@ internal object ReplayPatternAnalyzer {
         Regex("""\"$key\"\s*:\s*(-?\d+(?:\.\d+)?)""").find(text)?.groupValues?.getOrNull(1)?.toFloatOrNull()
 
     private fun jsonInt(text: String, key: String): Int? =
+        Regex("""\"$key\"\s*:\s*(-?\d+)""").find(text)?.groupValues?.getOrNull(1)?.toIntOrNull()
+
+    private fun jsonFloatArray(text: String, key: String): List<Float> {
+        val body = Regex("""\"$key\"\s*:\s*\[([^\]]*)\]""").find(text)?.groupValues?.getOrNull(1) ?: return emptyList()
+        return body.split(",").mapNotNull { it.trim().toFloatOrNull() }
+    }
+
