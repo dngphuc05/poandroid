@@ -100,3 +100,10 @@ internal object ReplayPatternAnalyzer {
         var c1 = minSegmentFrames
         while (c1 <= rows.size - minSegmentFrames * 2) {
             var c2 = c1 + minSegmentFrames
+            while (c2 <= rows.size - minSegmentFrames) {
+                val segments = listOf(
+                    values.subList(0, c1),
+                    values.subList(c1, c2),
+                    values.subList(c2, values.size),
+                )
+                val medians = segments.map { median(it.filterNotNull()) }
