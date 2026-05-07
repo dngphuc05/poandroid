@@ -60,3 +60,10 @@ class ReplayPatternAnalyzerTest {
             .filter { it.isNotBlank() }
             .toList()
         val header = rows.first().split(",")
+        fun column(name: String): Int = header.indexOf(name).also { require(it >= 0) { "missing column $name" } }
+        val serverPoseStatus = column("server_pose_status")
+        val technicalPoseSource = column("technical_pose_source")
+        val heightLockState = column("height_lock_state")
+        val height = column("height_m")
+        val dataRows = rows.drop(1).map { it.split(",") }
+
