@@ -290,3 +290,12 @@ internal object ReplayPatternAnalyzer {
     private fun percentile(values: List<Float>, p: Float): Float {
         if (values.isEmpty()) return Float.NaN
         val sorted = values.sorted()
+        val rank = (p.coerceIn(0f, 1f) * sorted.lastIndex).toInt().coerceIn(0, sorted.lastIndex)
+        return sorted[rank]
+    }
+
+    private fun String.toFiniteFloatOrNull(): Float? {
+        val value = toFloatOrNull() ?: return null
+        return if (value.isFinite()) value else null
+    }
+
