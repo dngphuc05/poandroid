@@ -156,3 +156,10 @@ class SubjectSceneSolverTest {
             solved = solver.solveShadow(raw, SceneMeasurementExtractor.extract(raw, Float.NaN))
         }
 
+        assertTrue(
+            "expected ${solved.experimentalDistanceMeters} to follow stable foot evidence",
+            solved.experimentalDistanceMeters in 2.18f..2.30f,
+        )
+        assertTrue(solved.baselineExperimentalDistanceDeltaMeters > 0.10f)
+    }
+
