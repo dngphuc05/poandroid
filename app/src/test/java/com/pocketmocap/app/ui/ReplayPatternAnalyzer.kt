@@ -299,3 +299,10 @@ internal object ReplayPatternAnalyzer {
         return if (value.isFinite()) value else null
     }
 
+    private fun jsonString(text: String, key: String): String? =
+        Regex("""\"$key\"\s*:\s*\"([^\"]*)\"""").find(text)?.groupValues?.getOrNull(1)
+
+    private fun jsonFloat(text: String, key: String): Float? =
+        Regex("""\"$key\"\s*:\s*(-?\d+(?:\.\d+)?)""").find(text)?.groupValues?.getOrNull(1)?.toFloatOrNull()
+
+    private fun jsonInt(text: String, key: String): Int? =
