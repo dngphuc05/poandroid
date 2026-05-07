@@ -110,3 +110,11 @@ class ReplayPatternAnalyzerTest {
         val rows = csvRows(csv)
         val postAcquire = rows.filter { it["height_lock_state"] != "acquiring" }
         val exportedHeights = postAcquire.count { it["corrected_height_m"]?.toFloatOrNull()?.isFinite() == true }
+
+        assertTrue("metrics54 stabilized height should stay near 1.83m: ${analysis.diagnoses}", "wrong_height_lock" !in analysis.diagnoses)
+        assertTrue("metrics54 stabilized distance should stay inside 1.4-2.8m: ${analysis.diagnoses}", "distance_outside_expected_band" !in analysis.diagnoses)
+        assertTrue("height export should be present on most post-acquisition frames", exportedHeights > postAcquire.size * 3 / 4)
+        assertTrue("height median should be close to 1.83m", analysis.heightMedian in 1.80f..1.86f)
+        assertEquals("distance_m", analysis.bestDistanceScore?.column)
+    }
+
