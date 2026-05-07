@@ -166,3 +166,10 @@ class ReplayPatternAnalyzerTest {
             minSegmentFrames = 24,
         )
 
+    private fun buildSyntheticPatternCsv(
+        distances: List<Float>,
+        heights: List<Float>,
+        framesPerSegment: Int = 48,
+        includeServerColumns: Boolean = false,
+    ): String = buildString {
+        val header = mutableListOf(
