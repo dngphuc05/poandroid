@@ -88,3 +88,18 @@ class ReplayPatternAnalyzerTest {
         val rows = csvRows(csv)
         val finiteHeights = rows.mapNotNull { it["height_m"]?.toFloatOrNull() }
         val nearTruthHeights = finiteHeights.count { it in 1.65f..1.69f }
+        val distanceValues = rows.mapNotNull { it["distance_m"]?.toFloatOrNull() }
+        val distanceOutsideStrictBand = distanceValues.count { it < 2.0f || it > 2.8f }
+
+        assertTrue("server pose should be present despite bad height", rows.all { it["server_pose_status"] == "ok" })
+        assertTrue("technical skeleton should still be server DLT", rows.all { it["technical_pose_source"] == "server_dlt" })
+        assertTrue("metrics49 should expose missing height with skeleton present: ${analysis.diagnoses}", "height_missing_with_server_pose" in analysis.diagnoses)
+        assertTrue("metrics49 should expose wrong finite height with skeleton present: ${analysis.diagnoses}", "height_wrong_with_server_pose" in analysis.diagnoses)
+        assertTrue("metrics49 should expose no usable 1.67m height candidate: ${analysis.diagnoses}", "missing_truth_height_candidate" in analysis.diagnoses)
+        assertTrue("metrics49 should expose distance leakage outside 2.0-2.8m: ${analysis.diagnoses}", "distance_outside_expected_band" in analysis.diagnoses)
+        assertTrue("finite height should be mostly missing", finiteHeights.size < rows.size / 2)
+        assertTrue("no frames should land in the true 1.67m band", nearTruthHeights == 0)
+        assertTrue("distance should still contain the expected walking range", distanceValues.minOrNull()!! < 2.0f && distanceValues.maxOrNull()!! > 2.8f)
+        assertTrue("many distance frames should be outside strict expected band", distanceOutsideStrictBand > rows.size / 5)
+    }
+
