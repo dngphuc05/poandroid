@@ -194,3 +194,10 @@ class SubjectSceneSolverTest {
             solved = solver.solveShadow(raw, SceneMeasurementExtractor.extract(raw, Float.NaN))
         }
 
+        assertTrue(solved.promotedSolverSource in setOf("experimental_height", "experimental_height_distance"))
+        assertTrue(solved.bodyHeightMeters in 1.80f..1.85f)
+        assertTrue(solved.correctedHeightMeters in 1.80f..1.85f)
+        assertEquals("locked", solved.heightLockState)
+    }
+
+    @Test
