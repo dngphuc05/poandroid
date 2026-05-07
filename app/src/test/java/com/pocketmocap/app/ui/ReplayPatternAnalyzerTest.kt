@@ -206,3 +206,7 @@ class ReplayPatternAnalyzerTest {
                     row += "server_dlt"
                 }
                 appendLine(row.joinToString(","))
+            }
+        }
+    }
+}
