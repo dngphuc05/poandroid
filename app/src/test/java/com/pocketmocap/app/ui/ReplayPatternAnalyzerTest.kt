@@ -118,3 +118,11 @@ class ReplayPatternAnalyzerTest {
         assertEquals("distance_m", analysis.bestDistanceScore?.column)
     }
 
+    @Test
+    fun syntheticServerPosePresentButHeightMissing_isDiagnosedSeparatelyFromSkeletonDropout() {
+        val csv = buildSyntheticPatternCsv(
+            distances = listOf(2.8f, 2.4f, 2.0f),
+            heights = listOf(Float.NaN, Float.NaN, Float.NaN),
+            includeServerColumns = true,
+        )
+        val analysis = ReplayPatternAnalyzer.analyze(
