@@ -107,3 +107,11 @@ internal object ReplayPatternAnalyzer {
                     values.subList(c2, values.size),
                 )
                 val medians = segments.map { median(it.filterNotNull()) }
+                if (medians.all { it.isFinite() }) {
+                    val deltas = listOf(medians[1] - medians[0], medians[2] - medians[1])
+                    val medianError = medians.zip(expected).sumOf { (actual, target) -> abs(actual - target).toDouble() }.toFloat()
+                    val deltaError = deltas.sumOf { delta -> abs(delta + 0.70f).toDouble() }.toFloat()
+                    val jitter = segments.sumOf { segment ->
+                        medianAbsoluteDeviation(segment.filterNotNull()).toDouble()
+                    }.toFloat()
+                    val monotonic = deltas.all { it < -0.15f }
