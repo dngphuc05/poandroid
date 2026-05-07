@@ -103,3 +103,10 @@ class ReplayPatternAnalyzerTest {
         assertTrue("many distance frames should be outside strict expected band", distanceOutsideStrictBand > rows.size / 5)
     }
 
+    @Test
+    fun metrics54_trimmedStabilizedFixtureKeepsHeightAndDistanceInBand() {
+        val (spec, csv) = ReplayPatternAnalyzer.loadSpec("metrics_54_height_distance_stabilized.json")
+        val analysis = ReplayPatternAnalyzer.analyze(csv, spec)
+        val rows = csvRows(csv)
+        val postAcquire = rows.filter { it["height_lock_state"] != "acquiring" }
+        val exportedHeights = postAcquire.count { it["corrected_height_m"]?.toFloatOrNull()?.isFinite() == true }
