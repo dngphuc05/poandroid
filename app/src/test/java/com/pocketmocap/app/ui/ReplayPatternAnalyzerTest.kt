@@ -67,3 +67,17 @@ class ReplayPatternAnalyzerTest {
         val height = column("height_m")
         val dataRows = rows.drop(1).map { it.split(",") }
 
+        assertTrue("metrics48 should expose wrong final height: ${analysis.diagnoses}", "wrong_height_lock" in analysis.diagnoses)
+        assertTrue("metrics48 should expose untrusted height feedback: ${analysis.diagnoses}", "untrusted_height_feedback" in analysis.diagnoses)
+        assertTrue("server pose should be present in the bad capture", dataRows.all { it.getOrNull(serverPoseStatus) == "ok" })
+        assertTrue("technical view should still be server DLT", dataRows.all { it.getOrNull(technicalPoseSource) == "server_dlt" })
+        assertTrue(
+            "old capture should contain untrusted height states that the runtime fix must not acquire from",
+            dataRows.count { it.getOrNull(heightLockState)?.contains("untrusted") == true } > dataRows.size / 2,
+        )
+        assertTrue(
+            "old capture briefly visits the true 1.67m band but does not hold it",
+            dataRows.count { row -> row.getOrNull(height)?.toFloatOrNull()?.let { it in 1.65f..1.69f } == true } in 1..40,
+        )
+    }
+
