@@ -180,3 +180,17 @@ class SubjectSceneSolverTest {
         )
         repeat(35) {
             val raw = rawScene(
+                distance = 2.10f,
+                height = 1.72f,
+                footPlaneDistance = 2.12f,
+                roiDistance = 2.10f,
+                topRayHeight = 1.83f + ((it % 3) - 1) * 0.002f,
+                pixelSpanHeight = 1.82f,
+                hipGeometryDistance = 2.10f,
+                hipGeometryHeight = 1.83f + ((it % 5) - 2) * 0.002f,
+                torsoHeight = 1.82f,
+                groundedFootDistance = 2.12f,
+            )
+            solved = solver.solveShadow(raw, SceneMeasurementExtractor.extract(raw, Float.NaN))
+        }
+
