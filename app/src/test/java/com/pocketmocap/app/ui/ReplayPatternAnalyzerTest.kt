@@ -126,3 +126,14 @@ class ReplayPatternAnalyzerTest {
             includeServerColumns = true,
         )
         val analysis = ReplayPatternAnalyzer.analyze(
+            csv,
+            ReplayPatternSpec(
+                id = "synthetic_missing_height",
+                csvFile = "",
+                expectedDistancePlateausMeters = listOf(2.8f, 2.4f, 2.0f),
+                expectedHeightRangeMeters = 1.65f..1.69f,
+                trimFraction = 0f,
+                minSegmentFrames = 24,
+            )
+        )
+
