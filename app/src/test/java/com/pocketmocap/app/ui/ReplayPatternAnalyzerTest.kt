@@ -144,3 +144,11 @@ class ReplayPatternAnalyzerTest {
 
     private fun analyzeFixture(fixture: String): ReplayPatternAnalysis {
         val (spec, csv) = ReplayPatternAnalyzer.loadSpec(fixture)
+        return ReplayPatternAnalyzer.analyze(csv, spec)
+    }
+
+    private fun csvRows(csv: String): List<Map<String, String>> {
+        val lines = csv.lineSequence().filter { it.isNotBlank() }.toList()
+        val header = lines.first().split(",")
+        return lines.drop(1).map { line ->
+            val cells = line.split(",")
