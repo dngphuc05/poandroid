@@ -43,3 +43,12 @@ class ReplayPatternAnalyzerTest {
         assertTrue("metrics46 should expose untrusted height feedback: ${analysis.diagnoses}", "untrusted_height_feedback" in analysis.diagnoses)
     }
 
+    @Test
+    fun metrics47_classifiesLateHipExplosionAndNoTruthCandidate() {
+        val analysis = analyzeFixture("metrics_47_three_step.json")
+
+        assertTrue("metrics47 should expose hip geometry explosion: ${analysis.diagnoses}", "hip_geometry_explosion" in analysis.diagnoses)
+        assertTrue("metrics47 should expose untrusted height feedback: ${analysis.diagnoses}", "untrusted_height_feedback" in analysis.diagnoses)
+        assertTrue("metrics47 should expose missing truth candidate: ${analysis.diagnoses}", "missing_truth_candidate" in analysis.diagnoses)
+    }
+
