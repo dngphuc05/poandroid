@@ -64,3 +64,10 @@ internal object ReplayPatternAnalyzer {
         val trimmed = rows.subList(start, end)
 
         val scores = distanceColumns.mapNotNull { column ->
+            scoreColumn(trimmed, column, spec.expectedDistancePlateausMeters, spec.minSegmentFrames)
+        }.sortedBy { it.score }
+        val heightValues = trimmed.mapNotNull { it["height_m"]?.toFiniteFloatOrNull() }
+        val heightMedian = median(heightValues)
+        val heightP10 = percentile(heightValues, 0.10f)
+        val heightP90 = percentile(heightValues, 0.90f)
+        val diagnoses = classify(trimmed, scores, heightMedian, heightP10, heightP90, spec)
