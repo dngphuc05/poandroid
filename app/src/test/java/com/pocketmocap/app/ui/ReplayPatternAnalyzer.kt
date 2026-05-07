@@ -50,3 +50,10 @@ internal object ReplayPatternAnalyzer {
         "relative_scale_distance_m",
     )
 
+    fun loadSpec(resourceFixtureJson: String): Pair<ReplayPatternSpec, String> {
+        val metadataText = readResourceText("replay/$resourceFixtureJson")
+        val spec = parseSpec(metadataText)
+        val csvText = readResourceText("replay/${spec.csvFile}")
+        return spec to csvText
+    }
+
