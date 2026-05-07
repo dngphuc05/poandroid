@@ -125,3 +125,20 @@ class SubjectSceneSolverTest {
         assertTrue(solved.experimentalFactorSummary.contains("hip_bias=0."))
     }
 
+    @Test
+    fun slidingWindowDistancePrefersStableGroundedFootOverLowHipGeometry() {
+        val solver = SubjectSceneSolver(windowSize = 30)
+        var solved = rawScene(
+            distance = 2.02f,
+            height = 1.83f,
+            footPlaneDistance = 2.25f,
+            roiDistance = 2.40f,
+            topRayHeight = 1.83f,
+            pixelSpanHeight = 1.70f,
+            hipGeometryDistance = 1.90f,
+            hipGeometryHeight = 1.83f,
+            torsoHeight = 1.48f,
+            groundedFootDistance = 2.25f,
+        )
+        repeat(35) {
+            val raw = rawScene(
