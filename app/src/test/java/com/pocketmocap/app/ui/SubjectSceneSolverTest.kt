@@ -163,3 +163,20 @@ class SubjectSceneSolverTest {
         assertTrue(solved.baselineExperimentalDistanceDeltaMeters > 0.10f)
     }
 
+    @Test
+    fun slidingWindowPromotesStableHeightWhenBaselineIsLow() {
+        val solver = SubjectSceneSolver(windowSize = 30)
+        var solved = rawScene(
+            distance = 2.10f,
+            height = 1.72f,
+            footPlaneDistance = 2.12f,
+            roiDistance = 2.10f,
+            topRayHeight = 1.83f,
+            pixelSpanHeight = 1.82f,
+            hipGeometryDistance = 2.10f,
+            hipGeometryHeight = 1.83f,
+            torsoHeight = 1.82f,
+            groundedFootDistance = 2.12f,
+        )
+        repeat(35) {
+            val raw = rawScene(
