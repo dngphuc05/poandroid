@@ -56,3 +56,12 @@ class ReplayMetricsStabilityTest {
         )
     }
 
+    @Test
+    fun crossStackConsistency_hasNoContradictoryPoseState() {
+        val fixtures = listOf(
+            "stable_metrics_12_f121_140.json",
+            "pushpull_metrics_12_f40_79.json",
+            "occlusion_metrics_12_f20_39.json",
+        )
+        for (fixture in fixtures) {
+            val (meta, csv) = ReplayFixtureAnalyzer.loadFixture(fixture)
