@@ -188,3 +188,21 @@ internal object ReplayPatternAnalyzer {
             diagnoses += "stale_distance_hold"
         }
         val hipValues = rows.mapNotNull { it["hip_geometry_distance_m"]?.toFiniteFloatOrNull() }
+        if ((hipValues.maxOrNull() ?: 0f) > 6.0f || hipScore?.medians?.any { it > 6.0f } == true) {
+            diagnoses += "hip_geometry_explosion"
+        }
+        val untrustedHeightFrames = rows.count { it["height_lock_state"].orEmpty().contains("untrusted") }
+        if (heightMedian !in spec.expectedHeightRangeMeters && untrustedHeightFrames > rows.size / 4) {
+            diagnoses += "untrusted_height_feedback"
+        }
+        if (heightMedian !in spec.expectedHeightRangeMeters || heightP10 < spec.expectedHeightRangeMeters.start || heightP90 > spec.expectedHeightRangeMeters.endInclusive) {
+            diagnoses += "wrong_height_lock"
+        }
+        if (serverPosePresent && heightMissingRatio > 0.35f) {
+            diagnoses += "height_missing_with_server_pose"
+        }
+        if (serverPosePresent && heightValues.isNotEmpty() && heightMedian !in spec.expectedHeightRangeMeters) {
+            diagnoses += "height_wrong_with_server_pose"
+        }
+        if (heightValues.isEmpty() || nearTruthHeightCount < max(3, (heightValues.size * 0.05f).toInt())) {
+            diagnoses += "missing_truth_height_candidate"
