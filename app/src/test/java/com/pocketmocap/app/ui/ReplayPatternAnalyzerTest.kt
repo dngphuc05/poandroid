@@ -173,3 +173,18 @@ class ReplayPatternAnalyzerTest {
         includeServerColumns: Boolean = false,
     ): String = buildString {
         val header = mutableListOf(
+            "frame",
+            "scene_source",
+            "distance_m",
+            "height_m",
+            "hip_geometry_distance_m",
+            "foot_plane_distance_m",
+            "raw_hip_depth_distance_m",
+            "height_lock_state",
+        )
+        if (includeServerColumns) {
+            header += "server_pose_status"
+            header += "technical_pose_source"
+        }
+        appendLine(header.joinToString(","))
+        var frame = 0
