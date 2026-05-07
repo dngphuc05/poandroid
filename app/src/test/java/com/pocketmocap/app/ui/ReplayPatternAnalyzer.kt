@@ -268,3 +268,10 @@ internal object ReplayPatternAnalyzer {
         return cells
     }
 
+    private fun readResourceText(path: String): String {
+        val stream = ReplayPatternAnalyzer::class.java.classLoader?.getResourceAsStream(path)
+            ?: error("missing test resource: $path")
+        return stream.bufferedReader().use { it.readText() }
+    }
+
+    private fun median(values: List<Float>): Float {
