@@ -74,3 +74,13 @@ class SubjectSceneSolverTest {
             )
         )
 
+        assertEquals("baseline", solved.promotedSolverSource)
+        assertEquals("shadow_sliding_window", solved.experimentalSolverStatus)
+        assertTrue(solved.experimentalFactorSummary.contains("measurements="))
+        assertTrue(solved.experimentalHeightMeters.isFinite())
+        assertTrue(solved.experimentalDistanceMeters.isFinite())
+        assertTrue(solved.experimentalHeightSigmaMeters in 0.015f..0.80f)
+        assertTrue(solved.experimentalDistanceSigmaMeters in 0.02f..2.50f)
+        assertEquals(0f, solved.baselineExperimentalDistanceDeltaMeters, 1e-4f)
+    }
+
