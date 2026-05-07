@@ -81,3 +81,10 @@ class ReplayPatternAnalyzerTest {
         )
     }
 
+    @Test
+    fun metrics49_classifiesMissingAndWrongHeightWhileSkeletonIsPresent() {
+        val (spec, csv) = ReplayPatternAnalyzer.loadSpec("metrics_49_missing_wrong_height.json")
+        val analysis = ReplayPatternAnalyzer.analyze(csv, spec)
+        val rows = csvRows(csv)
+        val finiteHeights = rows.mapNotNull { it["height_m"]?.toFloatOrNull() }
+        val nearTruthHeights = finiteHeights.count { it in 1.65f..1.69f }
