@@ -57,3 +57,10 @@ internal object ReplayPatternAnalyzer {
         return spec to csvText
     }
 
+    fun analyze(csvText: String, spec: ReplayPatternSpec): ReplayPatternAnalysis {
+        val rows = parseCsvRows(csvText).filter { it["scene_source"] == "arcore_floor" }
+        val start = (rows.size * spec.trimFraction).toInt().coerceIn(0, rows.size)
+        val end = (rows.size * (1f - spec.trimFraction)).toInt().coerceIn(start, rows.size)
+        val trimmed = rows.subList(start, end)
+
+        val scores = distanceColumns.mapNotNull { column ->
