@@ -27,3 +27,10 @@ internal data class PlateauScore(
 
 internal data class ReplayPatternAnalysis(
     val specId: String,
+    val rowCount: Int,
+    val trimmedRowCount: Int,
+    val bestDistanceScore: PlateauScore?,
+    val distanceScores: List<PlateauScore>,
+    val heightMedian: Float,
+    val heightP10: Float,
+    val heightP90: Float,
