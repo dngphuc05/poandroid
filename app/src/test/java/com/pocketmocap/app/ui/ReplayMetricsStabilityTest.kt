@@ -19,3 +19,11 @@ class ReplayMetricsStabilityTest {
     @Test
     fun pushPullFixture_distanceMovesWhileHeightRemainsBounded() {
         val (meta, csv) = ReplayFixtureAnalyzer.loadFixture("pushpull_metrics_12_f40_79.json")
+        val analysis = ReplayFixtureAnalyzer.analyze(csv, meta)
+        val gate = ReplayFixtureAnalyzer.evaluateStrictGate(meta, analysis)
+
+        assertTrue("push/pull fixture should pass strict gate: ${gate.failures}", gate.pass)
+        assertTrue("distance should show movement in push/pull", analysis.distanceSpanMeters >= 0.80f)
+        assertTrue("height should stay bounded while distance moves", analysis.heightSpanMeters <= 0.35f)
+    }
+
