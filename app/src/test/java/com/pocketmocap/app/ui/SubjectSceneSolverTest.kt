@@ -201,3 +201,21 @@ class SubjectSceneSolverTest {
     }
 
     @Test
+    fun typedMeasurementExtractorDownweightsClippedEndpoints() {
+        val clipped = rawScene(
+            distance = 2.10f,
+            height = 1.83f,
+            footPlaneDistance = 2.25f,
+            roiDistance = 2.35f,
+            topRayHeight = 1.83f,
+            pixelSpanHeight = 1.80f,
+            hipGeometryDistance = 2.12f,
+            hipGeometryHeight = 1.83f,
+            torsoHeight = 1.60f,
+            groundedFootDistance = 2.25f,
+        ).copy(
+            bodyClipRisk = 0.95f,
+            topEndpointConfidence = 0.05f,
+            footEndpointConfidence = 0.10f,
+            maskEndpointConfidence = 0.05f,
+        )
