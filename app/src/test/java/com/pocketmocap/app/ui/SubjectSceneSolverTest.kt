@@ -233,3 +233,21 @@ class SubjectSceneSolverTest {
     }
 
     private fun rawScene(
+        distance: Float,
+        height: Float,
+        footPlaneDistance: Float,
+        roiDistance: Float,
+        topRayHeight: Float,
+        pixelSpanHeight: Float,
+        hipGeometryDistance: Float,
+        hipGeometryHeight: Float,
+        torsoHeight: Float,
+        groundedFootDistance: Float,
+    ): SceneMetricSnapshot =
+        SceneMetricSnapshot(
+            source = "arcore_floor",
+            confidence = 0.84f,
+            distanceMeters = distance,
+            bodyHeightMeters = height,
+            cameraHeightMeters = 1.34f,
+            floorPitchDegrees = 7f,
