@@ -1,0 +1,9 @@
+{
+  "id": "degraded_metrics_12_f0_19",
+  "csv_file": "degraded_metrics_12_f0_19.csv",
+  "expected_distance_range_m": [1.60, 1.90],
+  "expected_height_range_m": [1.15, 1.25],
+  "max_missing_server_pose_ratio": 0.02,
+  "max_distance_step_p95_m": 0.10,
+  "max_height_step_p95_m": 0.05
+}
