@@ -269,3 +269,4 @@ class SubjectSceneSolverTest {
             heightConfidence = 0.68f,
             floorConfidence = 0.84f,
         )
+}
