@@ -219,3 +219,10 @@ class SubjectSceneSolverTest {
             footEndpointConfidence = 0.10f,
             maskEndpointConfidence = 0.05f,
         )
+
+        val measurements = SceneMeasurementExtractor.extract(clipped, Float.NaN)
+        val top = measurements.first { it.source == "top_ray_height" }
+        val pixel = measurements.first { it.source == "pixel_span_height" }
+        val foot = measurements.first { it.source == "foot_plane_distance" }
+        val hip = measurements.first { it.source == "hip_geometry_height" }
+
