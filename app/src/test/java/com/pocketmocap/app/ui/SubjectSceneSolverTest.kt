@@ -226,3 +226,10 @@ class SubjectSceneSolverTest {
         val foot = measurements.first { it.source == "foot_plane_distance" }
         val hip = measurements.first { it.source == "hip_geometry_height" }
 
+        assertTrue(top.confidence < 0.05f)
+        assertTrue(pixel.confidence < 0.05f)
+        assertTrue(foot.confidence < 0.10f)
+        assertTrue(hip.confidence > top.confidence)
+    }
+
+    private fun rawScene(
