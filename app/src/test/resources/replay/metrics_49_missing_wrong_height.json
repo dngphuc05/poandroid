@@ -1,0 +1,8 @@
+{
+  "id": "metrics_49_missing_wrong_height",
+  "csv_file": "metrics_49_missing_wrong_height.csv",
+  "expected_distance_plateaus_m": [2.8, 2.4, 2.0],
+  "expected_height_range_m": [1.65, 1.69],
+  "trim_fraction": 0.00,
+  "min_segment_frames": 60
+}
