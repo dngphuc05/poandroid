@@ -1,0 +1,9 @@
+{
+  "id": "occlusion_metrics_12_f20_39",
+  "csv_file": "occlusion_metrics_12_f20_39.csv",
+  "expected_distance_range_m": [1.55, 1.82],
+  "expected_height_range_m": [1.14, 1.36],
+  "max_missing_server_pose_ratio": 0.06,
+  "max_distance_step_p95_m": 0.04,
+  "max_height_step_p95_m": 0.02
+}
