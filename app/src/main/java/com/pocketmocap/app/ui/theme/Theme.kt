@@ -1,4 +1,4 @@
-package com.pocketmocap.app.ui.theme
+﻿package com.pocketmocap.app.ui.theme
 
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FiniteAnimationSpec

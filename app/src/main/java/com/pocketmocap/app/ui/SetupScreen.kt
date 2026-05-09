@@ -1,4 +1,4 @@
-package com.pocketmocap.app.ui
+﻿package com.pocketmocap.app.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing

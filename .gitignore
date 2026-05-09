@@ -1,4 +1,4 @@
-# Android build outputs
+﻿# Android build outputs
 build/
 *.apk
 *.aab

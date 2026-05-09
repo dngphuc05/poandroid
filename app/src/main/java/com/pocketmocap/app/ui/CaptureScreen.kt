@@ -1,4 +1,4 @@
-package com.pocketmocap.app.ui
+﻿package com.pocketmocap.app.ui
 
 import android.Manifest
 import android.content.pm.PackageManager

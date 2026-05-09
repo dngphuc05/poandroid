@@ -1,4 +1,4 @@
-package com.pocketmocap.app
+﻿package com.pocketmocap.app
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
