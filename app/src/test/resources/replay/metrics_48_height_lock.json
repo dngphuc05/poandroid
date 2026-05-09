@@ -1,0 +1,8 @@
+{
+  "id": "metrics_48_height_lock",
+  "csv_file": "metrics_48_height_lock.csv",
+  "expected_distance_plateaus_m": [2.8, 2.1, 1.4],
+  "expected_height_range_m": [1.65, 1.69],
+  "trim_fraction": 0.00,
+  "min_segment_frames": 40
+}
