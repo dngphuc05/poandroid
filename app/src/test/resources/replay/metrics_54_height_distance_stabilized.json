@@ -1,0 +1,8 @@
+{
+  "id": "metrics_54_height_distance_stabilized",
+  "csv_file": "metrics_54_height_distance_stabilized.csv",
+  "expected_distance_plateaus_m": [2.8, 2.1, 1.4],
+  "expected_height_range_m": [1.80, 1.86],
+  "trim_fraction": 0.0,
+  "min_segment_frames": 6
+}

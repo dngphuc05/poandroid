@@ -1,0 +1,9 @@
+{
+  "id": "pushpull_metrics_12_f40_79",
+  "csv_file": "pushpull_metrics_12_f40_79.csv",
+  "expected_distance_range_m": [1.53, 2.54],
+  "expected_height_range_m": [1.35, 1.64],
+  "max_missing_server_pose_ratio": 0.0,
+  "max_distance_step_p95_m": 0.07,
+  "max_height_step_p95_m": 0.02
+}
