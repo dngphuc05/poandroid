@@ -29,6 +29,7 @@ class MocapServerClient(
     interface Listener {
         fun onConnected(sessionId: String)
         fun onLobbyJoined(code: String, name: String)
+        fun onLobbyClosed(code: String) {}   // PC operator closed the lobby (or disconnected)
         fun onDisconnected()
         fun onCalibrationAck(success: Boolean, state: String)
         fun onBootstrapProgress(collected: Int, target: Int, complete: Boolean)
@@ -46,6 +47,8 @@ class MocapServerClient(
     private var socket: Socket? = null
     private val sessionId = AtomicReference<String?>(null)
     private var serverUrl: String = ""
+    // 6-digit lobby code this phone has joined — stamped onto extrinsic/ready events for the PC.
+    @Volatile private var joinedLobbyCode: String = ""
     @Volatile private var latestPoseFrameIndex = -1
     @Volatile private var latestPoseTimestampUs = 0L
 
@@ -106,7 +109,15 @@ class MocapServerClient(
                     val code = data.optString("code", "")
                     val name = data.optString("name", "")
                     Log.i(TAG, "Lobby joined: code=$code name=$name")
+                    joinedLobbyCode = code
                     listener.onLobbyJoined(code, name)
+                }
+                on("lobby_closed") { args ->
+                    val data = args.firstOrNull() as? JSONObject
+                    val code = data?.optString("code", "") ?: ""
+                    Log.i(TAG, "Lobby closed by PC: code=$code")
+                    joinedLobbyCode = ""
+                    listener.onLobbyClosed(code)
                 }
                 on("rtc_answer") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
@@ -161,6 +172,7 @@ class MocapServerClient(
         socket?.off()
         socket = null
         sessionId.set(null)
+        joinedLobbyCode = ""
         latestPoseFrameIndex = -1
         latestPoseTimestampUs = 0L
         rtcDisabledForFrames = false
@@ -183,6 +195,34 @@ class MocapServerClient(
             put("label", label.take(64))
         })
         Log.i(TAG, "Sent session_join for lobby=$normalizedCode")
+    }
+
+    /**
+     * Report this phone's camera extrinsic (world position + euler rotation) so the
+     * PC operator can place this device in the multi-camera scene and optimise DLT.
+     * No-op until the phone has joined a lobby.
+     */
+    fun sendExtrinsicUpdate(pos: FloatArray, rotDegrees: FloatArray) {
+        if (joinedLobbyCode.length != 6 || !isConnected) return
+        if (pos.size < 3 || rotDegrees.size < 3) return
+        socket?.emit("extrinsic_update", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("pos", JSONArray().apply { (0 until 3).forEach { put(pos[it].toDouble()) } })
+            put("rot", JSONArray().apply { (0 until 3).forEach { put(rotDegrees[it].toDouble()) } })
+        })
+    }
+
+    /**
+     * Signal to the PC operator whether this phone has finished calibration and is
+     * ready to capture. No-op until the phone has joined a lobby.
+     */
+    fun sendDeviceReady(ready: Boolean) {
+        if (joinedLobbyCode.length != 6 || !isConnected) return
+        socket?.emit("device_ready", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("ready", ready)
+        })
+        Log.i(TAG, "Sent device_ready=$ready for lobby=$joinedLobbyCode")
     }
 
     /** Create the WebRTC channel and fire the offer over Socket.IO. */

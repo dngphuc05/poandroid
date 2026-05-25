@@ -1,5 +1,6 @@
 package com.pocketmocap.app.ui
 
+import com.pocketmocap.app.ui.theme.PocapMono
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -219,7 +220,7 @@ fun PocapChip(
             text = label.uppercase(),
             style = MaterialTheme.typography.labelSmall,
             color = PocapInk,
-            fontFamily = FontFamily.Monospace,
+            fontFamily = PocapMono,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
         )
@@ -236,7 +237,7 @@ fun PocapEyebrow(
         modifier = modifier,
         style = MaterialTheme.typography.labelSmall,
         color = PocapInk3,
-        fontFamily = FontFamily.Monospace,
+        fontFamily = PocapMono,
         fontWeight = FontWeight.Bold,
     )
 }
@@ -331,7 +332,7 @@ fun PocapBigNum(
                 text = value,
                 style = MaterialTheme.typography.titleLarge,
                 color = tone,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PocapMono,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -341,7 +342,7 @@ fun PocapBigNum(
                     text = it,
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk3,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PocapMono,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 2.dp),
                     maxLines = 1,
@@ -418,7 +419,7 @@ fun PocapFactBox(
                 text = value,
                 style = MaterialTheme.typography.titleSmall,
                 color = PocapInk,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PocapMono,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

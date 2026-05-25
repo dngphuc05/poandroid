@@ -19,7 +19,6 @@ class CaptureNodeImplementationTest {
             "http://127.0.0.1",
             "coming soon",
             "SkeletonOverlay",
-            "FloorMarkers",
             "pasted-",
         )
 
@@ -160,6 +159,7 @@ class CaptureNodeImplementationTest {
         val connect = appDir.resolve("src/main/java/com/pocketmocap/app/ui/ConnectScreen.kt").readText()
         val join = appDir.resolve("src/main/java/com/pocketmocap/app/ui/JoinSessionScreen.kt").readText()
         val capture = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
+        val viewfinder = appDir.resolve("src/main/java/com/pocketmocap/app/ui/PocapViewfinder.kt").readText()
         val qr = appDir.resolve("src/main/java/com/pocketmocap/app/ui/QrLinkScannerScreen.kt").readText()
 
         val requiredUiTokens = listOf(
@@ -178,8 +178,11 @@ class CaptureNodeImplementationTest {
             "PocapFactBox",
             "PocapSignalBars",
             "PocapCornerBrackets",
+            "PocapMockViewfinder",
+            "PocapFloorMarkers",
+            "PocapCameraGlyph",
         )
-        val missingUiTokens = requiredUiTokens.filterNot { token -> token in uiKit }
+        val missingUiTokens = requiredUiTokens.filterNot { token -> token in uiKit || token in viewfinder }
         assertTrue("Missing native port tokens from frontend prototype: $missingUiTokens", missingUiTokens.isEmpty())
 
         val requiredScreenSignals = listOf(
@@ -194,11 +197,15 @@ class CaptureNodeImplementationTest {
             "viewModel.onCameraFrame" to capture,
             "AndroidView" to capture,
             "RealLandmarkOverlay" to capture,
+            "private enum class CaptureView" to capture,
+            "CameraReadyChrome" to capture,
+            "LiveCaptureChrome" to capture,
+            "SyncCalibrationScreen" to capture,
+            "SessionErrorScreen" to capture,
+            "PermissionScreen" to capture,
             "SessionPill" to capture,
             "WarningBanner" to capture,
             "MetricsRowCard" to capture,
-            "DeviceActionCard" to capture,
-            "LiveRecordingStrip" to capture,
             "PocapCameraScrim" to capture,
             "PocapCornerBrackets" to capture,
             "PocapBigNum" to capture,
@@ -211,6 +218,9 @@ class CaptureNodeImplementationTest {
             .filterNot { (token, source) -> token in source }
             .map { (token, _) -> token }
         assertTrue("Missing phone screen implementation signals: $missingScreenSignals", missingScreenSignals.isEmpty())
+        assertTrue("Live capture must use real runtime counters", capture.contains("viewModel.framesSentToServer"))
+        assertTrue("Sync screen must use runtime calibration state", capture.contains("uiState.calibrationStep"))
+        assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
 
     private fun locateAppDir(): File {

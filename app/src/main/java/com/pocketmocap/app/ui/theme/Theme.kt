@@ -56,23 +56,37 @@ object MocapColors {
 }
 
 // ── Fonts ──────────────────────────────────────────────────────
-private val DisplayFontFamily = FontFamily(
-    Font(R.font.plus_jakarta_sans_variable, weight = FontWeight.Bold),
-    Font(R.font.plus_jakarta_sans_variable, weight = FontWeight.ExtraBold),
+// Matches the Pocap prototype: Geist for sans + display, JetBrains Mono for
+// code/eyebrow/numeric. Both ship as variable TTFs, so each weight pins the
+// `wght` axis explicitly.
+private fun geist(weight: FontWeight) = Font(R.font.geist_variable, weight = weight)
+
+private fun jetBrainsMono(weight: FontWeight) = Font(R.font.jetbrains_mono_variable, weight = weight)
+
+private val GeistFamily = FontFamily(
+    geist(FontWeight.Normal),
+    geist(FontWeight.Medium),
+    geist(FontWeight.SemiBold),
+    geist(FontWeight.Bold),
 )
 
-private val BodyFontFamily = FontFamily(
-    Font(R.font.be_vietnam_pro_regular, weight = FontWeight.Normal),
-    Font(R.font.be_vietnam_pro_medium, weight = FontWeight.Medium),
-    Font(R.font.be_vietnam_pro_semi_bold, weight = FontWeight.SemiBold),
-    Font(R.font.be_vietnam_pro_bold, weight = FontWeight.Bold),
+/** JetBrains Mono — public so Riso primitives/screens can use it for mono text. */
+val PocapMono = FontFamily(
+    jetBrainsMono(FontWeight.Normal),
+    jetBrainsMono(FontWeight.Medium),
+    jetBrainsMono(FontWeight.SemiBold),
+    jetBrainsMono(FontWeight.Bold),
 )
+
+// Prototype `pm-display`/`h1`/`h2` are Geist 600; body is Geist 400/500.
+private val DisplayFontFamily = GeistFamily
+private val BodyFontFamily = GeistFamily
 
 // ── Typography ─────────────────────────────────────────────────
 private val PocketMocapTypography = Typography(
     headlineLarge = TextStyle(
-        fontFamily = DisplayFontFamily, fontWeight = FontWeight.ExtraBold,
-        fontSize = 56.sp, lineHeight = 56.sp, letterSpacing = 0.sp, color = Ink,
+        fontFamily = DisplayFontFamily, fontWeight = FontWeight.SemiBold,
+        fontSize = 46.sp, lineHeight = 48.sp, letterSpacing = (-1.1).sp, color = Ink,
     ),
     headlineMedium = TextStyle(
         fontFamily = DisplayFontFamily, fontWeight = FontWeight.Bold,

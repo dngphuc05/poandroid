@@ -1,5 +1,6 @@
 package com.pocketmocap.app.ui
 
+import com.pocketmocap.app.ui.theme.PocapMono
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -223,7 +224,7 @@ private fun DigitBox(
                 text = digit.ifBlank { if (active) "|" else "." },
                 style = MaterialTheme.typography.headlineSmall,
                 color = if (filled || active) PocapInk else PocapInk4,
-                fontFamily = FontFamily.Monospace,
+                fontFamily = PocapMono,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp,
                 maxLines = 1,
@@ -247,7 +248,7 @@ private fun LinkedServerCard(serverUrl: String) {
                     text = serverUrl.ifBlank { "waiting for PC link" },
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk,
-                    fontFamily = FontFamily.Monospace,
+                    fontFamily = PocapMono,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

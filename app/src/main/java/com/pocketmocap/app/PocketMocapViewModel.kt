@@ -198,6 +198,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private var serverMetricClientMotionOverlayActive = false
     private var lastCanonicalAuthoritativeHeightMeters = Float.NaN
     private var lastCanonicalAuthoritativeDistanceMeters = Float.NaN
+    // Lobby extrinsic reporting — throttle the PC-facing extrinsic_update stream to ~2 Hz.
+    private var extrinsicEmitCountdown = 0
+    private var deviceReadyReported = false
 
     init {
         loadManualMetricProfile()
@@ -335,7 +338,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     // ── Server Client ──
-    private val serverClient = MocapServerClient(getApplication(), object : MocapServerClient.Listener {
+    private val serverClient: MocapServerClient = MocapServerClient(getApplication(), object : MocapServerClient.Listener {
         override fun onConnected(sessionId: String) {
             Log.i(TAG, "onConnected: session=$sessionId")
             val shouldAutoResume =
@@ -366,12 +369,29 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
         override fun onLobbyJoined(code: String, name: String) {
             Log.i(TAG, "onLobbyJoined: code=$code name=$name")
+            deviceReadyReported = false
             _uiState.update { it.copy(
                 lobbyCodeInput = code,
                 joinedLobbyCode = code,
                 joinedLobbyName = name,
                 lobbyJoinState = LobbyJoinState.JOINED,
                 errorMessage = null,
+            )}
+        }
+
+        override fun onLobbyClosed(code: String) {
+            Log.i(TAG, "onLobbyClosed: code=$code")
+            deviceReadyReported = false
+            autoResumeServerAfterReconnect = false
+            clearServerPoseArrays()
+            pipeline?.stop()
+            _uiState.update { it.copy(
+                joinedLobbyCode = "",
+                joinedLobbyName = "",
+                lobbyJoinState = LobbyJoinState.IDLE,
+                calibrationStep = CalibrationStep.PENDING,
+                bootstrapProgress = 0f,
+                errorMessage = "The PC operator closed this session.",
             )}
         }
 
@@ -411,6 +431,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             if (complete) {
                 _uiState.update { it.copy(calibrationStep = CalibrationStep.COMPLETE) }
                 pipeline?.onBootstrapComplete()
+                reportDeviceReadyToLobby()
             }
         }
 
@@ -687,6 +708,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         worldLandmarksZ = zWorld
                         poseVisibility = _completedVis.copyOf()
                         updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
+                        maybeSendExtrinsicUpdate(worldTracking)
                         updateClientTechnicalPose()
                         updateServerMetricPoseWithClientMotion()
                         recordCaptureFrameIfNeeded()
@@ -781,6 +803,52 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     /** Feed a camera frame into the pipeline (called from CaptureScreen). */
     fun onCameraFrame(frame: CapturedCameraFrame) {
         pipeline?.onCameraFrame(frame)
+    }
+
+    /**
+     * Report this phone's ARCore camera extrinsic to the PC lobby (~2 Hz) so the
+     * operator can place the device in the multi-camera scene. Throttled to avoid
+     * flooding the Socket.IO control channel; the heavy pose stream stays separate.
+     */
+    /** Tell the PC operator this phone has finished calibration and is ready to capture (once). */
+    private fun reportDeviceReadyToLobby() {
+        if (deviceReadyReported) return
+        deviceReadyReported = true
+        serverClient.sendDeviceReady(true)
+    }
+
+    private fun maybeSendExtrinsicUpdate(worldTracking: WorldTrackingSnapshot?) {
+        if (_uiState.value.joinedLobbyCode.length != 6) return
+        val pos = worldTracking?.cameraPosition?.takeIf { it.size >= 3 } ?: return
+        if (extrinsicEmitCountdown > 0) {
+            extrinsicEmitCountdown -= 1
+            return
+        }
+        extrinsicEmitCountdown = 15  // ~2 Hz at 30 fps capture
+        val rotDeg = quaternionToEulerDegrees(worldTracking?.cameraRotation)
+        serverClient.sendExtrinsicUpdate(
+            pos = floatArrayOf(pos[0], pos[1], pos[2]),
+            rotDegrees = rotDeg,
+        )
+    }
+
+    /** Quaternion (x, y, z, w) → intrinsic XYZ euler angles in degrees. Returns zeros if absent. */
+    private fun quaternionToEulerDegrees(quat: FloatArray?): FloatArray {
+        if (quat == null || quat.size < 4) return floatArrayOf(0f, 0f, 0f)
+        val (x, y, z, w) = listOf(quat[0], quat[1], quat[2], quat[3])
+        val rad = 180.0 / Math.PI
+        // roll (x-axis)
+        val sinrCosp = 2.0 * (w * x + y * z)
+        val cosrCosp = 1.0 - 2.0 * (x * x + y * y)
+        val roll = Math.atan2(sinrCosp, cosrCosp)
+        // pitch (y-axis), clamped to avoid NaN at the poles
+        val sinp = 2.0 * (w * y - z * x)
+        val pitch = if (kotlin.math.abs(sinp) >= 1.0) Math.copySign(Math.PI / 2.0, sinp) else Math.asin(sinp)
+        // yaw (z-axis)
+        val sinyCosp = 2.0 * (w * z + x * y)
+        val cosyCosp = 1.0 - 2.0 * (y * y + z * z)
+        val yaw = Math.atan2(sinyCosp, cosyCosp)
+        return floatArrayOf((roll * rad).toFloat(), (pitch * rad).toFloat(), (yaw * rad).toFloat())
     }
 
     private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
