@@ -153,7 +153,8 @@ fun ConnectScreen(
                     OutlinedTextField(
                         value = serverUrl,
                         onValueChange = { serverUrl = it },
-                        label = { Text("Server URL or Pocap link") },
+                        label = { Text("Pocap PC link or server URL") },
+                        placeholder = { Text("Paste the PC app link or type the PC IPv4 URL") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),

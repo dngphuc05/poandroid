@@ -47,7 +47,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     companion object {
         private const val TAG = "PocketMocapVM"
-        private const val DEFAULT_SERVER_URL = "http://192.168.100.146:8090"
         // Joints moving faster than this per frame are likely MediaPipe glitches (outlier gate)
         private const val MAX_JOINT_DELTA = 0.15f  // ~48px at 320w
         // Below this visibility a joint is treated as fully occluded
@@ -72,7 +71,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     // Phone capture-node UI state.
     data class UiState(
-        val serverUrl: String = DEFAULT_SERVER_URL,
+        val serverUrl: String = PhoneConnectionDefaults.INITIAL_SERVER_URL,
         val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
         val sessionId: String = "",
         val pipelineState: HybridPosePipeline.PipelineState = HybridPosePipeline.PipelineState.IDLE,
