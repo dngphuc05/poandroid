@@ -19,12 +19,19 @@ object CaptureNodeContract {
 
     val outboundPayloads = setOf(
         "timestamped_frame",
+        "frame_index",
         "mediapipe_2d_landmarks",
+        "mediapipe_metric_xyz",
+        "landmark_visibility_presence_confidence",
         "camera_intrinsics",
+        "image_size",
+        "rotation_degrees",
         "world_tracking",
         "scene_metrics",
         "ml_crop",
         "device_status",
+        "webrtc_compact_frame",
+        "socketio_named_frame",
     )
 
     val forbiddenRuntimeResponsibilities = setOf(

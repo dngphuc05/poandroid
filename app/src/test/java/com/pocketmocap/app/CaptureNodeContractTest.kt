@@ -17,10 +17,18 @@ class CaptureNodeContractTest {
     @Test
     fun phoneAppStreamsCaptureEvidenceToServer() {
         assertTrue(CaptureNodeContract.outboundPayloads.contains("timestamped_frame"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("frame_index"))
         assertTrue(CaptureNodeContract.outboundPayloads.contains("mediapipe_2d_landmarks"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("mediapipe_metric_xyz"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("landmark_visibility_presence_confidence"))
         assertTrue(CaptureNodeContract.outboundPayloads.contains("camera_intrinsics"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("image_size"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("rotation_degrees"))
         assertTrue(CaptureNodeContract.outboundPayloads.contains("world_tracking"))
         assertTrue(CaptureNodeContract.outboundPayloads.contains("scene_metrics"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("ml_crop"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("webrtc_compact_frame"))
+        assertTrue(CaptureNodeContract.outboundPayloads.contains("socketio_named_frame"))
     }
 
     @Test
