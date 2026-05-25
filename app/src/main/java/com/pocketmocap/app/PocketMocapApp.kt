@@ -21,6 +21,7 @@ import com.pocketmocap.app.ui.ConnectScreen
 import com.pocketmocap.app.ui.LibraryCapturesScreen
 import com.pocketmocap.app.ui.LibraryModelsScreen
 import com.pocketmocap.app.ui.LibraryTab
+import com.pocketmocap.app.ui.QrLinkScannerScreen
 import com.pocketmocap.app.ui.SetupScreen
 import com.pocketmocap.app.ui.components.BottomNav
 import com.pocketmocap.app.ui.components.CaptureView
@@ -35,6 +36,7 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
     var captureView by remember { mutableStateOf(CaptureView.SKELETON) }
     var hasConnected by remember { mutableStateOf(false) }
     var libraryTab by remember { mutableStateOf(LibraryTab.CAPTURES) }
+    var scanningServerLink by remember { mutableStateOf(false) }
 
     // Move past ConnectScreen once connected
     LaunchedEffect(uiState.connectionState) {
@@ -58,11 +60,27 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                 .background(MaterialTheme.colorScheme.background),
         ) {
             if (!hasConnected) {
-                ConnectScreen(
-                    uiState = uiState,
-                    onConnect = { viewModel.connect(it) },
-                    onClearError = { viewModel.clearError() },
-                )
+                if (scanningServerLink) {
+                    QrLinkScannerScreen(
+                        onLinkScanned = { raw ->
+                            viewModel.applyServerLink(raw)
+                            scanningServerLink = false
+                        },
+                        onCancel = { scanningServerLink = false },
+                        onError = { message ->
+                            viewModel.showError(message)
+                            scanningServerLink = false
+                        },
+                    )
+                } else {
+                    ConnectScreen(
+                        uiState = uiState,
+                        onConnect = { viewModel.connect(it) },
+                        onApplyLink = { viewModel.applyServerLink(it) },
+                        onScanQr = { scanningServerLink = true },
+                        onClearError = { viewModel.clearError() },
+                    )
+                }
             } else {
                 // Main content (full-bleed behind header/nav)
                 when (activeTab) {

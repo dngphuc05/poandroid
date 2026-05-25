@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,9 +72,15 @@ import com.pocketmocap.app.ui.theme.Slate
 fun ConnectScreen(
     uiState: UiState,
     onConnect: (String) -> Unit,
+    onApplyLink: (String) -> Unit,
+    onScanQr: () -> Unit,
     onClearError: () -> Unit,
 ) {
     var serverUrl by remember { mutableStateOf(uiState.serverUrl) }
+
+    LaunchedEffect(uiState.serverUrl) {
+        serverUrl = uiState.serverUrl
+    }
 
     Box(
         modifier = Modifier
@@ -146,7 +153,7 @@ fun ConnectScreen(
                     OutlinedTextField(
                         value = serverUrl,
                         onValueChange = { serverUrl = it },
-                        label = { Text("Server URL") },
+                        label = { Text("Server URL or Pocap link") },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -157,6 +164,22 @@ fun ConnectScreen(
                             unfocusedContainerColor = Color.White,
                         ),
                     )
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        LinkActionButton(
+                            label = "Scan QR",
+                            onClick = onScanQr,
+                            modifier = Modifier.weight(1f),
+                        )
+                        LinkActionButton(
+                            label = "Use Link",
+                            onClick = { onApplyLink(serverUrl) },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
 
                     // Connect button
                     ConnectButton(
@@ -281,6 +304,31 @@ private fun ConnectButton(
         }
     }
 }
+
+@Composable
+private fun LinkActionButton(
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .height(44.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(Color.White)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = Ink,
+            fontWeight = FontWeight.SemiBold,
+        )
+    }
+}
+
 private val CONNECT_LOGO_STROKES = listOf(
     "M 8.5 2 H 5 A 3 3 0 0 0 2 5 V 8.5",
     "M 15.5 2 H 19 A 3 3 0 0 1 22 5 V 8.5",

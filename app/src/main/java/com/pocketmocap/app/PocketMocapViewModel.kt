@@ -14,6 +14,7 @@ import androidx.lifecycle.viewModelScope
 import com.pocketmocap.app.capture.CaptureSessionRecorder
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
+import com.pocketmocap.app.network.ServerLinkParser
 import com.pocketmocap.app.pipeline.BoneConstraintEngine
 import com.pocketmocap.app.pipeline.HybridPosePipeline
 import com.pocketmocap.app.pipeline.LandmarkFallbackEngine
@@ -2447,16 +2448,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     // ── Connection ──
     fun connect(url: String = _uiState.value.serverUrl) {
+        val serverUrl = ServerLinkParser.parseServerUrl(url)
+        if (serverUrl == null) {
+            _uiState.update { it.copy(errorMessage = "Invalid Pocap link or server URL") }
+            return
+        }
         userInitiatedDisconnect = false
         autoResumeServerAfterReconnect = false
         clearServerPoseArrays()
         resetServerTransportDiagnostics()
         _uiState.update { it.copy(
-            serverUrl = url,
+            serverUrl = serverUrl,
             connectionState = ConnectionState.CONNECTING,
             errorMessage = null,
         )}
-        serverClient.connect(url)
+        serverClient.connect(serverUrl)
     }
 
     fun disconnect() {
@@ -2584,7 +2590,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun updateServerUrl(url: String) {
-        _uiState.update { it.copy(serverUrl = url) }
+        _uiState.update { it.copy(serverUrl = url, errorMessage = null) }
+    }
+
+    fun applyServerLink(raw: String): Boolean {
+        val serverUrl = ServerLinkParser.parseServerUrl(raw)
+        if (serverUrl == null) {
+            _uiState.update { it.copy(errorMessage = "Invalid Pocap link or server URL") }
+            return false
+        }
+        _uiState.update { it.copy(serverUrl = serverUrl, errorMessage = null) }
+        return true
+    }
+
+    fun showError(message: String) {
+        _uiState.update { it.copy(errorMessage = message) }
     }
 
     fun clearError() {
