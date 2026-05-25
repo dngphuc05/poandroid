@@ -24,22 +24,22 @@ import androidx.compose.ui.unit.sp
 import com.pocketmocap.app.R
 
 // ── Design tokens ──────────────────────────────────────────────
-val Cloud = Color(0xFFF5F7F9)
-val CloudWarm = Color(0xFFF5F4EB)
-val Ink = Color(0xFF2C2F31)
-val Slate = Color(0xFF595C5E)
-val Mint = Color(0xFF89F0CB)
-val MintBright = Color(0xFF98FFD9)
-val MintDeep = Color(0xFF00684F)
-val Fog = Color(0xFFD9DDE0)
-val RoseMist = Color(0xFFFAD3FD)
-val Glass = Color(0xCCFFFFFF)
-val GlassStrong = Color(0x99D9DDE0)
-val OutlineSoft = Color(0x33BAB9B2)
-val SkeletonBlue = Color(0xFFBEEBFF)
-val SkeletonMint = Color(0xFF7CF4C8)
-val SkeletonPink = Color(0xFFF8D6FF)
-val TechnicalGrid = Color(0x332CCFD0)
+val Cloud = Color(0xFFF4ECD9)
+val CloudWarm = Color(0xFFEDE6D6)
+val Ink = Color(0xFF1A1814)
+val Slate = Color(0xFF4A4338)
+val Mint = Color(0xFF22D3EE)
+val MintBright = Color(0xFF22D3EE)
+val MintDeep = Color(0xFF1A1814)
+val Fog = Color(0xFFDCD1B8)
+val RoseMist = Color(0xFFF472B6)
+val Glass = Color(0xF2F4ECD9)
+val GlassStrong = Color(0xEDEDE6D6)
+val OutlineSoft = Color(0x66A39880)
+val SkeletonBlue = Color(0xFF22D3EE)
+val SkeletonMint = Color(0xFFA78BFA)
+val SkeletonPink = Color(0xFFF472B6)
+val TechnicalGrid = Color(0x6622D3EE)
 
 /** Backward-compatible aliases used by existing ViewModel / screens. */
 object MocapColors {
@@ -72,15 +72,15 @@ private val BodyFontFamily = FontFamily(
 private val PocketMocapTypography = Typography(
     headlineLarge = TextStyle(
         fontFamily = DisplayFontFamily, fontWeight = FontWeight.ExtraBold,
-        fontSize = 56.sp, lineHeight = 56.sp, letterSpacing = (-1.4).sp, color = Ink,
+        fontSize = 56.sp, lineHeight = 56.sp, letterSpacing = 0.sp, color = Ink,
     ),
     headlineMedium = TextStyle(
         fontFamily = DisplayFontFamily, fontWeight = FontWeight.Bold,
-        fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = (-0.6).sp, color = Ink,
+        fontSize = 28.sp, lineHeight = 32.sp, letterSpacing = 0.sp, color = Ink,
     ),
     titleLarge = TextStyle(
         fontFamily = DisplayFontFamily, fontWeight = FontWeight.Bold,
-        fontSize = 20.sp, lineHeight = 28.sp, letterSpacing = (-0.6).sp, color = Ink,
+        fontSize = 20.sp, lineHeight = 28.sp, letterSpacing = 0.sp, color = Ink,
     ),
     titleMedium = TextStyle(
         fontFamily = BodyFontFamily, fontWeight = FontWeight.Bold,

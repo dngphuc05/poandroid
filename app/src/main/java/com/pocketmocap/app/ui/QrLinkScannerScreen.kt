@@ -16,15 +16,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,9 +43,6 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import com.pocketmocap.app.ui.theme.CloudWarm
-import com.pocketmocap.app.ui.theme.Ink
-import com.pocketmocap.app.ui.theme.MintDeep
 import java.util.concurrent.atomic.AtomicBoolean
 
 @Composable
@@ -95,33 +89,37 @@ fun QrLinkScannerScreen(
             )
         }
 
-        Surface(
+        PocapCard(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .padding(18.dp),
-            shape = RoundedCornerShape(22.dp),
-            color = CloudWarm.copy(alpha = 0.96f),
-            tonalElevation = 8.dp,
+            color = PocapPaper.copy(alpha = 0.96f),
+            radius = 18.dp,
         ) {
             Column(
-                modifier = Modifier.padding(18.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
+                PocapEyebrow("server link")
                 Text(
                     text = "Scan Pocap link",
                     style = MaterialTheme.typography.titleMedium,
-                    color = Ink,
+                    color = PocapInk,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
                     text = "Point the phone at the QR shown on the PC before creating or joining a session.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Ink.copy(alpha = 0.72f),
+                    color = PocapInk2,
                 )
-                TextButton(onClick = onCancel) {
-                    Text("Cancel", color = MintDeep)
-                }
+                PocapButton(
+                    label = "Cancel",
+                    onClick = onCancel,
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
     }
@@ -133,32 +131,42 @@ private fun PermissionFallback(
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
+    PocapCard(
         modifier = modifier.padding(24.dp),
-        shape = RoundedCornerShape(24.dp),
-        color = CloudWarm,
+        radius = 22.dp,
     ) {
         Column(
             modifier = Modifier.padding(22.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            PocapLogoMark()
             Text(
                 text = "Camera permission needed",
                 style = MaterialTheme.typography.titleMedium,
-                color = Ink,
+                color = PocapInk,
                 fontWeight = FontWeight.Bold,
             )
             Text(
                 text = "Grant camera access to scan the PC link QR, or type the IP link manually.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Ink.copy(alpha = 0.72f),
+                color = PocapInk2,
             )
-            Button(onClick = onRequestPermission) {
-                Text("Grant camera permission")
-            }
-            TextButton(onClick = onCancel) {
-                Text("Type link manually")
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                PocapButton(
+                    label = "Grant Camera",
+                    onClick = onRequestPermission,
+                    tone = PocapCyan,
+                    contentColor = PocapInk,
+                    modifier = Modifier.weight(1f),
+                )
+                PocapButton(
+                    label = "Type Link",
+                    onClick = onCancel,
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }

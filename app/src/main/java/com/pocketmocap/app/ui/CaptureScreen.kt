@@ -21,18 +21,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CloudDone
 import androidx.compose.material.icons.rounded.LinkOff
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Sensors
-import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -43,29 +36,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.pocketmocap.app.PocketMocapViewModel
 import com.pocketmocap.app.camera.ArCoreFrameCapture
 import com.pocketmocap.app.pipeline.HybridPosePipeline
-import com.pocketmocap.app.ui.theme.CloudWarm
-import com.pocketmocap.app.ui.theme.Glass
-import com.pocketmocap.app.ui.theme.Ink
-import com.pocketmocap.app.ui.theme.Mint
-import com.pocketmocap.app.ui.theme.MintBright
-import com.pocketmocap.app.ui.theme.MintDeep
-import com.pocketmocap.app.ui.theme.OutlineSoft
-import com.pocketmocap.app.ui.theme.RoseMist
-import com.pocketmocap.app.ui.theme.Slate
 
 @Composable
 fun CaptureScreen(
@@ -77,7 +61,6 @@ fun CaptureScreen(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-
     var hasCameraPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
@@ -113,26 +96,25 @@ fun CaptureScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(CloudWarm),
-    ) {
+    Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         if (hasCameraPermission) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = { cameraCapture.previewView },
             )
-            LandmarkConfidenceOverlay(
+            RealLandmarkOverlay(
                 x = viewModel.poseLandmarksX,
                 y = viewModel.poseLandmarksY,
                 visibility = viewModel.poseVisibility,
             )
+            PocapCameraScrim()
         } else {
-            PermissionRequiredPanel(
-                onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-                modifier = Modifier.align(Alignment.Center),
-            )
+            PocapPaperScaffold {
+                PermissionPanel(
+                    onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) },
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
         }
 
         Column(
@@ -142,13 +124,12 @@ fun CaptureScreen(
                 .padding(18.dp),
             verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            CaptureHeader(
+            CaptureTopBar(
                 uiState = uiState,
                 visibleLandmarks = viewModel.visibleLandmarkCount,
                 onDisconnect = onDisconnect,
             )
-
-            CaptureStatusSheet(
+            CaptureBottomSheet(
                 uiState = uiState,
                 viewModel = viewModel,
                 hasCameraPermission = hasCameraPermission,
@@ -160,171 +141,137 @@ fun CaptureScreen(
 }
 
 @Composable
-private fun CaptureHeader(
+private fun CaptureTopBar(
     uiState: PocketMocapViewModel.UiState,
     visibleLandmarks: Int,
     onDisconnect: () -> Unit,
 ) {
-    Surface(
-        shape = RoundedCornerShape(24.dp),
-        color = Glass,
-        shadowElevation = 10.dp,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    PocapCard(color = PocapPaper.copy(alpha = 0.94f), radius = 18.dp) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
-            StatusOrb(
-                active = uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING,
-                label = "capture",
-            )
+            PocapLogoMark(modifier = Modifier.size(30.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Pocap Capture Node",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Ink,
+                    text = "Pocap capture node",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = PocapInk,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "Session ${uiState.sessionId.ifBlank { "pending" }} · $visibleLandmarks landmarks",
+                    text = "Session ${uiState.sessionId.ifBlank { "pending" }} - $visibleLandmarks/33 landmarks",
                     style = MaterialTheme.typography.bodySmall,
-                    color = Slate,
+                    color = PocapInk2,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            Surface(
-                shape = RoundedCornerShape(14.dp),
-                color = Color.White.copy(alpha = 0.92f),
+            PocapChip(
+                label = if (uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING) "live" else "ready",
+                tone = if (uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING) PocapCyan else PocapPaperLight,
+                dot = true,
+            )
+            Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(14.dp))
+                    .size(42.dp)
                     .clickable(onClick = onDisconnect),
+                contentAlignment = Alignment.Center,
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Icon(Icons.Rounded.LinkOff, contentDescription = null, tint = Ink, modifier = Modifier.size(16.dp))
-                    Text("Leave", style = MaterialTheme.typography.labelLarge, color = Ink)
-                }
+                Icon(Icons.Rounded.LinkOff, contentDescription = "Leave session", tint = PocapInk)
             }
         }
     }
 }
 
 @Composable
-private fun CaptureStatusSheet(
+private fun CaptureBottomSheet(
     uiState: PocketMocapViewModel.UiState,
     viewModel: PocketMocapViewModel,
     hasCameraPermission: Boolean,
     onStartCalibration: () -> Unit,
     onClearError: () -> Unit,
 ) {
-    Surface(
-        shape = RoundedCornerShape(28.dp),
-        color = Glass,
-        shadowElevation = 16.dp,
-        modifier = Modifier.fillMaxWidth(),
-    ) {
+    PocapCard(color = PocapPaper.copy(alpha = 0.96f), radius = 22.dp) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .padding(18.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                StatusMetric(
-                    label = "Camera",
-                    value = if (hasCameraPermission) "Active" else "Permission",
+            PocapStageRail(
+                stages = listOf("cam", "sync", "stream"),
+                activeIndex = stageIndex(uiState, hasCameraPermission),
+            )
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PocapMetricTile(
+                    label = "camera",
+                    value = if (hasCameraPermission) "active" else "blocked",
                     active = hasCameraPermission,
                     modifier = Modifier.weight(1f),
                 )
-                StatusMetric(
-                    label = "MediaPipe",
+                PocapMetricTile(
+                    label = "mediapipe",
                     value = "${viewModel.visibleLandmarkCount}/33",
                     active = viewModel.visibleLandmarkCount >= 18,
                     modifier = Modifier.weight(1f),
                 )
-                StatusMetric(
-                    label = "Server",
+                PocapMetricTile(
+                    label = "server",
                     value = viewModel.lastServerTransport.uppercase(),
                     active = viewModel.framesSentToServer > 0,
                     modifier = Modifier.weight(1f),
                 )
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
-                StatusMetric(
-                    label = "Frames Sent",
-                    value = viewModel.framesSentToServer.toString(),
-                    active = viewModel.framesSentToServer > 0,
-                    modifier = Modifier.weight(1f),
-                )
-                StatusMetric(
-                    label = "Server Acks",
-                    value = viewModel.pose3DReceivedCount.toString(),
-                    active = viewModel.pose3DReceivedCount > 0,
-                    modifier = Modifier.weight(1f),
-                )
-                StatusMetric(
-                    label = "Pipeline",
-                    value = "${uiState.lastPipelineMs.toInt()} ms",
-                    active = uiState.lastPipelineMs in 1f..34f,
-                    modifier = Modifier.weight(1f),
-                )
+            PocapCard(color = PocapPaperLight, shadow = false) {
+                Column(
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    PocapEyebrow("capture payload")
+                    PocapPayloadRow("2D landmarks", "${viewModel.visibleLandmarkCount} visible joints")
+                    PocapPayloadRow("Frame metadata", "${viewModel.cameraImageWidth}x${viewModel.cameraImageHeight} timestamped")
+                    PocapPayloadRow("World tracking", viewModel.latestWorldTracking?.trackingState ?: "waiting")
+                    PocapPayloadRow("Scene metrics", viewModel.latestSceneMetrics?.source ?: "waiting")
+                    PocapPayloadRow("Server stream", "${viewModel.framesSentToServer} sent / ${viewModel.pose3DReceivedCount} acks")
+                }
             }
 
-            PipelineSummary(uiState = uiState, viewModel = viewModel)
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CaptureActionButton(
-                    label = if (uiState.calibrationStep == PocketMocapViewModel.CalibrationStep.COMPLETE) {
-                        "Recalibrate"
-                    } else {
-                        "Start Sync"
-                    },
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                PocapButton(
+                    label = if (uiState.calibrationStep == PocketMocapViewModel.CalibrationStep.COMPLETE) "Recalibrate" else "Start Sync",
                     enabled = hasCameraPermission,
-                    primary = true,
                     onClick = onStartCalibration,
                     modifier = Modifier.weight(1f),
+                    tone = PocapCyan,
+                    contentColor = PocapInk,
                 )
-                CaptureActionButton(
+                PocapButton(
                     label = if (viewModel.isCaptureRecording) "Stop Log" else "Log Raw",
                     enabled = hasCameraPermission,
-                    primary = false,
                     onClick = { viewModel.toggleCaptureRecording() },
                     modifier = Modifier.weight(1f),
+                    tone = if (viewModel.isCaptureRecording) PocapPink else PocapPaperLight,
+                    contentColor = PocapInk,
                 )
             }
 
             uiState.errorMessage?.let { error ->
-                Surface(
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFFFEFEF),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = onClearError),
-                ) {
+                PocapCard(color = Color(0xFFFFEFEF), shadow = false) {
                     Text(
                         text = error,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF9B1C1C),
-                        modifier = Modifier.padding(14.dp),
+                        color = PocapDanger,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = onClearError)
+                            .padding(12.dp),
                     )
                 }
             }
@@ -333,197 +280,36 @@ private fun CaptureStatusSheet(
 }
 
 @Composable
-private fun PipelineSummary(
-    uiState: PocketMocapViewModel.UiState,
-    viewModel: PocketMocapViewModel,
-) {
-    Surface(
-        shape = RoundedCornerShape(20.dp),
-        color = Color.White.copy(alpha = 0.86f),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Text("CAPTURE PAYLOAD", style = MaterialTheme.typography.labelMedium, color = Slate)
-            PayloadRow("2D landmarks", "${viewModel.visibleLandmarkCount} visible joints")
-            PayloadRow(
-                "Frame metadata",
-                "${viewModel.cameraImageWidth}x${viewModel.cameraImageHeight} · timestamped",
-            )
-            PayloadRow("World tracking", viewModel.latestWorldTracking?.trackingState ?: "waiting")
-            PayloadRow("Scene metrics", viewModel.latestSceneMetrics?.source ?: "waiting")
-            PayloadRow("Calibration", uiState.calibrationStep.name.lowercase().replace('_', ' '))
-            PayloadRow(
-                "Server output",
-                "received for diagnostics only; 3D display lives in Pocap PC",
-            )
-        }
-    }
-}
-
-@Composable
-private fun PayloadRow(label: String, value: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .size(8.dp)
-                .clip(CircleShape)
-                .background(MintDeep.copy(alpha = 0.72f)),
-        )
-        Text(label, style = MaterialTheme.typography.bodySmall, color = Ink, modifier = Modifier.weight(0.42f))
-        Text(
-            value,
-            style = MaterialTheme.typography.bodySmall,
-            color = Slate,
-            modifier = Modifier.weight(0.58f),
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
-@Composable
-private fun StatusMetric(
-    label: String,
-    value: String,
-    active: Boolean,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        shape = RoundedCornerShape(18.dp),
-        color = Color.White.copy(alpha = 0.90f),
-        modifier = modifier,
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp),
-        ) {
-            Text(label.uppercase(), style = MaterialTheme.typography.labelSmall, color = Slate, maxLines = 1)
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(if (active) MintDeep else OutlineSoft),
-                )
-                Text(
-                    value,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Ink,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun CaptureActionButton(
-    label: String,
-    enabled: Boolean,
-    primary: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val background = if (primary) {
-        Brush.linearGradient(listOf(MintDeep, MintDeep.copy(alpha = 0.86f)))
-    } else {
-        Brush.linearGradient(listOf(Color.White, Color.White.copy(alpha = 0.92f)))
-    }
-    Surface(
-        shape = RoundedCornerShape(18.dp),
-        color = Color.Transparent,
-        modifier = modifier
-            .height(54.dp)
-            .clip(RoundedCornerShape(18.dp))
-            .background(background)
-            .clickable(enabled = enabled, onClick = onClick),
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                imageVector = if (primary) Icons.Rounded.PlayArrow else Icons.Rounded.Sensors,
-                contentDescription = null,
-                tint = if (primary) Color.White else MintDeep,
-                modifier = Modifier.size(18.dp),
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                color = if (primary) Color.White else Ink,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-    }
-}
-
-@Composable
-private fun PermissionRequiredPanel(
+private fun PermissionPanel(
     onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        shape = RoundedCornerShape(28.dp),
-        color = Glass,
-        shadowElevation = 16.dp,
-        modifier = modifier.padding(24.dp),
-    ) {
+    PocapCard(modifier = modifier.padding(24.dp), radius = 22.dp) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(22.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(14.dp),
         ) {
-            Icon(Icons.Rounded.Stop, contentDescription = null, tint = MintDeep, modifier = Modifier.size(36.dp))
-            Text("Camera permission needed", style = MaterialTheme.typography.titleMedium, color = Ink)
+            PocapLogoMark(modifier = Modifier.size(48.dp))
+            Text("Camera permission needed", style = MaterialTheme.typography.titleMedium, color = PocapInk)
             Text(
-                "Pocap needs camera frames to run MediaPipe landmarks and stream capture payloads to the server.",
+                "Pocap needs camera frames to run MediaPipe 2D landmarks and stream timestamped capture evidence to the server.",
                 style = MaterialTheme.typography.bodySmall,
-                color = Slate,
+                color = PocapInk2,
             )
-            CaptureActionButton(
+            PocapButton(
                 label = "Allow Camera",
-                enabled = true,
-                primary = true,
                 onClick = onRequestPermission,
                 modifier = Modifier.fillMaxWidth(),
+                tone = PocapCyan,
+                contentColor = PocapInk,
             )
         }
     }
 }
 
 @Composable
-private fun StatusOrb(active: Boolean, label: String) {
-    val colors = if (active) listOf(MintBright, MintDeep) else listOf(RoseMist, Slate.copy(alpha = 0.42f))
-    Box(
-        modifier = Modifier
-            .size(42.dp)
-            .clip(CircleShape)
-            .background(Brush.linearGradient(colors)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(
-            imageVector = if (active) Icons.Rounded.CloudDone else Icons.Rounded.Sensors,
-            contentDescription = label,
-            tint = Color.White,
-            modifier = Modifier.size(22.dp),
-        )
-    }
-}
-
-@Composable
-private fun LandmarkConfidenceOverlay(
+private fun RealLandmarkOverlay(
     x: FloatArray?,
     y: FloatArray?,
     visibility: FloatArray?,
@@ -531,16 +317,80 @@ private fun LandmarkConfidenceOverlay(
     Canvas(modifier = Modifier.fillMaxSize()) {
         if (x == null || y == null) return@Canvas
         val count = minOf(x.size, y.size, visibility?.size ?: x.size)
-        for (index in 0 until count) {
+        fun point(index: Int): Offset? {
+            if (index !in 0 until count) return null
             val confidence = visibility?.getOrNull(index) ?: 1f
-            if (confidence < 0.35f) continue
-            val px = x[index].coerceIn(0f, 1f) * size.width
-            val py = y[index].coerceIn(0f, 1f) * size.height
+            if (confidence < 0.28f) return null
+            return Offset(
+                x[index].coerceIn(0f, 1f) * size.width,
+                y[index].coerceIn(0f, 1f) * size.height,
+            )
+        }
+
+        REAL_2D_EDGES.forEach { (a, b) ->
+            val pa = point(a)
+            val pb = point(b)
+            if (pa != null && pb != null) {
+                drawLine(
+                    color = PocapCyan.copy(alpha = 0.72f),
+                    start = pa,
+                    end = pb,
+                    strokeWidth = 2.5.dp.toPx(),
+                    cap = StrokeCap.Round,
+                )
+            }
+        }
+        for (index in 0 until count) {
+            val p = point(index) ?: continue
+            val confidence = visibility?.getOrNull(index)?.coerceIn(0f, 1f) ?: 1f
             drawCircle(
-                color = MintBright.copy(alpha = 0.28f + confidence.coerceIn(0f, 1f) * 0.42f),
-                radius = 4.dp.toPx(),
-                center = Offset(px, py),
+                color = PocapInk.copy(alpha = 0.72f),
+                radius = 5.0.dp.toPx(),
+                center = p,
+            )
+            drawCircle(
+                color = when {
+                    index in 13..22 -> PocapViolet
+                    index >= 25 -> PocapPink
+                    else -> PocapCyan
+                }.copy(alpha = 0.42f + confidence * 0.42f),
+                radius = 3.2.dp.toPx(),
+                center = p,
             )
         }
     }
 }
+
+private fun stageIndex(
+    uiState: PocketMocapViewModel.UiState,
+    hasCameraPermission: Boolean,
+): Int = when {
+    !hasCameraPermission -> 0
+    uiState.calibrationStep != PocketMocapViewModel.CalibrationStep.COMPLETE -> 1
+    else -> 2
+}
+
+private val REAL_2D_EDGES = listOf(
+    11 to 12,
+    11 to 13,
+    13 to 15,
+    15 to 17,
+    15 to 19,
+    15 to 21,
+    12 to 14,
+    14 to 16,
+    16 to 18,
+    16 to 20,
+    16 to 22,
+    11 to 23,
+    12 to 24,
+    23 to 24,
+    23 to 25,
+    25 to 27,
+    27 to 29,
+    27 to 31,
+    24 to 26,
+    26 to 28,
+    28 to 30,
+    28 to 32,
+)

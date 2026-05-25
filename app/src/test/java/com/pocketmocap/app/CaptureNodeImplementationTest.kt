@@ -12,9 +12,15 @@ class CaptureNodeImplementationTest {
     fun mainSourceDoesNotShipWithDeveloperServerAddress() {
         val forbidden = listOf(
             "192.168.100.146",
+            "10.0.0.42",
+            "482931",
             "DEFAULT_SERVER_URL",
             "http://localhost",
             "http://127.0.0.1",
+            "coming soon",
+            "SkeletonOverlay",
+            "FloorMarkers",
+            "pasted-",
         )
 
         val offenders = appDir.resolve("src/main")
@@ -122,6 +128,45 @@ class CaptureNodeImplementationTest {
         }
         assertTrue(colors.contains("name=\"pocap_icon_background\""))
         assertTrue(colors.contains("#FFFFFF"))
+    }
+
+    @Test
+    fun phoneScreensUseFrontendPrototypeLanguageWithoutMockCaptureData() {
+        val uiKit = appDir.resolve("src/main/java/com/pocketmocap/app/ui/PocapPhoneUi.kt").readText()
+        val connect = appDir.resolve("src/main/java/com/pocketmocap/app/ui/ConnectScreen.kt").readText()
+        val capture = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
+        val qr = appDir.resolve("src/main/java/com/pocketmocap/app/ui/QrLinkScannerScreen.kt").readText()
+
+        val requiredUiTokens = listOf(
+            "PocapPaper",
+            "PocapPaperLight",
+            "PocapInk",
+            "PocapCyan",
+            "PocapViolet",
+            "PocapPink",
+            "PocapCard",
+            "PocapButton",
+            "PocapLogoMark",
+        )
+        val missingUiTokens = requiredUiTokens.filterNot { token -> token in uiKit }
+        assertTrue("Missing native port tokens from frontend prototype: $missingUiTokens", missingUiTokens.isEmpty())
+
+        val requiredScreenSignals = listOf(
+            "PocapPaperScaffold" to connect,
+            "PocapCard" to connect,
+            "PocapButton" to connect,
+            "ArCoreFrameCapture" to capture,
+            "viewModel.onCameraFrame" to capture,
+            "AndroidView" to capture,
+            "RealLandmarkOverlay" to capture,
+            "PocapCameraScrim" to capture,
+            "PocapPayloadRow" to capture,
+            "QrCameraPreview" to qr,
+        )
+        val missingScreenSignals = requiredScreenSignals
+            .filterNot { (token, source) -> token in source }
+            .map { (token, _) -> token }
+        assertTrue("Missing phone screen implementation signals: $missingScreenSignals", missingScreenSignals.isEmpty())
     }
 
     private fun locateAppDir(): File {
