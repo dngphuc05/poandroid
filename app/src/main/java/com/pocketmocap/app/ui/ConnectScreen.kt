@@ -111,7 +111,7 @@ fun ConnectScreen(
 
             // App name
             Text(
-                text = "Pocket Mocap",
+                text = "Pocap",
                 style = MaterialTheme.typography.headlineMedium,
                 color = Ink,
             )

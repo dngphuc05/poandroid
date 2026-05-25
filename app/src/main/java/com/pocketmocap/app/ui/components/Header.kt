@@ -45,7 +45,7 @@ fun Header(modifier: Modifier = Modifier) {
             ) {
                 PocketMocapGlyph()
                 Text(
-                    text = "Pocket Mocap",
+                    text = "Pocap",
                     style = MaterialTheme.typography.titleLarge,
                 )
             }
