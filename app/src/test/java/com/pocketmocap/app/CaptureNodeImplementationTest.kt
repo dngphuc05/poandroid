@@ -143,7 +143,9 @@ class CaptureNodeImplementationTest {
     fun launcherIconUsesPocapGlyphOnWhiteBackground() {
         val icon = appDir.resolve("src/main/res/mipmap-anydpi-v26/app_icon.xml").readText()
         val roundIcon = appDir.resolve("src/main/res/mipmap-anydpi-v26/app_icon_round.xml").readText()
+        val logo = appDir.resolve("src/main/res/drawable/pocap_logo.xml").readText()
         val colors = appDir.resolve("src/main/res/values/colors.xml").readText()
+        val uiKit = appDir.resolve("src/main/java/com/pocketmocap/app/ui/PocapPhoneUi.kt").readText()
 
         listOf(icon, roundIcon).forEach { xml ->
             assertTrue(xml.contains("@color/pocap_icon_background"))
@@ -151,6 +153,9 @@ class CaptureNodeImplementationTest {
         }
         assertTrue(colors.contains("name=\"pocap_icon_background\""))
         assertTrue(colors.contains("#FFFFFF"))
+        assertTrue(logo.contains("android:scaleX=\"0.86\""))
+        assertTrue(logo.contains("android:scaleY=\"0.86\""))
+        assertTrue(uiKit.contains("scale = 0.86f"))
     }
 
     @Test

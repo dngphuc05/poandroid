@@ -299,12 +299,14 @@ fun PocapLogoMark(
 
     Canvas(modifier = modifier.size(32.dp)) {
         scale(size.width / 24f, size.height / 24f, pivot = Offset.Zero) {
-            paths.forEach { path ->
-                drawPath(path, color = color, style = Stroke(width = 2.1f, cap = StrokeCap.Round))
+            scale(scale = 0.86f, pivot = Offset(12f, 12f)) {
+                paths.forEach { path ->
+                    drawPath(path, color = color, style = Stroke(width = 2.1f, cap = StrokeCap.Round))
+                }
+                drawCircle(color, radius = 1.9f, center = Offset(7.5f, 17f))
+                drawCircle(color, radius = 2.1f, center = Offset(14.5f, 14.8f))
+                drawCircle(color, radius = 1.9f, center = Offset(16.5f, 7.5f))
             }
-            drawCircle(color, radius = 1.9f, center = Offset(7.5f, 17f))
-            drawCircle(color, radius = 2.1f, center = Offset(14.5f, 14.8f))
-            drawCircle(color, radius = 1.9f, center = Offset(16.5f, 7.5f))
         }
     }
 }
