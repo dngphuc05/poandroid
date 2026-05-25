@@ -30,7 +30,7 @@ class PocketMocapBridge private constructor() {
 
     interface RuntimeStateListener {
         fun onRuntimeShellStateChanged(state: RuntimeShellState) {}
-        fun onUnityRuntimeReadyChanged(isReady: Boolean) {}
+        fun onRuntimeReadyChanged(isReady: Boolean) {}
     }
 
     private var activityRef: WeakReference<ComponentActivity>? = null
@@ -41,7 +41,7 @@ class PocketMocapBridge private constructor() {
     private val mainHandler = Handler(Looper.getMainLooper())
 
     @Volatile
-    private var unityRuntimeReady = false
+    private var runtimeReady = false
 
     fun attachActivity(activity: ComponentActivity) {
         activityRef = WeakReference(activity)
@@ -60,7 +60,7 @@ class PocketMocapBridge private constructor() {
     fun addRuntimeStateListener(listener: RuntimeStateListener) {
         listeners += listener
         dispatchState(listener, runtimeShellState)
-        dispatchReady(listener, unityRuntimeReady)
+        dispatchReady(listener, runtimeReady)
     }
 
     fun removeRuntimeStateListener(listener: RuntimeStateListener) {
@@ -158,8 +158,8 @@ class PocketMocapBridge private constructor() {
             viewMode = viewMode,
         )
 
-        val wasReady = unityRuntimeReady
-        unityRuntimeReady = true
+        val wasReady = runtimeReady
+        runtimeReady = true
         if (!wasReady) {
             dispatchReadyToAll(true)
         }
@@ -168,15 +168,15 @@ class PocketMocapBridge private constructor() {
 
     fun resetRuntimeShellState() {
         runtimeShellState = RuntimeShellState()
-        val wasReady = unityRuntimeReady
-        unityRuntimeReady = false
+        val wasReady = runtimeReady
+        runtimeReady = false
         if (wasReady) {
             dispatchReadyToAll(false)
         }
         dispatchStateToAll()
     }
 
-    fun isUnityRuntimeReady(): Boolean = unityRuntimeReady
+    fun isRuntimeReady(): Boolean = runtimeReady
 
     fun getTrackingState(): String = runtimeShellState.trackingState
     fun getSetupProgress(): Float = runtimeShellState.setupProgress
@@ -200,7 +200,7 @@ class PocketMocapBridge private constructor() {
     }
 
     private fun dispatchReady(listener: RuntimeStateListener, isReady: Boolean) {
-        mainHandler.post { listener.onUnityRuntimeReadyChanged(isReady) }
+        mainHandler.post { listener.onRuntimeReadyChanged(isReady) }
     }
 
     companion object {

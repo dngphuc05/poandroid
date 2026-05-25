@@ -9,9 +9,9 @@ import androidx.activity.viewModels
 import org.json.JSONObject
 
 /**
- * Main entry point for Pocket Mocap Client.
+ * Main entry point for the Pocap phone capture app.
  *
- * Hosts Compose UI + optional Unity panel for VRM rendering.
+ * Hosts the Compose capture UI. Avatar/stage rendering belongs on the PC app.
  */
 class MainActivity : ComponentActivity() {
 

@@ -1,4 +1,4 @@
-package com.pocketmocap.app.ui
+﻿package com.pocketmocap.app.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
@@ -178,7 +178,7 @@ fun ConnectScreen(
                                         .background(Mint)
                                 )
                                 Text(
-                                    text = "Connected · ${uiState.sessionId.take(8)}",
+                                    text = "Connected Â· ${uiState.sessionId.take(8)}",
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MintDeep,
                                 )
@@ -281,6 +281,13 @@ private fun ConnectButton(
         }
     }
 }
+private val CONNECT_LOGO_STROKES = listOf(
+    "M 8.5 2 H 5 A 3 3 0 0 0 2 5 V 8.5",
+    "M 15.5 2 H 19 A 3 3 0 0 1 22 5 V 8.5",
+    "M 2 15.5 V 19 A 3 3 0 0 0 5 22 H 8.5",
+    "M 22 15.5 V 19 A 3 3 0 0 1 19 22 H 15.5",
+    "M 7.5 17 L 14.5 14.8 L 16.5 7.5",
+)
 
 @Composable
 private fun PocketMocapLogo() {
@@ -290,14 +297,13 @@ private fun PocketMocapLogo() {
         animationSpec = infiniteRepeatable(tween(2200, easing = LinearEasing), RepeatMode.Reverse),
         label = "logoPulse",
     )
-    val path = remember {
-        androidx.compose.ui.graphics.vector.PathParser().parsePathString(
-            "M0 13.75C0 11.8333 0.359375 10.0417 1.07812 8.375C1.79688 6.70833 2.78125 5.25521 4.03125 4.01562C5.28125 2.77604 6.73958 1.79688 8.40625 1.07812C10.0729 0.359375 11.8542 0 13.75 0C15.6458 0 17.4271 0.359375 19.0938 1.07812C20.7604 1.79688 22.2188 2.77604 23.4688 4.01562C24.7188 5.25521 25.7031 6.70833 26.4219 8.375C27.1406 10.0417 27.5 11.8333 27.5 13.75H25C25 12.1875 24.7031 10.724 24.1094 9.35938C23.5156 7.99479 22.7083 6.80208 21.6875 5.78125C20.6667 4.76042 19.474 3.95833 18.1094 3.375C16.7448 2.79167 15.2917 2.5 13.75 2.5C12.2083 2.5 10.7552 2.79167 9.39062 3.375C8.02604 3.95833 6.83333 4.76042 5.8125 5.78125C4.79167 6.80208 3.98438 7.99479 3.39062 9.35938C2.79688 10.724 2.5 12.1875 2.5 13.75H0M5 13.75C5 11.2917 5.85417 9.21875 7.5625 7.53125C9.27083 5.84375 11.3333 5 13.75 5C16.1667 5 18.2292 5.84375 19.9375 7.53125C21.6458 9.21875 22.5 11.2917 22.5 13.75H20C20 12.0208 19.3906 10.5469 18.1719 9.32812C16.9531 8.10938 15.4792 7.5 13.75 7.5C12.0208 7.5 10.5469 8.10938 9.32812 9.32812C8.10938 10.5469 7.5 12.0208 7.5 13.75H5M10 26.75L8.25 25L12.5 20.75V16.625C11.9375 16.375 11.4844 15.9896 11.1406 15.4688C10.7969 14.9479 10.625 14.375 10.625 13.75C10.625 12.875 10.9271 12.1354 11.5312 11.5312C12.1354 10.9271 12.875 10.625 13.75 10.625C14.625 10.625 15.3646 10.9271 15.9688 11.5312C16.5729 12.1354 16.875 12.875 16.875 13.75C16.875 14.375 16.7031 14.9479 16.3594 15.4688C16.0156 15.9896 15.5625 16.375 15 16.625V20.75L19.25 25L17.5 26.75L13.75 23L10 26.75"
-        ).toPath()
+    val paths = remember {
+        CONNECT_LOGO_STROKES.map {
+            androidx.compose.ui.graphics.vector.PathParser().parsePathString(it).toPath()
+        }
     }
 
     Box(contentAlignment = Alignment.Center) {
-        // Outer glow halo
         Canvas(modifier = Modifier.size(120.dp)) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -306,12 +312,14 @@ private fun PocketMocapLogo() {
                 radius = size.minDimension * 0.5f * pulse,
             )
         }
-        // Figma logo — concentric tracking arcs with pointer
         Canvas(modifier = Modifier.size(80.dp)) {
-            val sx = size.width / 27.5f
-            val sy = size.height / 26.75f
-            scale(sx, sy, pivot = Offset.Zero) {
-                drawPath(path, color = MintBright)
+            scale(size.width / 24f, size.height / 24f, pivot = Offset.Zero) {
+                paths.forEach {
+                    drawPath(it, color = MintBright, style = Stroke(width = 2.1f, cap = StrokeCap.Round))
+                }
+                drawCircle(MintBright, radius = 1.9f, center = Offset(7.5f, 17f))
+                drawCircle(MintBright, radius = 2.1f, center = Offset(14.5f, 14.8f))
+                drawCircle(MintBright, radius = 1.9f, center = Offset(16.5f, 7.5f))
             }
         }
     }
