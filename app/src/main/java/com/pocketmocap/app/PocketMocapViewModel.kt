@@ -2,7 +2,6 @@ package com.pocketmocap.app
 
 import android.app.Application
 import android.content.Context
-import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
 import kotlin.math.min
@@ -71,10 +70,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         private const val PREF_SUBJECT_HEIGHT_M = "subject_height_m"
     }
 
-    // ── VRM Model ──
-    data class VrmModel(val name: String, val uri: Uri)
-
-    // ── UI State ──
+    // Phone capture-node UI state.
     data class UiState(
         val serverUrl: String = DEFAULT_SERVER_URL,
         val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
@@ -89,9 +85,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val manualCameraHeightMeters: Float = 1.17f,
         val manualSubjectHeightMeters: Float = Float.NaN,
         val errorMessage: String? = null,
-        val shouldNavigateToCapture: Boolean = false,
-        val vrmModels: List<VrmModel> = emptyList(),
-        val activeVrmIndex: Int = -1,
     )
 
     enum class ConnectionState { DISCONNECTED, CONNECTING, CONNECTED }
@@ -2504,10 +2497,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 return@launch
             }
             p.beginCalibration(imageWidth, imageHeight)
-            Log.i(TAG, "calibration sent, navigating to capture screen")
-
-            // Navigate to CaptureScreen so camera starts feeding frames for bootstrap
-            _uiState.update { it.copy(shouldNavigateToCapture = true) }
+            Log.i(TAG, "calibration sent; capture-device screen remains active")
         }
     }
 
@@ -2523,10 +2513,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             imageWidth = imageWidth,
             imageHeight = imageHeight,
         )
-    }
-
-    fun onNavigatedToCapture() {
-        _uiState.update { it.copy(shouldNavigateToCapture = false) }
     }
 
     override fun onCleared() {
@@ -2558,18 +2544,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         _uiState.update { it.copy(manualSubjectHeightMeters = calibrated) }
     }
 
-    fun addVrm(name: String, uri: Uri) {
-        _uiState.update { state ->
-            val updated = state.vrmModels + VrmModel(name, uri)
-            state.copy(vrmModels = updated, activeVrmIndex = updated.lastIndex)
-        }
-    }
-
-    fun setActiveVrm(index: Int) {
-        _uiState.update { it.copy(activeVrmIndex = index) }
-    }
-
-    /** Start calibration from SetupScreen — requires already connected. */
+    /** Start phone capture calibration after the device has joined the server. */
     fun startCalibration() {
         val state = _uiState.value
         if (state.connectionState != ConnectionState.CONNECTED) {

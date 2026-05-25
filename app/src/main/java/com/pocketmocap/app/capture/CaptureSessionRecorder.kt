@@ -62,8 +62,8 @@ class CaptureSessionRecorder(private val context: Context) {
                 appendLine("created_at=$stamp")
                 appendLine("folder=${dir.absolutePath}")
                 appendLine("contents=metrics.csv,skeleton_2d_landmarks.csv,technical_3d_landmarks.csv,visual_frames.csv")
-                appendLine("technical_scene_policy=server_first_ar_constrained")
-                appendLine("fallback_policy=client_33pt_only_when_server_catastrophic_or_missing")
+                appendLine("technical_scene_policy=phone_records_capture_evidence_only")
+                appendLine("display_policy=3d_skeleton_and_avatar_stage_render_on_pocap_pc")
                 appendLine("visual_recording_policy=optional_external_rgb_or_video_with_frame_timestamp_mapping")
             }
         )

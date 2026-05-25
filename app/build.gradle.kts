@@ -77,10 +77,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.documentfile:documentfile:1.0.1")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation("androidx.navigation:navigation-compose:2.8.1")
     implementation("androidx.camera:camera-camera2:1.3.4")
     implementation("androidx.camera:camera-lifecycle:1.3.4")
     implementation("androidx.camera:camera-view:1.3.4")
@@ -96,9 +94,6 @@ dependencies {
 
     // WebRTC DataChannel — low-latency unreliable UDP transport for pose frames
     implementation("io.getstream:stream-webrtc-android:1.1.3")
-
-    // SceneView — Compose-friendly Filament 3D engine for VRM/GLB rendering
-    implementation("io.github.sceneview:sceneview:2.2.1")
 
     testImplementation("junit:junit:4.13.2")
 
