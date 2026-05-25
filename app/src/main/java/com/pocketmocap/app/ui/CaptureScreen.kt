@@ -286,7 +286,7 @@ private fun LiveCaptureChrome(
         modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
-            .padding(14.dp),
+            .padding(horizontal = 18.dp, vertical = 22.dp),
     ) {
         // recording rim
         Box(
@@ -298,7 +298,9 @@ private fun LiveCaptureChrome(
 
         // top-left: REC chip + timer
         Column(
-            modifier = Modifier.align(Alignment.TopStart),
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 4.dp, top = 6.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.Start,
         ) {
@@ -336,7 +338,7 @@ private fun LiveCaptureChrome(
             radius = 14.dp,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(top = 64.dp)
+                .padding(top = 106.dp, end = 2.dp)
                 .width(58.dp),
         ) {
             Column(
@@ -358,7 +360,9 @@ private fun LiveCaptureChrome(
 
         // bottom: action bar with record/stop button + frame counters
         Column(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Row(

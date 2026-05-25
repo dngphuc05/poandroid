@@ -172,6 +172,7 @@ class CaptureNodeImplementationTest {
             "PocapCard",
             "PocapButton",
             "PocapLogoMark",
+            "PocapDecoratedHeadline",
             "PocapIconButton",
             "PocapBigNum",
             "PocapProgressBar",
@@ -187,9 +188,11 @@ class CaptureNodeImplementationTest {
 
         val requiredScreenSignals = listOf(
             "PocapPaperScaffold" to connect,
+            "PocapDecoratedHeadline" to connect,
             "PocapCard" to connect,
             "PocapButton" to connect,
             "PocapPaperScaffold" to join,
+            "PocapDecoratedHeadline" to join,
             "SessionCodeInput" to join,
             "DigitBox" to join,
             "LinkedServerCard" to join,
@@ -220,6 +223,10 @@ class CaptureNodeImplementationTest {
         assertTrue("Missing phone screen implementation signals: $missingScreenSignals", missingScreenSignals.isEmpty())
         assertTrue("Live capture must use real runtime counters", capture.contains("viewModel.framesSentToServer"))
         assertTrue("Sync screen must use runtime calibration state", capture.contains("uiState.calibrationStep"))
+        assertTrue("Join headline must decorate the session word", join.contains("decoratedLine = \"session.\"") && join.contains("decoratorColor = PocapViolet"))
+        assertTrue("Connect headline must decorate Pocap PC with cyan", connect.contains("decoratedLine = \"Pocap PC.\"") && connect.contains("decoratorColor = PocapCyan"))
+        assertTrue("Live confidence card must clear the local log card", capture.contains(".padding(top = 106.dp"))
+        assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
 

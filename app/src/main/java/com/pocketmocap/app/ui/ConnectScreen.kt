@@ -56,37 +56,38 @@ fun ConnectScreen(
         ) {
             BrandRow()
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             PocapEyebrow("Step 1 - connect")
-            Text(
-                text = "Link this\nphone to\nPocap PC.",
-                style = MaterialTheme.typography.headlineLarge,
-                color = PocapInk,
-                fontWeight = FontWeight.Bold,
+            PocapDecoratedHeadline(
+                lines = listOf("Link this", "phone to"),
+                decoratedLine = "Pocap PC.",
+                decoratorColor = PocapCyan,
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
-                text = "Scan the PC link or type the most likely IPv4 server address from ipconfig. Session joining happens on the next screen.",
+                text = "Scan QR or type the PC IPv4 server URL. Join the session next.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = PocapInk2,
-                modifier = Modifier.padding(top = 14.dp),
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = 10.dp),
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(16.dp))
             PocapCard {
                 Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     PocapEyebrow("PC server link")
                     OutlinedTextField(
                         value = serverUrl,
                         onValueChange = { serverUrl = it },
-                        label = { Text("Pocap PC link or IPv4 URL") },
-                        placeholder = { Text("http://<PC IPv4>:8090") },
+                        label = { Text("Pocap PC link or IPv4 URL", style = MaterialTheme.typography.bodySmall) },
+                        placeholder = { Text("http://<PC IPv4>:8090", style = MaterialTheme.typography.bodySmall) },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = PocapInk,
                             unfocusedBorderColor = PocapInk4,
@@ -128,7 +129,7 @@ fun ConnectScreen(
             )
 
             uiState.errorMessage?.let { error ->
-                Spacer(modifier = Modifier.height(14.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 PocapCard(color = Color(0xFFFFEFEF), shadow = false) {
                     Text(
                         text = error,
@@ -156,15 +157,16 @@ fun ConnectScreen(
             Spacer(modifier = Modifier.weight(1f))
             PocapCard(color = PocapPaperLight, shadow = false) {
                 Row(
-                    modifier = Modifier.padding(12.dp),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     PocapChip(label = connectionStatus(uiState), tone = connectionTone(uiState), dot = true)
                     Text(
-                        text = "Most controls stay on the PC. This device only captures camera, MediaPipe landmarks, world tracking, and scene metrics.",
+                        text = "PC controls the session. This phone only captures camera, landmarks, tracking, and metrics.",
                         style = MaterialTheme.typography.bodySmall,
                         color = PocapInk2,
+                        fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f),
                     )
                 }

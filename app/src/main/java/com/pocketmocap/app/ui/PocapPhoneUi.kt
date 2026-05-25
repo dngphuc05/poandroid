@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 val PocapPaper = Color(0xFFEDE6D6)
 val PocapPaperLight = Color(0xFFF4ECD9)
@@ -70,6 +71,45 @@ fun PocapPaperScaffold(
     ) {
         PaperGrain()
         content()
+    }
+}
+
+@Composable
+fun PocapDecoratedHeadline(
+    lines: List<String>,
+    decoratedLine: String,
+    decoratorColor: Color,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy((-3).dp),
+    ) {
+        lines.forEach { line ->
+            Text(
+                text = line,
+                style = MaterialTheme.typography.headlineLarge,
+                color = PocapInk,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.8).sp,
+                maxLines = 1,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .padding(top = 1.dp)
+                .background(decoratorColor),
+        ) {
+            Text(
+                text = decoratedLine,
+                style = MaterialTheme.typography.headlineLarge,
+                color = PocapInk,
+                fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.8).sp,
+                maxLines = 1,
+                modifier = Modifier.padding(horizontal = 4.dp),
+            )
+        }
     }
 }
 

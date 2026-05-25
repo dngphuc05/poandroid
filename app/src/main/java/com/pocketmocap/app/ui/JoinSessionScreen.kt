@@ -60,11 +60,10 @@ fun JoinSessionScreen(
 
             Spacer(modifier = Modifier.height(28.dp))
             PocapEyebrow("Step 2 - session")
-            Text(
-                text = "Join a\ncapture\nsession.",
-                style = MaterialTheme.typography.headlineLarge,
-                color = PocapInk,
-                fontWeight = FontWeight.Bold,
+            PocapDecoratedHeadline(
+                lines = listOf("Join a", "capture"),
+                decoratedLine = "session.",
+                decoratorColor = PocapViolet,
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
