@@ -99,6 +99,28 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
+    fun phoneLinksToServerBeforeJoiningLobbyCode() {
+        val app = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapApp.kt").readText()
+        val vm = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
+        val client = appDir.resolve("src/main/java/com/pocketmocap/app/network/MocapServerClient.kt").readText()
+        val connect = appDir.resolve("src/main/java/com/pocketmocap/app/ui/ConnectScreen.kt").readText()
+        val join = appDir.resolve("src/main/java/com/pocketmocap/app/ui/JoinSessionScreen.kt").readText()
+
+        assertTrue(app.contains("uiState.connectionState != ConnectionState.CONNECTED -> ConnectScreen"))
+        assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED -> JoinSessionScreen"))
+        assertTrue(app.contains("else -> CaptureScreen"))
+        assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED"))
+        assertTrue(vm.contains("enum class LobbyJoinState"))
+        assertTrue(vm.contains("fun joinSession"))
+        assertTrue(client.contains("\"session_join\""))
+        assertTrue(client.contains("\"lobby_joined\""))
+        assertTrue(connect.contains("Link this"))
+        assertFalse(connect.contains("Join session"))
+        assertTrue(join.contains("6-digit code"))
+        assertTrue(join.contains("LinkedServerCard"))
+    }
+
+    @Test
     fun phoneRuntimeDoesNotContainViewerOrAssetLibraryScreens() {
         val removedViewerFiles = listOf(
             "src/main/java/com/pocketmocap/app/ui/LibraryScreens.kt",
@@ -134,6 +156,7 @@ class CaptureNodeImplementationTest {
     fun phoneScreensUseFrontendPrototypeLanguageWithoutMockCaptureData() {
         val uiKit = appDir.resolve("src/main/java/com/pocketmocap/app/ui/PocapPhoneUi.kt").readText()
         val connect = appDir.resolve("src/main/java/com/pocketmocap/app/ui/ConnectScreen.kt").readText()
+        val join = appDir.resolve("src/main/java/com/pocketmocap/app/ui/JoinSessionScreen.kt").readText()
         val capture = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
         val qr = appDir.resolve("src/main/java/com/pocketmocap/app/ui/QrLinkScannerScreen.kt").readText()
 
@@ -155,6 +178,10 @@ class CaptureNodeImplementationTest {
             "PocapPaperScaffold" to connect,
             "PocapCard" to connect,
             "PocapButton" to connect,
+            "PocapPaperScaffold" to join,
+            "SessionCodeInput" to join,
+            "DigitBox" to join,
+            "LinkedServerCard" to join,
             "ArCoreFrameCapture" to capture,
             "viewModel.onCameraFrame" to capture,
             "AndroidView" to capture,

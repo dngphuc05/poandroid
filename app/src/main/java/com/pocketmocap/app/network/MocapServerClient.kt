@@ -28,6 +28,7 @@ class MocapServerClient(
 ) {
     interface Listener {
         fun onConnected(sessionId: String)
+        fun onLobbyJoined(code: String, name: String)
         fun onDisconnected()
         fun onCalibrationAck(success: Boolean, state: String)
         fun onBootstrapProgress(collected: Int, target: Int, complete: Boolean)
@@ -96,6 +97,17 @@ class MocapServerClient(
                     // Kick off WebRTC negotiation immediately after session is confirmed
                     initiateRtc()
                 }
+                on("lobby_joined") { args ->
+                    val data = args.firstOrNull() as? JSONObject
+                    if (data == null) {
+                        Log.w(TAG, "lobby_joined: no JSONObject in args (${args.map { it?.javaClass?.name }})")
+                        return@on
+                    }
+                    val code = data.optString("code", "")
+                    val name = data.optString("name", "")
+                    Log.i(TAG, "Lobby joined: code=$code name=$name")
+                    listener.onLobbyJoined(code, name)
+                }
                 on("rtc_answer") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
                     val sdp = data.optString("sdp")
@@ -153,6 +165,24 @@ class MocapServerClient(
         latestPoseTimestampUs = 0L
         rtcDisabledForFrames = false
         rtcFramesSinceLastPose = 0
+    }
+
+    fun joinLobby(code: String, deviceId: String, label: String) {
+        val normalizedCode = code.filter(Char::isDigit).take(6)
+        if (normalizedCode.length != 6) {
+            listener.onError("Enter the 6-digit session code from the PC app")
+            return
+        }
+        if (!isConnected) {
+            listener.onError("Link this phone to the Pocap PC server first")
+            return
+        }
+        socket?.emit("session_join", JSONObject().apply {
+            put("code", normalizedCode)
+            put("device_id", deviceId.take(64))
+            put("label", label.take(64))
+        })
+        Log.i(TAG, "Sent session_join for lobby=$normalizedCode")
     }
 
     /** Create the WebRTC channel and fire the offer over Socket.IO. */

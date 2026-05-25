@@ -163,7 +163,7 @@ private fun CaptureTopBar(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "Session ${uiState.sessionId.ifBlank { "pending" }} - $visibleLandmarks/33 landmarks",
+                    text = "Session ${formatSessionCode(uiState.joinedLobbyCode)} - $visibleLandmarks/33 landmarks",
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk2,
                     maxLines = 1,
@@ -369,6 +369,9 @@ private fun stageIndex(
     uiState.calibrationStep != PocketMocapViewModel.CalibrationStep.COMPLETE -> 1
     else -> 2
 }
+
+private fun formatSessionCode(code: String): String =
+    code.filter(Char::isDigit).take(6).chunked(3).joinToString(" ").ifBlank { "pending" }
 
 private val REAL_2D_EDGES = listOf(
     11 to 12,

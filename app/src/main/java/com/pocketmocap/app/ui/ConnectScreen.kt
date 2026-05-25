@@ -59,14 +59,14 @@ fun ConnectScreen(
             Spacer(modifier = Modifier.height(28.dp))
             PocapEyebrow("Step 1 - connect")
             Text(
-                text = "Join a\ncapture\nsession.",
+                text = "Link this\nphone to\nPocap PC.",
                 style = MaterialTheme.typography.headlineLarge,
                 color = PocapInk,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
-                text = "Scan the Pocap PC link or type the PC IPv4 server address. This phone becomes one timestamped capture camera.",
+                text = "Scan the PC link or type the most likely IPv4 server address from ipconfig. Session joining happens on the next screen.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = PocapInk2,
                 modifier = Modifier.padding(top = 14.dp),
@@ -193,14 +193,14 @@ private fun BrandRow() {
 }
 
 private fun connectLabel(connectionState: ConnectionState): String = when (connectionState) {
-    ConnectionState.CONNECTING -> "Joining..."
+    ConnectionState.CONNECTING -> "Linking..."
     ConnectionState.CONNECTED -> "Connected"
-    ConnectionState.DISCONNECTED -> "Join session"
+    ConnectionState.DISCONNECTED -> "Link phone"
 }
 
 private fun connectionStatus(uiState: UiState): String = when (uiState.connectionState) {
     ConnectionState.CONNECTED -> "connected"
-    ConnectionState.CONNECTING -> "joining"
+    ConnectionState.CONNECTING -> "linking"
     ConnectionState.DISCONNECTED -> "waiting"
 }
 

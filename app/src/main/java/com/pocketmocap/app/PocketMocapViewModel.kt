@@ -2,6 +2,8 @@ package com.pocketmocap.app
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
 import kotlin.math.min
@@ -74,6 +76,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val serverUrl: String = PhoneConnectionDefaults.INITIAL_SERVER_URL,
         val connectionState: ConnectionState = ConnectionState.DISCONNECTED,
         val sessionId: String = "",
+        val lobbyCodeInput: String = "",
+        val joinedLobbyCode: String = "",
+        val joinedLobbyName: String = "",
+        val lobbyJoinState: LobbyJoinState = LobbyJoinState.IDLE,
         val pipelineState: HybridPosePipeline.PipelineState = HybridPosePipeline.PipelineState.IDLE,
         val calibrationStep: CalibrationStep = CalibrationStep.PENDING,
         val bootstrapProgress: Float = 0f,
@@ -87,6 +93,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     )
 
     enum class ConnectionState { DISCONNECTED, CONNECTING, CONNECTED }
+    enum class LobbyJoinState { IDLE, JOINING, JOINED }
     enum class CalibrationStep { PENDING, INTRINSIC_CALC, EXTRINSIC_ANCHOR, BOOTSTRAP, COMPLETE }
 
     private val _uiState = MutableStateFlow(UiState())
@@ -343,6 +350,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(
                 connectionState = ConnectionState.CONNECTED,
                 sessionId = sessionId,
+                joinedLobbyCode = "",
+                joinedLobbyName = "",
+                lobbyJoinState = LobbyJoinState.IDLE,
                 errorMessage = null,
             )}
             if (shouldAutoResume) {
@@ -352,6 +362,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 _uiState.update { it.copy(calibrationStep = CalibrationStep.BOOTSTRAP) }
                 pipeline?.beginCalibration(serverCalibrationWidth, serverCalibrationHeight)
             }
+        }
+
+        override fun onLobbyJoined(code: String, name: String) {
+            Log.i(TAG, "onLobbyJoined: code=$code name=$name")
+            _uiState.update { it.copy(
+                lobbyCodeInput = code,
+                joinedLobbyCode = code,
+                joinedLobbyName = name,
+                lobbyJoinState = LobbyJoinState.JOINED,
+                errorMessage = null,
+            )}
         }
 
         override fun onDisconnected() {
@@ -365,7 +386,12 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     )
             clearServerPoseArrays()
             resetServerTransportDiagnostics()
-            _uiState.update { it.copy(connectionState = ConnectionState.DISCONNECTED) }
+            _uiState.update { it.copy(
+                connectionState = ConnectionState.DISCONNECTED,
+                joinedLobbyCode = "",
+                joinedLobbyName = "",
+                lobbyJoinState = LobbyJoinState.IDLE,
+            ) }
         }
 
         override fun onCalibrationAck(success: Boolean, state: String) {
@@ -417,7 +443,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
         override fun onError(message: String) {
             Log.e(TAG, "Server error: $message")
-            _uiState.update { it.copy(errorMessage = message) }
+            _uiState.update { it.copy(
+                lobbyJoinState = if (it.lobbyJoinState == LobbyJoinState.JOINING) {
+                    LobbyJoinState.IDLE
+                } else {
+                    it.lobbyJoinState
+                },
+                errorMessage = message,
+            ) }
         }
 
         override fun onRtcChannelReady() {
@@ -2452,9 +2485,48 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         _uiState.update { it.copy(
             serverUrl = serverUrl,
             connectionState = ConnectionState.CONNECTING,
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            lobbyJoinState = LobbyJoinState.IDLE,
             errorMessage = null,
         )}
         serverClient.connect(serverUrl)
+    }
+
+    fun updateLobbyCode(code: String) {
+        _uiState.update { it.copy(
+            lobbyCodeInput = code.filter(Char::isDigit).take(6),
+            errorMessage = null,
+        ) }
+    }
+
+    fun joinSession(code: String = _uiState.value.lobbyCodeInput) {
+        val normalizedCode = code.filter(Char::isDigit).take(6)
+        if (normalizedCode.length != 6) {
+            _uiState.update { it.copy(
+                lobbyCodeInput = normalizedCode,
+                lobbyJoinState = LobbyJoinState.IDLE,
+                errorMessage = "Enter the 6-digit session code from the PC app",
+            ) }
+            return
+        }
+        if (_uiState.value.connectionState != ConnectionState.CONNECTED) {
+            _uiState.update { it.copy(
+                lobbyJoinState = LobbyJoinState.IDLE,
+                errorMessage = "Link this phone to the Pocap PC server first",
+            ) }
+            return
+        }
+        _uiState.update { it.copy(
+            lobbyCodeInput = normalizedCode,
+            lobbyJoinState = LobbyJoinState.JOINING,
+            errorMessage = null,
+        ) }
+        serverClient.joinLobby(
+            code = normalizedCode,
+            deviceId = deviceId(),
+            label = deviceLabel(),
+        )
     }
 
     fun disconnect() {
@@ -2550,6 +2622,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(errorMessage = "Not connected to server") }
             return
         }
+        if (state.lobbyJoinState != LobbyJoinState.JOINED || state.joinedLobbyCode.isBlank()) {
+            _uiState.update { it.copy(errorMessage = "Join the PC session code before starting capture") }
+            return
+        }
         beginCalibration(1920, 1080)
     }
 
@@ -2557,14 +2633,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     fun connectAndCalibrate() {
         val state = _uiState.value
         if (state.connectionState == ConnectionState.CONNECTED) {
-            beginCalibration(1920, 1080)
+            startCalibration()
         } else {
             connect()
         }
     }
 
     fun updateServerUrl(url: String) {
-        _uiState.update { it.copy(serverUrl = url, errorMessage = null) }
+        _uiState.update { it.copy(
+            serverUrl = url,
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            lobbyJoinState = LobbyJoinState.IDLE,
+            errorMessage = null,
+        ) }
     }
 
     fun applyServerLink(raw: String): Boolean {
@@ -2573,7 +2655,13 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(errorMessage = "Invalid Pocap link or server URL") }
             return false
         }
-        _uiState.update { it.copy(serverUrl = serverUrl, errorMessage = null) }
+        _uiState.update { it.copy(
+            serverUrl = serverUrl,
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            lobbyJoinState = LobbyJoinState.IDLE,
+            errorMessage = null,
+        ) }
         return true
     }
 
@@ -2584,4 +2672,21 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
+
+    private fun deviceId(): String {
+        val app = getApplication<Application>()
+        return Settings.Secure.getString(app.contentResolver, Settings.Secure.ANDROID_ID)
+            ?.takeIf { it.isNotBlank() }
+            ?: Build.MODEL
+                .lowercase()
+                .replace(Regex("[^a-z0-9_-]"), "-")
+                .ifBlank { "android-phone" }
+    }
+
+    private fun deviceLabel(): String =
+        listOf(Build.MANUFACTURER, Build.MODEL)
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+            .ifBlank { "Pocap Phone" }
 }

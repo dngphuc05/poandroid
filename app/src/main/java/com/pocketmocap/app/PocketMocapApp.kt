@@ -12,8 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.pocketmocap.app.PocketMocapViewModel.ConnectionState
+import com.pocketmocap.app.PocketMocapViewModel.LobbyJoinState
 import com.pocketmocap.app.ui.CaptureScreen
 import com.pocketmocap.app.ui.ConnectScreen
+import com.pocketmocap.app.ui.JoinSessionScreen
 import com.pocketmocap.app.ui.QrLinkScannerScreen
 import com.pocketmocap.app.ui.theme.PocketMocapTheme
 
@@ -46,6 +48,14 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                     onConnect = { viewModel.connect(it) },
                     onApplyLink = { viewModel.applyServerLink(it) },
                     onScanQr = { scanningServerLink = true },
+                    onClearError = { viewModel.clearError() },
+                )
+
+                uiState.lobbyJoinState != LobbyJoinState.JOINED -> JoinSessionScreen(
+                    uiState = uiState,
+                    onCodeChange = { viewModel.updateLobbyCode(it) },
+                    onJoinSession = { viewModel.joinSession(it) },
+                    onDisconnect = { viewModel.disconnect() },
                     onClearError = { viewModel.clearError() },
                 )
 
