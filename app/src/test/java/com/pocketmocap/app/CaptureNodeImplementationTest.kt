@@ -110,6 +110,8 @@ class CaptureNodeImplementationTest {
         assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED -> JoinSessionScreen"))
         assertTrue(app.contains("else -> CaptureScreen"))
         assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED"))
+        assertTrue(app.contains("viewModel.applyServerLink(raw)"))
+        assertTrue(app.contains("viewModel.connect()"))
         assertTrue(vm.contains("enum class LobbyJoinState"))
         assertTrue(vm.contains("fun joinSession"))
         assertTrue(client.contains("\"session_join\""))

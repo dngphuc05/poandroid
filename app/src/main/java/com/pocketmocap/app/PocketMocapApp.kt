@@ -33,7 +33,9 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
             when {
                 scanningServerLink -> QrLinkScannerScreen(
                     onLinkScanned = { raw ->
-                        viewModel.applyServerLink(raw)
+                        if (viewModel.applyServerLink(raw)) {
+                            viewModel.connect()
+                        }
                         scanningServerLink = false
                     },
                     onCancel = { scanningServerLink = false },
