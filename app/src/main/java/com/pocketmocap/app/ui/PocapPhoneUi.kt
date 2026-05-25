@@ -11,12 +11,14 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -159,6 +162,36 @@ fun PocapButton(
 }
 
 @Composable
+fun PocapIconButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    tone: Color = PocapPaperLight,
+    enabled: Boolean = true,
+    content: @Composable BoxScope.() -> Unit,
+) {
+    val shape = RoundedCornerShape(12.dp)
+    Box(modifier = modifier.size(44.dp)) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .offset(2.dp, 2.dp)
+                .clip(shape)
+                .background(PocapInk.copy(alpha = if (enabled) 1f else 0.35f)),
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(shape)
+                .background(if (enabled) tone else PocapPaperDeep)
+                .border(2.dp, PocapInk.copy(alpha = if (enabled) 1f else 0.55f), shape)
+                .clickable(enabled = enabled, onClick = onClick),
+            contentAlignment = Alignment.Center,
+            content = content,
+        )
+    }
+}
+
+@Composable
 fun PocapChip(
     label: String,
     modifier: Modifier = Modifier,
@@ -272,6 +305,169 @@ fun PocapMetricTile(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun PocapBigNum(
+    label: String,
+    value: String,
+    modifier: Modifier = Modifier,
+    unit: String? = null,
+    tone: Color = PocapInk,
+    align: TextAlign = TextAlign.Start,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(3.dp),
+        horizontalAlignment = if (align == TextAlign.Center) Alignment.CenterHorizontally else Alignment.Start,
+    ) {
+        PocapEyebrow(label)
+        Row(
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                color = tone,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            unit?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = PocapInk3,
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 2.dp),
+                    maxLines = 1,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PocapProgressBar(
+    progress: Float?,
+    modifier: Modifier = Modifier,
+    tone: Color = PocapViolet,
+    height: Dp = 14.dp,
+) {
+    val shape = CircleShape
+    Box(
+        modifier = modifier
+            .height(height)
+            .clip(shape)
+            .background(PocapPaperDeep)
+            .border(1.5.dp, PocapInk, shape),
+    ) {
+        if (progress == null) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                repeat(9) { index ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(18.dp)
+                            .background(if (index % 2 == 0) tone else tone.copy(alpha = 0.62f)),
+                    )
+                }
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(progress.coerceIn(0f, 1f))
+                    .background(tone)
+                    .border(0.dp, Color.Transparent),
+            )
+        }
+    }
+}
+
+@Composable
+fun PocapFactBox(
+    label: String,
+    value: String,
+    tone: Color,
+    modifier: Modifier = Modifier,
+) {
+    PocapCard(
+        modifier = modifier,
+        color = PocapPaperLight,
+        radius = 12.dp,
+        shadow = false,
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .clip(CircleShape)
+                    .background(tone),
+            )
+            PocapEyebrow(label, modifier = Modifier.padding(top = 3.dp))
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleSmall,
+                color = PocapInk,
+                fontFamily = FontFamily.Monospace,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+@Composable
+fun PocapSignalBars(
+    value: Float,
+    modifier: Modifier = Modifier,
+) {
+    val filled = (value.coerceIn(0f, 1f) * 5f).toInt().coerceIn(0, 5)
+    Row(
+        modifier = modifier.height(28.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.Bottom,
+    ) {
+        repeat(5) { index ->
+            Box(
+                modifier = Modifier
+                    .width(5.dp)
+                    .height((8 + index * 4).dp)
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(if (index < filled) PocapCyan else PocapPaperDeep)
+                    .border(1.dp, PocapInk, RoundedCornerShape(2.dp)),
+            )
+        }
+    }
+}
+
+@Composable
+fun PocapCornerBrackets(
+    modifier: Modifier = Modifier,
+    color: Color = PocapPaper,
+) {
+    Canvas(modifier = modifier.fillMaxSize()) {
+        val inset = 10.dp.toPx()
+        val arm = 30.dp.toPx()
+        val stroke = 2.5.dp.toPx()
+        drawLine(color, Offset(inset, inset + arm), Offset(inset, inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(inset, inset), Offset(inset + arm, inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width - inset - arm, inset), Offset(size.width - inset, inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width - inset, inset), Offset(size.width - inset, inset + arm), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(inset, size.height - inset - arm), Offset(inset, size.height - inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(inset, size.height - inset), Offset(inset + arm, size.height - inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width - inset - arm, size.height - inset), Offset(size.width - inset, size.height - inset), strokeWidth = stroke, cap = StrokeCap.Round)
+        drawLine(color, Offset(size.width - inset, size.height - inset), Offset(size.width - inset, size.height - inset - arm), strokeWidth = stroke, cap = StrokeCap.Round)
     }
 }
 

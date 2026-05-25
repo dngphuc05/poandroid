@@ -172,6 +172,12 @@ class CaptureNodeImplementationTest {
             "PocapCard",
             "PocapButton",
             "PocapLogoMark",
+            "PocapIconButton",
+            "PocapBigNum",
+            "PocapProgressBar",
+            "PocapFactBox",
+            "PocapSignalBars",
+            "PocapCornerBrackets",
         )
         val missingUiTokens = requiredUiTokens.filterNot { token -> token in uiKit }
         assertTrue("Missing native port tokens from frontend prototype: $missingUiTokens", missingUiTokens.isEmpty())
@@ -188,7 +194,16 @@ class CaptureNodeImplementationTest {
             "viewModel.onCameraFrame" to capture,
             "AndroidView" to capture,
             "RealLandmarkOverlay" to capture,
+            "SessionPill" to capture,
+            "WarningBanner" to capture,
+            "MetricsRowCard" to capture,
+            "DeviceActionCard" to capture,
+            "LiveRecordingStrip" to capture,
             "PocapCameraScrim" to capture,
+            "PocapCornerBrackets" to capture,
+            "PocapBigNum" to capture,
+            "PocapProgressBar" to capture,
+            "PocapFactBox" to capture,
             "PocapPayloadRow" to capture,
             "QrCameraPreview" to qr,
         )
