@@ -57,7 +57,7 @@ import com.pocketmocap.app.camera.ArCoreFrameCapture
 import com.pocketmocap.app.pipeline.HybridPosePipeline
 
 /** In-session screens. The camera surface stays mounted under all of them. */
-private enum class CaptureView { CAMERA, LIVE, CALIBRATION, ERROR }
+private enum class CaptureView { CAMERA, CALIBRATION, ERROR }
 
 @Composable
 fun CaptureScreen(
@@ -112,14 +112,9 @@ fun CaptureScreen(
         return
     }
 
-    // Manual navigation only ever points at the beige overlays (Calibration / Error);
-    // the live camera vs. recording view is derived from pipeline state.
+    // Manual navigation only ever points at the beige overlays (Calibration / Error).
     var manualView by remember { mutableStateOf<CaptureView?>(null) }
-    val recording = viewModel.isCaptureRecording
-    LaunchedEffect(recording) { if (recording) manualView = null }
-    val activeView = manualView ?: if (recording) CaptureView.LIVE else CaptureView.CAMERA
-
-    val recordingSeconds = rememberRecordingSeconds(recording)
+    val activeView = manualView ?: CaptureView.CAMERA
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         // Persistent camera surface — keeps ArCore + streaming alive across views.
@@ -141,15 +136,7 @@ fun CaptureScreen(
                 viewModel = viewModel,
                 onOpenCalibration = { manualView = CaptureView.CALIBRATION },
                 onOpenError = { manualView = CaptureView.ERROR },
-                onToggleRecording = { viewModel.toggleCaptureRecording() },
                 onDisconnect = onDisconnect,
-            )
-
-            CaptureView.LIVE -> LiveCaptureChrome(
-                uiState = uiState,
-                viewModel = viewModel,
-                recordingSeconds = recordingSeconds,
-                onStopRecording = { viewModel.toggleCaptureRecording() },
             )
 
             CaptureView.CALIBRATION -> SyncCalibrationScreen(
@@ -179,7 +166,6 @@ private fun CameraReadyChrome(
     viewModel: PocketMocapViewModel,
     onOpenCalibration: () -> Unit,
     onOpenError: () -> Unit,
-    onToggleRecording: () -> Unit,
     onDisconnect: () -> Unit,
 ) {
     val visible = viewModel.visibleLandmarkCount
@@ -228,9 +214,7 @@ private fun CameraReadyChrome(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             MetricsRowCard(uiState = uiState, viewModel = viewModel)
             CompactActionRow(
-                recording = viewModel.isCaptureRecording,
                 onOpenCalibration = onOpenCalibration,
-                onToggleRecording = onToggleRecording,
             )
         }
     }
@@ -238,9 +222,7 @@ private fun CameraReadyChrome(
 
 @Composable
 private fun CompactActionRow(
-    recording: Boolean,
     onOpenCalibration: () -> Unit,
-    onToggleRecording: () -> Unit,
 ) {
     PocapCard(color = PocapPaper.copy(alpha = 0.96f), radius = 18.dp) {
         Row(
@@ -259,7 +241,7 @@ private fun CompactActionRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "PC records the session. DIAG only saves local troubleshooting data.",
+                    text = "PC records session artifacts. This phone streams camera landmarks and tracking metrics.",
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk3,
                     fontWeight = FontWeight.SemiBold,
@@ -270,201 +252,6 @@ private fun CompactActionRow(
             PocapIconButton(onClick = onOpenCalibration, tone = PocapViolet) {
                 Text("SYNC", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
-            PocapIconButton(
-                onClick = onToggleRecording,
-                tone = if (recording) PocapPink else PocapPaperLight,
-            ) {
-                Text("DIAG", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
-            }
-        }
-    }
-}
-
-// ════════════════════════════════════════════════════════════════════
-// LIVE — recording active, full reference layout (slim floating chrome)
-// ════════════════════════════════════════════════════════════════════
-@Composable
-private fun LiveCaptureChrome(
-    uiState: PocketMocapViewModel.UiState,
-    viewModel: PocketMocapViewModel,
-    recordingSeconds: Int,
-    onStopRecording: () -> Unit,
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .statusBarsPadding()
-            .padding(horizontal = 18.dp, vertical = 22.dp),
-    ) {
-        // recording rim
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(RoundedCornerShape(18.dp))
-                .border(3.dp, PocapPink, RoundedCornerShape(18.dp)),
-        )
-
-        // top-left: local diagnostic log chip + timer
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 4.dp, top = 6.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.Start,
-        ) {
-            PocapChip(label = "local log", tone = PocapPink, dot = true)
-            PocapCard(color = PocapPaper.copy(alpha = 0.94f), radius = 14.dp) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.Bottom,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text(
-                        text = formatRecordClock(recordingSeconds),
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = PocapInk,
-                        fontFamily = PocapMono,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                    )
-                    Text(
-                        text = "DIAGNOSTIC",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = PocapInk3,
-                        fontFamily = PocapMono,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 4.dp),
-                        maxLines = 1,
-                    )
-                }
-            }
-        }
-
-        // right: confidence signal bars
-        PocapCard(
-            color = PocapPaper.copy(alpha = 0.94f),
-            radius = 14.dp,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 106.dp, end = 2.dp)
-                .width(58.dp),
-        ) {
-            Column(
-                modifier = Modifier.padding(10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                PocapEyebrow("conf")
-                PocapSignalBars(value = (viewModel.visibleLandmarkCount / 33f).coerceIn(0f, 1f))
-                Text(
-                    text = "${((viewModel.visibleLandmarkCount / 33f).coerceIn(0f, 1f) * 100).toInt()}%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = PocapInk,
-                    fontFamily = PocapMono,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-
-        // bottom: action bar with local-log stop button + frame counters
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(start = 4.dp, end = 4.dp, bottom = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .background(PocapPaper.copy(alpha = 0.92f))
-                        .border(1.5.dp, PocapInk, CircleShape)
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(PocapViolet))
-                        PocapEyebrow("laptop in control")
-                    }
-                }
-            }
-            PocapCard(color = PocapPaper.copy(alpha = 0.96f), radius = 20.dp) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 18.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            PocapChip(label = "streaming", tone = PocapCyan)
-                            Text(
-                                text = "${viewModel.framesSentToServer} sent",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = PocapInk2,
-                                fontFamily = PocapMono,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                            PocapBigNum(label = "frames", value = uiState.frameCount.toString(), tone = PocapInk)
-                            PocapBigNum(
-                                label = "pose age",
-                                value = viewModel.lastPose3DAgeMs?.toString() ?: "--",
-                                unit = "ms",
-                                tone = PocapViolet,
-                            )
-                        }
-                    }
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
-                    ) {
-                        RecordStopButton(onClick = onStopRecording)
-                        Text(
-                            text = "STOP LOG",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = PocapInk2,
-                            fontFamily = PocapMono,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun RecordStopButton(onClick: () -> Unit) {
-    val shape = CircleShape
-    Box(modifier = Modifier.size(64.dp)) {
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(start = 3.dp, top = 3.dp)
-                .clip(shape)
-                .background(PocapInk),
-        )
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .clip(shape)
-                .background(PocapPink)
-                .border(2.dp, PocapInk, shape)
-                .clickable(onClick = onClick),
-            contentAlignment = Alignment.Center,
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(18.dp)
-                    .clip(RoundedCornerShape(3.dp))
-                    .background(PocapInk),
-            )
         }
     }
 }
@@ -953,22 +740,6 @@ private fun PermissionFact(text: String) {
 // Shared chrome pieces + helpers
 // ════════════════════════════════════════════════════════════════════
 @Composable
-private fun rememberRecordingSeconds(isRecording: Boolean): Int {
-    var seconds by remember { mutableStateOf(0) }
-    LaunchedEffect(isRecording) {
-        if (!isRecording) {
-            seconds = 0
-            return@LaunchedEffect
-        }
-        while (true) {
-            kotlinx.coroutines.delay(1000L)
-            seconds += 1
-        }
-    }
-    return seconds
-}
-
-@Composable
 private fun SessionPill(code: String, status: String) {
     PocapCard(color = PocapPaper.copy(alpha = 0.94f), radius = 999.dp) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1104,11 +875,6 @@ private fun calibrationProgressLabel(uiState: PocketMocapViewModel.UiState): Str
 
 private fun formatMeters(value: Float): String =
     if (value.isFinite()) String.format(java.util.Locale.US, "%.2f m", value) else "waiting"
-
-private fun formatRecordClock(totalSeconds: Int): String {
-    val safe = totalSeconds.coerceAtLeast(0)
-    return String.format(java.util.Locale.US, "%02d:%02d", safe / 60, safe % 60)
-}
 
 private fun formatSessionCode(code: String): String =
     code.filter(Char::isDigit).take(6).chunked(3).joinToString(" ").ifBlank { "pending" }

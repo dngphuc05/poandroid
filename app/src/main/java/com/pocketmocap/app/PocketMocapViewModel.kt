@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.pocketmocap.app.capture.CaptureSessionRecorder
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
 import com.pocketmocap.app.network.ServerLinkParser
@@ -34,8 +33,6 @@ import com.pocketmocap.app.ui.PhysicalSceneBias
 import com.pocketmocap.app.ui.PhysicalSceneFactorGraph
 import com.pocketmocap.app.ui.computePoseRoi
 import com.pocketmocap.app.ui.deriveOverlayPoseEstimate
-import com.pocketmocap.app.ui.evaluateServerPoseHealth
-import com.pocketmocap.app.ui.classifyServerPoseMissingReason
 import com.pocketmocap.bridge.PocketMocapBridge
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -183,12 +180,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         private set
     var latestCameraIntrinsics by mutableStateOf<CameraIntrinsics?>(null)
         private set
-    var isCaptureRecording by mutableStateOf(false)
-        private set
-    var activeCaptureFolderName by mutableStateOf<String?>(null)
-        private set
-
-    private val captureRecorder = CaptureSessionRecorder(getApplication())
     private val sceneBiasPrefs by lazy {
         getApplication<Application>().getSharedPreferences(PHYSICAL_SCENE_BIAS_PREFS, Context.MODE_PRIVATE)
     }
@@ -711,7 +702,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         maybeSendExtrinsicUpdate(worldTracking)
                         updateClientTechnicalPose()
                         updateServerMetricPoseWithClientMotion()
-                        recordCaptureFrameIfNeeded()
                         // Guard constant/rarely-changing values — avoids spurious Compose recompositions
                         if (visibleLandmarkCount != visible) visibleLandmarkCount = visible
                         if (cameraImageWidth != imageWidth) cameraImageWidth = imageWidth
@@ -1281,261 +1271,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             .putFloat("depth_offset_m", bias.depthOffsetMeters)
             .putFloat("height_endpoint_bias_m", bias.heightEndpointBiasMeters)
             .apply()
-    }
-
-    fun toggleCaptureRecording() {
-        if (isCaptureRecording) {
-            stopCaptureRecording()
-        } else {
-            startCaptureRecording()
-        }
-    }
-
-    fun startCaptureRecording() {
-        physicalSceneGraph.resetRuntimeState()
-        latestSceneMetrics = null
-        latestTechnicalSceneMetrics = null
-        technicalSceneMissingFrames = 0
-        sceneHoldFrames = 0
-        val dir = captureRecorder.start()
-        isCaptureRecording = true
-        activeCaptureFolderName = dir.name
-        Log.i(TAG, "Capture recording started: ${dir.absolutePath}")
-    }
-
-    fun stopCaptureRecording() {
-        val dir = captureRecorder.stop()
-        isCaptureRecording = false
-        activeCaptureFolderName = dir?.name
-        Log.i(TAG, "Capture recording stopped: ${dir?.absolutePath}")
-    }
-
-    private fun recordCaptureFrameIfNeeded() {
-        if (!captureRecorder.isRecording) return
-        val hasServerPose = serverPoseX != null && serverPoseY != null && serverPoseZ != null
-        val serverHealth = evaluateServerPoseHealth(
-            poseX = serverPoseX,
-            poseY = serverPoseY,
-            poseZ = serverPoseZ,
-            poseVisibility = serverPoseConf,
-        )
-        val serverDebug = latestServerPoseDebug
-        val technicalSceneMetrics = latestTechnicalSceneMetrics
-        val canonicalJointsReady = serverDebug?.let {
-            it.hasCanonicalMetricPose() &&
-                it.poseJointsFrame == "display_floor_metric_v1" &&
-                it.poseJointsNormalized.isFinite() &&
-                kotlin.math.abs(it.poseJointsNormalized - 1f) <= 1e-3f
-        } == true
-        val useServerPose = hasServerPose &&
-            serverHealth.usable &&
-            serverMetricPoseDisplayReady
-        val serverPoseIsStaleForRecording =
-            lastPose3DAgeMs?.let { it > 85L } == true
-        val allowClientTechnicalFallback = !serverMetricPoseExpected
-        val clientTechnicalPose = if (useServerPose || !allowClientTechnicalFallback) {
-            null
-        } else {
-            latestClientTechnicalPose()
-        }
-        val techX = if (useServerPose) serverPoseX else clientTechnicalPose?.first
-        val techY = if (useServerPose) serverPoseY else clientTechnicalPose?.second
-        val techZ = if (useServerPose) serverPoseZ else clientTechnicalPose?.third
-        val technicalSource = when {
-            useServerPose -> if (
-                serverDebug?.metricPoseStatus == "hold_previous" ||
-                (!canonicalJointsReady && heldCanonicalServerPoseFrames > 0) ||
-                serverPoseIsStaleForRecording
-            ) {
-                "server_metric_canonical_held"
-            } else if (serverMetricClientMotionOverlayActive) {
-                "server_metric_client_motion"
-            } else {
-                "server_metric_canonical"
-            }
-            clientTechnicalPose != null -> "arcore_client_33pt"
-            else -> "none"
-        }
-        val missingReason = classifyServerPoseMissingReason(
-            pose3DReceivedCount = pose3DReceivedCount,
-            lastServerParseReason = lastServerMissingReason,
-            serverHealth = serverHealth,
-        )
-        val scaleApplied = serverDebug?.scaleApplied
-        val scaleEffective = scaleApplied != null && scaleApplied.isFinite() &&
-            kotlin.math.abs(scaleApplied - 1f) > 1e-3f
-        val rootShift = serverDebug?.rootTranslationMeters
-        val rootShiftEffective = rootShift != null && rootShift.isFinite() && rootShift > 0.02f
-        val serverConstraintConfidence = serverDebug?.constraintConfidence?.takeIf { it.isFinite() }
-        val serverConstraintReason = serverDebug?.correctionReason.orEmpty()
-        val serverConstraintActive = serverConstraintConfidence != null &&
-            (
-                scaleEffective ||
-                    rootShiftEffective ||
-                    serverDebug?.hasV2MetricAuthority() == true ||
-                    serverConstraintReason == "height_and_root_constrained" ||
-                    serverConstraintReason == "root_constrained"
-            )
-        captureRecorder.recordFrame(
-            uiState = _uiState.value,
-            visibleLandmarkCount = _completedVis.count { it > 0.5f },
-            sceneMetrics = technicalSceneMetrics,
-            worldTracking = latestWorldTracking,
-            skeletonX = _completedX,
-            skeletonY = _completedY,
-            skeletonZ = poseLandmarksZ,
-            skeletonVisibility = _completedVis,
-            technicalX = techX,
-            technicalY = techY,
-            technicalZ = techZ,
-            technicalConfidence = if (useServerPose) serverPoseConf else _completedVis,
-            technicalSource = technicalSource,
-            serverStableFrames = serverPoseStableFrames,
-            acceptedPoseSource = technicalSource,
-            serverPoseStatus = when {
-                useServerPose -> serverDebug?.poseStatus ?: "ok"
-                hasServerPose && !serverMetricPoseDisplayReady -> "rejected"
-                serverHealth.usable -> "ok"
-                else -> "missing_server_pose"
-            },
-            serverCorrectionReason = serverDebug?.correctionReason,
-            rejectedServerReason = if (useServerPose) "none" else missingReason,
-            serverTransport = lastServerTransport,
-            framesSentToServer = framesSentToServer,
-            pose3DReceivedCount = pose3DReceivedCount,
-            lastPose3DAgeMs = lastPose3DAgeMs,
-            lastServerJointsCount = lastServerJointsCount,
-            serverMissingReason = missingReason,
-            rawServerHeightMeters = serverDebug?.rawHeightMeters?.takeIf { serverConstraintActive },
-            rawServerDistanceMeters = serverDebug?.rawDistanceMeters?.takeIf { serverConstraintActive },
-            preSkeletonConstrainedHeightMeters = serverDebug?.preSkeletonConstrainedHeightMeters?.takeIf {
-                serverConstraintActive
-            },
-            preSkeletonConstrainedDistanceMeters = serverDebug?.preSkeletonConstrainedDistanceMeters?.takeIf {
-                serverConstraintActive
-            },
-            constrainedServerHeightMeters = serverDebug?.constrainedHeightMeters?.takeIf { serverConstraintActive },
-            constrainedServerDistanceMeters = serverDebug?.constrainedDistanceMeters?.takeIf { serverConstraintActive },
-            arTargetHeightMeters = serverDebug?.arTargetHeightMeters ?: technicalSceneMetrics?.bodyHeightMeters,
-            arTargetDistanceMeters = serverDebug?.arTargetDistanceMeters ?: technicalSceneMetrics?.distanceMeters,
-            serverScaleApplied = serverDebug?.scaleApplied,
-            serverRootShiftMeters = serverDebug?.rootTranslationMeters,
-            constraintConfidence = serverConstraintConfidence,
-            mlVisualUsable = serverDebug?.mlVisualUsable,
-            mlDltMetricBad = serverDebug?.mlDltMetricBad,
-            mlHeightTargetSource = serverDebug?.mlHeightTargetSource,
-            mlDistanceTargetSource = serverDebug?.mlDistanceTargetSource,
-            mlDistanceHoldActive = serverDebug?.mlDistanceHoldActive,
-            mlDltWeightScale = serverDebug?.mlDltWeightScale,
-            heightTargetWeight = serverDebug?.heightTargetWeight,
-            heightPriorWeight = serverDebug?.heightPriorWeight,
-            heightSmoothWeight = serverDebug?.heightSmoothWeight,
-            heightTargetAdmission = serverDebug?.heightTargetAdmission,
-            heightTargetAdmissionReason = serverDebug?.heightTargetAdmissionReason,
-            heightGeometrySuspicious = serverDebug?.heightGeometrySuspicious,
-            heightWitnessCount = serverDebug?.heightWitnessCount,
-            heightWitnessMedianMeters = serverDebug?.heightWitnessMedianMeters,
-            heightWitnessSpreadMeters = serverDebug?.heightWitnessSpreadMeters,
-            heightCorrectedVsTopDeltaMeters = serverDebug?.heightCorrectedVsTopDeltaMeters,
-            heightCorrectedVsHipDeltaMeters = serverDebug?.heightCorrectedVsHipDeltaMeters,
-            heightCorrectedVsPixelDeltaMeters = serverDebug?.heightCorrectedVsPixelDeltaMeters,
-            heightCorrectedVsTorsoDeltaMeters = serverDebug?.heightCorrectedVsTorsoDeltaMeters,
-            heightTargetBeforeGateMeters = serverDebug?.heightTargetBeforeGateMeters,
-            heightTargetAfterGateMeters = serverDebug?.heightTargetAfterGateMeters,
-            heightMemoryUpdate = serverDebug?.heightMemoryUpdate,
-            heightMemoryReason = serverDebug?.heightMemoryReason,
-            heightMemoryAgeFrames = serverDebug?.heightMemoryAgeFrames,
-            heightMemoryTargetMeters = serverDebug?.heightMemoryTargetMeters,
-            wlsHeightMeters = serverDebug?.wlsHeightMeters,
-            postStableSkeletonHeightMeters = serverDebug?.postStableSkeletonHeightMeters,
-            finalSmoothedHeightMeters = serverDebug?.finalSmoothedHeightMeters,
-            heightLossStage = serverDebug?.heightLossStage,
-            distanceTargetWeight = serverDebug?.distanceTargetWeight,
-            distancePriorWeight = serverDebug?.distancePriorWeight,
-            distanceSmoothWeight = serverDebug?.distanceSmoothWeight,
-            distanceLocalAuthority = serverDebug?.distanceLocalAuthority,
-            distanceTargetAdmission = serverDebug?.distanceTargetAdmission,
-            distanceTargetAdmissionReason = serverDebug?.distanceTargetAdmissionReason,
-            distanceGeometrySuspicious = serverDebug?.distanceGeometrySuspicious,
-            distanceWitnessCount = serverDebug?.distanceWitnessCount,
-            distanceWitnessMedianMeters = serverDebug?.distanceWitnessMedianMeters,
-            distanceWitnessSpreadMeters = serverDebug?.distanceWitnessSpreadMeters,
-            distanceVsPreviousTargetDeltaMeters = serverDebug?.distanceVsPreviousTargetDeltaMeters,
-            distanceFootRoiDisagreementMeters = serverDebug?.distanceFootRoiDisagreementMeters,
-            distanceFootRelativeDisagreementMeters = serverDebug?.distanceFootRelativeDisagreementMeters,
-            distanceCorrectedVsFootDeltaMeters = serverDebug?.distanceCorrectedVsFootDeltaMeters,
-            distanceTargetBeforeGateMeters = serverDebug?.distanceTargetBeforeGateMeters,
-            distanceTargetAfterGateMeters = serverDebug?.distanceTargetAfterGateMeters,
-            distanceMemoryUpdate = serverDebug?.distanceMemoryUpdate,
-            distanceMemoryReason = serverDebug?.distanceMemoryReason,
-            distanceMemoryAgeFrames = serverDebug?.distanceMemoryAgeFrames,
-            distanceMemoryTargetMeters = serverDebug?.distanceMemoryTargetMeters,
-            factorGraphActive = serverDebug?.factorGraphActive,
-            factorGraphStatus = serverDebug?.factorGraphStatus,
-            factorGraphCostBefore = serverDebug?.factorGraphCostBefore,
-            factorGraphCostAfter = serverDebug?.factorGraphCostAfter,
-            factorGraphScaleDelta = serverDebug?.factorGraphScaleDelta,
-            factorGraphYawDegrees = serverDebug?.factorGraphYawDegrees,
-            factorGraphRootDxMeters = serverDebug?.factorGraphRootDxMeters,
-            factorGraphRootDzMeters = serverDebug?.factorGraphRootDzMeters,
-            factorGraphLeftFootDzMeters = serverDebug?.factorGraphLeftFootDzMeters,
-            factorGraphRightFootDzMeters = serverDebug?.factorGraphRightFootDzMeters,
-            factorGraphTargetDistanceMeters = serverDebug?.factorGraphTargetDistanceMeters,
-            factorGraphTargetHeightMeters = serverDebug?.factorGraphTargetHeightMeters,
-            factorGraphFactorSummary = serverDebug?.factorGraphFactorSummary,
-            metricPoseStatus = serverDebug?.metricPoseStatus,
-            metricPoseRejectReason = serverDebug?.metricPoseRejectReason,
-            metricPoseFrame = serverDebug?.metricPoseFrame,
-            metricRootXMeters = serverDebug?.metricRootXMeters,
-            metricRootYMeters = serverDebug?.metricRootYMeters,
-            metricRootZMeters = serverDebug?.metricRootZMeters,
-            metricRootDistanceMeters = serverDebug?.metricRootDistanceMeters,
-            metricFootMidpointXMeters = serverDebug?.metricFootMidpointXMeters,
-            metricFootMidpointZMeters = serverDebug?.metricFootMidpointZMeters,
-            metricBodyHeightMeters = serverDebug?.metricBodyHeightMeters,
-            metricBodyScaleLocked = serverDebug?.metricBodyScaleLocked,
-            metricBoneScaleSource = serverDebug?.metricBoneScaleSource,
-            metricPoseJitterScaleMeters = serverDebug?.metricPoseJitterScaleMeters,
-            metricPoseJitterRootMeters = serverDebug?.metricPoseJitterRootMeters,
-            poseJointsFrame = serverDebug?.poseJointsFrame,
-            poseJointsNormalized = serverDebug?.poseJointsNormalized,
-            poseJointsNormalizationScale = serverDebug?.poseJointsNormalizationScale,
-            poseLifterStatus = serverDebug?.poseLifterStatus,
-            poseLifterModelPath = serverDebug?.poseLifterModelPath,
-            poseLifterHiddenJointCount = serverDebug?.poseLifterHiddenJointCount,
-            poseLifterMeanConfidence = serverDebug?.poseLifterMeanConfidence,
-            poseLifterAppliedJointCount = serverDebug?.poseLifterAppliedJointCount,
-            poseLifterRejectReason = serverDebug?.poseLifterRejectReason,
-            clientMotionOverlayActive = serverMetricClientMotionOverlayActive,
-            stableSkeletonLearningEnabled = serverDebug?.stableSkeletonLearningEnabled,
-            stableSkeletonResetReason = serverDebug?.stableSkeletonResetReason,
-            mlEvidenceStatus = serverDebug?.mlEvidenceStatus,
-            mlEvidenceHeightSigmaMeters = serverDebug?.mlEvidenceHeightSigmaMeters,
-            mlEvidenceDistanceSigmaMeters = serverDebug?.mlEvidenceDistanceSigmaMeters,
-            mlEvidenceMaskEndpointConfidence = serverDebug?.mlEvidenceMaskEndpointConfidence,
-            mlEvidenceVisibleBodyFraction = serverDebug?.mlEvidenceVisibleBodyFraction,
-            mlEvidenceFootContactProbability = serverDebug?.mlEvidenceFootContactProbability,
-            mlEvidenceImageStatus = serverDebug?.mlEvidenceImageStatus,
-            mlEvidenceDebug = serverDebug?.mlEvidenceDebug,
-            mlImageWidthPx = serverDebug?.mlImageWidthPx,
-            mlImageHeightPx = serverDebug?.mlImageHeightPx,
-            mlImageSourceWidthPx = serverDebug?.mlImageSourceWidthPx,
-            mlImageSourceHeightPx = serverDebug?.mlImageSourceHeightPx,
-            mlImageCropLeftPx = serverDebug?.mlImageCropLeftPx,
-            mlImageCropTopPx = serverDebug?.mlImageCropTopPx,
-            mlImageCropWidthPx = serverDebug?.mlImageCropWidthPx,
-            mlImageCropHeightPx = serverDebug?.mlImageCropHeightPx,
-            mlImageJpegQuality = serverDebug?.mlImageJpegQuality,
-            mlImageCropPadRatio = serverDebug?.mlImageCropPadRatio,
-            mlEvidenceSchema = serverDebug?.mlEvidenceSchema,
-            mlEvidenceOutputs = serverDebug?.mlEvidenceOutputs,
-            serverSceneMetricsReceived = serverDebug?.serverSceneMetricsReceived,
-            serverSceneMetricsAccepted = serverDebug?.serverSceneMetricsAccepted,
-            serverSceneMetricsSource = serverDebug?.serverSceneMetricsSource,
-            serverSceneMetricsFloorSource = serverDebug?.serverSceneMetricsFloorSource,
-            serverSceneMetricsFilterReason = serverDebug?.serverSceneMetricsFilterReason,
-            serverSceneMetricsConfidence = serverDebug?.serverSceneMetricsConfidence,
-        )
     }
 
     private fun latestClientTechnicalPose(): Triple<FloatArray, FloatArray, FloatArray>? {
@@ -2655,7 +2390,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     override fun onCleared() {
-        stopCaptureRecording()
         super.onCleared()
     }
 

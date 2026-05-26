@@ -133,6 +133,7 @@ class CaptureNodeImplementationTest {
             "src/main/java/com/pocketmocap/app/ui/VrmSceneView.kt",
             "src/main/java/com/pocketmocap/app/ui/components/BottomNav.kt",
             "src/main/java/com/pocketmocap/app/ui/components/ViewToggle.kt",
+            "src/main/java/com/pocketmocap/app/capture/CaptureSessionRecorder.kt",
             "src/main/assets/angry.vrm",
             "src/main/assets/mocap_gru.onnx",
         )
@@ -210,7 +211,6 @@ class CaptureNodeImplementationTest {
             "RealLandmarkOverlay" to capture,
             "private enum class CaptureView" to capture,
             "CameraReadyChrome" to capture,
-            "LiveCaptureChrome" to capture,
             "SyncCalibrationScreen" to capture,
             "SessionErrorScreen" to capture,
             "PermissionScreen" to capture,
@@ -233,13 +233,14 @@ class CaptureNodeImplementationTest {
         assertTrue("Sync screen must use runtime calibration state", capture.contains("uiState.calibrationStep"))
         assertTrue("Join headline must decorate the session word", join.contains("decoratedLine = \"session.\"") && join.contains("decoratorColor = PocapViolet"))
         assertTrue("Connect headline must decorate Pocap PC with cyan", connect.contains("decoratedLine = \"Pocap PC.\"") && connect.contains("decoratorColor = PocapCyan"))
-        assertTrue("Live confidence card must clear the local log card", capture.contains(".padding(top = 106.dp"))
-        assertTrue("Capture actions must separate PC recording from phone diagnostics", capture.contains("DIAG") && capture.contains("local troubleshooting data"))
+        assertTrue("Phone capture screen must name PC-owned artifacts", capture.contains("PC records session artifacts"))
         assertTrue("Phone readiness action must not pretend to own PC sync", capture.contains("Mark phone ready"))
         assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
         assertFalse("Connect screen must not expose a second typed-link action", connect.contains("Use Link"))
         assertFalse("Capture screen must not use unclear LOG button text", capture.contains("Text(\"LOG\""))
         assertFalse("Capture screen must not use REC wording for local diagnostics", capture.contains("PocapChip(label = \"rec\""))
+        assertFalse("Phone app must not expose a local diagnostic recorder", capture.contains("DIAG"))
+        assertFalse("Phone app must not include local capture CSV names", capture.contains("metrics.csv") || capture.contains("skeleton_2d_landmarks.csv") || capture.contains("technical_3d_landmarks.csv"))
         assertFalse("Phone sync screen must not claim direct sync ownership", capture.contains("label = \"Start sync\""))
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
