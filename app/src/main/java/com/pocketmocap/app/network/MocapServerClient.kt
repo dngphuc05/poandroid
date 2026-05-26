@@ -30,6 +30,8 @@ class MocapServerClient(
         fun onConnected(sessionId: String)
         fun onLobbyJoined(code: String, name: String, preset: String)
         fun onLobbyClosed(code: String) {}   // PC operator closed the lobby (or disconnected)
+        fun onAnchorStatus(lobby: JSONObject) {}
+        fun onAnchorResolveRequest(sharedAnchorId: String) {} 
         fun onDisconnected()
         fun onCalibrationAck(success: Boolean, state: String)
         fun onBootstrapProgress(collected: Int, target: Int, complete: Boolean)
@@ -59,6 +61,7 @@ class MocapServerClient(
 
     val isConnected: Boolean get() = socket?.connected() == true
     val isRtcReady: Boolean get() = !rtcDisabledForFrames && rtcChannel?.isReady == true
+    fun socketSessionId(): String = sessionId.get().orEmpty()
 
     fun connect(url: String) {
         serverUrl = url
@@ -106,14 +109,15 @@ class MocapServerClient(
                         Log.w(TAG, "lobby_joined: no JSONObject in args (${args.map { it?.javaClass?.name }})")
                         return@on
                     }
-                    val code = data.optString("code", "")
+                    val rawCode = data.optString("code", "")
+                    val code = rawCode.filter(Char::isDigit).take(6)
                     val name = data.optString("name", "")
-                    val lobby = data.optJSONObject("lobby")
-                    val preset = data.optString(
-                        "preset",
-                        lobby?.optString("preset", "multi_live") ?: "multi_live",
-                    )
-                    Log.i(TAG, "Lobby joined: code=$code name=$name preset=$preset")
+                    val preset = normalizeLobbyPreset(data)
+                    Log.i(TAG, "Lobby joined: rawCode=$rawCode normalizedCode=$code name=$name preset=$preset")
+                    if (code.length != 6) {
+                        listener.onError("PC returned an invalid session code: $rawCode")
+                        return@on
+                    }
                     joinedLobbyCode = code
                     listener.onLobbyJoined(code, name, preset)
                 }
@@ -123,6 +127,14 @@ class MocapServerClient(
                     Log.i(TAG, "Lobby closed by PC: code=$code")
                     joinedLobbyCode = ""
                     listener.onLobbyClosed(code)
+                }
+                on("anchor_status") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
+                    data.optJSONObject("lobby")?.let { listener.onAnchorStatus(it) }
+                }
+                on("anchor_resolve_request") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
+                    listener.onAnchorResolveRequest(data.optString("shared_anchor_id", ""))
                 }
                 on("rtc_answer") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
@@ -207,14 +219,47 @@ class MocapServerClient(
      * PC operator can place this device in the multi-camera scene and optimise DLT.
      * No-op until the phone has joined a lobby.
      */
-    fun sendExtrinsicUpdate(pos: FloatArray, rotDegrees: FloatArray) {
+    fun sendExtrinsicUpdate(
+        pos: FloatArray,
+        rotDegrees: FloatArray,
+        calibrationMode: String = "arcore_pose",
+        sharedAnchorId: String = "",
+        anchorState: String = "local_arcore",
+        quality: Float = Float.NaN,
+    ) {
         if (joinedLobbyCode.length != 6 || !isConnected) return
         if (pos.size < 3 || rotDegrees.size < 3) return
         socket?.emit("extrinsic_update", JSONObject().apply {
             put("code", joinedLobbyCode)
             put("pos", JSONArray().apply { (0 until 3).forEach { put(pos[it].toDouble()) } })
             put("rot", JSONArray().apply { (0 until 3).forEach { put(rotDegrees[it].toDouble()) } })
+            put("calibration_mode", calibrationMode)
+            put("anchor_state", anchorState)
+            if (sharedAnchorId.isNotBlank()) put("shared_anchor_id", sharedAnchorId)
+            if (quality.isFinite()) put("quality", quality.toDouble())
         })
+    }
+
+    fun sendAnchorHosted(sharedAnchorId: String, pose: JSONObject, quality: Float) {
+        if (joinedLobbyCode.length != 6 || !isConnected || sharedAnchorId.isBlank()) return
+        socket?.emit("anchor_hosted", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("shared_anchor_id", sharedAnchorId)
+            put("pose", pose)
+            if (quality.isFinite()) put("quality", quality.toDouble())
+        })
+        Log.i(TAG, "Sent anchor_hosted id=$sharedAnchorId")
+    }
+
+    fun sendAnchorResolved(sharedAnchorId: String, pose: JSONObject, quality: Float) {
+        if (joinedLobbyCode.length != 6 || !isConnected || sharedAnchorId.isBlank()) return
+        socket?.emit("anchor_resolved", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("shared_anchor_id", sharedAnchorId)
+            put("pose", pose)
+            if (quality.isFinite()) put("quality", quality.toDouble())
+        })
+        Log.i(TAG, "Sent anchor_resolved id=$sharedAnchorId")
     }
 
     /**
@@ -558,6 +603,21 @@ class MocapServerClient(
     }
 }
 
+fun normalizeLobbyPreset(data: JSONObject?): String {
+    val lobby = data?.optJSONObject("lobby")
+    return listOf(
+        data?.optString("preset", "").orEmpty(),
+        lobby?.optString("preset", "").orEmpty(),
+        data?.optString("capture_preset", "").orEmpty(),
+        lobby?.optString("capture_preset", "").orEmpty(),
+        data?.optString("session_type", "").orEmpty(),
+        lobby?.optString("session_type", "").orEmpty(),
+    )
+        .map(String::trim)
+        .firstOrNull { it == "single_live" || it == "multi_live" }
+        ?: "multi_live"
+}
+
 /**
  * Lightweight landmark data to send to server.
  */
@@ -572,3 +632,8 @@ data class LandmarkData(
     val presence: Float = 0f,
     val confidence: Float = 0f,
 )
+
+
+
+
+

@@ -107,6 +107,8 @@ class CaptureNodeImplementationTest {
 
         assertTrue(app.contains("uiState.connectionState != ConnectionState.CONNECTED -> ConnectScreen"))
         assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED -> JoinSessionScreen"))
+        assertTrue(app.contains("onBackToLink = { viewModel.leaveSessionCodeEntry() }"))
+        assertTrue(app.contains("onBackToJoin = { viewModel.leaveToJoinCode() }"))
         assertTrue(app.contains("else -> CaptureScreen"))
         assertTrue(app.contains("uiState.lobbyJoinState != LobbyJoinState.JOINED"))
         assertTrue(app.contains("viewModel.applyServerLink(raw)"))
@@ -122,6 +124,27 @@ class CaptureNodeImplementationTest {
         assertTrue(join.contains("6-digit code"))
         assertTrue(join.contains("Join PC session"))
         assertTrue(join.contains("LinkedServerCard"))
+        assertTrue(join.contains("Delete digit"))
+        assertTrue(join.contains("Clear code"))
+        assertTrue(join.contains("KeyboardType.Number"))
+    }
+
+
+    @Test
+    fun phoneUsesServerLobbyPresetForSingleAndMultiCameraFlow() {
+        val client = appDir.resolve("src/main/java/com/pocketmocap/app/network/MocapServerClient.kt").readText()
+        val capture = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
+
+        assertTrue(client.contains("fun normalizeLobbyPreset"))
+        assertTrue(client.contains("lobby?.optString(\"preset\""))
+        assertTrue(client.contains("it == \"single_live\" || it == \"multi_live\""))
+        assertTrue(client.contains("listener.onLobbyJoined(code, name, preset)"))
+        assertTrue(capture.contains("val sessionIsSingleCamera = uiState.joinedLobbyPreset == \"single_live\""))
+        assertTrue(capture.contains("This one-camera session skips sync"))
+        assertTrue(capture.contains("This multi-camera session calibrates this phone before capture"))
+        assertTrue(capture.contains("Syncing multi-phone timing"))
+        assertTrue(capture.contains("CalibrationStep.SYNC_WAIT"))
+        assertTrue(capture.contains("CalibrationStep.FAILED"))
     }
 
     @Test
@@ -211,7 +234,6 @@ class CaptureNodeImplementationTest {
             "RealLandmarkOverlay" to capture,
             "private enum class CaptureView" to capture,
             "CameraReadyChrome" to capture,
-            "SyncCalibrationScreen" to capture,
             "SessionErrorScreen" to capture,
             "PermissionScreen" to capture,
             "SessionPill" to capture,
@@ -233,19 +255,20 @@ class CaptureNodeImplementationTest {
         assertTrue("Sync screen must use runtime calibration state", capture.contains("uiState.calibrationStep"))
         assertTrue("Join headline must decorate the session word", join.contains("decoratedLine = \"session.\"") && join.contains("decoratorColor = PocapViolet"))
         assertTrue("Connect headline must decorate Pocap PC with cyan", connect.contains("decoratedLine = \"Pocap PC.\"") && connect.contains("decoratorColor = PocapCyan"))
-        assertTrue("Phone capture screen must name PC-owned mocap recording", capture.contains("PC records mocap"))
+        assertTrue("Phone capture screen must name PC-owned mocap recording", capture.contains("PC records mocap") && capture.contains("RecordStepScreen"))
         assertTrue("Phone capture screen must expose screen evidence REC", capture.contains("Text(\"REC\"") && capture.contains("SCREEN MP4"))
         assertTrue("Phone sync screen must expose metric camera height adjustment", capture.contains("CameraHeightControl") && capture.contains("metric camera height"))
         assertTrue("Camera height adjustment must use the metric pipeline setter", capture.contains("viewModel::setManualCameraHeightMeters"))
-        assertTrue("Phone calibration must branch single-camera and multi-camera setup", capture.contains("joinedLobbyPreset") && capture.contains("single camera metric setup") && capture.contains("multi-camera sync + extrinsics"))
-        assertTrue("Phone calibration must send camera setup before live capture", capture.contains("Send camera calibration") && capture.contains("Send sync calibration"))
+        assertTrue("Phone calibration must branch single-camera and multi-camera setup", capture.contains("SetupStepScreen") && capture.contains("single camera live") && capture.contains("multi camera live"))
+        assertTrue("Phone calibration must send camera setup before live capture", capture.contains("Send camera calibration") && capture.contains("Send sync calibration") && capture.contains("Opening capture..."))
+        assertTrue("Phone capture flow must expose step-based navigation", capture.contains("SessionStepScaffold") && capture.contains("Single-camera guided flow") && capture.contains("Multi-camera guided flow"))
         assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
         assertFalse("Connect screen must not expose a second typed-link action", connect.contains("Use Link"))
         assertFalse("Capture screen must not use unclear LOG button text", capture.contains("Text(\"LOG\""))
         assertFalse("Phone app must not expose the old local diagnostic recorder", capture.contains("DIAG"))
         assertFalse("Phone app must not include local capture CSV names", capture.contains("metrics.csv") || capture.contains("skeleton_2d_landmarks.csv") || capture.contains("technical_3d_landmarks.csv"))
         assertFalse("Phone sync screen must not claim direct sync ownership", capture.contains("label = \"Start sync\""))
-        assertFalse("Camera action row must not use purple SYNC button copy", capture.contains("Text(\"SYNC\""))
+        assertTrue("Phone app should expose explicit capture navigation controls", capture.contains("Text(\"REC\"") && capture.contains("Back to code") )
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
 
@@ -312,3 +335,4 @@ class CaptureNodeImplementationTest {
     private fun String.containsJsonKey(key: String): Boolean =
         contains("\"$key\"") || contains("\\\"$key\\\"")
 }
+

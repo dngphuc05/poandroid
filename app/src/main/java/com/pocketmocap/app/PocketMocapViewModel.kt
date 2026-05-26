@@ -15,6 +15,8 @@ import androidx.lifecycle.viewModelScope
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
 import com.pocketmocap.app.network.ServerLinkParser
+import com.pocketmocap.app.calibration.CloudAnchorEngine
+import com.pocketmocap.app.calibration.CloudAnchorResult
 import com.pocketmocap.app.pipeline.BoneConstraintEngine
 import com.pocketmocap.app.pipeline.HybridPosePipeline
 import com.pocketmocap.app.pipeline.LandmarkFallbackEngine
@@ -88,11 +90,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val manualCameraHeightMeters: Float = 1.17f,
         val manualSubjectHeightMeters: Float = Float.NaN,
         val errorMessage: String? = null,
+        val anchorRole: String = "",
+        val sharedAnchorId: String = "",
+        val anchorState: String = "not_started",
+        val calibrationGate: String = "",
     )
 
     enum class ConnectionState { DISCONNECTED, CONNECTING, CONNECTED }
     enum class LobbyJoinState { IDLE, JOINING, JOINED }
-    enum class CalibrationStep { PENDING, INTRINSIC_CALC, EXTRINSIC_ANCHOR, BOOTSTRAP, COMPLETE }
+    enum class CalibrationStep { PENDING, INTRINSIC_CALC, EXTRINSIC_ANCHOR, SYNC_WAIT, BOOTSTRAP, COMPLETE, FAILED }
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -197,6 +203,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // Lobby extrinsic reporting — throttle the PC-facing extrinsic_update stream to ~2 Hz.
     private var extrinsicEmitCountdown = 0
     private var deviceReadyReported = false
+    private var anchorHostedReported = false
+    private var anchorResolvedReported = false
+    private var pendingAnchorIdToResolve = ""
+    private var cloudAnchorEngine: CloudAnchorEngine? = null
 
     init {
         loadManualMetricProfile()
@@ -364,15 +374,33 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         }
 
         override fun onLobbyJoined(code: String, name: String, preset: String) {
+            val normalizedCode = code.filter(Char::isDigit).take(6)
             val normalizedPreset = preset.takeIf { it == "single_live" || it == "multi_live" } ?: "multi_live"
-            Log.i(TAG, "onLobbyJoined: code=$code name=$name preset=$normalizedPreset")
+            val isSingleCamera = normalizedPreset == "single_live"
+            Log.w(TAG, "JOINED LOBBY PRESET => rawCode=$code normalizedCode=$normalizedCode name=$name preset=$normalizedPreset")
+            if (normalizedCode.length != 6) {
+                _uiState.update { it.copy(
+                    lobbyJoinState = LobbyJoinState.IDLE,
+                    errorMessage = "PC returned an invalid session code",
+                ) }
+                return
+            }
             deviceReadyReported = false
+            anchorHostedReported = false
+            anchorResolvedReported = false
+            pendingAnchorIdToResolve = ""
             _uiState.update { it.copy(
-                lobbyCodeInput = code,
-                joinedLobbyCode = code,
+                lobbyCodeInput = normalizedCode,
+                joinedLobbyCode = normalizedCode,
                 joinedLobbyName = name,
                 joinedLobbyPreset = normalizedPreset,
                 lobbyJoinState = LobbyJoinState.JOINED,
+                calibrationStep = CalibrationStep.PENDING,
+                bootstrapProgress = 0f,
+                anchorRole = "",
+                sharedAnchorId = "",
+                anchorState = if (isSingleCamera) "not_used" else "not_started",
+                calibrationGate = if (isSingleCamera) "single_camera" else "",
                 errorMessage = null,
             )}
         }
@@ -394,6 +422,61 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             )}
         }
 
+        override fun onAnchorStatus(lobby: JSONObject) {
+            viewModelScope.launch {
+                val lobbyPreset = lobby.optString("preset", "")
+                    .takeIf { it == "single_live" || it == "multi_live" }
+                val myDeviceId = deviceId()
+                val devices = lobby.optJSONArray("devices")
+                var role = ""
+                var deviceAnchorState = lobby.optString("anchor_state", "not_started")
+                for (i in 0 until (devices?.length() ?: 0)) {
+                    val d = devices?.optJSONObject(i) ?: continue
+                    if (d.optString("device_id") == myDeviceId) {
+                        role = d.optString("anchor_role", "")
+                        deviceAnchorState = d.optString("anchor_state", deviceAnchorState)
+                    }
+                }
+                _uiState.update { state ->
+                    val activePreset = lobbyPreset ?: state.joinedLobbyPreset
+                    val gate = lobby.optString("calibration_gate", state.calibrationGate)
+                    val nextStep = when {
+                        activePreset != "multi_live" -> state.calibrationStep
+                        gate == "ready" && state.calibrationStep == CalibrationStep.EXTRINSIC_ANCHOR -> CalibrationStep.BOOTSTRAP
+                        gate == "ready" && state.calibrationStep == CalibrationStep.SYNC_WAIT -> CalibrationStep.BOOTSTRAP
+                        gate == "anchor_quality_low" -> CalibrationStep.FAILED
+                        else -> state.calibrationStep
+                    }
+                    state.copy(
+                        joinedLobbyPreset = activePreset,
+                        anchorRole = role,
+                        sharedAnchorId = lobby.optString("shared_anchor_id", state.sharedAnchorId),
+                        anchorState = deviceAnchorState,
+                        calibrationGate = gate,
+                        calibrationStep = nextStep,
+                        errorMessage = if (gate == "anchor_quality_low") "Cloud Anchor quality is too low. Rescan the room and try again." else state.errorMessage,
+                    )
+                }
+            }
+            maybeRunCloudAnchorCalibration()
+        }
+
+        override fun onAnchorResolveRequest(sharedAnchorId: String) {
+            if (_uiState.value.joinedLobbyPreset != "multi_live") {
+                Log.i(TAG, "Ignoring Cloud Anchor resolve request for single-camera session")
+                return
+            }
+            pendingAnchorIdToResolve = sharedAnchorId
+            anchorResolvedReported = false
+            _uiState.update { state ->
+                state.copy(
+                    sharedAnchorId = sharedAnchorId,
+                    anchorRole = "resolver",
+                    anchorState = "resolve_requested",
+                )
+            }
+            maybeRunCloudAnchorCalibration()
+        }
         override fun onDisconnected() {
             Log.i(TAG, "onDisconnected")
             autoResumeServerAfterReconnect =
@@ -417,10 +500,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         override fun onCalibrationAck(success: Boolean, state: String) {
             Log.i(TAG, "onCalibrationAck: success=$success state=$state")
             if (success) {
-                _uiState.update { it.copy(calibrationStep = CalibrationStep.BOOTSTRAP) }
+                val isSingle = _uiState.value.joinedLobbyPreset == "single_live"
+                val nextStep = if (isSingle) CalibrationStep.BOOTSTRAP else CalibrationStep.EXTRINSIC_ANCHOR
+                _uiState.update { it.copy(calibrationStep = nextStep, errorMessage = null) }
                 pipeline?.onCalibrationConfirmed()
+                if (!isSingle) {
+                    maybeRunCloudAnchorCalibration()
+                }
             } else {
-                _uiState.update { it.copy(errorMessage = "Calibration failed") }
+                _uiState.update { it.copy(calibrationStep = CalibrationStep.FAILED, errorMessage = "Calibration failed") }
             }
         }
 
@@ -429,7 +517,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             val progress = if (target > 0) collected.toFloat() / target else 0f
             _uiState.update { it.copy(bootstrapProgress = progress) }
             if (complete) {
-                _uiState.update { it.copy(calibrationStep = CalibrationStep.COMPLETE) }
+                _uiState.update { it.copy(calibrationStep = CalibrationStep.COMPLETE, errorMessage = null) }
                 pipeline?.onBootstrapComplete()
                 reportDeviceReadyToLobby()
             }
@@ -816,6 +904,94 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         serverClient.sendDeviceReady(true)
     }
 
+    fun bindCloudAnchorEngine(engine: CloudAnchorEngine?) {
+        cloudAnchorEngine = engine
+        if (engine != null) {
+            maybeRunCloudAnchorCalibration()
+        }
+    }
+
+    private fun maybeRunCloudAnchorCalibration() {
+        val state = _uiState.value
+        if (state.joinedLobbyPreset != "multi_live") return
+        if (state.joinedLobbyCode.length != 6) return
+        val engine = cloudAnchorEngine ?: return
+        when {
+            state.anchorRole == "host" && !anchorHostedReported -> {
+                anchorHostedReported = true
+                _uiState.update { it.copy(anchorState = "hosting", calibrationGate = "waiting_for_cloud_anchor_host") }
+                engine.hostSharedAnchor(::handleHostedCloudAnchorResult)
+            }
+            state.anchorRole == "resolver" &&
+                pendingAnchorIdToResolve.isNotBlank() &&
+                !anchorResolvedReported -> {
+                anchorResolvedReported = true
+                _uiState.update { it.copy(anchorState = "resolving", sharedAnchorId = pendingAnchorIdToResolve) }
+                engine.resolveSharedAnchor(pendingAnchorIdToResolve, ::handleResolvedCloudAnchorResult)
+            }
+        }
+    }
+
+    private fun handleHostedCloudAnchorResult(result: CloudAnchorResult) {
+        viewModelScope.launch {
+            when (result.state) {
+                "hosting" -> _uiState.update {
+                    it.copy(anchorState = "hosting", errorMessage = null)
+                }
+                "hosted" -> {
+                    _uiState.update {
+                        it.copy(
+                            anchorState = "hosted",
+                            sharedAnchorId = result.sharedAnchorId,
+                            errorMessage = null,
+                        )
+                    }
+                    serverClient.sendAnchorHosted(result.sharedAnchorId, result.poseJson(), result.quality)
+                }
+                else -> {
+                    anchorHostedReported = false
+                    _uiState.update {
+                        it.copy(
+                            calibrationStep = CalibrationStep.FAILED,
+                            anchorState = "failed",
+                            errorMessage = result.errorMessage.ifBlank { "Cloud Anchor hosting failed" },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleResolvedCloudAnchorResult(result: CloudAnchorResult) {
+        viewModelScope.launch {
+            when (result.state) {
+                "resolving" -> _uiState.update {
+                    it.copy(anchorState = "resolving", sharedAnchorId = result.sharedAnchorId, errorMessage = null)
+                }
+                "resolved" -> {
+                    _uiState.update {
+                        it.copy(
+                            anchorState = "resolved",
+                            sharedAnchorId = result.sharedAnchorId,
+                            errorMessage = null,
+                        )
+                    }
+                    serverClient.sendAnchorResolved(result.sharedAnchorId, result.poseJson(), result.quality)
+                }
+                else -> {
+                    anchorResolvedReported = false
+                    _uiState.update {
+                        it.copy(
+                            calibrationStep = CalibrationStep.FAILED,
+                            anchorState = "failed",
+                            errorMessage = result.errorMessage.ifBlank { "Cloud Anchor resolve failed" },
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     private fun maybeSendExtrinsicUpdate(worldTracking: WorldTrackingSnapshot?) {
         if (_uiState.value.joinedLobbyCode.length != 6) return
         val pos = worldTracking?.cameraPosition?.takeIf { it.size >= 3 } ?: return
@@ -828,7 +1004,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         serverClient.sendExtrinsicUpdate(
             pos = floatArrayOf(pos[0], pos[1], pos[2]),
             rotDegrees = rotDeg,
+            calibrationMode = if (_uiState.value.joinedLobbyPreset == "single_live") {
+                "single_camera_ar"
+            } else {
+                "multi_camera_cloud_anchor"
+            },
+            sharedAnchorId = _uiState.value.sharedAnchorId,
+            anchorState = _uiState.value.anchorState,
+            quality = worldTracking.confidence,
         )
+        maybeRunCloudAnchorCalibration()
     }
 
     /** Quaternion (x, y, z, w) → intrinsic XYZ euler angles in degrees. Returns zeros if absent. */
@@ -2313,6 +2498,62 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         ) }
     }
 
+
+    fun leaveSessionCodeEntry() {
+        userInitiatedDisconnect = true
+        autoResumeServerAfterReconnect = false
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        serverClient.disconnect()
+        pipeline?.stop()
+        _uiState.update { it.copy(
+            connectionState = ConnectionState.DISCONNECTED,
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
+            lobbyJoinState = LobbyJoinState.IDLE,
+            calibrationStep = CalibrationStep.PENDING,
+            bootstrapProgress = 0f,
+            errorMessage = null,
+        ) }
+    }
+
+    fun leaveToJoinCode() {
+        userInitiatedDisconnect = false
+        autoResumeServerAfterReconnect = false
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        pipeline?.stop()
+        _uiState.update { it.copy(
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
+            lobbyJoinState = LobbyJoinState.IDLE,
+            calibrationStep = CalibrationStep.PENDING,
+            bootstrapProgress = 0f,
+            errorMessage = null,
+        ) }
+    }
+
+    fun leaveJoinedSession() {
+        userInitiatedDisconnect = false
+        autoResumeServerAfterReconnect = false
+        clearServerPoseArrays()
+        resetServerTransportDiagnostics()
+        serverClient.disconnect()
+        pipeline?.stop()
+        _uiState.update { it.copy(
+            connectionState = ConnectionState.CONNECTED,
+            joinedLobbyCode = "",
+            joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
+            lobbyJoinState = LobbyJoinState.IDLE,
+            calibrationStep = CalibrationStep.PENDING,
+            bootstrapProgress = 0f,
+            errorMessage = null,
+        ) }
+    }
+
     fun joinSession(code: String = _uiState.value.lobbyCodeInput) {
         val normalizedCode = code.filter(Char::isDigit).take(6)
         if (normalizedCode.length != 6) {
@@ -2515,3 +2756,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             .joinToString(" ")
             .ifBlank { "Pocap Phone" }
 }
+
+
+
+
