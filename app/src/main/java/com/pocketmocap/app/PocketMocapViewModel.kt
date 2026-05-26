@@ -21,7 +21,6 @@ import com.pocketmocap.app.pipeline.BoneConstraintEngine
 import com.pocketmocap.app.pipeline.HybridPosePipeline
 import com.pocketmocap.app.pipeline.LandmarkFallbackEngine
 import com.pocketmocap.app.pipeline.LandmarkKalman2D
-import com.pocketmocap.app.pipeline.ObservedJointDisplayFilter
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.BodyTurnTransitionDetector
 import com.pocketmocap.app.tracking.enforceCanonicalLimbEndpoints
@@ -55,6 +54,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         private const val VIS_OCCLUDE = 0.20f
         // Below this visibility a joint is uncertain (conservative EMA)
         private const val VIS_UNCERTAIN = 0.50f
+        // Predicted hidden joints stay visibly marked on the phone overlay without
+        // raising the confidence sent to the server reconstruction pipeline.
+        private const val DISPLAY_PREDICTED_VIS = 0.34f
         private const val MIN_STABLE_SERVER_FRAMES = 6
         private const val MAX_AR_SCENE_HOLD_FRAMES = 18
         private const val MAX_TECHNICAL_SCENE_MISSING_FRAMES = 15
@@ -220,8 +222,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverPoseZ != null
 
     /**
-     * Direct-draw callback fired from the analysis thread with observed
-     * MediaPipe joints filtered for display.
+     * Direct-draw callback fired from the analysis thread with the completed
+     * 33-point MediaPipe pose prepared for display.
      * Bypasses Compose recomposition and Vsync coalescing — set by CaptureScreen,
      * cleared on dispose. Signature: (xNorm, yNorm, visibility, imageWidth, imageHeight)
      */
@@ -238,6 +240,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private val _completedX = FloatArray(33)
     private val _completedY = FloatArray(33)
     private val _completedVis = FloatArray(33)
+    private val _displayFullVis = FloatArray(33)
     private val _lastReliable2DX = FloatArray(33)
     private val _lastReliable2DY = FloatArray(33)
     private val _hasLastReliable2D = BooleanArray(33)
@@ -252,7 +255,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // low-confidence joints to satisfy those ratios each frame.
     private val _boneConstraints = BoneConstraintEngine(minConfidence = 0.5f)
     private val _landmarkFallback = LandmarkFallbackEngine()
-    private val _observedDisplayFilter = ObservedJointDisplayFilter()
     private var serverCalibrationWidth = 1920
     private var serverCalibrationHeight = 1080
     private var autoResumeServerAfterReconnect = false
@@ -788,25 +790,32 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _completedVis,
                         )
                         val visible = _completedVis.count { it > 0.5f }
-                        // Draw the phone overlay from observed MediaPipe points, not plausible
-                        // completion. Hidden-joint repair is useful for server packets, but it
-                        // should not paint ghost joints away from the actor on the live camera.
-                        val displayFrame = _observedDisplayFilter.update(xNorm, yNorm, visibility)
+                        for (i in 0 until 33) {
+                            val hasPrediction = _completedX[i].isFinite() && _completedY[i].isFinite()
+                            _displayFullVis[i] = when {
+                                _completedVis[i] >= VIS_OCCLUDE -> _completedVis[i].coerceIn(0f, 1f)
+                                hasPrediction -> DISPLAY_PREDICTED_VIS
+                                else -> 0f
+                            }
+                        }
+                        val displayX = _completedX.copyOf()
+                        val displayY = _completedY.copyOf()
+                        val displayVis = _displayFullVis.copyOf()
                         directLandmarkCallback?.invoke(
-                            displayFrame.x,
-                            displayFrame.y,
-                            displayFrame.visibility,
+                            displayX,
+                            displayY,
+                            displayVis,
                             imageWidth,
                             imageHeight,
                         )
                         // mutableStateOf writes for warning banner, joint count, server fallback
-                        poseLandmarksX = displayFrame.x
-                        poseLandmarksY = displayFrame.y
+                        poseLandmarksX = displayX
+                        poseLandmarksY = displayY
                         poseLandmarksZ = zWorld
                         worldLandmarksX = xWorld
                         worldLandmarksY = yWorld
                         worldLandmarksZ = zWorld
-                        poseVisibility = displayFrame.visibility
+                        poseVisibility = displayVis
                         updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
                         maybeSendExtrinsicUpdate(worldTracking)
                         updateClientTechnicalPose()
@@ -828,7 +837,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         _kalman.forEach { it.reset() }
                         _boneConstraints.reset()
                         _landmarkFallback.reset()
-                        _observedDisplayFilter.reset()
+                        _displayFullVis.fill(0f)
                         _hasLastGoodRelativeZ.fill(false)
                         poseLandmarksX = null
                         poseLandmarksY = null

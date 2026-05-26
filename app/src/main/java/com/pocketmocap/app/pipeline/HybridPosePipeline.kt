@@ -84,7 +84,7 @@ class HybridPosePipeline(
 
     companion object {
         private const val TAG = "HybridPosePipeline"
-        private const val MODEL_ASSET_PATH = "pose_landmarker_lite.task"  // 8ms vs full 25ms; fresher results beat marginal accuracy gain for fast motion
+        private const val MODEL_ASSET_PATH = "pose_landmarker_full.task"  // Better hidden-joint stability while staying lighter than heavy.
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
         private const val ML_TRANSPORT_IMAGE_SIZE = 320

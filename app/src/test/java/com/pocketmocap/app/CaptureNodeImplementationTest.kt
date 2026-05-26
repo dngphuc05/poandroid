@@ -325,6 +325,21 @@ class CaptureNodeImplementationTest {
         assertFalse("Realtime landmark processing must not own screen projection", pipeline.contains("MediaProjection"))
     }
 
+    @Test
+    fun phoneUsesFullLandmarkerAndKeepsPredictedThirtyThreePointOverlayVisible() {
+        val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
+        val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
+
+        assertTrue(pipeline.contains("pose_landmarker_full.task"))
+        assertTrue(viewModel.contains("DISPLAY_PREDICTED_VIS"))
+        assertTrue(viewModel.contains("_displayFullVis"))
+        assertTrue(viewModel.contains("_completedX.copyOf()"))
+        assertTrue(viewModel.contains("_completedY.copyOf()"))
+        assertTrue(viewModel.contains("_displayFullVis.copyOf()"))
+        assertTrue(viewModel.contains("directLandmarkCallback?.invoke("))
+        assertFalse("Phone overlay must not drop back to observed-only hidden joints", viewModel.contains("val displayFrame = _observedDisplayFilter.update"))
+    }
+
     private fun locateAppDir(): File {
         val userDir = System.getProperty("user.dir") ?: "."
         var current = File(userDir).canonicalFile
