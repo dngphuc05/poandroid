@@ -442,9 +442,9 @@ private fun SetupStepScreen(
         stepTitle = if (isSingleCamera) "single-cam setup" else "multi-cam setup",
         headline = if (isSingleCamera) "Single-cam\ncalibration." else "Multi-cam\ncalibration.",
         description = if (isSingleCamera)
-            "This one-camera session skips sync. Set the phone camera height, send calibration, then Pocap moves straight into live capture."
+            "Set camera height, send calibration, then capture starts."
         else
-            "This multi-camera session calibrates this phone before capture. Sync is part of setup now; later re-sync only appears inside live capture if phones drift.",
+            "Sync phones, calibrate this camera, then capture starts.",
         steps = if (isSingleCamera) listOf("JOIN", "CALIB", "CAPT", "RECO") else listOf("JOIN", "SYNC", "CALIB", "CAPT", "RECO"),
         activeIndex = when {
             isSingleCamera && step == CalibrationStep.PENDING -> 1
