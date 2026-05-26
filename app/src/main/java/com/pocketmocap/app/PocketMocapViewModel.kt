@@ -424,8 +424,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
         override fun onAnchorStatus(lobby: JSONObject) {
             viewModelScope.launch {
-                val lobbyPreset = lobby.optString("preset", "")
-                    .takeIf { it == "single_live" || it == "multi_live" }
+                val lobbyPreset = com.pocketmocap.app.network.normalizeLobbyPreset(
+                    JSONObject().put("lobby", lobby),
+                )
                 val myDeviceId = deviceId()
                 val devices = lobby.optJSONArray("devices")
                 var role = ""
@@ -438,7 +439,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     }
                 }
                 _uiState.update { state ->
-                    val activePreset = lobbyPreset ?: state.joinedLobbyPreset
+                    val activePreset = lobbyPreset.takeIf { it == "single_live" || it == "multi_live" }
+                        ?: state.joinedLobbyPreset
                     val gate = lobby.optString("calibration_gate", state.calibrationGate)
                     val nextStep = when {
                         activePreset != "multi_live" -> state.calibrationStep

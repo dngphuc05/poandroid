@@ -605,7 +605,7 @@ class MocapServerClient(
 
 fun normalizeLobbyPreset(data: JSONObject?): String {
     val lobby = data?.optJSONObject("lobby")
-    return listOf(
+    val explicitPreset = listOf(
         data?.optString("preset", "").orEmpty(),
         lobby?.optString("preset", "").orEmpty(),
         data?.optString("capture_preset", "").orEmpty(),
@@ -615,7 +615,15 @@ fun normalizeLobbyPreset(data: JSONObject?): String {
     )
         .map(String::trim)
         .firstOrNull { it == "single_live" || it == "multi_live" }
-        ?: "multi_live"
+    if (explicitPreset != null) return explicitPreset
+
+    val maxDevices = listOf(
+        data?.optInt("max_devices", -1) ?: -1,
+        lobby?.optInt("max_devices", -1) ?: -1,
+        data?.optInt("phone_limit", -1) ?: -1,
+        lobby?.optInt("phone_limit", -1) ?: -1,
+    ).firstOrNull { it > 0 }
+    return if (maxDevices == 1) "single_live" else "multi_live"
 }
 
 /**

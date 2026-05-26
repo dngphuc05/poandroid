@@ -70,6 +70,14 @@ class CloudAnchorContractTest {
             normalizeLobbyPreset(JSONObject("""{"lobby":{"capture_preset":"single_live"}}""")),
         )
         assertEquals(
+            "single_live",
+            normalizeLobbyPreset(JSONObject("""{"lobby":{"max_devices":1}}""")),
+        )
+        assertEquals(
+            "single_live",
+            normalizeLobbyPreset(JSONObject("""{"max_devices":1}""")),
+        )
+        assertEquals(
             "multi_live",
             normalizeLobbyPreset(JSONObject("""{"preset":"unknown"}""")),
         )
@@ -80,7 +88,7 @@ class CloudAnchorContractTest {
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
 
         assertTrue(viewModel.contains("joinedLobbyPreset = activePreset"))
-        assertTrue(viewModel.contains("val activePreset = lobbyPreset ?: state.joinedLobbyPreset"))
+        assertTrue(viewModel.contains("val activePreset = lobbyPreset.takeIf"))
         assertTrue(viewModel.contains("if (_uiState.value.joinedLobbyPreset != \"multi_live\")"))
         assertTrue(viewModel.contains("Ignoring Cloud Anchor resolve request for single-camera session"))
     }
