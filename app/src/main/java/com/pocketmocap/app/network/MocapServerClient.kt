@@ -275,6 +275,28 @@ class MocapServerClient(
         Log.i(TAG, "Sent device_ready=$ready for lobby=$joinedLobbyCode")
     }
 
+    fun sendCaptureStart(phoneVideoPath: String = "") {
+        if (joinedLobbyCode.length != 6 || !isConnected) {
+            listener.onError("Join an online PC session before recording")
+            return
+        }
+        socket?.emit("capture_start", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("trigger", "phone_rec")
+            if (phoneVideoPath.isNotBlank()) put("phone_video_path", phoneVideoPath.take(512))
+        })
+        Log.i(TAG, "Sent capture_start for lobby=$joinedLobbyCode")
+    }
+
+    fun sendCaptureStop() {
+        if (joinedLobbyCode.length != 6 || !isConnected) return
+        socket?.emit("capture_stop", JSONObject().apply {
+            put("code", joinedLobbyCode)
+            put("trigger", "phone_rec")
+        })
+        Log.i(TAG, "Sent capture_stop for lobby=$joinedLobbyCode")
+    }
+
     /** Create the WebRTC channel and fire the offer over Socket.IO. */
     private fun initiateRtc() {
         if (rtcChannel != null) return
@@ -651,8 +673,3 @@ data class LandmarkData(
     val presence: Float = 0f,
     val confidence: Float = 0f,
 )
-
-
-
-
-

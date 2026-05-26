@@ -13,9 +13,11 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.os.ParcelFileDescriptor
+import android.os.ResultReceiver
 import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.WindowManager
@@ -29,6 +31,7 @@ class ScreenEvidenceRecordingService : Service() {
     private var mediaRecorder: MediaRecorder? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var outputTarget: RecordingOutputTarget? = null
+    private var resultReceiver: ResultReceiver? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -48,15 +51,18 @@ class ScreenEvidenceRecordingService : Service() {
 
     private fun startRecording(intent: Intent) {
         if (mediaRecorder != null) return
+        resultReceiver = resultReceiver(intent)
 
         val resultCode = intent.getIntExtra(EXTRA_RESULT_CODE, 0)
         val resultData = projectionIntent(intent) ?: run {
+            notifyFailed("REC permission data missing")
             stopSelf()
             return
         }
         startForeground(NOTIFICATION_ID, buildNotification())
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         val projection = projectionManager.getMediaProjection(resultCode, resultData) ?: run {
+            notifyFailed("REC projection unavailable")
             stopSelf()
             return
         }
@@ -71,33 +77,39 @@ class ScreenEvidenceRecordingService : Service() {
 
         val metrics = screenMetrics()
         val output = nextOutputTarget()
-        val recorder = newMediaRecorder().apply {
-            setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            setVideoSize(metrics.widthPixels, metrics.heightPixels)
-            setVideoFrameRate(30)
-            setVideoEncodingBitRate(8_000_000)
-            output.applyTo(this)
-            prepare()
+        try {
+            val recorder = newMediaRecorder().apply {
+                setVideoSource(MediaRecorder.VideoSource.SURFACE)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+                setVideoSize(metrics.widthPixels, metrics.heightPixels)
+                setVideoFrameRate(30)
+                setVideoEncodingBitRate(8_000_000)
+                output.applyTo(this)
+                prepare()
+            }
+
+            val display = projection.createVirtualDisplay(
+                "pocap-screen-evidence",
+                metrics.widthPixels,
+                metrics.heightPixels,
+                metrics.densityDpi,
+                DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+                recorder.surface,
+                null,
+                null,
+            )
+
+            mediaProjection = projection
+            mediaRecorder = recorder
+            virtualDisplay = display
+            outputTarget = output
+            recorder.start()
+            notifyStarted(output.displayPath())
+        } catch (error: Exception) {
+            notifyFailed(error.message ?: "REC start failed")
+            stopRecording()
         }
-
-        val display = projection.createVirtualDisplay(
-            "pocap-screen-evidence",
-            metrics.widthPixels,
-            metrics.heightPixels,
-            metrics.densityDpi,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            recorder.surface,
-            null,
-            null,
-        )
-
-        mediaProjection = projection
-        mediaRecorder = recorder
-        virtualDisplay = display
-        outputTarget = output
-        recorder.start()
     }
 
     private fun stopRecording() {
@@ -108,11 +120,13 @@ class ScreenEvidenceRecordingService : Service() {
         runCatching { mediaRecorder?.release() }
         mediaRecorder = null
         runCatching { outputTarget?.finish(this) }
+        val stoppedOutput = outputTarget?.displayPath()
         outputTarget = null
         val projection = mediaProjection
         mediaProjection = null
         runCatching { projection?.stop() }
         stopForeground(STOP_FOREGROUND_REMOVE)
+        notifyStopped(stoppedOutput)
         stopSelf()
     }
 
@@ -157,6 +171,14 @@ class ScreenEvidenceRecordingService : Service() {
             intent.getParcelableExtra(EXTRA_RESULT_DATA)
         }
 
+    private fun resultReceiver(intent: Intent): ResultReceiver? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_RESULT_RECEIVER, ResultReceiver::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_RESULT_RECEIVER)
+        }
+
     private fun newMediaRecorder(): MediaRecorder =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(this)
@@ -194,6 +216,7 @@ class ScreenEvidenceRecordingService : Service() {
     private sealed class RecordingOutputTarget {
         abstract fun applyTo(recorder: MediaRecorder)
         abstract fun finish(context: Context)
+        abstract fun displayPath(): String
 
         data class FilePath(private val file: File) : RecordingOutputTarget() {
             override fun applyTo(recorder: MediaRecorder) {
@@ -201,6 +224,8 @@ class ScreenEvidenceRecordingService : Service() {
             }
 
             override fun finish(context: Context) = Unit
+
+            override fun displayPath(): String = file.absolutePath
         }
 
         data class MediaStoreUri(
@@ -222,22 +247,60 @@ class ScreenEvidenceRecordingService : Service() {
                     )
                 }
             }
+
+            override fun displayPath(): String = uri.toString()
         }
     }
 
+    private fun notifyStarted(outputPath: String) {
+        resultReceiver?.send(
+            RESULT_STARTED,
+            Bundle().apply { putString(EXTRA_OUTPUT_PATH, outputPath) },
+        )
+    }
+
+    private fun notifyStopped(outputPath: String?) {
+        resultReceiver?.send(
+            RESULT_STOPPED,
+            Bundle().apply { putString(EXTRA_OUTPUT_PATH, outputPath.orEmpty()) },
+        )
+        resultReceiver = null
+    }
+
+    private fun notifyFailed(message: String) {
+        resultReceiver?.send(
+            RESULT_FAILED,
+            Bundle().apply { putString(EXTRA_ERROR, message) },
+        )
+        resultReceiver = null
+    }
+
     companion object {
+        const val RESULT_STARTED = 1
+        const val RESULT_STOPPED = 2
+        const val RESULT_FAILED = 3
+        const val EXTRA_OUTPUT_PATH = "output_path"
+        const val EXTRA_ERROR = "error"
+
         private const val ACTION_START = "com.pocketmocap.app.recording.START_SCREEN_EVIDENCE"
         private const val ACTION_STOP = "com.pocketmocap.app.recording.STOP_SCREEN_EVIDENCE"
         private const val EXTRA_RESULT_CODE = "result_code"
         private const val EXTRA_RESULT_DATA = "result_data"
+        private const val EXTRA_RESULT_RECEIVER = "result_receiver"
         private const val CHANNEL_ID = "pocap_screen_evidence"
         private const val NOTIFICATION_ID = 260526
 
-        fun startIntent(context: Context, resultCode: Int, resultData: Intent): Intent =
+        fun startIntent(
+            context: Context,
+            resultCode: Int,
+            resultData: Intent,
+            receiver: ResultReceiver,
+        ): Intent =
             Intent(context, ScreenEvidenceRecordingService::class.java).apply {
                 action = ACTION_START
                 putExtra(EXTRA_RESULT_CODE, resultCode)
                 putExtra(EXTRA_RESULT_DATA, resultData)
+                putExtra(EXTRA_RESULT_RECEIVER, receiver)
             }
 
         fun stopIntent(context: Context): Intent =

@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.media.projection.MediaProjectionManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.ResultReceiver
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,14 +23,36 @@ import com.pocketmocap.app.recording.ScreenEvidenceRecordingService
 class MainActivity : ComponentActivity() {
 
     private val viewModel: PocketMocapViewModel by viewModels()
+    private val screenEvidenceReceiver = object : ResultReceiver(Handler(Looper.getMainLooper())) {
+        override fun onReceiveResult(resultCode: Int, resultData: Bundle?) {
+            when (resultCode) {
+                ScreenEvidenceRecordingService.RESULT_STARTED -> {
+                    val output = resultData?.getString(ScreenEvidenceRecordingService.EXTRA_OUTPUT_PATH).orEmpty()
+                    viewModel.markScreenEvidenceRecordingStarted(output)
+                }
+                ScreenEvidenceRecordingService.RESULT_STOPPED -> {
+                    viewModel.markScreenEvidenceRecordingStopped()
+                }
+                ScreenEvidenceRecordingService.RESULT_FAILED -> {
+                    val reason = resultData?.getString(ScreenEvidenceRecordingService.EXTRA_ERROR)
+                        ?: "REC failed"
+                    viewModel.markScreenEvidenceRecordingStopped(reason)
+                }
+            }
+        }
+    }
     private val screenEvidenceLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { result ->
         val data = result.data
         if (result.resultCode == Activity.RESULT_OK && data != null) {
-            val intent = ScreenEvidenceRecordingService.startIntent(this, result.resultCode, data)
+            val intent = ScreenEvidenceRecordingService.startIntent(
+                this,
+                result.resultCode,
+                data,
+                screenEvidenceReceiver,
+            )
             ContextCompat.startForegroundService(this, intent)
-            viewModel.markScreenEvidenceRecordingStarted()
         } else {
             viewModel.markScreenEvidenceRecordingStopped("REC permission cancelled")
         }
@@ -59,6 +84,5 @@ class MainActivity : ComponentActivity() {
 
     private fun stopScreenEvidenceRecording() {
         startService(ScreenEvidenceRecordingService.stopIntent(this))
-        viewModel.markScreenEvidenceRecordingStopped()
     }
 }

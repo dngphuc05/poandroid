@@ -311,10 +311,16 @@ class CaptureNodeImplementationTest {
         assertTrue(capture.contains("REC saves this phone screen, person, and 2D landmarks as MP4"))
         assertTrue(capture.contains("PocapChip(") && capture.contains("label = \"rec\""))
         assertTrue(service.contains("MediaRecorder.VideoEncoder.H264"))
+        assertTrue(service.contains("ResultReceiver"))
+        assertTrue(service.contains("RESULT_STARTED"))
+        assertTrue(service.contains("notifyStarted(output.displayPath())"))
         assertTrue(service.contains("MediaStore.Video.Media.EXTERNAL_CONTENT_URI"))
         assertTrue(service.contains("Environment.DIRECTORY_MOVIES}/Pocap"))
         assertTrue(service.contains("Environment.DIRECTORY_MOVIES"))
         assertTrue(service.contains("pocap-screen-evidence"))
+        assertTrue(mainActivity.contains("screenEvidenceReceiver"))
+        assertTrue(viewModel.contains("serverClient.sendCaptureStart(phoneVideoPath)"))
+        assertTrue(viewModel.contains("serverClient.sendCaptureStop()"))
         assertFalse("Realtime landmark processing must not own MP4 encoding", pipeline.contains("MediaRecorder"))
         assertFalse("Realtime landmark processing must not own screen projection", pipeline.contains("MediaProjection"))
     }
@@ -337,4 +343,3 @@ class CaptureNodeImplementationTest {
     private fun String.containsJsonKey(key: String): Boolean =
         contains("\"$key\"") || contains("\\\"$key\\\"")
 }
-

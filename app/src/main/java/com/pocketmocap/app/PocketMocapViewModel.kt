@@ -2741,15 +2741,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         _uiState.update { it.copy(errorMessage = null) }
     }
 
-    fun markScreenEvidenceRecordingStarted() {
+    fun markScreenEvidenceRecordingStarted(phoneVideoPath: String = "") {
         isScreenEvidenceRecording = true
         screenEvidenceRecordingStatus = "Recording overlay MP4"
+        serverClient.sendCaptureStart(phoneVideoPath)
         clearError()
     }
 
     fun markScreenEvidenceRecordingStopped(reason: String = "REC off") {
+        val wasRecording = isScreenEvidenceRecording
         isScreenEvidenceRecording = false
         screenEvidenceRecordingStatus = reason
+        if (wasRecording) {
+            serverClient.sendCaptureStop()
+        }
     }
 
     private fun deviceId(): String {
@@ -2769,4 +2774,3 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             .joinToString(" ")
             .ifBlank { "Pocap Phone" }
 }
-
