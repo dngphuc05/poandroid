@@ -603,8 +603,17 @@ class MocapServerClient(
     }
 }
 
-fun normalizeLobbyPreset(data: JSONObject?): String {
+fun normalizeLobbyPreset(data: JSONObject?, fallback: String = "multi_live"): String {
     val lobby = data?.optJSONObject("lobby")
+    val maxDevices = listOf(
+        data?.optInt("max_devices", -1) ?: -1,
+        lobby?.optInt("max_devices", -1) ?: -1,
+        data?.optInt("phone_limit", -1) ?: -1,
+        lobby?.optInt("phone_limit", -1) ?: -1,
+    ).firstOrNull { it > 0 }
+    if (maxDevices == 1) return "single_live"
+    if (maxDevices != null && maxDevices > 1) return "multi_live"
+
     val explicitPreset = listOf(
         data?.optString("preset", "").orEmpty(),
         lobby?.optString("preset", "").orEmpty(),
@@ -617,13 +626,7 @@ fun normalizeLobbyPreset(data: JSONObject?): String {
         .firstOrNull { it == "single_live" || it == "multi_live" }
     if (explicitPreset != null) return explicitPreset
 
-    val maxDevices = listOf(
-        data?.optInt("max_devices", -1) ?: -1,
-        lobby?.optInt("max_devices", -1) ?: -1,
-        data?.optInt("phone_limit", -1) ?: -1,
-        lobby?.optInt("phone_limit", -1) ?: -1,
-    ).firstOrNull { it > 0 }
-    return if (maxDevices == 1) "single_live" else "multi_live"
+    return fallback.takeIf { it == "single_live" || it == "multi_live" } ?: "multi_live"
 }
 
 /**
