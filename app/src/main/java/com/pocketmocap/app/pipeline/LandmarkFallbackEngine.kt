@@ -1,5 +1,6 @@
 package com.pocketmocap.app.pipeline
 
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 /**
@@ -34,6 +35,13 @@ class LandmarkFallbackEngine {
         val isValid: Boolean,
     )
 
+    private data class HingeRecovery(
+        val root: Int,
+        val middle: Int,
+        val end: Int,
+        val expectedBodySide: Float,
+    )
+
     companion object {
         private const val JOINT_COUNT = 33
         private const val OBSERVED_THRESHOLD = 0.50f
@@ -46,6 +54,8 @@ class LandmarkFallbackEngine {
         private const val MIN_BODY_FRAME_SIMILARITY = 0.74f
         private const val MIN_SCALE_RATIO = 0.72f
         private const val MAX_SCALE_RATIO = 1.38f
+        private const val HINGE_ANCHOR_THRESHOLD = 0.35f
+        private const val EPSILON = 1e-4f
         private val DEFAULT_BODY_FRAME = BodyFrame(
             centerX = 0.5f,
             centerY = 0.43f,
@@ -84,6 +94,13 @@ class LandmarkFallbackEngine {
             this[30] = 28
             this[31] = 27
             this[32] = 28
+        }
+
+        private val HINGE_BY_MIDDLE = arrayOfNulls<HingeRecovery>(JOINT_COUNT).apply {
+            this[13] = HingeRecovery(root = 11, middle = 13, end = 15, expectedBodySide = -1f)
+            this[14] = HingeRecovery(root = 12, middle = 14, end = 16, expectedBodySide = 1f)
+            this[25] = HingeRecovery(root = 23, middle = 25, end = 27, expectedBodySide = -1f)
+            this[26] = HingeRecovery(root = 24, middle = 26, end = 28, expectedBodySide = 1f)
         }
 
         private fun midpoint(
@@ -183,6 +200,78 @@ class LandmarkFallbackEngine {
             val scale = maxLen / currentLen
             return Pair(dx * scale, dy * scale)
         }
+
+        private fun defaultFrameDistance(frame: BodyFrame, a: Int, b: Int): Float {
+            val du = DEFAULT_TEMPLATE_U[a] - DEFAULT_TEMPLATE_U[b]
+            val dv = DEFAULT_TEMPLATE_V[a] - DEFAULT_TEMPLATE_V[b]
+            return sqrt(du * du + dv * dv) * frame.scale
+        }
+
+        private fun bodySideScore(frame: BodyFrame, x: Float, y: Float, expectedBodySide: Float): Float {
+            val dx = x - frame.centerX
+            val dy = y - frame.centerY
+            val u = (dx * frame.xAxisX + dy * frame.xAxisY) / frame.scale.coerceAtLeast(EPSILON)
+            return expectedBodySide * u
+        }
+
+        private fun recoverHiddenHinge(
+            frame: BodyFrame,
+            hinge: HingeRecovery,
+            x: FloatArray,
+            y: FloatArray,
+            visibility: FloatArray,
+        ): Boolean {
+            if (!frame.isValid) return false
+            if (visibility[hinge.middle] >= OBSERVED_THRESHOLD) return false
+            if (visibility[hinge.root] < HINGE_ANCHOR_THRESHOLD || visibility[hinge.end] < HINGE_ANCHOR_THRESHOLD) {
+                return false
+            }
+
+            val ax = x[hinge.root]
+            val ay = y[hinge.root]
+            val cx = x[hinge.end]
+            val cy = y[hinge.end]
+            val dx = cx - ax
+            val dy = cy - ay
+            val currentDistance = sqrt(dx * dx + dy * dy)
+            if (currentDistance < EPSILON) return false
+
+            val upperLength = defaultFrameDistance(frame, hinge.root, hinge.middle)
+            val lowerLength = defaultFrameDistance(frame, hinge.middle, hinge.end)
+            if (upperLength < EPSILON || lowerLength < EPSILON) return false
+
+            val clampedDistance = currentDistance.coerceIn(
+                abs(upperLength - lowerLength) + EPSILON,
+                upperLength + lowerLength - EPSILON,
+            )
+            val dirX = dx / currentDistance
+            val dirY = dy / currentDistance
+            val along = (upperLength * upperLength - lowerLength * lowerLength + clampedDistance * clampedDistance) /
+                (2f * clampedDistance)
+            val heightSquared = maxOf(upperLength * upperLength - along * along, 0f)
+            val height = sqrt(heightSquared)
+            val baseX = ax + dirX * along
+            val baseY = ay + dirY * along
+            val perpX = -dirY
+            val perpY = dirX
+
+            val firstX = baseX + perpX * height
+            val firstY = baseY + perpY * height
+            val secondX = baseX - perpX * height
+            val secondY = baseY - perpY * height
+            val firstScore = bodySideScore(frame, firstX, firstY, hinge.expectedBodySide)
+            val secondScore = bodySideScore(frame, secondX, secondY, hinge.expectedBodySide)
+
+            if (firstScore >= secondScore) {
+                x[hinge.middle] = firstX.coerceIn(0f, 1f)
+                y[hinge.middle] = firstY.coerceIn(0f, 1f)
+            } else {
+                x[hinge.middle] = secondX.coerceIn(0f, 1f)
+                y[hinge.middle] = secondY.coerceIn(0f, 1f)
+            }
+            visibility[hinge.middle] = maxOf(visibility[hinge.middle], FALLBACK_VISIBILITY)
+            return true
+        }
     }
 
     private var lastBodyFrame: BodyFrame? = null
@@ -254,6 +343,11 @@ class LandmarkFallbackEngine {
             if (visibility >= OBSERVED_THRESHOLD) continue
 
             val anchorFrame = if (bodyFrame.isValid) bodyFrame else (lastBodyFrame ?: DEFAULT_BODY_FRAME)
+            val hinge = HINGE_BY_MIDDLE[i]
+            if (hinge != null && recoverHiddenHinge(anchorFrame, hinge, outX, outY, outVisibility)) {
+                continue
+            }
+
             val anchorIndex = ANCHOR_PARENT[i]
             if (anchorIndex >= 0) {
                 val anchorX = outX[anchorIndex]

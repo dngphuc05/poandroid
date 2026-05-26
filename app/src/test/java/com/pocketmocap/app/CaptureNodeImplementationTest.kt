@@ -330,7 +330,7 @@ class CaptureNodeImplementationTest {
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
 
-        assertTrue(pipeline.contains("pose_landmarker_full.task"))
+        assertTrue(pipeline.contains("pose_landmarker_heavy.task"))
         assertTrue(viewModel.contains("DISPLAY_PREDICTED_VIS"))
         assertTrue(viewModel.contains("_displayFullVis"))
         assertTrue(viewModel.contains("_completedX.copyOf()"))
