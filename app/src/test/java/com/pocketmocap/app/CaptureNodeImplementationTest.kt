@@ -117,7 +117,10 @@ class CaptureNodeImplementationTest {
         assertTrue(client.contains("\"lobby_joined\""))
         assertTrue(connect.contains("Link this"))
         assertFalse(connect.contains("Join session"))
+        assertFalse(connect.contains("Use Link"))
+        assertTrue(connect.contains("Link to Pocap PC"))
         assertTrue(join.contains("6-digit code"))
+        assertTrue(join.contains("Join PC session"))
         assertTrue(join.contains("LinkedServerCard"))
     }
 
@@ -231,7 +234,13 @@ class CaptureNodeImplementationTest {
         assertTrue("Join headline must decorate the session word", join.contains("decoratedLine = \"session.\"") && join.contains("decoratorColor = PocapViolet"))
         assertTrue("Connect headline must decorate Pocap PC with cyan", connect.contains("decoratedLine = \"Pocap PC.\"") && connect.contains("decoratorColor = PocapCyan"))
         assertTrue("Live confidence card must clear the local log card", capture.contains(".padding(top = 106.dp"))
+        assertTrue("Capture actions must separate PC recording from phone diagnostics", capture.contains("DIAG") && capture.contains("local troubleshooting data"))
+        assertTrue("Phone readiness action must not pretend to own PC sync", capture.contains("Mark phone ready"))
         assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
+        assertFalse("Connect screen must not expose a second typed-link action", connect.contains("Use Link"))
+        assertFalse("Capture screen must not use unclear LOG button text", capture.contains("Text(\"LOG\""))
+        assertFalse("Capture screen must not use REC wording for local diagnostics", capture.contains("PocapChip(label = \"rec\""))
+        assertFalse("Phone sync screen must not claim direct sync ownership", capture.contains("label = \"Start sync\""))
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
 

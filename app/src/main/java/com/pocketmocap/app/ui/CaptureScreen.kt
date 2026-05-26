@@ -249,24 +249,32 @@ private fun CompactActionRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                PocapEyebrow("device · role")
+                PocapEyebrow("device / role")
                 Text(
-                    text = "Pocap phone · capture node",
+                    text = "Phone capture node",
                     style = MaterialTheme.typography.titleSmall,
                     color = PocapInk,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Text(
+                    text = "PC records the session. DIAG only saves local troubleshooting data.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = PocapInk3,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             PocapIconButton(onClick = onOpenCalibration, tone = PocapViolet) {
-                Text("CAL", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+                Text("SYNC", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
             PocapIconButton(
                 onClick = onToggleRecording,
                 tone = if (recording) PocapPink else PocapPaperLight,
             ) {
-                Text("LOG", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+                Text("DIAG", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
@@ -296,7 +304,7 @@ private fun LiveCaptureChrome(
                 .border(3.dp, PocapPink, RoundedCornerShape(18.dp)),
         )
 
-        // top-left: REC chip + timer
+        // top-left: local diagnostic log chip + timer
         Column(
             modifier = Modifier
                 .align(Alignment.TopStart)
@@ -304,7 +312,7 @@ private fun LiveCaptureChrome(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.Start,
         ) {
-            PocapChip(label = "rec", tone = PocapPink, dot = true)
+            PocapChip(label = "local log", tone = PocapPink, dot = true)
             PocapCard(color = PocapPaper.copy(alpha = 0.94f), radius = 14.dp) {
                 Row(
                     modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
@@ -320,7 +328,7 @@ private fun LiveCaptureChrome(
                         maxLines = 1,
                     )
                     Text(
-                        text = "LOCAL LOG",
+                        text = "DIAGNOSTIC",
                         style = MaterialTheme.typography.labelSmall,
                         color = PocapInk3,
                         fontFamily = PocapMono,
@@ -358,7 +366,7 @@ private fun LiveCaptureChrome(
             }
         }
 
-        // bottom: action bar with record/stop button + frame counters
+        // bottom: action bar with local-log stop button + frame counters
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -411,7 +419,20 @@ private fun LiveCaptureChrome(
                             )
                         }
                     }
-                    RecordStopButton(onClick = onStopRecording)
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                    ) {
+                        RecordStopButton(onClick = onStopRecording)
+                        Text(
+                            text = "STOP LOG",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = PocapInk2,
+                            fontFamily = PocapMono,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                        )
+                    }
                 }
             }
         }
@@ -505,7 +526,7 @@ private fun SyncCalibrationScreen(
                     Icon(Icons.Rounded.LinkOff, contentDescription = "Back to camera", tint = PocapInk)
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    PocapEyebrow("stage · ${stages[stageIdx]}")
+                    PocapEyebrow("stage / ${stages[stageIdx]}")
                     Text(
                         text = "PC controlled",
                         style = MaterialTheme.typography.titleSmall,
@@ -622,7 +643,7 @@ private fun SyncCalibrationScreen(
             Spacer(modifier = Modifier.weight(1f))
             if (step == CalibrationStep.PENDING) {
                 PocapButton(
-                    label = "Start sync",
+                    label = "Mark phone ready",
                     onClick = onStartCalibration,
                     modifier = Modifier.fillMaxWidth(),
                     tone = PocapViolet,
@@ -841,7 +862,7 @@ private fun PermissionScreen(
                 PocapIconButton(onClick = onCancel, tone = PocapPaperLight) {
                     Icon(Icons.Rounded.LinkOff, contentDescription = "Back", tint = PocapInk)
                 }
-                PocapEyebrow("Step 3 · camera")
+                PocapEyebrow("Step 3 / camera")
             }
 
             PocapCard(radius = 20.dp) {
@@ -880,12 +901,12 @@ private fun PermissionScreen(
                 fontWeight = FontWeight.Bold,
             )
             Text(
-                text = "Your phone reads 2D landmarks from the camera and streams them to the PC. Nothing is recorded locally.",
+                text = "Your phone reads 2D landmarks from the camera and streams them to the PC. PC records the final session; local diagnostics are optional.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = PocapInk2,
                 modifier = Modifier.padding(top = 12.dp, bottom = 18.dp),
             )
-            PermissionFact("On-device pose · no frames leave")
+            PermissionFact("On-device pose / no frames leave")
             PermissionFact("Streams 33 landmarks @ 30 fps")
             PermissionFact("Stays joined while the PC holds the session")
             Spacer(modifier = Modifier.weight(1f))
@@ -897,7 +918,7 @@ private fun PermissionScreen(
                 contentColor = PocapInk,
             )
             Text(
-                text = "Cancel · back to session",
+                text = "Back to session",
                 style = MaterialTheme.typography.bodySmall,
                 color = PocapInk3,
                 modifier = Modifier.fillMaxWidth().clickable(onClick = onCancel).padding(top = 12.dp),
@@ -1074,11 +1095,11 @@ private fun calibrationProgress(uiState: PocketMocapViewModel.UiState): Float? =
 }
 
 private fun calibrationProgressLabel(uiState: PocketMocapViewModel.UiState): String = when (uiState.calibrationStep) {
-    CalibrationStep.PENDING -> "Idle · waiting for PC"
+    CalibrationStep.PENDING -> "Idle / waiting for PC"
     CalibrationStep.INTRINSIC_CALC -> "Sync running"
     CalibrationStep.EXTRINSIC_ANCHOR -> "Waiting for subject"
     CalibrationStep.BOOTSTRAP -> "Locking metric scale"
-    CalibrationStep.COMPLETE -> "Calibration · OK"
+    CalibrationStep.COMPLETE -> "Calibration / OK"
 }
 
 private fun formatMeters(value: Float): String =

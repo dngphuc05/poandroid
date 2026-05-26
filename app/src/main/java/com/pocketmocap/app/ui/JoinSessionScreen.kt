@@ -67,7 +67,7 @@ fun JoinSessionScreen(
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
-                text = "Enter the 6-digit code shown on the PC app. This phone will appear there as one capture camera.",
+                text = "Enter the 6-digit code shown on Pocap PC. This phone will join as one capture camera.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = PocapInk2,
                 modifier = Modifier.padding(top = 14.dp),
@@ -100,7 +100,7 @@ fun JoinSessionScreen(
 
             Spacer(modifier = Modifier.weight(1f))
             PocapButton(
-                label = if (joining) "Joining..." else "Join session",
+                label = if (joining) "Joining PC session..." else "Join PC session",
                 onClick = { onJoinSession(code) },
                 enabled = ready && !joining,
                 modifier = Modifier.fillMaxWidth(),
@@ -108,7 +108,7 @@ fun JoinSessionScreen(
                 contentColor = PocapInk,
             )
             Text(
-                text = "The phone stays idle until the PC lobby accepts it.",
+                text = "After joining, camera capture opens. The PC remains in control.",
                 style = MaterialTheme.typography.bodySmall,
                 color = PocapInk3,
                 modifier = Modifier
@@ -117,7 +117,7 @@ fun JoinSessionScreen(
                 textAlign = TextAlign.Center,
             )
             Text(
-                text = "Unlink from server",
+                text = "Change PC link",
                 style = MaterialTheme.typography.bodySmall,
                 color = PocapInk2,
                 modifier = Modifier
@@ -242,7 +242,7 @@ private fun LinkedServerCard(serverUrl: String) {
         ) {
             PocapLogoMark(modifier = Modifier.size(24.dp), color = PocapCyan)
             Column(modifier = Modifier.weight(1f)) {
-                PocapEyebrow("linked server")
+                PocapEyebrow("PC link ready")
                 Text(
                     text = serverUrl.ifBlank { "waiting for PC link" },
                     style = MaterialTheme.typography.bodySmall,
@@ -253,7 +253,7 @@ private fun LinkedServerCard(serverUrl: String) {
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            PocapChip(label = "reachable", tone = PocapCyan, dot = true)
+            PocapChip(label = "linked", tone = PocapCyan, dot = true)
         }
     }
 }

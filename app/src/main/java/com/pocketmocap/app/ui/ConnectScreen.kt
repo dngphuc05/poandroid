@@ -3,7 +3,6 @@ package com.pocketmocap.app.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,7 +36,6 @@ import com.pocketmocap.app.PocketMocapViewModel.UiState
 fun ConnectScreen(
     uiState: UiState,
     onConnect: (String) -> Unit,
-    onApplyLink: (String) -> Unit,
     onScanQr: () -> Unit,
     onClearError: () -> Unit,
 ) {
@@ -65,7 +63,7 @@ fun ConnectScreen(
                 modifier = Modifier.padding(top = 8.dp),
             )
             Text(
-                text = "Scan QR or type the PC IPv4 server URL. Join the session next.",
+                text = "Scan the PC QR or type the IPv4 server URL. Session code comes next.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = PocapInk2,
                 fontWeight = FontWeight.SemiBold,
@@ -98,23 +96,13 @@ fun ConnectScreen(
                             unfocusedLabelColor = PocapInk3,
                         ),
                     )
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        PocapButton(
-                            label = "Scan QR",
-                            onClick = onScanQr,
-                            modifier = Modifier.weight(1f),
-                            tone = PocapPaperLight,
-                            contentColor = PocapInk,
-                        )
-                        PocapButton(
-                            label = "Use Link",
-                            onClick = { onApplyLink(serverUrl) },
-                            modifier = Modifier.weight(1f),
-                            tone = PocapViolet,
-                            contentColor = PocapInk,
-                            enabled = serverUrl.isNotBlank(),
-                        )
-                    }
+                    PocapButton(
+                        label = "Scan QR",
+                        onClick = onScanQr,
+                        modifier = Modifier.fillMaxWidth(),
+                        tone = PocapPaperLight,
+                        contentColor = PocapInk,
+                    )
                 }
             }
 
@@ -163,7 +151,7 @@ fun ConnectScreen(
                 ) {
                     PocapChip(label = connectionStatus(uiState), tone = connectionTone(uiState), dot = true)
                     Text(
-                        text = "PC controls the session. This phone only captures camera, landmarks, tracking, and metrics.",
+                        text = "PC controls sessions and recording. This phone only streams camera landmarks and metrics.",
                         style = MaterialTheme.typography.bodySmall,
                         color = PocapInk2,
                         fontWeight = FontWeight.SemiBold,
@@ -195,15 +183,15 @@ private fun BrandRow() {
 }
 
 private fun connectLabel(connectionState: ConnectionState): String = when (connectionState) {
-    ConnectionState.CONNECTING -> "Linking..."
-    ConnectionState.CONNECTED -> "Connected"
-    ConnectionState.DISCONNECTED -> "Link phone"
+    ConnectionState.CONNECTING -> "Linking to PC..."
+    ConnectionState.CONNECTED -> "Linked to PC"
+    ConnectionState.DISCONNECTED -> "Link to Pocap PC"
 }
 
 private fun connectionStatus(uiState: UiState): String = when (uiState.connectionState) {
-    ConnectionState.CONNECTED -> "connected"
+    ConnectionState.CONNECTED -> "pc linked"
     ConnectionState.CONNECTING -> "linking"
-    ConnectionState.DISCONNECTED -> "waiting"
+    ConnectionState.DISCONNECTED -> "not linked"
 }
 
 private fun connectionTone(uiState: UiState): Color = when (uiState.connectionState) {

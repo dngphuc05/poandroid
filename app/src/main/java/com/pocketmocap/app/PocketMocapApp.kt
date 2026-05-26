@@ -48,7 +48,6 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                 uiState.connectionState != ConnectionState.CONNECTED -> ConnectScreen(
                     uiState = uiState,
                     onConnect = { viewModel.connect(it) },
-                    onApplyLink = { viewModel.applyServerLink(it) },
                     onScanQr = { scanningServerLink = true },
                     onClearError = { viewModel.clearError() },
                 )
