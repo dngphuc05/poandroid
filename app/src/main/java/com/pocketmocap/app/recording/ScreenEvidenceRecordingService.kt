@@ -54,6 +54,7 @@ class ScreenEvidenceRecordingService : Service() {
             stopSelf()
             return
         }
+        startForeground(NOTIFICATION_ID, buildNotification())
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         val projection = projectionManager.getMediaProjection(resultCode, resultData) ?: run {
             stopSelf()
@@ -67,8 +68,6 @@ class ScreenEvidenceRecordingService : Service() {
             },
             null,
         )
-
-        startForeground(NOTIFICATION_ID, buildNotification())
 
         val metrics = screenMetrics()
         val output = nextOutputTarget()

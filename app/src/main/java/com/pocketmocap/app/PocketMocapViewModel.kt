@@ -786,17 +786,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _completedVis,
                         )
                         val visible = _completedVis.count { it > 0.5f }
-                        // Drive UI and outbound server packets from the completed 33-point set so a
-                        // whole missing limb can still be reconstructed client-side in the same frame.
-                        directLandmarkCallback?.invoke(_completedX, _completedY, _completedVis, imageWidth, imageHeight)
+                        // Draw the phone overlay from observed MediaPipe points, not plausible
+                        // completion. Hidden-joint repair is useful for server packets, but it
+                        // should not paint ghost joints away from the actor on the live camera.
+                        directLandmarkCallback?.invoke(xNorm, yNorm, visibility, imageWidth, imageHeight)
                         // mutableStateOf writes for warning banner, joint count, server fallback
-                        poseLandmarksX = _completedX.copyOf()
-                        poseLandmarksY = _completedY.copyOf()
+                        poseLandmarksX = xNorm.copyOf()
+                        poseLandmarksY = yNorm.copyOf()
                         poseLandmarksZ = zWorld
                         worldLandmarksX = xWorld
                         worldLandmarksY = yWorld
                         worldLandmarksZ = zWorld
-                        poseVisibility = _completedVis.copyOf()
+                        poseVisibility = visibility.copyOf()
                         updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
                         maybeSendExtrinsicUpdate(worldTracking)
                         updateClientTechnicalPose()

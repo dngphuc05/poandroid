@@ -9,6 +9,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,14 +60,16 @@ import com.pocketmocap.app.pipeline.HybridPosePipeline
 import kotlinx.coroutines.delay
 
 /** In-session screens. The camera surface stays mounted under all of them. */
-private enum class CaptureView { CAMERA, CALIBRATION, ERROR }
+private enum class CaptureView { CAMERA, SETUP, RECORD, ERROR }
 
 @Composable
 fun CaptureScreen(
     uiState: PocketMocapViewModel.UiState,
     viewModel: PocketMocapViewModel,
     onStartCalibration: () -> Unit,
-    onDisconnect: () -> Unit,
+    onLeaveSession: () -> Unit,
+    onBackToJoin: () -> Unit,
+    onBackToLink: () -> Unit,
     onClearError: () -> Unit,
     onStartScreenEvidenceRecording: () -> Unit,
     onStopScreenEvidenceRecording: () -> Unit,
@@ -99,10 +103,12 @@ fun CaptureScreen(
     DisposableEffect(hasCameraPermission) {
         if (hasCameraPermission) {
             Log.i("CaptureScreen", "Starting Pocap phone capture node")
+            viewModel.bindCloudAnchorEngine(cameraCapture)
             cameraCapture.start(lifecycleOwner)
         }
         onDispose {
             Log.i("CaptureScreen", "Stopping Pocap phone capture node")
+            viewModel.bindCloudAnchorEngine(null)
             cameraCapture.stop()
         }
     }
@@ -110,17 +116,18 @@ fun CaptureScreen(
     if (!hasCameraPermission) {
         PermissionScreen(
             onRequestPermission = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-            onCancel = onDisconnect,
+            onCancel = onBackToLink,
         )
         return
     }
 
-    // After a phone joins, calibration/setup is the deliberate bridge before live capture.
-    var manualView by remember { mutableStateOf<CaptureView?>(null) }
-    val activeView = manualView ?: if (uiState.calibrationStep == CalibrationStep.COMPLETE) {
-        CaptureView.CAMERA
-    } else {
-        CaptureView.CALIBRATION
+    val sessionIsSingleCamera = uiState.joinedLobbyPreset == "single_live"
+    val calibrationComplete = uiState.calibrationStep == CalibrationStep.COMPLETE
+    val setupFailed = uiState.calibrationStep == CalibrationStep.FAILED || (uiState.errorMessage != null && !calibrationComplete)
+    val activeView = when {
+        setupFailed -> CaptureView.ERROR
+        calibrationComplete -> CaptureView.CAMERA
+        else -> CaptureView.SETUP
     }
     val recordingSeconds = rememberRecordingSeconds(viewModel.isScreenEvidenceRecording)
 
@@ -134,6 +141,8 @@ fun CaptureScreen(
             x = viewModel.poseLandmarksX,
             y = viewModel.poseLandmarksY,
             visibility = viewModel.poseVisibility,
+            imageWidth = viewModel.cameraImageWidth,
+            imageHeight = viewModel.cameraImageHeight,
         )
         PocapCornerBrackets()
         PocapCameraScrim()
@@ -148,9 +157,7 @@ fun CaptureScreen(
             CaptureView.CAMERA -> CameraReadyChrome(
                 uiState = uiState,
                 viewModel = viewModel,
-                onOpenCalibration = { manualView = CaptureView.CALIBRATION },
-                onOpenError = { manualView = CaptureView.ERROR },
-                onDisconnect = onDisconnect,
+                onBackToJoin = onBackToJoin,
                 onToggleScreenRecording = {
                     if (viewModel.isScreenEvidenceRecording) {
                         onStopScreenEvidenceRecording()
@@ -160,19 +167,27 @@ fun CaptureScreen(
                 },
             )
 
-            CaptureView.CALIBRATION -> SyncCalibrationScreen(
+            CaptureView.SETUP -> SetupStepScreen(
                 uiState = uiState,
                 viewModel = viewModel,
-                onBack = { manualView = CaptureView.CAMERA },
+                isSingleCamera = sessionIsSingleCamera,
+                onBackToJoin = onBackToJoin,
                 onStartCalibration = onStartCalibration,
                 onClearError = onClearError,
+            )
+
+            CaptureView.RECORD -> RecordStepScreen(
+                uiState = uiState,
+                viewModel = viewModel,
+                onToggleScreenRecording = {
+                    if (viewModel.isScreenEvidenceRecording) onStopScreenEvidenceRecording() else onStartScreenEvidenceRecording()
+                },
             )
 
             CaptureView.ERROR -> SessionErrorScreen(
                 uiState = uiState,
                 viewModel = viewModel,
-                onRetry = { manualView = null },
-                onLeave = onDisconnect,
+                onBackToJoin = onBackToJoin,
             )
         }
     }
@@ -185,9 +200,7 @@ fun CaptureScreen(
 private fun CameraReadyChrome(
     uiState: PocketMocapViewModel.UiState,
     viewModel: PocketMocapViewModel,
-    onOpenCalibration: () -> Unit,
-    onOpenError: () -> Unit,
-    onDisconnect: () -> Unit,
+    onBackToJoin: () -> Unit,
     onToggleScreenRecording: () -> Unit,
 ) {
     val visible = viewModel.visibleLandmarkCount
@@ -210,11 +223,8 @@ private fun CameraReadyChrome(
                     status = if (uiState.pipelineState == HybridPosePipeline.PipelineState.CAPTURING) "streaming" else "cam node",
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    PocapIconButton(onClick = onOpenError, tone = PocapPaper.copy(alpha = 0.92f)) {
-                        Text("...", color = PocapInk, fontWeight = FontWeight.Bold)
-                    }
-                    PocapIconButton(onClick = onDisconnect, tone = PocapPaper.copy(alpha = 0.92f)) {
-                        Icon(Icons.Rounded.LinkOff, contentDescription = "Leave session", tint = PocapInk)
+                    PocapIconButton(onClick = onBackToJoin, tone = PocapPaper.copy(alpha = 0.92f)) {
+                        Icon(Icons.Rounded.LinkOff, contentDescription = "Back to code", tint = PocapInk)
                     }
                 }
             }
@@ -236,7 +246,6 @@ private fun CameraReadyChrome(
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             MetricsRowCard(uiState = uiState, viewModel = viewModel)
             CompactActionRow(
-                onOpenCalibration = onOpenCalibration,
                 recording = viewModel.isScreenEvidenceRecording,
                 recordingStatus = viewModel.screenEvidenceRecordingStatus,
                 onToggleScreenRecording = onToggleScreenRecording,
@@ -247,7 +256,6 @@ private fun CameraReadyChrome(
 
 @Composable
 private fun CompactActionRow(
-    onOpenCalibration: () -> Unit,
     recording: Boolean,
     recordingStatus: String,
     onToggleScreenRecording: () -> Unit,
@@ -272,7 +280,7 @@ private fun CompactActionRow(
                     text = if (recording) {
                         recordingStatus
                     } else {
-                        "PC records mocap. REC saves this phone screen, person, and 2D landmarks as MP4."
+                        "PC records mocap. REC saves this phone screen, person, and 2D landmarks as MP4 in Movies/Pocap."
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk3,
@@ -281,9 +289,11 @@ private fun CompactActionRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            PocapIconButton(onClick = onOpenCalibration, tone = PocapCyan) {
-                Text("SETUP", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
-            }
+            PocapChip(
+                label = if (recording) "recording" else "capture live",
+                tone = if (recording) PocapPink else PocapCyan,
+                dot = true,
+            )
             PocapIconButton(
                 onClick = onToggleScreenRecording,
                 tone = if (recording) PocapPink else PocapPaperLight,
@@ -417,153 +427,58 @@ private fun ScreenEvidenceRecordingChrome(
 // ════════════════════════════════════════════════════════════════════
 // SYNC / CALIBRATION — beige, laptop-controlled stage (off-camera)
 // ════════════════════════════════════════════════════════════════════
+
 @Composable
-private fun SyncCalibrationScreen(
+private fun SetupStepScreen(
     uiState: PocketMocapViewModel.UiState,
     viewModel: PocketMocapViewModel,
-    onBack: () -> Unit,
+    isSingleCamera: Boolean,
+    onBackToJoin: () -> Unit,
     onStartCalibration: () -> Unit,
     onClearError: () -> Unit,
 ) {
     val step = uiState.calibrationStep
-    val isSingleCamera = uiState.joinedLobbyPreset == "single_live"
-    val stages = if (isSingleCamera) {
-        listOf("Setup", "Calibrate", "Capture")
-    } else {
-        listOf("Sync", "Calibrate", "Capture")
-    }
-    val stageIdx = when (step) {
-        CalibrationStep.PENDING, CalibrationStep.INTRINSIC_CALC -> 0
-        CalibrationStep.EXTRINSIC_ANCHOR, CalibrationStep.BOOTSTRAP -> 1
-        CalibrationStep.COMPLETE -> 2
-    }
-    val (title, body) = when (step) {
-        CalibrationStep.PENDING -> "Send camera\ncalibration." to
-            if (isSingleCamera) {
-                "Single-camera live uses camera intrinsics, lens height, AR floor, and a virtual mirror path. No multi-phone sync step is needed."
-            } else {
-                "Multi-camera live uses a shared clock, per-phone camera extrinsics, camera intrinsics, and floor reference before DLT reconstruction."
-            }
-        CalibrationStep.INTRINSIC_CALC -> if (isSingleCamera) {
-            "Reading\ncamera metrics." to "Sending intrinsics, lens height, and AR/floor tracking to the PC."
-        } else {
-            "Syncing\ncamera nodes." to "Negotiating intrinsics, shared timing, and camera placement with the PC."
-        }
-        CalibrationStep.EXTRINSIC_ANCHOR -> "Stand in\nframe." to
-            "Subject faces the camera, full body visible, arms loose. The laptop anchors the scene."
-        CalibrationStep.BOOTSTRAP -> "Reading\nthe room." to
-            "Collecting canonical-pose frames to lock metric scale and the floor plane."
-        CalibrationStep.COMPLETE -> "Looks\ngood." to
-            "Floor plane and subject height are locked. Ready to capture."
-    }
-    val sideLabel = when (step) {
-        CalibrationStep.PENDING, CalibrationStep.INTRINSIC_CALC -> if (isSingleCamera) "Lens height ready" else "Sync setup"
-        CalibrationStep.EXTRINSIC_ANCHOR -> "Subject ready"
-        CalibrationStep.BOOTSTRAP -> "Hold still"
-        CalibrationStep.COMPLETE -> "Ready"
-    }
-
-    PocapPaperScaffold {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .padding(horizontal = 22.dp, vertical = 18.dp),
-        ) {
-            // header
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.padding(bottom = 18.dp),
-            ) {
-                PocapIconButton(onClick = onBack, tone = PocapPaperLight) {
-                    Icon(Icons.Rounded.LinkOff, contentDescription = "Back to camera", tint = PocapInk)
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                PocapEyebrow("stage / ${stages[stageIdx]}")
-                    Text(
-                        text = if (isSingleCamera) "Single camera setup" else "Multi-camera setup",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = PocapInk,
-                        fontFamily = PocapMono,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(PocapViolet))
-            }
-
-            // stage rail
-            PocapCard(color = PocapPaperLight, radius = 12.dp, shadow = false) {
-                Box(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
-                    PocapStageRail(stages = stages, activeIndex = stageIdx)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.headlineLarge,
-                color = PocapInk,
-                fontWeight = FontWeight.Bold,
+    SessionStepScaffold(
+        stepTitle = if (isSingleCamera) "single-cam setup" else "multi-cam setup",
+        headline = if (isSingleCamera) "Single-cam\ncalibration." else "Multi-cam\ncalibration.",
+        description = if (isSingleCamera)
+            "This one-camera session skips sync. Set the phone camera height, send calibration, then Pocap moves straight into live capture."
+        else
+            "This multi-camera session calibrates this phone before capture. Sync is part of setup now; later re-sync only appears inside live capture if phones drift.",
+        steps = if (isSingleCamera) listOf("JOIN", "CALIB", "CAPT", "RECO") else listOf("JOIN", "SYNC", "CALIB", "CAPT", "RECO"),
+        activeIndex = when {
+            isSingleCamera && step == CalibrationStep.PENDING -> 1
+            isSingleCamera && step == CalibrationStep.COMPLETE -> 2
+            isSingleCamera -> 1
+            !isSingleCamera && step == CalibrationStep.PENDING -> 1
+            !isSingleCamera && step == CalibrationStep.INTRINSIC_CALC -> 1
+            !isSingleCamera && step == CalibrationStep.SYNC_WAIT -> 1
+            !isSingleCamera && step == CalibrationStep.COMPLETE -> 3
+            else -> 2
+        },
+        progress = calibrationProgress(uiState),
+        progressLabel = calibrationProgressLabel(uiState),
+        onBack = onBackToJoin,
+        body = {
+            CalibrationPayloadRow("session mode", if (isSingleCamera) "single camera live" else "multi camera live")
+            CalibrationPayloadRow("phones allowed", if (isSingleCamera) "1" else "multiple")
+            CalibrationPayloadRow(
+                "server receives",
+                if (isSingleCamera)
+                    "intrinsics, lens height, camera extrinsics, 2D landmarks"
+                else
+                    "intrinsics, lens height, sync timing, camera extrinsics, 2D landmarks"
             )
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodyMedium,
-                color = PocapInk2,
-                modifier = Modifier.padding(top = 12.dp, bottom = 18.dp),
-            )
-
-            // calibration contract card
-            PocapCard(radius = 18.dp) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    PocapChip(label = sideLabel, tone = if (isSingleCamera) PocapCyan else PocapPaper.copy(alpha = 0.94f))
-                    CalibrationPayloadRow(
-                        label = "calibration type",
-                        value = if (isSingleCamera) "single camera metric setup" else "multi-camera sync + extrinsics",
-                    )
-                    CalibrationPayloadRow(
-                        label = "server receives",
-                        value = if (isSingleCamera) {
-                            "intrinsics, lens height, AR floor, 2D landmarks"
-                        } else {
-                            "intrinsics, lens height, clock sync, camera extrinsics, 2D landmarks"
-                        },
-                    )
-                    CalibrationPayloadRow(
-                        label = "reconstruction path",
-                        value = if (isSingleCamera) "virtual mirror + metric evidence + canonical solver" else "DLT triangulation + metric evidence + canonical solver",
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
-                        PocapEyebrow(calibrationProgressLabel(uiState))
-                        calibrationProgress(uiState)?.let {
-                            Text(
-                                text = "${(it * 100).toInt()}%",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = PocapInk,
-                                fontFamily = PocapMono,
-                                fontWeight = FontWeight.Bold,
-                            )
-                        }
-                    }
-                    PocapProgressBar(
-                        progress = calibrationProgress(uiState),
-                        tone = if (step == CalibrationStep.COMPLETE) PocapCyan else PocapViolet,
-                    )
-                }
+            if (!isSingleCamera) {
+                CalibrationPayloadRow("sync usage", "done during setup; later only if phones drift during live capture")
             }
-
-            Spacer(modifier = Modifier.height(18.dp))
             CameraHeightControl(
                 cameraHeightMeters = uiState.manualCameraHeightMeters,
                 onCameraHeightChange = viewModel::setManualCameraHeightMeters,
             )
-
+        },
+        footer = {
             uiState.errorMessage?.let { error ->
-                Spacer(modifier = Modifier.height(14.dp))
                 PocapCard(color = Color(0xFFFFEFEF), shadow = false) {
                     Text(
                         text = error,
@@ -572,9 +487,8 @@ private fun SyncCalibrationScreen(
                         modifier = Modifier.fillMaxWidth().clickable(onClick = onClearError).padding(12.dp),
                     )
                 }
+                Spacer(modifier = Modifier.height(10.dp))
             }
-
-            Spacer(modifier = Modifier.weight(1f))
             if (step == CalibrationStep.PENDING) {
                 PocapButton(
                     label = if (isSingleCamera) "Send camera calibration" else "Send sync calibration",
@@ -585,40 +499,154 @@ private fun SyncCalibrationScreen(
                 )
             } else {
                 PocapButton(
-                    label = "Back to camera",
-                    onClick = onBack,
+                    label = when (step) {
+                        CalibrationStep.COMPLETE -> "Opening capture..."
+                        CalibrationStep.INTRINSIC_CALC -> if (isSingleCamera) "Camera calibration running" else "Sync running"
+                        CalibrationStep.EXTRINSIC_ANCHOR -> "Solving camera extrinsics"
+                        CalibrationStep.SYNC_WAIT -> "Syncing multi-phone timing"
+                        CalibrationStep.BOOTSTRAP -> "Locking metric scale"
+                        CalibrationStep.FAILED -> "Calibration failed"
+                        CalibrationStep.PENDING -> "Waiting"
+                    },
+                    onClick = {},
+                    enabled = false,
                     modifier = Modifier.fillMaxWidth(),
-                    tone = if (step == CalibrationStep.COMPLETE) PocapCyan else PocapPaperLight,
+                    tone = PocapPaperLight,
                     contentColor = PocapInk,
                 )
             }
-            if (step != CalibrationStep.COMPLETE && step != CalibrationStep.PENDING) {
-                Row(
-                    modifier = Modifier.padding(top = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                ) {
-                    Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(PocapViolet))
+        },
+    )
+}
+
+@Composable
+private fun RecordStepScreen(
+    uiState: PocketMocapViewModel.UiState,
+    viewModel: PocketMocapViewModel,
+    onToggleScreenRecording: () -> Unit,
+) {
+    SessionStepScaffold(
+        stepTitle = "capture / record",
+        headline = "Capture and\nrecord.",
+        description = "The session is calibrated. PC can run reconstruction and save session metrics. REC on phone saves the phone screen with person + 2D landmarks MP4.",
+        steps = if (uiState.joinedLobbyPreset == "single_live") listOf("JOIN", "CALIB", "CAPT", "RECO") else listOf("JOIN", "SYNC", "CALIB", "CAPT", "RECO"),
+        activeIndex = if (uiState.joinedLobbyPreset == "single_live") 3 else 4,
+        onBack = {},
+        body = {
+            CalibrationPayloadRow("session", formatSessionCode(uiState.joinedLobbyCode))
+            CalibrationPayloadRow("mode", if (uiState.joinedLobbyPreset == "single_live") "single camera" else "multi camera")
+            CalibrationPayloadRow("stream", "${viewModel.framesSentToServer} frames sent")
+            CalibrationPayloadRow("phone REC", if (viewModel.isScreenEvidenceRecording) "recording overlay MP4" else "ready")
+        },
+        footer = {
+            PocapButton(
+                label = if (viewModel.isScreenEvidenceRecording) "Stop REC" else "Start REC",
+                onClick = onToggleScreenRecording,
+                modifier = Modifier.fillMaxWidth(),
+                tone = if (viewModel.isScreenEvidenceRecording) PocapPink else PocapCyan,
+                contentColor = PocapInk,
+            )
+        },
+    )
+}
+
+@Composable
+private fun SessionStepScaffold(
+    stepTitle: String,
+    headline: String,
+    description: String,
+    steps: List<String>,
+    activeIndex: Int,
+    progress: Float? = null,
+    progressLabel: String? = null,
+    onBack: () -> Unit,
+    body: @Composable () -> Unit,
+    footer: @Composable () -> Unit,
+) {
+    PocapPaperScaffold {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 22.dp, vertical = 18.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(bottom = 18.dp),
+            ) {
+                PocapIconButton(onClick = onBack, tone = PocapPaperLight) {
+                    Icon(Icons.Rounded.LinkOff, contentDescription = "Back", tint = PocapInk)
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    PocapEyebrow(stepTitle)
                     Text(
-                        text = "Phone is in standby. The PC drives the next step.",
+                        text = if (steps.size == 4) "Single-camera guided flow" else "Multi-camera guided flow",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = PocapInk,
+                        fontFamily = PocapMono,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+                Box(modifier = Modifier.size(32.dp).clip(RoundedCornerShape(8.dp)).background(PocapViolet))
+            }
+
+            PocapCard(color = PocapPaperLight, radius = 12.dp, shadow = false) {
+                Box(modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp)) {
+                    PocapStageRail(stages = steps, activeIndex = activeIndex.coerceIn(0, steps.lastIndex))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+            Text(
+                text = headline,
+                style = MaterialTheme.typography.headlineLarge,
+                color = PocapInk,
+                fontWeight = FontWeight.Bold,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = PocapInk2,
+                modifier = Modifier.padding(top = 12.dp, bottom = 16.dp),
+            )
+
+            PocapCard(color = PocapPaper, radius = 18.dp) {
+                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    body()
+                }
+            }
+
+            progress?.let {
+                Spacer(modifier = Modifier.height(16.dp))
+                PocapProgressBar(progress = it)
+                progressLabel?.let { label ->
+                    Text(
+                        text = label,
                         style = MaterialTheme.typography.bodySmall,
                         color = PocapInk2,
+                        modifier = Modifier.padding(top = 10.dp, bottom = 6.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            footer()
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
-// ════════════════════════════════════════════════════════════════════
 // ERROR / DISCONNECTED — beige (off-camera)
 // ════════════════════════════════════════════════════════════════════
 @Composable
 private fun SessionErrorScreen(
     uiState: PocketMocapViewModel.UiState,
     viewModel: PocketMocapViewModel,
-    onRetry: () -> Unit,
-    onLeave: () -> Unit,
+    onBackToJoin: () -> Unit,
 ) {
     val hasError = uiState.errorMessage != null
     val title = if (hasError) "Phone hit\na snag." else "Connection\ndetails."
@@ -637,7 +665,7 @@ private fun SessionErrorScreen(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.padding(bottom = 22.dp),
             ) {
-                PocapIconButton(onClick = onRetry, tone = PocapPaperLight) {
+                PocapIconButton(onClick = onBackToJoin, tone = PocapPaperLight) {
                     Text("×", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 }
                 PocapEyebrow("connection")
@@ -727,18 +755,11 @@ private fun SessionErrorScreen(
 
             Spacer(modifier = Modifier.weight(1f))
             PocapButton(
-                label = "Back to camera",
-                onClick = onRetry,
+                label = "Back to code",
+                onClick = onBackToJoin,
                 modifier = Modifier.fillMaxWidth(),
                 tone = PocapPink,
                 contentColor = PocapInk,
-            )
-            Text(
-                text = "Leave session",
-                style = MaterialTheme.typography.bodySmall,
-                color = PocapInk3,
-                modifier = Modifier.fillMaxWidth().clickable(onClick = onLeave).padding(top = 14.dp),
-                textAlign = TextAlign.Center,
             )
         }
     }
@@ -1025,18 +1046,24 @@ private fun captureWarning(uiState: PocketMocapViewModel.UiState, visibleLandmar
     else -> null
 }
 
-private fun calibrationProgress(uiState: PocketMocapViewModel.UiState): Float? = when {
-    uiState.calibrationStep == CalibrationStep.COMPLETE -> 1f
-    uiState.bootstrapProgress > 0f -> uiState.bootstrapProgress.coerceIn(0f, 1f)
-    else -> null
+private fun calibrationProgress(uiState: PocketMocapViewModel.UiState): Float? = when (uiState.calibrationStep) {
+    CalibrationStep.PENDING -> null
+    CalibrationStep.INTRINSIC_CALC -> 0.20f
+    CalibrationStep.EXTRINSIC_ANCHOR -> 0.40f
+    CalibrationStep.SYNC_WAIT -> 0.55f
+    CalibrationStep.BOOTSTRAP -> maxOf(0.65f, uiState.bootstrapProgress.coerceIn(0f, 1f))
+    CalibrationStep.COMPLETE -> 1f
+    CalibrationStep.FAILED -> null
 }
 
 private fun calibrationProgressLabel(uiState: PocketMocapViewModel.UiState): String = when (uiState.calibrationStep) {
-    CalibrationStep.PENDING -> "Idle / waiting for PC"
-    CalibrationStep.INTRINSIC_CALC -> "Sync running"
-    CalibrationStep.EXTRINSIC_ANCHOR -> "Waiting for subject"
+    CalibrationStep.PENDING -> if (uiState.joinedLobbyPreset == "single_live") "Ready to send camera calibration" else "Ready to send sync calibration"
+    CalibrationStep.INTRINSIC_CALC -> if (uiState.joinedLobbyPreset == "single_live") "Reading camera intrinsics" else "Reading camera intrinsics for multi-cam"
+    CalibrationStep.EXTRINSIC_ANCHOR -> if (uiState.joinedLobbyPreset == "single_live") "Solving camera extrinsics" else "Solving camera extrinsics"
+    CalibrationStep.SYNC_WAIT -> "Syncing multi-phone timing"
     CalibrationStep.BOOTSTRAP -> "Locking metric scale"
-    CalibrationStep.COMPLETE -> "Calibration / OK"
+    CalibrationStep.COMPLETE -> "Capture live"
+    CalibrationStep.FAILED -> "Calibration failed"
 }
 
 private fun formatMeters(value: Float): String =
@@ -1068,6 +1095,8 @@ private fun RealLandmarkOverlay(
     x: FloatArray?,
     y: FloatArray?,
     visibility: FloatArray?,
+    imageWidth: Int,
+    imageHeight: Int,
 ) {
     Canvas(modifier = Modifier.fillMaxSize()) {
         if (x == null || y == null) return@Canvas
@@ -1076,10 +1105,17 @@ private fun RealLandmarkOverlay(
             if (index !in 0 until count) return null
             val confidence = visibility?.getOrNull(index) ?: 1f
             if (confidence < 0.28f) return null
-            return Offset(
-                x[index].coerceIn(0f, 1f) * size.width,
-                y[index].coerceIn(0f, 1f) * size.height,
-            )
+            val lx = x[index].coerceIn(0f, 1f)
+            val ly = y[index].coerceIn(0f, 1f)
+            if (imageWidth > 0 && imageHeight > 0) {
+                val scale = maxOf(size.width / imageWidth.toFloat(), size.height / imageHeight.toFloat())
+                val displayedWidth = imageWidth * scale
+                val displayedHeight = imageHeight * scale
+                val offsetX = (displayedWidth - size.width) * 0.5f
+                val offsetY = (displayedHeight - size.height) * 0.5f
+                return Offset(lx * displayedWidth - offsetX, ly * displayedHeight - offsetY)
+            }
+            return Offset(lx * size.width, ly * size.height)
         }
 
         REAL_2D_EDGES.forEach { (a, b) ->
