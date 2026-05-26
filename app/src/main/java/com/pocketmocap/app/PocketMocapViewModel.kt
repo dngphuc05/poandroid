@@ -858,7 +858,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     override fun prepareServerSceneMetrics(worldTracking: WorldTrackingSnapshot?): SceneMetricSnapshot? {
                         latestTechnicalSceneMetrics
                             ?.takeIf {
-                                it.source == "arcore_floor" &&
+                                it.source in setOf("arcore_floor", "arcore_floor_provisional", "imu_roi_fallback", "roi_fallback") &&
                                     it.confidence >= MIN_TECHNICAL_SCENE_CONFIDENCE_FOR_SERVER &&
                                     (
                                         it.distanceMeters.isFinite() ||

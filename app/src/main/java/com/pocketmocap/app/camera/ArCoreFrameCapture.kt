@@ -21,9 +21,12 @@ import com.google.ar.core.HitResult
 import com.google.ar.core.exceptions.NotYetAvailableException
 import com.google.ar.core.Plane
 import com.google.ar.core.Point
+import com.google.ar.core.Pose
 import com.google.ar.core.Session
 import com.google.ar.core.TrackingState
 import com.pocketmocap.app.CapturedCameraFrame
+import com.pocketmocap.app.calibration.CloudAnchorEngine
+import com.pocketmocap.app.calibration.CloudAnchorResult
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.DepthMapSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
@@ -45,7 +48,7 @@ import kotlin.math.atan2
 class ArCoreFrameCapture(
     private val context: Context,
     private val onFrame: (CapturedCameraFrame) -> Unit,
-) {
+) : CloudAnchorEngine {
     companion object {
         private const val TAG = "ArCoreFrameCapture"
         private const val MIN_FRAME_INTERVAL_NS = 16_000_000L
@@ -72,6 +75,7 @@ class ArCoreFrameCapture(
     @Volatile private var lockedCameraHeightMeters = Float.NaN
     @Volatile private var pendingCameraHeightMeters = Float.NaN
     @Volatile private var pendingCameraHeightFrames = 0
+    @Volatile private var latestCameraPose: Pose? = null
 
     private data class FloorAnchor(
         val point: FloatArray,
@@ -87,6 +91,7 @@ class ArCoreFrameCapture(
             val arSession = Session(context)
             val config = Config(arSession).apply {
                 planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
+                cloudAnchorMode = Config.CloudAnchorMode.ENABLED
                 updateMode = Config.UpdateMode.LATEST_CAMERA_IMAGE
                 focusMode = Config.FocusMode.AUTO
                 if (arSession.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
@@ -117,6 +122,96 @@ class ArCoreFrameCapture(
         lockedCameraHeightMeters = clamped
         pendingCameraHeightMeters = Float.NaN
         pendingCameraHeightFrames = 0
+        latestCameraPose = null
+    }
+
+    override fun hostSharedAnchor(onResult: (CloudAnchorResult) -> Unit) {
+        previewView.queueEvent {
+            val arSession = session
+            val pose = latestCameraPose
+            if (arSession == null || pose == null) {
+                onResult(CloudAnchorResult(state = "failed", errorMessage = "ARCore is not tracking yet"))
+                return@queueEvent
+            }
+            runCatching {
+                val localAnchor = arSession.createAnchor(pose)
+                val featureQuality = arSession.estimateFeatureMapQualityForHosting(pose)
+                val qualityScore = when (featureQuality) {
+                    Session.FeatureMapQuality.GOOD -> 0.92f
+                    Session.FeatureMapQuality.SUFFICIENT -> 0.74f
+                    Session.FeatureMapQuality.INSUFFICIENT -> 0.42f
+                    else -> 0.0f
+                }
+                onResult(CloudAnchorResult(state = "hosting", quality = qualityScore))
+                arSession.hostCloudAnchorAsync(localAnchor, 1) { cloudAnchorId, cloudState ->
+                    if (cloudState == com.google.ar.core.Anchor.CloudAnchorState.SUCCESS && cloudAnchorId.isNotBlank()) {
+                        onResult(
+                            CloudAnchorResult(
+                                state = "hosted",
+                                sharedAnchorId = cloudAnchorId,
+                                position = pose.translation,
+                                rotation = pose.rotationQuaternion,
+                                quality = qualityScore,
+                            )
+                        )
+                    } else {
+                        onResult(
+                            CloudAnchorResult(
+                                state = "failed",
+                                quality = qualityScore,
+                                errorMessage = "Cloud Anchor hosting failed: ${cloudState.name}",
+                            )
+                        )
+                    }
+                    runCatching { localAnchor.detach() }
+                }
+            }.onFailure {
+                onResult(CloudAnchorResult(state = "failed", errorMessage = it.message ?: "Cloud Anchor hosting failed"))
+            }
+        }
+    }
+
+    override fun resolveSharedAnchor(sharedAnchorId: String, onResult: (CloudAnchorResult) -> Unit) {
+        val anchorId = sharedAnchorId.trim()
+        if (anchorId.isBlank()) {
+            onResult(CloudAnchorResult(state = "failed", errorMessage = "Missing Cloud Anchor ID"))
+            return
+        }
+        previewView.queueEvent {
+            val arSession = session
+            if (arSession == null) {
+                onResult(CloudAnchorResult(state = "failed", sharedAnchorId = anchorId, errorMessage = "ARCore is not running"))
+                return@queueEvent
+            }
+            runCatching {
+                onResult(CloudAnchorResult(state = "resolving", sharedAnchorId = anchorId))
+                arSession.resolveCloudAnchorAsync(anchorId) { anchor, cloudState ->
+                    if (cloudState == com.google.ar.core.Anchor.CloudAnchorState.SUCCESS) {
+                        val pose = anchor.pose
+                        onResult(
+                            CloudAnchorResult(
+                                state = "resolved",
+                                sharedAnchorId = anchorId,
+                                position = pose.translation,
+                                rotation = pose.rotationQuaternion,
+                                quality = 0.82f,
+                            )
+                        )
+                    } else {
+                        onResult(
+                            CloudAnchorResult(
+                                state = "failed",
+                                sharedAnchorId = anchorId,
+                                errorMessage = "Cloud Anchor resolve failed: ${cloudState.name}",
+                            )
+                        )
+                    }
+                    runCatching { anchor.detach() }
+                }
+            }.onFailure {
+                onResult(CloudAnchorResult(state = "failed", sharedAnchorId = anchorId, errorMessage = it.message ?: "Cloud Anchor resolve failed"))
+            }
+        }
     }
 
     fun stop() {
@@ -277,6 +372,7 @@ class ArCoreFrameCapture(
     ): WorldTrackingSnapshot {
         val camera = frame.camera
         val pose = camera.pose
+        latestCameraPose = pose
         val translation = pose.translation
         val rotation = pose.rotationQuaternion
         val floorAnchor = selectFloorAnchor(arSession, frame, translation)

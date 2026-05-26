@@ -60,7 +60,8 @@ fun PocketMocapApp(
                     uiState = uiState,
                     onCodeChange = { viewModel.updateLobbyCode(it) },
                     onJoinSession = { viewModel.joinSession(it) },
-                    onDisconnect = { viewModel.disconnect() },
+                    onBackToLink = { viewModel.leaveSessionCodeEntry() },
+                    onScanQr = { scanningServerLink = true },
                     onClearError = { viewModel.clearError() },
                 )
 
@@ -68,7 +69,9 @@ fun PocketMocapApp(
                     uiState = uiState,
                     viewModel = viewModel,
                     onStartCalibration = { viewModel.startCalibration() },
-                    onDisconnect = { viewModel.disconnect() },
+                    onLeaveSession = { viewModel.leaveJoinedSession() },
+                    onBackToJoin = { viewModel.leaveToJoinCode() },
+                    onBackToLink = { viewModel.disconnect() },
                     onClearError = { viewModel.clearError() },
                     onStartScreenEvidenceRecording = onStartScreenEvidenceRecording,
                     onStopScreenEvidenceRecording = onStopScreenEvidenceRecording,

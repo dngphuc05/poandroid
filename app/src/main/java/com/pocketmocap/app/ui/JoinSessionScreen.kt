@@ -42,7 +42,8 @@ fun JoinSessionScreen(
     uiState: PocketMocapViewModel.UiState,
     onCodeChange: (String) -> Unit,
     onJoinSession: (String) -> Unit,
-    onDisconnect: () -> Unit,
+    onBackToLink: () -> Unit,
+    onScanQr: () -> Unit,
     onClearError: () -> Unit,
 ) {
     val code = uiState.lobbyCodeInput.filter(Char::isDigit).take(6)
@@ -79,6 +80,27 @@ fun JoinSessionScreen(
                 hasError = uiState.errorMessage != null,
                 onCodeChange = onCodeChange,
             )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                PocapButton(
+                    label = "Delete digit",
+                    onClick = { onCodeChange(code.dropLast(1)) },
+                    enabled = code.isNotEmpty() && !joining,
+                    modifier = Modifier.weight(1f),
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                )
+                PocapButton(
+                    label = "Clear code",
+                    onClick = { onCodeChange("") },
+                    enabled = code.isNotEmpty() && !joining,
+                    modifier = Modifier.weight(1f),
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                )
+            }
 
             uiState.errorMessage?.let { error ->
                 Spacer(modifier = Modifier.height(10.dp))
@@ -116,16 +138,25 @@ fun JoinSessionScreen(
                     .padding(top = 12.dp),
                 textAlign = TextAlign.Center,
             )
-            Text(
-                text = "Change PC link",
-                style = MaterialTheme.typography.bodySmall,
-                color = PocapInk2,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onDisconnect)
-                    .padding(top = 10.dp, bottom = 2.dp),
-                textAlign = TextAlign.Center,
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                PocapButton(
+                    label = "Back to link",
+                    onClick = onBackToLink,
+                    modifier = Modifier.weight(1f),
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                )
+                PocapButton(
+                    label = "Scan QR",
+                    onClick = onScanQr,
+                    modifier = Modifier.weight(1f),
+                    tone = PocapPaperLight,
+                    contentColor = PocapInk,
+                )
+            }
         }
     }
 }
@@ -159,7 +190,7 @@ private fun SessionCodeInput(
         value = code,
         onValueChange = { value -> onCodeChange(value.filter(Char::isDigit).take(6)) },
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         textStyle = TextStyle(color = Color.Transparent),
         cursorBrush = SolidColor(Color.Transparent),
         modifier = Modifier.fillMaxWidth(),
