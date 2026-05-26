@@ -7,6 +7,7 @@ import android.app.Service
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -59,7 +60,13 @@ class ScreenEvidenceRecordingService : Service() {
             stopSelf()
             return
         }
-        startForeground(NOTIFICATION_ID, buildNotification())
+        // Android 14 (API 34+) requires specifying the service type explicitly for mediaProjection.
+        // The 3-argument startForeground was added in API 29.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(NOTIFICATION_ID, buildNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION)
+        } else {
+            startForeground(NOTIFICATION_ID, buildNotification())
+        }
         val projectionManager = getSystemService(Context.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
         val projection = projectionManager.getMediaProjection(resultCode, resultData) ?: run {
             notifyFailed("REC projection unavailable")
