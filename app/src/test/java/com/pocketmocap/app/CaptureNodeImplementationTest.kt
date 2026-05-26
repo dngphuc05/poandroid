@@ -235,6 +235,8 @@ class CaptureNodeImplementationTest {
         assertTrue("Connect headline must decorate Pocap PC with cyan", connect.contains("decoratedLine = \"Pocap PC.\"") && connect.contains("decoratorColor = PocapCyan"))
         assertTrue("Phone capture screen must name PC-owned mocap recording", capture.contains("PC records mocap"))
         assertTrue("Phone capture screen must expose screen evidence REC", capture.contains("Text(\"REC\"") && capture.contains("SCREEN MP4"))
+        assertTrue("Phone sync screen must expose metric camera height adjustment", capture.contains("CameraHeightControl") && capture.contains("metric camera height"))
+        assertTrue("Camera height adjustment must use the metric pipeline setter", capture.contains("viewModel::setManualCameraHeightMeters"))
         assertTrue("Phone readiness action must not pretend to own PC sync", capture.contains("Mark phone ready"))
         assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
         assertFalse("Connect screen must not expose a second typed-link action", connect.contains("Use Link"))
@@ -243,6 +245,22 @@ class CaptureNodeImplementationTest {
         assertFalse("Phone app must not include local capture CSV names", capture.contains("metrics.csv") || capture.contains("skeleton_2d_landmarks.csv") || capture.contains("technical_3d_landmarks.csv"))
         assertFalse("Phone sync screen must not claim direct sync ownership", capture.contains("label = \"Start sync\""))
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
+    }
+
+    @Test
+    fun cameraHeightAdjustmentFeedsArcoreMetricCapture() {
+        val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
+        val captureScreen = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
+        val arcoreCapture = appDir.resolve("src/main/java/com/pocketmocap/app/camera/ArCoreFrameCapture.kt").readText()
+
+        assertTrue(viewModel.contains("fun setManualCameraHeightMeters"))
+        assertTrue(viewModel.contains("PREF_MANUAL_CAMERA_HEIGHT_M"))
+        assertTrue(captureScreen.contains("CameraHeightControl"))
+        assertTrue(captureScreen.contains("viewModel::setManualCameraHeightMeters"))
+        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight - 0.05f)"))
+        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight + 0.05f)"))
+        assertTrue(arcoreCapture.contains("fun setManualCameraHeightMeters"))
+        assertTrue(arcoreCapture.contains("cameraHeightMeters = cameraHeight"))
     }
 
     @Test

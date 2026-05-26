@@ -291,6 +291,53 @@ private fun CompactActionRow(
 }
 
 @Composable
+private fun CameraHeightControl(
+    cameraHeightMeters: Float,
+    onCameraHeightChange: (Float) -> Unit,
+) {
+    val safeHeight = cameraHeightMeters.takeIf { it.isFinite() } ?: 1.17f
+    PocapCard(color = PocapPaperLight, radius = 14.dp, shadow = false) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                PocapEyebrow("metric camera height")
+                Text(
+                    text = "Use the phone lens height from the floor.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = PocapInk2,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            PocapIconButton(
+                onClick = { onCameraHeightChange(safeHeight - 0.05f) },
+                tone = PocapPaper,
+            ) {
+                Text("-5", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            }
+            Text(
+                text = formatMeters(safeHeight),
+                style = MaterialTheme.typography.titleSmall,
+                color = PocapInk,
+                fontFamily = PocapMono,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+            PocapIconButton(
+                onClick = { onCameraHeightChange(safeHeight + 0.05f) },
+                tone = PocapCyan,
+            ) {
+                Text("+5", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            }
+        }
+    }
+}
+
+@Composable
 private fun ScreenEvidenceRecordingChrome(
     recordingSeconds: Int,
     onStopRecording: () -> Unit,
@@ -521,6 +568,11 @@ private fun SyncCalibrationScreen(
                     modifier = Modifier.weight(1f),
                 )
             }
+            Spacer(modifier = Modifier.height(12.dp))
+            CameraHeightControl(
+                cameraHeightMeters = uiState.manualCameraHeightMeters,
+                onCameraHeightChange = viewModel::setManualCameraHeightMeters,
+            )
 
             uiState.errorMessage?.let { error ->
                 Spacer(modifier = Modifier.height(14.dp))
