@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
@@ -14,6 +15,8 @@ import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Environment
 import android.os.IBinder
+import android.os.ParcelFileDescriptor
+import android.provider.MediaStore
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import java.io.File
@@ -25,6 +28,7 @@ class ScreenEvidenceRecordingService : Service() {
     private var mediaProjection: MediaProjection? = null
     private var mediaRecorder: MediaRecorder? = null
     private var virtualDisplay: VirtualDisplay? = null
+    private var outputTarget: RecordingOutputTarget? = null
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -67,7 +71,7 @@ class ScreenEvidenceRecordingService : Service() {
         startForeground(NOTIFICATION_ID, buildNotification())
 
         val metrics = screenMetrics()
-        val output = nextOutputFile()
+        val output = nextOutputTarget()
         val recorder = newMediaRecorder().apply {
             setVideoSource(MediaRecorder.VideoSource.SURFACE)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
@@ -75,7 +79,7 @@ class ScreenEvidenceRecordingService : Service() {
             setVideoSize(metrics.widthPixels, metrics.heightPixels)
             setVideoFrameRate(30)
             setVideoEncodingBitRate(8_000_000)
-            setOutputFile(output.absolutePath)
+            output.applyTo(this)
             prepare()
         }
 
@@ -93,6 +97,7 @@ class ScreenEvidenceRecordingService : Service() {
         mediaProjection = projection
         mediaRecorder = recorder
         virtualDisplay = display
+        outputTarget = output
         recorder.start()
     }
 
@@ -103,6 +108,8 @@ class ScreenEvidenceRecordingService : Service() {
         runCatching { mediaRecorder?.reset() }
         runCatching { mediaRecorder?.release() }
         mediaRecorder = null
+        runCatching { outputTarget?.finish(this) }
+        outputTarget = null
         val projection = mediaProjection
         mediaProjection = null
         runCatching { projection?.stop() }
@@ -159,12 +166,64 @@ class ScreenEvidenceRecordingService : Service() {
             MediaRecorder()
         }
 
+    private fun nextOutputTarget(): RecordingOutputTarget {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val stamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+            val values = ContentValues().apply {
+                put(MediaStore.Video.Media.DISPLAY_NAME, "pocap_screen_$stamp.mp4")
+                put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
+                put(MediaStore.Video.Media.RELATIVE_PATH, "${Environment.DIRECTORY_MOVIES}/Pocap")
+                put(MediaStore.Video.Media.IS_PENDING, 1)
+            }
+            val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values)
+                ?: return RecordingOutputTarget.FilePath(nextOutputFile())
+            val descriptor = contentResolver.openFileDescriptor(uri, "w")
+                ?: return RecordingOutputTarget.FilePath(nextOutputFile())
+            return RecordingOutputTarget.MediaStoreUri(uri, descriptor)
+        }
+        return RecordingOutputTarget.FilePath(nextOutputFile())
+    }
+
     private fun nextOutputFile(): File {
         val root = getExternalFilesDir(Environment.DIRECTORY_MOVIES)
             ?: File(filesDir, "movies")
         val dir = File(root, "pocap-screen-evidence").apply { mkdirs() }
         val stamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
         return File(dir, "pocap_screen_$stamp.mp4")
+    }
+
+    private sealed class RecordingOutputTarget {
+        abstract fun applyTo(recorder: MediaRecorder)
+        abstract fun finish(context: Context)
+
+        data class FilePath(private val file: File) : RecordingOutputTarget() {
+            override fun applyTo(recorder: MediaRecorder) {
+                recorder.setOutputFile(file.absolutePath)
+            }
+
+            override fun finish(context: Context) = Unit
+        }
+
+        data class MediaStoreUri(
+            private val uri: android.net.Uri,
+            private val descriptor: ParcelFileDescriptor,
+        ) : RecordingOutputTarget() {
+            override fun applyTo(recorder: MediaRecorder) {
+                recorder.setOutputFile(descriptor.fileDescriptor)
+            }
+
+            override fun finish(context: Context) {
+                runCatching { descriptor.close() }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    context.contentResolver.update(
+                        uri,
+                        ContentValues().apply { put(MediaStore.Video.Media.IS_PENDING, 0) },
+                        null,
+                        null,
+                    )
+                }
+            }
+        }
     }
 
     companion object {

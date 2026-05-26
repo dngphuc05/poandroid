@@ -221,7 +221,7 @@ class CaptureNodeImplementationTest {
             "PocapCornerBrackets" to capture,
             "PocapBigNum" to capture,
             "PocapProgressBar" to capture,
-            "PocapFactBox" to capture,
+            "CalibrationPayloadRow" to capture,
             "PocapPayloadRow" to capture,
             "QrCameraPreview" to qr,
         )
@@ -237,13 +237,15 @@ class CaptureNodeImplementationTest {
         assertTrue("Phone capture screen must expose screen evidence REC", capture.contains("Text(\"REC\"") && capture.contains("SCREEN MP4"))
         assertTrue("Phone sync screen must expose metric camera height adjustment", capture.contains("CameraHeightControl") && capture.contains("metric camera height"))
         assertTrue("Camera height adjustment must use the metric pipeline setter", capture.contains("viewModel::setManualCameraHeightMeters"))
-        assertTrue("Phone readiness action must not pretend to own PC sync", capture.contains("Mark phone ready"))
+        assertTrue("Phone calibration must branch single-camera and multi-camera setup", capture.contains("joinedLobbyPreset") && capture.contains("single camera metric setup") && capture.contains("multi-camera sync + extrinsics"))
+        assertTrue("Phone calibration must send camera setup before live capture", capture.contains("Send camera calibration") && capture.contains("Send sync calibration"))
         assertFalse("Connect intro copy must stay compact on phone viewports", connect.contains("Session joining happens on the next screen."))
         assertFalse("Connect screen must not expose a second typed-link action", connect.contains("Use Link"))
         assertFalse("Capture screen must not use unclear LOG button text", capture.contains("Text(\"LOG\""))
         assertFalse("Phone app must not expose the old local diagnostic recorder", capture.contains("DIAG"))
         assertFalse("Phone app must not include local capture CSV names", capture.contains("metrics.csv") || capture.contains("skeleton_2d_landmarks.csv") || capture.contains("technical_3d_landmarks.csv"))
         assertFalse("Phone sync screen must not claim direct sync ownership", capture.contains("label = \"Start sync\""))
+        assertFalse("Camera action row must not use purple SYNC button copy", capture.contains("Text(\"SYNC\""))
         assertFalse("Capture runtime must not draw the fake reference skeleton over the real camera", capture.contains("SkeletonOverlay("))
     }
 
@@ -257,8 +259,8 @@ class CaptureNodeImplementationTest {
         assertTrue(viewModel.contains("PREF_MANUAL_CAMERA_HEIGHT_M"))
         assertTrue(captureScreen.contains("CameraHeightControl"))
         assertTrue(captureScreen.contains("viewModel::setManualCameraHeightMeters"))
-        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight - 0.05f)"))
-        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight + 0.05f)"))
+        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight - 0.01f)"))
+        assertTrue(captureScreen.contains("onCameraHeightChange(safeHeight + 0.01f)"))
         assertTrue(arcoreCapture.contains("fun setManualCameraHeightMeters"))
         assertTrue(arcoreCapture.contains("cameraHeightMeters = cameraHeight"))
     }
@@ -284,6 +286,8 @@ class CaptureNodeImplementationTest {
         assertTrue(capture.contains("REC saves this phone screen, person, and 2D landmarks as MP4"))
         assertTrue(capture.contains("PocapChip(") && capture.contains("label = \"rec\""))
         assertTrue(service.contains("MediaRecorder.VideoEncoder.H264"))
+        assertTrue(service.contains("MediaStore.Video.Media.EXTERNAL_CONTENT_URI"))
+        assertTrue(service.contains("Environment.DIRECTORY_MOVIES}/Pocap"))
         assertTrue(service.contains("Environment.DIRECTORY_MOVIES"))
         assertTrue(service.contains("pocap-screen-evidence"))
         assertFalse("Realtime landmark processing must not own MP4 encoding", pipeline.contains("MediaRecorder"))

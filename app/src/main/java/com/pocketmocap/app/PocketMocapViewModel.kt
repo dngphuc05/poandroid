@@ -76,6 +76,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val lobbyCodeInput: String = "",
         val joinedLobbyCode: String = "",
         val joinedLobbyName: String = "",
+        val joinedLobbyPreset: String = "multi_live",
         val lobbyJoinState: LobbyJoinState = LobbyJoinState.IDLE,
         val pipelineState: HybridPosePipeline.PipelineState = HybridPosePipeline.PipelineState.IDLE,
         val calibrationStep: CalibrationStep = CalibrationStep.PENDING,
@@ -362,13 +363,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
 
-        override fun onLobbyJoined(code: String, name: String) {
-            Log.i(TAG, "onLobbyJoined: code=$code name=$name")
+        override fun onLobbyJoined(code: String, name: String, preset: String) {
+            val normalizedPreset = preset.takeIf { it == "single_live" || it == "multi_live" } ?: "multi_live"
+            Log.i(TAG, "onLobbyJoined: code=$code name=$name preset=$normalizedPreset")
             deviceReadyReported = false
             _uiState.update { it.copy(
                 lobbyCodeInput = code,
                 joinedLobbyCode = code,
                 joinedLobbyName = name,
+                joinedLobbyPreset = normalizedPreset,
                 lobbyJoinState = LobbyJoinState.JOINED,
                 errorMessage = null,
             )}
@@ -383,6 +386,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(
                 joinedLobbyCode = "",
                 joinedLobbyName = "",
+                joinedLobbyPreset = "multi_live",
                 lobbyJoinState = LobbyJoinState.IDLE,
                 calibrationStep = CalibrationStep.PENDING,
                 bootstrapProgress = 0f,
@@ -405,6 +409,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                 connectionState = ConnectionState.DISCONNECTED,
                 joinedLobbyCode = "",
                 joinedLobbyName = "",
+                joinedLobbyPreset = "multi_live",
                 lobbyJoinState = LobbyJoinState.IDLE,
             ) }
         }
@@ -2294,6 +2299,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             connectionState = ConnectionState.CONNECTING,
             joinedLobbyCode = "",
             joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
             lobbyJoinState = LobbyJoinState.IDLE,
             errorMessage = null,
         )}
@@ -2450,6 +2456,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverUrl = url,
             joinedLobbyCode = "",
             joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
             lobbyJoinState = LobbyJoinState.IDLE,
             errorMessage = null,
         ) }
@@ -2465,6 +2472,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             serverUrl = serverUrl,
             joinedLobbyCode = "",
             joinedLobbyName = "",
+            joinedLobbyPreset = "multi_live",
             lobbyJoinState = LobbyJoinState.IDLE,
             errorMessage = null,
         ) }

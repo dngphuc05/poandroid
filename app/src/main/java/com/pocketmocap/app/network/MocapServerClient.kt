@@ -28,7 +28,7 @@ class MocapServerClient(
 ) {
     interface Listener {
         fun onConnected(sessionId: String)
-        fun onLobbyJoined(code: String, name: String)
+        fun onLobbyJoined(code: String, name: String, preset: String)
         fun onLobbyClosed(code: String) {}   // PC operator closed the lobby (or disconnected)
         fun onDisconnected()
         fun onCalibrationAck(success: Boolean, state: String)
@@ -108,9 +108,14 @@ class MocapServerClient(
                     }
                     val code = data.optString("code", "")
                     val name = data.optString("name", "")
-                    Log.i(TAG, "Lobby joined: code=$code name=$name")
+                    val lobby = data.optJSONObject("lobby")
+                    val preset = data.optString(
+                        "preset",
+                        lobby?.optString("preset", "multi_live") ?: "multi_live",
+                    )
+                    Log.i(TAG, "Lobby joined: code=$code name=$name preset=$preset")
                     joinedLobbyCode = code
-                    listener.onLobbyJoined(code, name)
+                    listener.onLobbyJoined(code, name, preset)
                 }
                 on("lobby_closed") { args ->
                     val data = args.firstOrNull() as? JSONObject

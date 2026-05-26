@@ -115,9 +115,13 @@ fun CaptureScreen(
         return
     }
 
-    // Manual navigation only ever points at the beige overlays (Calibration / Error).
+    // After a phone joins, calibration/setup is the deliberate bridge before live capture.
     var manualView by remember { mutableStateOf<CaptureView?>(null) }
-    val activeView = manualView ?: CaptureView.CAMERA
+    val activeView = manualView ?: if (uiState.calibrationStep == CalibrationStep.COMPLETE) {
+        CaptureView.CAMERA
+    } else {
+        CaptureView.CALIBRATION
+    }
     val recordingSeconds = rememberRecordingSeconds(viewModel.isScreenEvidenceRecording)
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
@@ -159,7 +163,7 @@ fun CaptureScreen(
             CaptureView.CALIBRATION -> SyncCalibrationScreen(
                 uiState = uiState,
                 viewModel = viewModel,
-                onBack = { manualView = null },
+                onBack = { manualView = CaptureView.CAMERA },
                 onStartCalibration = onStartCalibration,
                 onClearError = onClearError,
             )
@@ -277,8 +281,8 @@ private fun CompactActionRow(
                     overflow = TextOverflow.Ellipsis,
                 )
             }
-            PocapIconButton(onClick = onOpenCalibration, tone = PocapViolet) {
-                Text("SYNC", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            PocapIconButton(onClick = onOpenCalibration, tone = PocapCyan) {
+                Text("SETUP", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
             PocapIconButton(
                 onClick = onToggleScreenRecording,
@@ -314,10 +318,10 @@ private fun CameraHeightControl(
                 )
             }
             PocapIconButton(
-                onClick = { onCameraHeightChange(safeHeight - 0.05f) },
+                onClick = { onCameraHeightChange(safeHeight - 0.01f) },
                 tone = PocapPaper,
             ) {
-                Text("-5", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+                Text("-1", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
             Text(
                 text = formatMeters(safeHeight),
@@ -328,10 +332,10 @@ private fun CameraHeightControl(
                 maxLines = 1,
             )
             PocapIconButton(
-                onClick = { onCameraHeightChange(safeHeight + 0.05f) },
+                onClick = { onCameraHeightChange(safeHeight + 0.01f) },
                 tone = PocapCyan,
             ) {
-                Text("+5", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+                Text("+1", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
         }
     }
@@ -422,17 +426,29 @@ private fun SyncCalibrationScreen(
     onClearError: () -> Unit,
 ) {
     val step = uiState.calibrationStep
-    val stages = listOf("Sync", "Calibrate", "Capture")
+    val isSingleCamera = uiState.joinedLobbyPreset == "single_live"
+    val stages = if (isSingleCamera) {
+        listOf("Setup", "Calibrate", "Capture")
+    } else {
+        listOf("Sync", "Calibrate", "Capture")
+    }
     val stageIdx = when (step) {
         CalibrationStep.PENDING, CalibrationStep.INTRINSIC_CALC -> 0
         CalibrationStep.EXTRINSIC_ANCHOR, CalibrationStep.BOOTSTRAP -> 1
         CalibrationStep.COMPLETE -> 2
     }
     val (title, body) = when (step) {
-        CalibrationStep.PENDING -> "Waiting for\nthe operator." to
-            "The laptop starts sync when ready. Keep this phone steady where it is."
-        CalibrationStep.INTRINSIC_CALC -> "Syncing\nthe camera." to
-            "Negotiating intrinsics and a shared clock with the laptop. Don't move the phone."
+        CalibrationStep.PENDING -> "Send camera\ncalibration." to
+            if (isSingleCamera) {
+                "Single-camera live uses camera intrinsics, lens height, AR floor, and a virtual mirror path. No multi-phone sync step is needed."
+            } else {
+                "Multi-camera live uses a shared clock, per-phone camera extrinsics, camera intrinsics, and floor reference before DLT reconstruction."
+            }
+        CalibrationStep.INTRINSIC_CALC -> if (isSingleCamera) {
+            "Reading\ncamera metrics." to "Sending intrinsics, lens height, and AR/floor tracking to the PC."
+        } else {
+            "Syncing\ncamera nodes." to "Negotiating intrinsics, shared timing, and camera placement with the PC."
+        }
         CalibrationStep.EXTRINSIC_ANCHOR -> "Stand in\nframe." to
             "Subject faces the camera, full body visible, arms loose. The laptop anchors the scene."
         CalibrationStep.BOOTSTRAP -> "Reading\nthe room." to
@@ -441,14 +457,11 @@ private fun SyncCalibrationScreen(
             "Floor plane and subject height are locked. Ready to capture."
     }
     val sideLabel = when (step) {
-        CalibrationStep.PENDING, CalibrationStep.INTRINSIC_CALC -> "Hold position"
+        CalibrationStep.PENDING, CalibrationStep.INTRINSIC_CALC -> if (isSingleCamera) "Lens height ready" else "Sync setup"
         CalibrationStep.EXTRINSIC_ANCHOR -> "Subject ready"
         CalibrationStep.BOOTSTRAP -> "Hold still"
         CalibrationStep.COMPLETE -> "Ready"
     }
-    val showSkeleton = step == CalibrationStep.EXTRINSIC_ANCHOR ||
-        step == CalibrationStep.BOOTSTRAP || step == CalibrationStep.COMPLETE
-    val showFloor = step == CalibrationStep.EXTRINSIC_ANCHOR || step == CalibrationStep.BOOTSTRAP
 
     PocapPaperScaffold {
         Column(
@@ -467,9 +480,9 @@ private fun SyncCalibrationScreen(
                     Icon(Icons.Rounded.LinkOff, contentDescription = "Back to camera", tint = PocapInk)
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    PocapEyebrow("stage / ${stages[stageIdx]}")
+                PocapEyebrow("stage / ${stages[stageIdx]}")
                     Text(
-                        text = "PC controlled",
+                        text = if (isSingleCamera) "Single camera setup" else "Multi-camera setup",
                         style = MaterialTheme.typography.titleSmall,
                         color = PocapInk,
                         fontFamily = PocapMono,
@@ -500,27 +513,26 @@ private fun SyncCalibrationScreen(
                 modifier = Modifier.padding(top = 12.dp, bottom = 18.dp),
             )
 
-            // visualizer card
+            // calibration contract card
             PocapCard(radius = 18.dp) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(140.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .border(1.5.dp, PocapInk, RoundedCornerShape(10.dp)),
-                    ) {
-                        PocapMockViewfinder(
-                            modifier = Modifier.fillMaxSize(),
-                            dark = step == CalibrationStep.PENDING,
-                        ) {
-                            if (showSkeleton) PocapMockSkeleton(confidence = if (step == CalibrationStep.COMPLETE) 1f else 0.85f)
-                            if (showFloor) PocapFloorMarkers(detecting = step == CalibrationStep.EXTRINSIC_ANCHOR)
-                        }
-                        Box(modifier = Modifier.align(Alignment.TopEnd).padding(8.dp)) {
-                            PocapChip(label = sideLabel, tone = PocapPaper.copy(alpha = 0.94f))
-                        }
-                    }
+                    PocapChip(label = sideLabel, tone = if (isSingleCamera) PocapCyan else PocapPaper.copy(alpha = 0.94f))
+                    CalibrationPayloadRow(
+                        label = "calibration type",
+                        value = if (isSingleCamera) "single camera metric setup" else "multi-camera sync + extrinsics",
+                    )
+                    CalibrationPayloadRow(
+                        label = "server receives",
+                        value = if (isSingleCamera) {
+                            "intrinsics, lens height, AR floor, 2D landmarks"
+                        } else {
+                            "intrinsics, lens height, clock sync, camera extrinsics, 2D landmarks"
+                        },
+                    )
+                    CalibrationPayloadRow(
+                        label = "reconstruction path",
+                        value = if (isSingleCamera) "virtual mirror + metric evidence + canonical solver" else "DLT triangulation + metric evidence + canonical solver",
+                    )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -545,30 +557,6 @@ private fun SyncCalibrationScreen(
             }
 
             Spacer(modifier = Modifier.height(18.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                PocapFactBox(
-                    label = "Camera",
-                    value = formatMeters(uiState.manualCameraHeightMeters),
-                    tone = PocapViolet,
-                    modifier = Modifier.weight(1f),
-                )
-                PocapFactBox(
-                    label = "Height",
-                    value = formatMeters(
-                        viewModel.latestSceneMetrics?.correctedHeightMeters?.takeIf { it.isFinite() }
-                            ?: viewModel.latestSceneMetrics?.bodyHeightMeters ?: Float.NaN,
-                    ),
-                    tone = PocapCyan,
-                    modifier = Modifier.weight(1f),
-                )
-                PocapFactBox(
-                    label = "Age",
-                    value = viewModel.lastPose3DAgeMs?.let { "$it ms" } ?: "--",
-                    tone = PocapPink,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
             CameraHeightControl(
                 cameraHeightMeters = uiState.manualCameraHeightMeters,
                 onCameraHeightChange = viewModel::setManualCameraHeightMeters,
@@ -589,10 +577,10 @@ private fun SyncCalibrationScreen(
             Spacer(modifier = Modifier.weight(1f))
             if (step == CalibrationStep.PENDING) {
                 PocapButton(
-                    label = "Mark phone ready",
+                    label = if (isSingleCamera) "Send camera calibration" else "Send sync calibration",
                     onClick = onStartCalibration,
                     modifier = Modifier.fillMaxWidth(),
-                    tone = PocapViolet,
+                    tone = PocapCyan,
                     contentColor = PocapInk,
                 )
             } else {
@@ -782,6 +770,25 @@ private fun ErrorFactRow(label: String, value: String, ok: Boolean, first: Boole
                 maxLines = 1,
             )
         }
+    }
+}
+
+@Composable
+private fun CalibrationPayloadRow(label: String, value: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        PocapEyebrow(label)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            color = PocapInk2,
+            fontWeight = FontWeight.SemiBold,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.End,
+        )
     }
 }
 
