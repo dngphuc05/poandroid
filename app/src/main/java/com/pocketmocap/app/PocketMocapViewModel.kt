@@ -114,6 +114,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         private set
     var visibleLandmarkCount by mutableStateOf(0)
         private set
+    var isScreenEvidenceRecording by mutableStateOf(false)
+        private set
+    var screenEvidenceRecordingStatus by mutableStateOf("REC off")
+        private set
     var cameraImageWidth by mutableStateOf(0)
         private set
     var cameraImageHeight by mutableStateOf(0)
@@ -2473,6 +2477,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
 
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
+    }
+
+    fun markScreenEvidenceRecordingStarted() {
+        isScreenEvidenceRecording = true
+        screenEvidenceRecordingStatus = "Recording overlay MP4"
+        clearError()
+    }
+
+    fun markScreenEvidenceRecordingStopped(reason: String = "REC off") {
+        isScreenEvidenceRecording = false
+        screenEvidenceRecordingStatus = reason
     }
 
     private fun deviceId(): String {

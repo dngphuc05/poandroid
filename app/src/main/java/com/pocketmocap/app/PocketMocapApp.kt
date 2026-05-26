@@ -20,7 +20,11 @@ import com.pocketmocap.app.ui.QrLinkScannerScreen
 import com.pocketmocap.app.ui.theme.PocketMocapTheme
 
 @Composable
-fun PocketMocapApp(viewModel: PocketMocapViewModel) {
+fun PocketMocapApp(
+    viewModel: PocketMocapViewModel,
+    onStartScreenEvidenceRecording: () -> Unit = {},
+    onStopScreenEvidenceRecording: () -> Unit = {},
+) {
     val uiState by viewModel.uiState.collectAsState()
     var scanningServerLink by remember { mutableStateOf(false) }
 
@@ -66,6 +70,8 @@ fun PocketMocapApp(viewModel: PocketMocapViewModel) {
                     onStartCalibration = { viewModel.startCalibration() },
                     onDisconnect = { viewModel.disconnect() },
                     onClearError = { viewModel.clearError() },
+                    onStartScreenEvidenceRecording = onStartScreenEvidenceRecording,
+                    onStopScreenEvidenceRecording = onStopScreenEvidenceRecording,
                 )
             }
         }

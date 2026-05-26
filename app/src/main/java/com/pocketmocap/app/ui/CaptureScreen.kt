@@ -55,6 +55,7 @@ import com.pocketmocap.app.PocketMocapViewModel
 import com.pocketmocap.app.PocketMocapViewModel.CalibrationStep
 import com.pocketmocap.app.camera.ArCoreFrameCapture
 import com.pocketmocap.app.pipeline.HybridPosePipeline
+import kotlinx.coroutines.delay
 
 /** In-session screens. The camera surface stays mounted under all of them. */
 private enum class CaptureView { CAMERA, CALIBRATION, ERROR }
@@ -66,6 +67,8 @@ fun CaptureScreen(
     onStartCalibration: () -> Unit,
     onDisconnect: () -> Unit,
     onClearError: () -> Unit,
+    onStartScreenEvidenceRecording: () -> Unit,
+    onStopScreenEvidenceRecording: () -> Unit,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -115,6 +118,7 @@ fun CaptureScreen(
     // Manual navigation only ever points at the beige overlays (Calibration / Error).
     var manualView by remember { mutableStateOf<CaptureView?>(null) }
     val activeView = manualView ?: CaptureView.CAMERA
+    val recordingSeconds = rememberRecordingSeconds(viewModel.isScreenEvidenceRecording)
 
     Box(modifier = Modifier.fillMaxSize().background(Color.Black)) {
         // Persistent camera surface — keeps ArCore + streaming alive across views.
@@ -129,6 +133,12 @@ fun CaptureScreen(
         )
         PocapCornerBrackets()
         PocapCameraScrim()
+        if (viewModel.isScreenEvidenceRecording) {
+            ScreenEvidenceRecordingChrome(
+                recordingSeconds = recordingSeconds,
+                onStopRecording = onStopScreenEvidenceRecording,
+            )
+        }
 
         when (activeView) {
             CaptureView.CAMERA -> CameraReadyChrome(
@@ -137,6 +147,13 @@ fun CaptureScreen(
                 onOpenCalibration = { manualView = CaptureView.CALIBRATION },
                 onOpenError = { manualView = CaptureView.ERROR },
                 onDisconnect = onDisconnect,
+                onToggleScreenRecording = {
+                    if (viewModel.isScreenEvidenceRecording) {
+                        onStopScreenEvidenceRecording()
+                    } else {
+                        onStartScreenEvidenceRecording()
+                    }
+                },
             )
 
             CaptureView.CALIBRATION -> SyncCalibrationScreen(
@@ -167,6 +184,7 @@ private fun CameraReadyChrome(
     onOpenCalibration: () -> Unit,
     onOpenError: () -> Unit,
     onDisconnect: () -> Unit,
+    onToggleScreenRecording: () -> Unit,
 ) {
     val visible = viewModel.visibleLandmarkCount
     Column(
@@ -215,6 +233,9 @@ private fun CameraReadyChrome(
             MetricsRowCard(uiState = uiState, viewModel = viewModel)
             CompactActionRow(
                 onOpenCalibration = onOpenCalibration,
+                recording = viewModel.isScreenEvidenceRecording,
+                recordingStatus = viewModel.screenEvidenceRecordingStatus,
+                onToggleScreenRecording = onToggleScreenRecording,
             )
         }
     }
@@ -223,6 +244,9 @@ private fun CameraReadyChrome(
 @Composable
 private fun CompactActionRow(
     onOpenCalibration: () -> Unit,
+    recording: Boolean,
+    recordingStatus: String,
+    onToggleScreenRecording: () -> Unit,
 ) {
     PocapCard(color = PocapPaper.copy(alpha = 0.96f), radius = 18.dp) {
         Row(
@@ -241,7 +265,11 @@ private fun CompactActionRow(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "PC records session artifacts. This phone streams camera landmarks and tracking metrics.",
+                    text = if (recording) {
+                        recordingStatus
+                    } else {
+                        "PC records mocap. REC saves this phone screen, person, and 2D landmarks as MP4."
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = PocapInk3,
                     fontWeight = FontWeight.SemiBold,
@@ -252,6 +280,85 @@ private fun CompactActionRow(
             PocapIconButton(onClick = onOpenCalibration, tone = PocapViolet) {
                 Text("SYNC", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
             }
+            PocapIconButton(
+                onClick = onToggleScreenRecording,
+                tone = if (recording) PocapPink else PocapPaperLight,
+            ) {
+                Text("REC", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ScreenEvidenceRecordingChrome(
+    recordingSeconds: Int,
+    onStopRecording: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .padding(horizontal = 10.dp, vertical = 12.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .clip(RoundedCornerShape(18.dp))
+                .border(3.dp, PocapPink, RoundedCornerShape(18.dp)),
+        )
+        PocapChip(
+            label = "rec",
+            tone = PocapPink,
+            dot = true,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 2.dp, top = 4.dp),
+        )
+        PocapCard(
+            color = PocapPaper.copy(alpha = 0.94f),
+            radius = 14.dp,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = 2.dp, top = 38.dp),
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.Bottom,
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+                Text(
+                    text = formatRecordClock(recordingSeconds),
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = PocapInk,
+                    fontFamily = PocapMono,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                )
+                Text(
+                    text = "SCREEN MP4",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = PocapInk3,
+                    fontFamily = PocapMono,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 4.dp),
+                    maxLines = 1,
+                )
+            }
+        }
+        PocapIconButton(
+            onClick = onStopRecording,
+            tone = PocapPink,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 4.dp, end = 2.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(16.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(PocapInk),
+            )
         }
     }
 }
@@ -875,6 +982,24 @@ private fun calibrationProgressLabel(uiState: PocketMocapViewModel.UiState): Str
 
 private fun formatMeters(value: Float): String =
     if (value.isFinite()) String.format(java.util.Locale.US, "%.2f m", value) else "waiting"
+
+@Composable
+private fun rememberRecordingSeconds(recording: Boolean): Int {
+    var seconds by remember { mutableStateOf(0) }
+    LaunchedEffect(recording) {
+        seconds = 0
+        while (recording) {
+            delay(1000)
+            seconds += 1
+        }
+    }
+    return seconds
+}
+
+private fun formatRecordClock(totalSeconds: Int): String {
+    val safe = totalSeconds.coerceAtLeast(0)
+    return String.format(java.util.Locale.US, "%02d:%02d", safe / 60, safe % 60)
+}
 
 private fun formatSessionCode(code: String): String =
     code.filter(Char::isDigit).take(6).chunked(3).joinToString(" ").ifBlank { "pending" }
