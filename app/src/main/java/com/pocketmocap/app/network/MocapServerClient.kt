@@ -603,7 +603,7 @@ class MocapServerClient(
     }
 }
 
-fun normalizeLobbyPreset(data: JSONObject?, fallback: String = "multi_live"): String {
+fun normalizeLobbyPreset(data: JSONObject?, fallback: String = "single_live"): String {
     val lobby = data?.optJSONObject("lobby")
     val maxDevices = listOf(
         data?.optInt("max_devices", -1) ?: -1,
@@ -622,11 +622,19 @@ fun normalizeLobbyPreset(data: JSONObject?, fallback: String = "multi_live"): St
         data?.optString("session_type", "").orEmpty(),
         lobby?.optString("session_type", "").orEmpty(),
     )
-        .map(String::trim)
-        .firstOrNull { it == "single_live" || it == "multi_live" }
+        .map { it.trim().lowercase().replace("-", "_").replace(" ", "_") }
+        .firstNotNullOfOrNull { value ->
+            when {
+                value == "single_live" || value == "single_camera_live" || value == "single_camera" -> "single_live"
+                value == "1_camera_live" || value == "one_camera_live" || value == "one_camera" -> "single_live"
+                value == "multi_live" || value == "multi_camera_live" || value == "multi_camera" -> "multi_live"
+                value == "multicam_live" || value == "multicam" -> "multi_live"
+                else -> null
+            }
+        }
     if (explicitPreset != null) return explicitPreset
 
-    return fallback.takeIf { it == "single_live" || it == "multi_live" } ?: "multi_live"
+    return fallback.takeIf { it == "single_live" || it == "multi_live" } ?: "single_live"
 }
 
 /**

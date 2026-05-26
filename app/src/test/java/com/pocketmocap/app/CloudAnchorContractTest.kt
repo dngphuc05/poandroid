@@ -78,8 +78,24 @@ class CloudAnchorContractTest {
             normalizeLobbyPreset(JSONObject("""{"max_devices":1}""")),
         )
         assertEquals(
-            "multi_live",
+            "single_live",
             normalizeLobbyPreset(JSONObject("""{"preset":"unknown"}""")),
+        )
+        assertEquals(
+            "single_live",
+            normalizeLobbyPreset(JSONObject("""{"preset":"1 camera live"}""")),
+        )
+        assertEquals(
+            "single_live",
+            normalizeLobbyPreset(JSONObject("""{"lobby":{"session_type":"single-camera live"}}""")),
+        )
+        assertEquals(
+            "multi_live",
+            normalizeLobbyPreset(JSONObject("""{"preset":"multi camera live"}""")),
+        )
+        assertEquals(
+            "multi_live",
+            normalizeLobbyPreset(JSONObject("""{"max_devices":8}""")),
         )
         assertEquals(
             "single_live",
@@ -91,6 +107,10 @@ class CloudAnchorContractTest {
         )
         assertEquals(
             "single_live",
+            normalizeLobbyPreset(JSONObject("""{}"""), fallback = "bad_state"),
+        )
+        assertEquals(
+            "single_live",
             normalizeLobbyPreset(JSONObject("""{"preset":"multi_live","max_devices":1}""")),
         )
     }
@@ -99,6 +119,9 @@ class CloudAnchorContractTest {
     fun singleCameraSessionsAreProtectedFromCloudAnchorState() {
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
 
+        assertTrue(viewModel.contains("joinedLobbyPreset: String = \"single_live\""))
+        assertFalse(viewModel.contains("joinedLobbyPreset: String = \"multi_live\""))
+        assertTrue(viewModel.contains("?: \"single_live\""))
         assertTrue(viewModel.contains("joinedLobbyPreset = activePreset"))
         assertTrue(viewModel.contains("fallback = state.joinedLobbyPreset"))
         assertTrue(viewModel.contains("if (_uiState.value.joinedLobbyPreset != \"multi_live\")"))

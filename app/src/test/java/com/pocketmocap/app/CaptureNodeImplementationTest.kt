@@ -136,8 +136,10 @@ class CaptureNodeImplementationTest {
         val capture = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
 
         assertTrue(client.contains("fun normalizeLobbyPreset"))
+        assertTrue(client.contains("fallback: String = \"single_live\""))
         assertTrue(client.contains("lobby?.optString(\"preset\""))
-        assertTrue(client.contains("it == \"single_live\" || it == \"multi_live\""))
+        assertTrue(client.contains("value == \"single_live\""))
+        assertTrue(client.contains("value == \"multi_live\""))
         assertTrue(client.contains("listener.onLobbyJoined(code, name, preset)"))
         assertTrue(capture.contains("val sessionIsSingleCamera = uiState.joinedLobbyPreset == \"single_live\""))
         assertTrue(capture.contains("This one-camera session skips sync"))
