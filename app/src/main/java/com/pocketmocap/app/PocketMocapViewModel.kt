@@ -726,15 +726,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     effectiveVis >= VIS_UNCERTAIN -> {
                                         // ── Clearly visible: speed-adaptive EMA with outlier gate ──────
                                         val maxDelta = if (reappearing) 0.32f else MAX_JOINT_DELTA
-                                        val safeX = if (dist > maxDelta)
+                                        val isVelocityBypass = dist > 0.18f
+                                        val safeX = if (isVelocityBypass) xNorm[i] else if (dist > maxDelta)
                                             _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
-                                        val safeY = if (dist > maxDelta)
+                                        val safeY = if (isVelocityBypass) yNorm[i] else if (dist > maxDelta)
                                             _smoothedY[i] + dy * (maxDelta / dist) else yNorm[i]
                                         // Saturate at 0.04 (~13px at 320): α=0.18 when still → 0.85 when fast.
                                         // Low floor = heavy smoothing for stationary joints (3× noise reduction),
                                         // high ceiling = near-zero lag during genuine fast movements.
                                         val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
-                                        val alpha = if (reappearing) {
+                                        val alpha = if (isVelocityBypass) {
+                                            1.0f
+                                        } else if (reappearing) {
                                             (0.58f + normSpeed * 0.30f).coerceIn(0.58f, 0.88f)
                                         } else {
                                             (0.18f + normSpeed * 0.67f).coerceIn(0.18f, 0.85f)
@@ -805,29 +808,31 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         val displayX = _completedX.copyOf()
                         val displayY = _completedY.copyOf()
                         val displayVis = _displayFullVis.copyOf()
-                        directLandmarkCallback?.invoke(
-                            displayX,
-                            displayY,
-                            displayVis,
-                            imageWidth,
-                            imageHeight,
-                        )
-                        // mutableStateOf writes for warning banner, joint count, server fallback
-                        poseLandmarksX = displayX
-                        poseLandmarksY = displayY
-                        poseLandmarksZ = zWorld
-                        worldLandmarksX = xWorld
-                        worldLandmarksY = yWorld
-                        worldLandmarksZ = zWorld
-                        poseVisibility = displayVis
-                        updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
-                        maybeSendExtrinsicUpdate(worldTracking)
-                        updateClientTechnicalPose()
-                        updateServerMetricPoseWithClientMotion()
-                        // Guard constant/rarely-changing values — avoids spurious Compose recompositions
-                        if (visibleLandmarkCount != visible) visibleLandmarkCount = visible
-                        if (cameraImageWidth != imageWidth) cameraImageWidth = imageWidth
-                        if (cameraImageHeight != imageHeight) cameraImageHeight = imageHeight
+                        viewModelScope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
+                            directLandmarkCallback?.invoke(
+                                displayX,
+                                displayY,
+                                displayVis,
+                                imageWidth,
+                                imageHeight,
+                            )
+                            // mutableStateOf writes for warning banner, joint count, server fallback
+                            poseLandmarksX = displayX
+                            poseLandmarksY = displayY
+                            poseLandmarksZ = zWorld
+                            worldLandmarksX = xWorld
+                            worldLandmarksY = yWorld
+                            worldLandmarksZ = zWorld
+                            poseVisibility = displayVis
+                            updateSceneMetrics(worldTracking, visualTopYNorm, visualTopConfidence)
+                            maybeSendExtrinsicUpdate(worldTracking)
+                            updateClientTechnicalPose()
+                            updateServerMetricPoseWithClientMotion()
+                            // Guard constant/rarely-changing values — avoids spurious Compose recompositions
+                            if (visibleLandmarkCount != visible) visibleLandmarkCount = visible
+                            if (cameraImageWidth != imageWidth) cameraImageWidth = imageWidth
+                            if (cameraImageHeight != imageHeight) cameraImageHeight = imageHeight
+                        }
                     }
 
                     override fun onNoPoseDetected() {
