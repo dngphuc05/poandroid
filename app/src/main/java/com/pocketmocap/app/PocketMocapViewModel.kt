@@ -726,22 +726,22 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     effectiveVis >= VIS_UNCERTAIN -> {
                                         // ── Clearly visible: speed-adaptive EMA with outlier gate ──────
                                         val maxDelta = if (reappearing) 0.32f else MAX_JOINT_DELTA
-                                        val isVelocityBypass = dist > 0.18f
-                                        val safeX = if (isVelocityBypass) xNorm[i] else if (dist > maxDelta)
+                                        val safeX = if (dist > maxDelta)
                                             _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
-                                        val safeY = if (isVelocityBypass) yNorm[i] else if (dist > maxDelta)
+                                        val safeY = if (dist > maxDelta)
                                             _smoothedY[i] + dy * (maxDelta / dist) else yNorm[i]
                                         // Saturate at 0.04 (~13px at 320): α=0.18 when still → 0.85 when fast.
                                         // Low floor = heavy smoothing for stationary joints (3× noise reduction),
                                         // high ceiling = near-zero lag during genuine fast movements.
                                         val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
-                                        val alpha = if (isVelocityBypass) {
-                                            1.0f
-                                        } else if (reappearing) {
+                                        // Soft-ramp alpha for fast movements to prevent hard snapping on noise
+                                        val fastMotionBoost = maxOf(0f, dist - 0.04f) * 5.0f
+                                        val baseAlpha = if (reappearing) {
                                             (0.58f + normSpeed * 0.30f).coerceIn(0.58f, 0.88f)
                                         } else {
                                             (0.18f + normSpeed * 0.67f).coerceIn(0.18f, 0.85f)
                                         }
+                                        val alpha = minOf(1.0f, baseAlpha + fastMotionBoost)
                                         _smoothedX[i] = alpha * safeX + (1f - alpha) * _smoothedX[i]
                                         _smoothedY[i] = alpha * safeY + (1f - alpha) * _smoothedY[i]
                                         _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
