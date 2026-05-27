@@ -18,7 +18,7 @@ data class ObservedJointDisplayFrame(
 class ObservedJointDisplayFilter(
     private val jointCount: Int = 33,
     private val visibleThreshold: Float = 0.28f,
-    private val stillAlpha: Float = 0.34f,
+    private val stillAlpha: Float = 0.40f,
     private val fastAlpha: Float = 0.96f,
     private val fastMotionDistance: Float = 0.12f,
 ) {
