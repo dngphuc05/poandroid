@@ -234,7 +234,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // Uncertain joints (0.20≤vis<0.50): conservative EMA, outlier rejection.
     // Occluded joints (vis<0.20): Kalman predicts forward, then geometric fallback
     // rebuilds a usable 33-point pose before UI/server output.
-    private val _kalman = Array(33) { LandmarkKalman2D(fps = 60f) }
+    private val _kalman = Array(33) { LandmarkKalman2D(fps = 30f) }
     private val _smoothedX = FloatArray(33)
     private val _smoothedY = FloatArray(33)
     private val _completedX = FloatArray(33)
@@ -304,25 +304,29 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         recoveringFromStalePose: Boolean,
         turnFastUpdateActive: Boolean,
     ): Float {
+        // Caps are applied after EMA — they must be high enough for fast motion
+        // (~6 m/s arm swing = 0.20 m/frame at 30 fps) while still blocking
+        // reconstruction error teleports (> 0.5 m jumps).
         if (turnFastUpdateActive) {
             return when (index) {
-                17, 18, 19, 20, 21, 22 -> 0.140f
-                15, 16 -> 0.130f
-                13, 14 -> 0.115f
-                11, 12, 23, 24 -> 0.075f
-                25, 26, 27, 28, 29, 30, 31, 32 -> 0.095f
-                else -> 0.100f
+                17, 18, 19, 20, 21, 22 -> 0.30f
+                15, 16 -> 0.28f
+                13, 14 -> 0.25f
+                11, 12, 23, 24 -> 0.18f
+                25, 26, 27, 28, 29, 30, 31, 32 -> 0.22f
+                else -> 0.20f
             }
         }
         val normal = when (index) {
-            17, 18, 19, 20, 21, 22 -> 0.070f
-            15, 16 -> 0.085f
-            13, 14 -> 0.070f
-            11, 12, 23, 24 -> 0.040f
-            25, 26, 27, 28, 29, 30, 31, 32 -> 0.055f
-            else -> 0.055f
+            17, 18, 19, 20, 21, 22 -> 0.22f
+            15, 16 -> 0.22f
+            13, 14 -> 0.20f
+            11, 12, 23, 24 -> 0.12f
+            25, 26, 27, 28, 29, 30, 31, 32 -> 0.16f
+            else -> 0.12f
         }
         if (!recoveringFromStalePose) return normal
+        // Recovering from stale: ease in slowly to hide reconstruction snaps.
         return when (index) {
             17, 18, 19, 20, 21, 22 -> 0.040f
             15, 16 -> 0.055f

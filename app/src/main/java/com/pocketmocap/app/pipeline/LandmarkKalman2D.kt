@@ -21,7 +21,7 @@ import kotlin.math.sqrt
  *   rNoise  — measurement noise variance. Lower→trust MediaPipe more.
  *             Default 3e-6 ≈ ~0.0017 std (~0.55px at 320 resolution).
  */
-class LandmarkKalman2D(fps: Float = 60f, qScale: Float = 8e-4f, rNoise: Float = 3e-6f) {
+class LandmarkKalman2D(fps: Float = 30f, qScale: Float = 8e-4f, rNoise: Float = 3e-6f) {
 
     private val kx = KalmanFilter1D(fps, qScale, rNoise)
     private val ky = KalmanFilter1D(fps, qScale, rNoise)
@@ -99,7 +99,7 @@ private class KalmanFilter1D(fps: Float, qScale: Float, rNoise: Float) {
         // Genuine fast limb swing → snap to raw measurement; reset covariance.
         if (maxInnovation > 0f && abs(z - pPred) > maxInnovation) {
             position = z
-            velocity = (z - position) / dt
+            velocity = (z - pPred) / dt
             P00 = R;  P01 = 0f;  P11 = Q11
             return position
         }

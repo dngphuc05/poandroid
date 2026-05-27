@@ -329,8 +329,14 @@ class CaptureNodeImplementationTest {
     fun phoneUsesFullLandmarkerAndKeepsPredictedThirtyThreePointOverlayVisible() {
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
+        val kalman = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/LandmarkKalman2D.kt").readText()
 
         assertTrue(pipeline.contains("pose_landmarker_heavy.task"))
+        assertTrue(viewModel.contains("LandmarkKalman2D(fps = 30f)"))
+        assertFalse("Phone smoother must not use 60fps timing when runtime delivery is ~30fps", viewModel.contains("LandmarkKalman2D(fps = 60f)"))
+        assertTrue(kalman.contains("class LandmarkKalman2D(fps: Float = 30f"))
+        assertTrue(kalman.contains("velocity = (z - pPred) / dt"))
+        assertFalse("Fast-motion snap must not zero measured velocity", kalman.contains("velocity = (z - position) / dt"))
         assertTrue(viewModel.contains("DISPLAY_PREDICTED_VIS"))
         assertTrue(viewModel.contains("_displayFullVis"))
         assertTrue(viewModel.contains("_completedX.copyOf()"))

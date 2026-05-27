@@ -157,7 +157,7 @@ class HybridPosePipeline(
     private var lastMlImageSendMs = 0L
     private val ML_IMAGE_SEND_INTERVAL_FRAMES = 8
     private val ML_IMAGE_SEND_INTERVAL_MS = 350L
-    private val SERVER_SEND_INTERVAL_MS = 33L
+    private val SERVER_SEND_INTERVAL_MS = 22L // ~45 fps — restored; server handles this throughput
 
     // Subject tracking
     private var lockedCenter: Pair<Float, Float>? = null
