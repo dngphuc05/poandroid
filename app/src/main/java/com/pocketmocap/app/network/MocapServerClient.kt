@@ -56,6 +56,7 @@ class MocapServerClient(
 
     // WebRTC DataChannel — replaces Socket.IO for frame transport once open
     private var rtcChannel: WebRtcPoseChannel? = null
+    @Volatile private var rtcIceServersJson: String? = null
     @Volatile private var rtcDisabledForFrames = false
     @Volatile private var rtcFramesSinceLastPose = 0
 
@@ -135,6 +136,10 @@ class MocapServerClient(
                 on("anchor_resolve_request") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
                     listener.onAnchorResolveRequest(data.optString("shared_anchor_id", ""))
+                }
+                on("rtc_config") { args ->
+                    val data = args.firstOrNull() as? JSONObject ?: return@on
+                    rtcIceServersJson = data.optJSONArray("ice_servers")?.toString()
                 }
                 on("rtc_answer") { args ->
                     val data = args.firstOrNull() as? JSONObject ?: return@on
@@ -302,6 +307,7 @@ class MocapServerClient(
         if (rtcChannel != null) return
         rtcChannel = WebRtcPoseChannel(
             context = context,
+            iceServers = WebRtcPoseChannel.parseIceServers(rtcIceServersJson),
             onOffer = { sdp, type ->
                 socket?.emit("rtc_offer", JSONObject().apply {
                     put("sdp", sdp)

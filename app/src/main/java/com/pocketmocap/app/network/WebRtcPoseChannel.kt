@@ -2,6 +2,7 @@ package com.pocketmocap.app.network
 
 import android.content.Context
 import android.util.Log
+import org.json.JSONArray
 import org.json.JSONObject
 import org.webrtc.*
 import java.nio.ByteBuffer
@@ -27,6 +28,7 @@ import java.nio.ByteBuffer
  */
 class WebRtcPoseChannel(
     context: Context,
+    private val iceServers: List<PeerConnection.IceServer> = defaultIceServers(),
     private val onOffer: (sdp: String, type: String) -> Unit,
     private val onIceCandidate: (candidate: String, sdpMid: String, sdpMLineIndex: Int) -> Unit,
     private val onPose3D: (JSONObject) -> Unit,
@@ -37,15 +39,35 @@ class WebRtcPoseChannel(
         private const val TAG = "WebRtcPoseChannel"
         private const val DATA_CHANNEL_LABEL = "pose"
 
-        // Single STUN server for host-candidate refinement on non-LAN networks.
-        // On the same WiFi the host candidate will succeed anyway.
-        private val ICE_SERVERS = listOf(
-            PeerConnection.IceServer.builder("stun:stun.l.google.com:19302")
-                .createIceServer()
-        )
+        private val DEFAULT_ICE_SERVER_URLS = listOf("stun:stun.l.google.com:19302")
 
         @Volatile
         private var factoryInitialized = false
+
+        fun defaultIceServers(): List<PeerConnection.IceServer> =
+            DEFAULT_ICE_SERVER_URLS.map { url -> PeerConnection.IceServer.builder(url).createIceServer() }
+
+        fun parseIceServers(configJson: String?): List<PeerConnection.IceServer> {
+            if (configJson.isNullOrBlank()) return defaultIceServers()
+            return runCatching {
+                val arr = JSONArray(configJson)
+                buildList {
+                    for (i in 0 until arr.length()) {
+                        val obj = arr.optJSONObject(i) ?: continue
+                        val urlsNode = obj.opt("urls")
+                        val urls = when (urlsNode) {
+                            is JSONArray -> (0 until urlsNode.length()).mapNotNull { idx -> urlsNode.optString(idx).takeIf { it.isNotBlank() } }
+                            else -> listOfNotNull(obj.optString("urls").takeIf { it.isNotBlank() })
+                        }
+                        if (urls.isEmpty()) continue
+                        val builder = PeerConnection.IceServer.builder(urls)
+                        obj.optString("username").takeIf { it.isNotBlank() }?.let(builder::setUsername)
+                        obj.optString("credential").takeIf { it.isNotBlank() }?.let(builder::setPassword)
+                        add(builder.createIceServer())
+                    }
+                }.ifEmpty { defaultIceServers() }
+            }.getOrElse { defaultIceServers() }
+        }
 
         fun initializeFactory(context: Context) {
             if (factoryInitialized) return
@@ -75,7 +97,7 @@ class WebRtcPoseChannel(
 
     /** Call once after Socket.IO session is confirmed to start the WebRTC handshake. */
     fun createOffer() {
-        val config = PeerConnection.RTCConfiguration(ICE_SERVERS).apply {
+        val config = PeerConnection.RTCConfiguration(iceServers).apply {
             sdpSemantics = PeerConnection.SdpSemantics.UNIFIED_PLAN
             continualGatheringPolicy = PeerConnection.ContinualGatheringPolicy.GATHER_CONTINUALLY
         }
