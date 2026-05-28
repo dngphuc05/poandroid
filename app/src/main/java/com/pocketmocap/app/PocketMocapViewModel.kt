@@ -719,18 +719,50 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 if (reappearing) {
                                     _smoothedVis[i] = maxOf(_smoothedVis[i], rawVis)
                                 }
+                                val dx = xNorm[i] - _smoothedX[i]
+                                val dy = yNorm[i] - _smoothedY[i]
+                                val dist = sqrt(dx * dx + dy * dy)
                                 when {
                                     effectiveVis >= VIS_UNCERTAIN -> {
-                                        // Send raw coordinates instantly to prevent compounded pipeline lag
-                                        _smoothedX[i] = xNorm[i]
-                                        _smoothedY[i] = yNorm[i]
+                                        // ── Clearly visible: speed-adaptive EMA with outlier gate ──────
+                                        val maxDelta = if (reappearing) 0.32f else MAX_JOINT_DELTA
+                                        val safeX = if (dist > maxDelta)
+                                            _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
+                                        val safeY = if (dist > maxDelta)
+                                            _smoothedY[i] + dy * (maxDelta / dist) else yNorm[i]
+                                        // Saturate at 0.04 (~13px at 320): α=0.18 when still → 0.85 when fast.
+                                        // Low floor = heavy smoothing for stationary joints (3× noise reduction),
+                                        // high ceiling = near-zero lag during genuine fast movements.
+                                        val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
+                                        // Soft-ramp alpha for fast movements to prevent hard snapping on noise
+                                        val fastMotionBoost = maxOf(0f, dist - 0.04f) * 5.0f
+                                        val baseAlpha = if (reappearing) {
+                                            (0.58f + normSpeed * 0.30f).coerceIn(0.58f, 0.88f)
+                                        } else {
+                                            (0.18f + normSpeed * 0.67f).coerceIn(0.18f, 0.85f)
+                                        }
+                                        val alpha = minOf(1.0f, baseAlpha + fastMotionBoost)
+                                        _smoothedX[i] = alpha * safeX + (1f - alpha) * _smoothedX[i]
+                                        _smoothedY[i] = alpha * safeY + (1f - alpha) * _smoothedY[i]
+                                        _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
                                     }
                                     effectiveVis >= VIS_OCCLUDE -> {
-                                        _smoothedX[i] = xNorm[i]
-                                        _smoothedY[i] = yNorm[i]
+                                        // ── Uncertain (0.20–0.50): conservative EMA, reject outliers ────
+                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, xNorm[i], yNorm[i])) {
+                                            val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
+                                            val alpha = (0.12f + normSpeed * 0.28f).coerceIn(0.12f, 0.40f)
+                                            _smoothedX[i] = alpha * xNorm[i] + (1f - alpha) * _smoothedX[i]
+                                            _smoothedY[i] = alpha * yNorm[i] + (1f - alpha) * _smoothedY[i]
+                                        } else if (_hasLastReliable2D[i]) {
+                                            _smoothedX[i] = _lastReliable2DX[i]
+                                            _smoothedY[i] = _lastReliable2DY[i]
+                                        }
+                                        _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = true)
                                     }
                                     else -> {
-                                        // Occluded: hold last position
+                                        val predicted = _kalman[i].update(_smoothedX[i], _smoothedY[i], visible = false)
+                                        _smoothedX[i] = predicted.first
+                                        _smoothedY[i] = predicted.second
                                         if (_hasLastReliable2D[i]) {
                                             _smoothedX[i] = _lastReliable2DX[i]
                                             _smoothedY[i] = _lastReliable2DY[i]
