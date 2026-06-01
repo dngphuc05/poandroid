@@ -14,6 +14,9 @@ import android.util.Log
 import android.view.Surface
 import androidx.lifecycle.LifecycleOwner
 import com.google.ar.core.Config
+import com.google.ar.core.CameraConfig
+import com.google.ar.core.CameraConfigFilter
+import java.util.EnumSet
 import com.google.ar.core.Coordinates2d
 import com.google.ar.core.DepthPoint
 import com.google.ar.core.Frame
@@ -89,6 +92,15 @@ class ArCoreFrameCapture(
         running = true
         try {
             val arSession = Session(context)
+            val filter = CameraConfigFilter(arSession).apply {
+                targetFps = EnumSet.of(CameraConfig.TargetFps.TARGET_FPS_60)
+            }
+            val cameraConfigs = arSession.getSupportedCameraConfigs(filter)
+            if (cameraConfigs.isNotEmpty()) {
+                arSession.cameraConfig = cameraConfigs[0]
+                Log.i(TAG, "Enabled 60fps ARCore camera mode")
+            }
+
             val config = Config(arSession).apply {
                 planeFindingMode = Config.PlaneFindingMode.HORIZONTAL
                 cloudAnchorMode = Config.CloudAnchorMode.ENABLED
@@ -332,6 +344,9 @@ class ArCoreFrameCapture(
         fun currentViewportSize(): Pair<Int, Int> = viewportWidth to viewportHeight
     }
 
+    private val frameExecutor = java.util.concurrent.Executors.newSingleThreadExecutor()
+    private val isProcessingImage = java.util.concurrent.atomic.AtomicBoolean(false)
+
     private fun maybeEmitCameraFrame(arSession: Session, frame: Frame) {
         val timestampNs = frame.timestamp
         if (timestampNs <= 0L || timestampNs == lastSentTimestampNs) return
@@ -347,20 +362,43 @@ class ArCoreFrameCapture(
             return
         }
 
-        image.use { cameraImage ->
-            val bitmap = yuv420ImageToBitmap(cameraImage) ?: return
-            val depthMap = acquirePortraitDepthMap(frame)
-            val snapshot = buildWorldTrackingSnapshot(arSession, frame, cameraImage, depthMap)
-            onFrame(
-                CapturedCameraFrame(
-                    bitmap = bitmap,
-                    width = bitmap.width,
-                    height = bitmap.height,
-                    timestampUs = timestampNs / 1000L,
-                    rotationDegrees = 90,
-                    worldTracking = snapshot,
-                )
-            )
+        val depthImage = try {
+            frame.acquireDepthImage16Bits()
+        } catch (_: NotYetAvailableException) {
+            null
+        } catch (e: Exception) {
+            Log.w(TAG, "Depth image unavailable: ${e.message}")
+            null
+        }
+
+        // Build snapshot synchronously on GL thread to safely access ARCore Frame/Camera
+        val snapshotWithoutDepth = buildWorldTrackingSnapshot(arSession, frame, image, null)
+
+        if (isProcessingImage.compareAndSet(false, true)) {
+            frameExecutor.execute {
+                try {
+                    val bitmap = yuv420ImageToBitmap(image) ?: return@execute
+                    val depthMap = depthImage?.let { extractPortraitDepthMap(it) }
+                    val snapshot = snapshotWithoutDepth.copy(depthMap = depthMap)
+                    onFrame(
+                        CapturedCameraFrame(
+                            bitmap = bitmap,
+                            width = bitmap.width,
+                            height = bitmap.height,
+                            timestampUs = timestampNs / 1000L,
+                            rotationDegrees = 90,
+                            worldTracking = snapshot,
+                        )
+                    )
+                } finally {
+                    image.close()
+                    depthImage?.close()
+                    isProcessingImage.set(false)
+                }
+            }
+        } else {
+            image.close()
+            depthImage?.close()
         }
     }
 

@@ -234,7 +234,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // Uncertain joints (0.20≤vis<0.50): conservative EMA, outlier rejection.
     // Occluded joints (vis<0.20): Kalman predicts forward, then geometric fallback
     // rebuilds a usable 33-point pose before UI/server output.
-    private val _kalman = Array(33) { LandmarkKalman2D(fps = 30f) }
+    private val _kalman = Array(33) { LandmarkKalman2D(fps = 60f) }
     private val _smoothedX = FloatArray(33)
     private val _smoothedY = FloatArray(33)
     private val _completedX = FloatArray(33)
@@ -628,21 +628,23 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 _completedY[i].coerceIn(0f, 1f),
                                 rotationDegrees,
                             )
-                            val stabilizedConfidence = _completedVis[i].coerceIn(0f, 1f)
                             val stabilizedZ = when {
                                 rawConfidence >= VIS_OCCLUDE -> raw.z
                                 _hasLastGoodRelativeZ[i] -> _lastGoodRelativeZ[i]
                                 else -> raw.z
                             }
 
+                            // Do NOT send the synthetically boosted visibility (_completedVis) to the server.
+                            // The server's ML PoseLifter needs the true raw visibility to know which joints
+                            // are actually hidden so it can accurately reconstruct them.
                             prepared.add(
                                 raw.copy(
                                     x = sensorX.coerceIn(0f, 1f) * outboundWidth,
                                     y = sensorY.coerceIn(0f, 1f) * outboundHeight,
                                     z = stabilizedZ,
-                                    visibility = stabilizedConfidence,
-                                    presence = stabilizedConfidence,
-                                    confidence = stabilizedConfidence,
+                                    visibility = raw.visibility,
+                                    presence = raw.presence,
+                                    confidence = raw.confidence,
                                 )
                             )
                         }

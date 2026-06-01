@@ -42,8 +42,8 @@ class MocapServerClient(
 
     companion object {
         private const val TAG = "MocapServerClient"
-        private const val RTC_NO_POSE_FRAME_LIMIT = 18
-        private const val RTC_MAX_FRAME_BYTES = 180_000
+        private const val RTC_NO_POSE_FRAME_LIMIT = 150
+        private const val RTC_MAX_FRAME_BYTES = 500_000
     }
 
     private var socket: Socket? = null
@@ -430,7 +430,7 @@ class MocapServerClient(
             val payloadBytes = json.toByteArray(Charsets.UTF_8).size
             when {
                 payloadBytes > RTC_MAX_FRAME_BYTES -> {
-                    disableRtcFrameTransport("rtc_payload_too_large:${payloadBytes}B")
+                    Log.w(TAG, "RTC payload too large (${payloadBytes}B). Falling back to Socket.IO for this frame.")
                 }
                 rtcChannel!!.sendFrame(json) -> {
                     rtcFramesSinceLastPose += 1
@@ -441,9 +441,6 @@ class MocapServerClient(
                     // Fall through and send this same frame via Socket.IO.
                     // If the RTC copy eventually arrives, frame-index/timestamp
                     // freshness gates on both sides will discard the duplicate.
-                }
-                else -> {
-                    disableRtcFrameTransport("datachannel_send_failed")
                 }
             }
             // Fall through to Socket.IO if DataChannel is unhealthy or unsafe for this payload.

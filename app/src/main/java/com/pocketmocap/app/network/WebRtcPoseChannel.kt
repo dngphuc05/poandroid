@@ -142,6 +142,7 @@ class WebRtcPoseChannel(
     fun sendFrame(json: String): Boolean {
         val dc = dataChannel ?: return false
         if (dc.state() != DataChannel.State.OPEN) return false
+        
         val bytes = json.toByteArray(Charsets.UTF_8)
         return dc.send(DataChannel.Buffer(ByteBuffer.wrap(bytes), false))
     }

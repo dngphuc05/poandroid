@@ -84,7 +84,7 @@ class HybridPosePipeline(
 
     companion object {
         private const val TAG = "HybridPosePipeline"
-        private const val MODEL_ASSET_PATH = "pose_landmarker_full.task"  // Better hidden-joint stability while staying lighter than heavy.
+        private const val MODEL_ASSET_PATH = "pose_landmarker_lite.task"  // 8ms vs full 25ms; fresher results beat marginal accuracy gain for fast motion
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
@@ -93,7 +93,7 @@ class HybridPosePipeline(
         private const val ML_CROP_MIN_VISIBILITY = 0.18f
         private const val ML_CROP_CLAMP_EDGE_EPS = 0.006f
         private const val ML_CROP_MIN_BODY_HEIGHT_NORM = 0.30f
-        private const val SYNTHETIC_FALLBACK_VISIBILITY = 0.18f
+        private const val SYNTHETIC_FALLBACK_VISIBILITY = 0.15f
         private val ML_CROP_UPPER_CORE = intArrayOf(0, 7, 8, 11, 12)
         private val ML_CROP_LOWER_CORE = intArrayOf(23, 24, 25, 26, 27, 28, 31, 32)
     }
@@ -157,7 +157,7 @@ class HybridPosePipeline(
     private var lastMlImageSendMs = 0L
     private val ML_IMAGE_SEND_INTERVAL_FRAMES = 8
     private val ML_IMAGE_SEND_INTERVAL_MS = 350L
-    private val SERVER_SEND_INTERVAL_MS = 22L // ~45 fps — restored; server handles this throughput
+    private val SERVER_SEND_INTERVAL_MS = 15L // ~45 fps — restored; server handles this throughput
 
     // Subject tracking
     private var lockedCenter: Pair<Float, Float>? = null
@@ -448,6 +448,8 @@ class HybridPosePipeline(
                     val iw = frame.width
                     val ih = frame.height
                     val mlImage = if (shouldAttachMlImage(fi, nowMs)) {
+                        lastMlImageSendFrameIndex = fi
+                        lastMlImageSendMs = nowMs
                         val mlCropLandmarks = listener.prepareMlImageCropLandmarks(_xNorm, _yNorm, _vis)
                         buildMlImagePayload(
                             bitmap = bitmap,
@@ -456,10 +458,7 @@ class HybridPosePipeline(
                             yNorm = mlCropLandmarks?.yNorm ?: _yNorm,
                             visibility = mlCropLandmarks?.visibility ?: _vis,
                             requireVisibleLandmarks = mlCropLandmarks == null,
-                        )?.also {
-                            lastMlImageSendFrameIndex = fi
-                            lastMlImageSendMs = nowMs
-                        }
+                        )
                     } else {
                         null
                     }
