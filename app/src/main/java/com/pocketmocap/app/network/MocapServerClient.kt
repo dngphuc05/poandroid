@@ -437,8 +437,12 @@ class MocapServerClient(
                     if (rtcFramesSinceLastPose < RTC_NO_POSE_FRAME_LIMIT) {
                         return
                     }
-                    disableRtcFrameTransport("no_pose_response_after_${rtcFramesSinceLastPose}_rtc_frames")
-                    // Fall through and send this same frame via Socket.IO.
+                    Log.w(TAG, "No pose response after $rtcFramesSinceLastPose RTC frames; sending one Socket.IO recovery frame and keeping WebRTC alive.")
+                    rtcFramesSinceLastPose = 0
+                    // Fall through and send this same frame via Socket.IO as a
+                    // recovery/probe frame. Do not close WebRTC here: latest-frame
+                    // pipelines intentionally drop stale frames under load, and
+                    // permanently switching to Socket.IO is what tanks live FPS.
                     // If the RTC copy eventually arrives, frame-index/timestamp
                     // freshness gates on both sides will discard the duplicate.
                 }

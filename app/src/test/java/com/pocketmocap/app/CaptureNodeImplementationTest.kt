@@ -359,6 +359,8 @@ class CaptureNodeImplementationTest {
         assertFalse("Live pose DataChannel must not use reliable ordered transport", channel.contains("ordered = true"))
         assertFalse("Live pose DataChannel must not allow unlimited retransmits", channel.contains("unlimited retransmits"))
         assertTrue("Socket.IO remains fallback only when DataChannel is not healthy", client.contains("Socket.IO fallback"))
+        assertTrue("Missing a burst of pose responses should trigger one recovery frame, not kill WebRTC", client.contains("Socket.IO recovery frame and keeping WebRTC alive"))
+        assertFalse("No-response backpressure must not permanently disable WebRTC frame transport", client.contains("disableRtcFrameTransport(\"no_pose_response_after_"))
     }
 
     @Test
