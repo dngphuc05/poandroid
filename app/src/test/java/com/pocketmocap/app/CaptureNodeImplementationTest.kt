@@ -346,6 +346,19 @@ class CaptureNodeImplementationTest {
         assertFalse("Phone overlay must not drop back to observed-only hidden joints", viewModel.contains("val displayFrame = _observedDisplayFilter.update"))
     }
 
+    @Test
+    fun v2LabFlavorCanInstallBesideStablePhoneApp() {
+        val gradle = appDir.resolve("build.gradle.kts").readText()
+        val label = appDir.resolve("src/v2Lab/res/values/strings.xml").readText()
+
+        assertTrue(gradle.contains("flavorDimensions += \"pipeline\""))
+        assertTrue(gradle.contains("create(\"stable\")"))
+        assertTrue(gradle.contains("create(\"v2Lab\")"))
+        assertTrue(gradle.contains("applicationIdSuffix = \".v2\""))
+        assertTrue(gradle.contains("buildConfigField(\"String\", \"PIPELINE_PROFILE\", \"\\\"v2a\\\"\")"))
+        assertTrue(label.contains("Pocap V2 Lab"))
+    }
+
     private fun locateAppDir(): File {
         val userDir = System.getProperty("user.dir") ?: "."
         var current = File(userDir).canonicalFile

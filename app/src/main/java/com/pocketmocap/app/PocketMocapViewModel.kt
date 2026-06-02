@@ -234,7 +234,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // Uncertain joints (0.20≤vis<0.50): conservative EMA, outlier rejection.
     // Occluded joints (vis<0.20): Kalman predicts forward, then geometric fallback
     // rebuilds a usable 33-point pose before UI/server output.
-    private val _kalman = Array(33) { LandmarkKalman2D(fps = 60f) }
+    private val _kalman = Array(33) { LandmarkKalman2D(fps = 30f) }
     private val _smoothedX = FloatArray(33)
     private val _smoothedY = FloatArray(33)
     private val _completedX = FloatArray(33)

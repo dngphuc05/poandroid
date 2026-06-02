@@ -27,6 +27,20 @@ android {
         }
     }
 
+    flavorDimensions += "pipeline"
+    productFlavors {
+        create("stable") {
+            dimension = "pipeline"
+            buildConfigField("String", "PIPELINE_PROFILE", "\"stable\"")
+        }
+        create("v2Lab") {
+            dimension = "pipeline"
+            applicationIdSuffix = ".v2"
+            versionNameSuffix = "-v2lab"
+            buildConfigField("String", "PIPELINE_PROFILE", "\"v2a\"")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -45,6 +59,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     externalNativeBuild {
