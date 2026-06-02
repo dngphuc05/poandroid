@@ -347,6 +347,21 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
+    fun webRtcPoseTransportDropsStaleFramesInsteadOfBuildingLatency() {
+        val channel = appDir.resolve("src/main/java/com/pocketmocap/app/network/WebRtcPoseChannel.kt").readText()
+        val client = appDir.resolve("src/main/java/com/pocketmocap/app/network/MocapServerClient.kt").readText()
+
+        assertTrue(channel.contains("ordered = false"))
+        assertTrue(channel.contains("maxRetransmits = 0"))
+        assertTrue(channel.contains("MAX_BUFFERED_FRAME_BYTES"))
+        assertTrue(channel.contains("dc.bufferedAmount() + bytes.size"))
+        assertTrue(channel.contains("Dropping stale pose frame"))
+        assertFalse("Live pose DataChannel must not use reliable ordered transport", channel.contains("ordered = true"))
+        assertFalse("Live pose DataChannel must not allow unlimited retransmits", channel.contains("unlimited retransmits"))
+        assertTrue("Socket.IO remains fallback only when DataChannel is not healthy", client.contains("Socket.IO fallback"))
+    }
+
+    @Test
     fun v2LabFlavorCanInstallBesideStablePhoneApp() {
         val gradle = appDir.resolve("build.gradle.kts").readText()
         val label = appDir.resolve("src/v2Lab/res/values/strings.xml").readText()

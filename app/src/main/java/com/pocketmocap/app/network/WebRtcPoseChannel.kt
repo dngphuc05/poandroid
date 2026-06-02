@@ -10,11 +10,10 @@ import java.nio.ByteBuffer
 /**
  * Manages a WebRTC PeerConnection + DataChannel for low-latency pose streaming.
  *
- * Transport properties (reliable, ordered — SCTP over DTLS/UDP):
+ * Transport properties (unordered, unreliable — SCTP over DTLS/UDP):
  *   - Faster than Socket.IO/TCP on LAN: no HTTP overhead, direct P2P, UDP-based SCTP
- *   - Reliable delivery required: GRU and Kalman filter are sequential models;
- *     dropped frames corrupt their hidden state and produce bad pose output
- *   - ordered=true so the GRU sees frames in the right temporal order
+ *   - Live mocap is latest-frame-wins; stale frames must be dropped instead of replayed
+ *   - ordered=false + maxRetransmits=0 prevents old frames from building hidden latency
  *
  * Protocol:
  *   Phone (offerer)          ←Socket.IO signaling→  Server (aiortc)
@@ -38,6 +37,7 @@ class WebRtcPoseChannel(
     companion object {
         private const val TAG = "WebRtcPoseChannel"
         private const val DATA_CHANNEL_LABEL = "pose"
+        private const val MAX_BUFFERED_FRAME_BYTES = 96_000L
 
         private val DEFAULT_ICE_SERVER_URLS = listOf("stun:stun.l.google.com:19302")
 
@@ -106,11 +106,11 @@ class WebRtcPoseChannel(
             ?: run { onError("PeerConnection creation failed"); return }
 
         // DataChannel must be created BEFORE the offer so it's included in the SDP.
-        // Reliable + ordered: SCTP over UDP still beats Socket.IO/TCP for latency on LAN,
-        // but we don't drop frames — the GRU and Kalman filter need sequential input.
+        // Live pose frames are disposable. Keeping old frames reliable/ordered creates
+        // visible motion lag when the server is slower than the phone camera.
         val dcInit = DataChannel.Init().apply {
-            ordered = true
-            // maxRetransmits / maxRetransmitTimeMs left at default (-1 = unlimited retransmits)
+            ordered = false
+            maxRetransmits = 0
         }
         dataChannel = pc!!.createDataChannel(DATA_CHANNEL_LABEL, dcInit)
             ?.also { it.registerObserver(dcObserver) }
@@ -144,6 +144,10 @@ class WebRtcPoseChannel(
         if (dc.state() != DataChannel.State.OPEN) return false
         
         val bytes = json.toByteArray(Charsets.UTF_8)
+        if (dc.bufferedAmount() + bytes.size > MAX_BUFFERED_FRAME_BYTES) {
+            Log.w(TAG, "Dropping stale pose frame: DataChannel buffered=${dc.bufferedAmount()}B payload=${bytes.size}B")
+            return true
+        }
         return dc.send(DataChannel.Buffer(ByteBuffer.wrap(bytes), false))
     }
 
