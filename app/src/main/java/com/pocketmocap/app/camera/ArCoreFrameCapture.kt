@@ -2,10 +2,7 @@ package com.pocketmocap.app.camera
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
-import android.graphics.Rect
-import android.graphics.YuvImage
 import android.media.Image
 import android.opengl.GLES11Ext
 import android.opengl.GLES20
@@ -33,7 +30,6 @@ import com.pocketmocap.app.calibration.CloudAnchorResult
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.DepthMapSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
-import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -780,55 +776,43 @@ class ArCoreFrameCapture(
 
 private fun yuv420ImageToBitmap(image: Image): Bitmap? {
     if (image.format != ImageFormat.YUV_420_888) return null
-    val nv21 = yuv420ToNv21(image)
-    val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
-    val out = ByteArrayOutputStream()
-    yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 82, out)
-    return BitmapFactory.decodeByteArray(out.toByteArray(), 0, out.size())
-}
-
-private fun yuv420ToNv21(image: Image): ByteArray {
     val width = image.width
     val height = image.height
-    val output = ByteArray(width * height * 3 / 2)
-    copyPlane(image.planes[0].buffer, image.planes[0].rowStride, image.planes[0].pixelStride, width, height, output, 0, 1)
-
+    val y = image.planes[0]
     val u = image.planes[1]
     val v = image.planes[2]
-    var offset = width * height
-    val chromaWidth = width / 2
-    val chromaHeight = height / 2
+
+    val yBuffer = y.buffer
     val uBuffer = u.buffer
     val vBuffer = v.buffer
-    for (row in 0 until chromaHeight) {
-        for (col in 0 until chromaWidth) {
-            val vuIndex = row * v.rowStride + col * v.pixelStride
-            val uuIndex = row * u.rowStride + col * u.pixelStride
-            output[offset++] = vBuffer.get(vuIndex)
-            output[offset++] = uBuffer.get(uuIndex)
+    val pixels = IntArray(width * height)
+    var outputIndex = 0
+
+    for (row in 0 until height) {
+        val yRow = row * y.rowStride
+        val uvRow = (row / 2) * u.rowStride
+        for (col in 0 until width) {
+            val uvCol = (col / 2) * u.pixelStride
+            val yValue = yBuffer.get(yRow + col * y.pixelStride).toInt() and 0xff
+            val uValue = uBuffer.get(uvRow + uvCol).toInt() and 0xff
+            val vValue = vBuffer.get(uvRow + uvCol).toInt() and 0xff
+            pixels[outputIndex++] = yuvPixelToArgb(yValue, uValue, vValue)
         }
     }
-    return output
+
+    return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+        setPixels(pixels, 0, width, 0, 0, width, height)
+    }
 }
 
-private fun copyPlane(
-    buffer: ByteBuffer,
-    rowStride: Int,
-    pixelStride: Int,
-    width: Int,
-    height: Int,
-    output: ByteArray,
-    outputOffset: Int,
-    outputPixelStride: Int,
-) {
-    var offset = outputOffset
-    for (row in 0 until height) {
-        val rowStart = row * rowStride
-        for (col in 0 until width) {
-            output[offset] = buffer.get(rowStart + col * pixelStride)
-            offset += outputPixelStride
-        }
-    }
+internal fun yuvPixelToArgb(yValue: Int, uValue: Int, vValue: Int): Int {
+    val y = (yValue - 16).coerceAtLeast(0)
+    val u = uValue - 128
+    val v = vValue - 128
+    val r = ((298 * y + 409 * v + 128) shr 8).coerceIn(0, 255)
+    val g = ((298 * y - 100 * u - 208 * v + 128) shr 8).coerceIn(0, 255)
+    val b = ((298 * y + 516 * u + 128) shr 8).coerceIn(0, 255)
+    return (0xff shl 24) or (r shl 16) or (g shl 8) or b
 }
 
 private fun createExternalTexture(): Int {
