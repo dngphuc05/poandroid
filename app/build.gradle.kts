@@ -15,6 +15,8 @@ android {
         targetSdk = 36
         versionCode = 4
         versionName = "2.0.2-single-preset"
+        buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_lite.task\"")
+        buildConfigField("Boolean", "POSE_SEGMENTATION_MASKS", "false")
 
         externalNativeBuild {
             cmake {

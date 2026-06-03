@@ -6,6 +6,7 @@ import android.graphics.Matrix
 import android.graphics.Rect
 import android.util.Base64
 import android.util.Log
+import com.pocketmocap.app.BuildConfig
 import com.pocketmocap.app.CapturedCameraFrame
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
@@ -84,7 +85,8 @@ class HybridPosePipeline(
 
     companion object {
         private const val TAG = "HybridPosePipeline"
-        private const val MODEL_ASSET_PATH = "pose_landmarker_full.task"
+        private val MODEL_ASSET_PATH: String = BuildConfig.POSE_LANDMARKER_MODEL
+        private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
@@ -410,7 +412,7 @@ class HybridPosePipeline(
             xNorm = _xNorm,
             yNorm = _yNorm,
             visibility = _vis,
-        )
+        ) ?: estimateVisualTopFromLandmarks(_xNorm, _yNorm, _vis)
         listener.onLandmarksDetected(
             _xNorm,
             _yNorm,
@@ -662,8 +664,7 @@ class HybridPosePipeline(
             // Tracking confidence low → almost never triggers full re-detection.
             // Re-detection is the expensive path; tracking is cheap interpolation.
             .setMinTrackingConfidence(0.2f)
-            // Segmentation gives us a visual crown/top cue when landmarks sit below the hair/head silhouette.
-            .setOutputSegmentationMasks(true)
+            .setOutputSegmentationMasks(OUTPUT_SEGMENTATION_MASKS)
             .build()
         return runCatching {
             PoseLandmarker.createFromOptions(context, options)
@@ -765,6 +766,33 @@ class HybridPosePipeline(
                 (liftFromHead / 0.10f).coerceIn(0f, 0.12f)
             ).coerceIn(0f, 1f)
         return VisualTopScan(bestY.coerceIn(0f, 1f), confidence)
+    }
+
+    private fun estimateVisualTopFromLandmarks(
+        xNorm: FloatArray,
+        yNorm: FloatArray,
+        visibility: FloatArray,
+    ): VisualTopScan? {
+        if (xNorm.size < JOINT_COUNT || yNorm.size < JOINT_COUNT || visibility.size < JOINT_COUNT) return null
+        val headIndices = intArrayOf(0, 7, 8, 9, 10)
+        val visibleHead = headIndices.asIterable().mapNotNull { idx: Int ->
+            val v = visibility[idx]
+            val y = yNorm[idx]
+            if (v > 0.30f && y.isFinite()) y.coerceIn(0f, 1f) to v else null
+        }
+        if (visibleHead.isEmpty()) return null
+        val headTopY = visibleHead.minOf { it.first }
+        val headSpan = normalizedSpanForScan(xNorm, yNorm, visibility, 7, 8)
+            ?: normalizedSpanForScan(xNorm, yNorm, visibility, 9, 10)
+        val shoulderSpan = normalizedSpanForScan(xNorm, yNorm, visibility, 11, 12)
+        val crownLift = max(
+            0.018f,
+            max((headSpan ?: 0f) * 0.45f, (shoulderSpan ?: 0f) * 0.16f),
+        ).coerceIn(0.018f, 0.070f)
+        val confidence = (
+            0.30f + visibleHead.map { it.second }.average().toFloat().coerceIn(0f, 0.45f)
+        ).coerceIn(0f, 0.72f)
+        return VisualTopScan((headTopY - crownLift).coerceIn(0f, 1f), confidence)
     }
 
     private fun normalizedSpanForScan(

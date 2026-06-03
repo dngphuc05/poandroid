@@ -326,12 +326,20 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
-    fun phoneUsesFullLandmarkerAndKeepsPredictedThirtyThreePointOverlayVisible() {
+    fun phoneUsesLiveLandmarkerProfileAndKeepsPredictedThirtyThreePointOverlayVisible() {
+        val gradle = appDir.resolve("build.gradle.kts").readText()
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
         val kalman = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/LandmarkKalman2D.kt").readText()
 
-        assertTrue(pipeline.contains("pose_landmarker_full.task"))
+        assertTrue(gradle.contains("POSE_LANDMARKER_MODEL"))
+        assertTrue(gradle.contains("pose_landmarker_lite.task"))
+        assertTrue(gradle.contains("POSE_SEGMENTATION_MASKS"))
+        assertTrue(gradle.contains("false"))
+        assertTrue(pipeline.contains("BuildConfig.POSE_LANDMARKER_MODEL"))
+        assertTrue(pipeline.contains("BuildConfig.POSE_SEGMENTATION_MASKS"))
+        assertTrue(pipeline.contains("estimateVisualTopFromLandmarks"))
+        assertFalse("Live capture must not hardcode the slower full landmarker", pipeline.contains("MODEL_ASSET_PATH = \"pose_landmarker_full.task\""))
         assertTrue(viewModel.contains("LandmarkKalman2D(fps = 30f)"))
         assertFalse("Phone smoother must not use 60fps timing when runtime delivery is ~30fps", viewModel.contains("LandmarkKalman2D(fps = 60f)"))
         assertTrue(kalman.contains("class LandmarkKalman2D(fps: Float = 30f"))
