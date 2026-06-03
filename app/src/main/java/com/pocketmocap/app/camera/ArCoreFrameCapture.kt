@@ -347,7 +347,6 @@ class ArCoreFrameCapture(
         val timestampNs = frame.timestamp
         if (timestampNs <= 0L || timestampNs == lastSentTimestampNs) return
         if (timestampNs - lastSentTimestampNs < MIN_FRAME_INTERVAL_NS) return
-        lastSentTimestampNs = timestampNs
 
         val image = try {
             frame.acquireCameraImage()
@@ -371,6 +370,7 @@ class ArCoreFrameCapture(
         val snapshotWithoutDepth = buildWorldTrackingSnapshot(arSession, frame, image, null)
 
         if (isProcessingImage.compareAndSet(false, true)) {
+            lastSentTimestampNs = timestampNs
             frameExecutor.execute {
                 try {
                     val bitmap = yuv420ImageToBitmap(image) ?: return@execute
