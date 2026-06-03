@@ -21,6 +21,9 @@ class ObservedJointDisplayFilter(
     private val stillAlpha: Float = 0.40f,
     private val fastAlpha: Float = 0.96f,
     private val fastMotionDistance: Float = 0.12f,
+    private val latencyCompensationFrames: Float = 1.0f,
+    private val minPredictionMotion: Float = 0.025f,
+    private val maxPredictionStep: Float = 0.06f,
 ) {
     private val state = DisplayJointState(jointCount)
 
@@ -59,13 +62,21 @@ class ObservedJointDisplayFilter(
 
         val x = measuredX.coerceIn(0f, 1f)
         val y = measuredY.coerceIn(0f, 1f)
+        val predicted = state.predictObserved(
+            index = index,
+            measuredX = x,
+            measuredY = y,
+            frames = latencyCompensationFrames,
+            minMotion = minPredictionMotion,
+            maxStep = maxPredictionStep,
+        )
         val alpha = if (state.hasVisible(index)) {
-            adaptiveAlpha(index, x, y)
+            adaptiveAlpha(index, predicted.first, predicted.second)
         } else {
             fastAlpha
         }
 
-        state.writeVisible(index, x, y, visibility, alpha, outX, outY, outVisibility)
+        state.writeVisible(index, x, y, predicted.first, predicted.second, visibility, alpha, outX, outY, outVisibility)
     }
 
     private fun isVisibleMeasurement(visibility: Float, x: Float, y: Float): Boolean =
@@ -83,14 +94,20 @@ class ObservedJointDisplayFilter(
 private class DisplayJointState(private val jointCount: Int) {
     private val x = FloatArray(jointCount)
     private val y = FloatArray(jointCount)
+    private val lastMeasuredX = FloatArray(jointCount)
+    private val lastMeasuredY = FloatArray(jointCount)
     private val visibility = FloatArray(jointCount)
     private val hasPosition = BooleanArray(jointCount)
+    private val hasMeasurement = BooleanArray(jointCount)
 
     fun reset() {
         x.fill(0f)
         y.fill(0f)
+        lastMeasuredX.fill(0f)
+        lastMeasuredY.fill(0f)
         visibility.fill(0f)
         hasPosition.fill(false)
+        hasMeasurement.fill(false)
     }
 
     fun hasVisible(index: Int): Boolean = hasPosition[index] && visibility[index] > 0f
@@ -110,22 +127,52 @@ private class DisplayJointState(private val jointCount: Int) {
         index: Int,
         measuredX: Float,
         measuredY: Float,
+        displayTargetX: Float,
+        displayTargetY: Float,
         measuredVisibility: Float,
         alpha: Float,
         outX: FloatArray,
         outY: FloatArray,
         outVisibility: FloatArray,
     ) {
-        val nextX = if (hasPosition[index]) lerp(x[index], measuredX, alpha) else measuredX
-        val nextY = if (hasPosition[index]) lerp(y[index], measuredY, alpha) else measuredY
+        val nextX = if (hasPosition[index]) lerp(x[index], displayTargetX, alpha) else displayTargetX
+        val nextY = if (hasPosition[index]) lerp(y[index], displayTargetY, alpha) else displayTargetY
         x[index] = nextX
         y[index] = nextY
+        lastMeasuredX[index] = measuredX
+        lastMeasuredY[index] = measuredY
         visibility[index] = measuredVisibility.coerceIn(0f, 1f)
         hasPosition[index] = true
+        hasMeasurement[index] = true
 
         outX[index] = nextX
         outY[index] = nextY
         outVisibility[index] = visibility[index]
+    }
+
+    fun predictObserved(
+        index: Int,
+        measuredX: Float,
+        measuredY: Float,
+        frames: Float,
+        minMotion: Float,
+        maxStep: Float,
+    ): Pair<Float, Float> {
+        if (!hasMeasurement[index] || frames <= 0f || maxStep <= 0f) {
+            return Pair(measuredX, measuredY)
+        }
+        var dx = (measuredX - lastMeasuredX[index]) * frames
+        var dy = (measuredY - lastMeasuredY[index]) * frames
+        val distance = sqrt(dx * dx + dy * dy)
+        if (distance < minMotion) {
+            return Pair(measuredX, measuredY)
+        }
+        if (distance > maxStep && distance > 1e-6f) {
+            val scale = maxStep / distance
+            dx *= scale
+            dy *= scale
+        }
+        return Pair((measuredX + dx).coerceIn(0f, 1f), (measuredY + dy).coerceIn(0f, 1f))
     }
 
     private fun lerp(from: Float, to: Float, alpha: Float): Float =

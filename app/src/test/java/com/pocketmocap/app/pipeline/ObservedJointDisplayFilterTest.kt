@@ -71,6 +71,31 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun visibleMotionIsPredictedForwardToReducePreviewOverlayLag() {
+        val filter = ObservedJointDisplayFilter(
+            stillAlpha = 1.0f,
+            fastAlpha = 1.0f,
+            latencyCompensationFrames = 1.0f,
+            maxPredictionStep = 0.10f,
+        )
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[15] = 0.20f
+        filter.update(x, y, v)
+
+        x[15] = 0.30f
+        val out = filter.update(x, y, v)
+
+        assertTrue(
+            "visible overlay should lead the stale analyzed frame by roughly one frame",
+            out.x[15] > 0.35f,
+        )
+        assertTrue("prediction must stay bounded", out.x[15] <= 0.40f)
+    }
+
+    @Test
     fun naturalElbowBendIsPreserved() {
         val filter = ObservedJointDisplayFilter()
         val x = FloatArray(33) { 0.5f }

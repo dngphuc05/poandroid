@@ -326,7 +326,7 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
-    fun phoneUsesLiveLandmarkerProfileAndKeepsPredictedThirtyThreePointOverlayVisible() {
+    fun phoneUsesLiveLandmarkerProfileAndDrawsObservedLowLatencyOverlay() {
         val gradle = appDir.resolve("build.gradle.kts").readText()
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
@@ -345,13 +345,14 @@ class CaptureNodeImplementationTest {
         assertTrue(kalman.contains("class LandmarkKalman2D(fps: Float = 30f"))
         assertTrue(kalman.contains("velocity = (z - pPred) / dt"))
         assertFalse("Fast-motion snap must not zero measured velocity", kalman.contains("velocity = (z - position) / dt"))
-        assertTrue(viewModel.contains("DISPLAY_PREDICTED_VIS"))
-        assertTrue(viewModel.contains("_displayFullVis"))
-        assertTrue(viewModel.contains("_completedX.copyOf()"))
-        assertTrue(viewModel.contains("_completedY.copyOf()"))
-        assertTrue(viewModel.contains("_displayFullVis.copyOf()"))
+        assertTrue(viewModel.contains("ObservedJointDisplayFilter"))
+        assertTrue(viewModel.contains("_observedDisplayFilter.update(xNorm, yNorm, visibility)"))
+        assertTrue(viewModel.contains("val displayX = observedDisplayFrame.x"))
+        assertTrue(viewModel.contains("val displayY = observedDisplayFrame.y"))
+        assertTrue(viewModel.contains("val displayVis = observedDisplayFrame.visibility"))
         assertTrue(viewModel.contains("directLandmarkCallback?.invoke("))
-        assertFalse("Phone overlay must not drop back to observed-only hidden joints", viewModel.contains("val displayFrame = _observedDisplayFilter.update"))
+        assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayX = _completedX.copyOf()"))
+        assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayY = _completedY.copyOf()"))
     }
 
     @Test

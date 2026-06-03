@@ -21,6 +21,7 @@ import com.pocketmocap.app.pipeline.BoneConstraintEngine
 import com.pocketmocap.app.pipeline.HybridPosePipeline
 import com.pocketmocap.app.pipeline.LandmarkFallbackEngine
 import com.pocketmocap.app.pipeline.LandmarkKalman2D
+import com.pocketmocap.app.pipeline.ObservedJointDisplayFilter
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.BodyTurnTransitionDetector
 import com.pocketmocap.app.tracking.enforceCanonicalLimbEndpoints
@@ -255,6 +256,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     // low-confidence joints to satisfy those ratios each frame.
     private val _boneConstraints = BoneConstraintEngine(minConfidence = 0.5f)
     private val _landmarkFallback = LandmarkFallbackEngine()
+    private val _observedDisplayFilter = ObservedJointDisplayFilter()
     private var serverCalibrationWidth = 1920
     private var serverCalibrationHeight = 1080
     private var autoResumeServerAfterReconnect = false
@@ -684,6 +686,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         visualTopConfidence: Float,
                     ) {
                         noPoseFrames = 0
+                        val observedDisplayFrame = _observedDisplayFilter.update(xNorm, yNorm, visibility)
                         val state = _uiState.value.pipelineState
                         // Collect raw MediaPipe landmarks for bone-length learning
                         if (state == HybridPosePipeline.PipelineState.BOOTSTRAPPING ||
@@ -798,7 +801,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _completedY,
                             _completedVis,
                         )
-                        val visible = _completedVis.count { it > 0.5f }
+                        val visible = observedDisplayFrame.visibility.count { it >= 0.28f }
                         for (i in 0 until 33) {
                             val hasPrediction = _completedX[i].isFinite() && _completedY[i].isFinite()
                             _displayFullVis[i] = when {
@@ -807,9 +810,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 else -> 0f
                             }
                         }
-                        val displayX = _completedX.copyOf()
-                        val displayY = _completedY.copyOf()
-                        val displayVis = _displayFullVis.copyOf()
+                        val displayX = observedDisplayFrame.x
+                        val displayY = observedDisplayFrame.y
+                        val displayVis = observedDisplayFrame.visibility
                         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
                             directLandmarkCallback?.invoke(
                                 displayX,
@@ -848,6 +851,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         _kalman.forEach { it.reset() }
                         _boneConstraints.reset()
                         _landmarkFallback.reset()
+                        _observedDisplayFilter.reset()
                         _displayFullVis.fill(0f)
                         _hasLastGoodRelativeZ.fill(false)
                         poseLandmarksX = null
