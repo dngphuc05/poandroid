@@ -781,6 +781,41 @@ private fun yuv420ImageToBitmap(image: Image): Bitmap? {
     val y = image.planes[0]
     val u = image.planes[1]
     val v = image.planes[2]
+    val pixels = IntArray(width * height)
+    if (
+        nativeYuvConverterAvailable &&
+        runCatching {
+            nativeYuv420ToArgb(
+                y.buffer,
+                u.buffer,
+                v.buffer,
+                y.rowStride,
+                y.pixelStride,
+                u.rowStride,
+                u.pixelStride,
+                v.rowStride,
+                v.pixelStride,
+                width,
+                height,
+                pixels,
+            )
+        }.getOrDefault(false)
+    ) {
+        return Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888).apply {
+            setPixels(pixels, 0, width, 0, 0, width, height)
+        }
+    }
+
+    return yuv420ImageToBitmapFallback(image)
+}
+
+private fun yuv420ImageToBitmapFallback(image: Image): Bitmap? {
+    if (image.format != ImageFormat.YUV_420_888) return null
+    val width = image.width
+    val height = image.height
+    val y = image.planes[0]
+    val u = image.planes[1]
+    val v = image.planes[2]
 
     val yBuffer = y.buffer
     val uBuffer = u.buffer
@@ -804,6 +839,26 @@ private fun yuv420ImageToBitmap(image: Image): Bitmap? {
         setPixels(pixels, 0, width, 0, 0, width, height)
     }
 }
+
+private val nativeYuvConverterAvailable: Boolean = runCatching {
+    System.loadLibrary("physical_scene_optimizer")
+    true
+}.getOrDefault(false)
+
+private external fun nativeYuv420ToArgb(
+    yBuffer: ByteBuffer,
+    uBuffer: ByteBuffer,
+    vBuffer: ByteBuffer,
+    yRowStride: Int,
+    yPixelStride: Int,
+    uRowStride: Int,
+    uPixelStride: Int,
+    vRowStride: Int,
+    vPixelStride: Int,
+    width: Int,
+    height: Int,
+    outPixels: IntArray,
+): Boolean
 
 internal fun yuvPixelToArgb(yValue: Int, uValue: Int, vValue: Int): Int {
     val y = (yValue - 16).coerceAtLeast(0)

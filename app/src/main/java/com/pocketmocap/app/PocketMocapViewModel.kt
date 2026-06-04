@@ -873,7 +873,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     override fun prepareServerSceneMetrics(worldTracking: WorldTrackingSnapshot?): SceneMetricSnapshot? {
                         latestTechnicalSceneMetrics
                             ?.takeIf {
-                                it.source in setOf("arcore_floor", "arcore_floor_provisional", "imu_roi_fallback", "roi_fallback") &&
+                                isServerSceneMetricSource(it.source) &&
                                     it.confidence >= MIN_TECHNICAL_SCENE_CONFIDENCE_FOR_SERVER &&
                                     (
                                         it.distanceMeters.isFinite() ||
@@ -2797,4 +2797,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             .filter { it.isNotBlank() }
             .joinToString(" ")
             .ifBlank { "Pocap Phone" }
+}
+
+internal fun isServerSceneMetricSource(source: String): Boolean {
+    val normalized = source.trim()
+    return normalized == "imu_roi_fallback" ||
+        normalized == "roi_fallback" ||
+        normalized.startsWith("arcore_floor")
 }

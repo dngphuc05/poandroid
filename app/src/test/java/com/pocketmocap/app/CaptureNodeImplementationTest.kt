@@ -291,6 +291,17 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
+    fun manualHeightArcoreFloorMetricsAreSentToServer() {
+        assertTrue(isServerSceneMetricSource("arcore_floor"))
+        assertTrue(isServerSceneMetricSource("arcore_floor_provisional"))
+        assertTrue(isServerSceneMetricSource("arcore_floor_provisional_manual_height"))
+        assertTrue(isServerSceneMetricSource("arcore_floor_hit_manual_height"))
+        assertTrue(isServerSceneMetricSource("imu_roi_fallback"))
+        assertTrue(isServerSceneMetricSource("roi_fallback"))
+        assertFalse(isServerSceneMetricSource("unknown"))
+    }
+
+    @Test
     fun screenEvidenceRecordingIsSeparateFromLandmarkStreamingPipeline() {
         val manifest = appDir.resolve("src/main/AndroidManifest.xml").readText()
         val mainActivity = appDir.resolve("src/main/java/com/pocketmocap/app/MainActivity.kt").readText()

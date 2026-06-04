@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 #include <vector>
 
@@ -917,4 +918,95 @@ Java_com_pocketmocap_app_ui_PhysicalSceneOptimizer_nativeOptimize(
     jfloatArray result = env->NewFloatArray(25);
     env->SetFloatArrayRegion(result, 0, 25, out);
     return result;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_pocketmocap_app_camera_ArCoreFrameCaptureKt_nativeYuv420ToArgb(
+    JNIEnv* env,
+    jclass,
+    jobject y_buffer,
+    jobject u_buffer,
+    jobject v_buffer,
+    jint y_row_stride,
+    jint y_pixel_stride,
+    jint u_row_stride,
+    jint u_pixel_stride,
+    jint v_row_stride,
+    jint v_pixel_stride,
+    jint width,
+    jint height,
+    jintArray out_pixels
+) {
+    if (width <= 0 || height <= 0 || out_pixels == nullptr) {
+        return JNI_FALSE;
+    }
+    const auto pixel_count = static_cast<jsize>(width * height);
+    if (env->GetArrayLength(out_pixels) < pixel_count) {
+        return JNI_FALSE;
+    }
+    if (
+        y_row_stride <= 0 || u_row_stride <= 0 || v_row_stride <= 0 ||
+        y_pixel_stride <= 0 || u_pixel_stride <= 0 || v_pixel_stride <= 0
+    ) {
+        return JNI_FALSE;
+    }
+
+    const auto* y = static_cast<const uint8_t*>(env->GetDirectBufferAddress(y_buffer));
+    const auto* u = static_cast<const uint8_t*>(env->GetDirectBufferAddress(u_buffer));
+    const auto* v = static_cast<const uint8_t*>(env->GetDirectBufferAddress(v_buffer));
+    if (y == nullptr || u == nullptr || v == nullptr) {
+        return JNI_FALSE;
+    }
+    const jlong y_capacity = env->GetDirectBufferCapacity(y_buffer);
+    const jlong u_capacity = env->GetDirectBufferCapacity(u_buffer);
+    const jlong v_capacity = env->GetDirectBufferCapacity(v_buffer);
+    if (y_capacity <= 0 || u_capacity <= 0 || v_capacity <= 0) {
+        return JNI_FALSE;
+    }
+
+    jint* pixels = env->GetIntArrayElements(out_pixels, nullptr);
+    if (pixels == nullptr) {
+        return JNI_FALSE;
+    }
+
+    auto clamp_u8 = [](int value) -> int {
+        return std::max(0, std::min(255, value));
+    };
+
+    int output_index = 0;
+    bool ok = true;
+    for (int row = 0; row < height && ok; ++row) {
+        const int y_row = row * y_row_stride;
+        const int uv_row = (row / 2) * u_row_stride;
+        const int vv_row = (row / 2) * v_row_stride;
+        for (int col = 0; col < width; ++col) {
+            const int y_offset = y_row + col * y_pixel_stride;
+            const int u_offset = uv_row + (col / 2) * u_pixel_stride;
+            const int v_offset = vv_row + (col / 2) * v_pixel_stride;
+            if (
+                y_offset < 0 || u_offset < 0 || v_offset < 0 ||
+                y_offset >= y_capacity || u_offset >= u_capacity || v_offset >= v_capacity
+            ) {
+                ok = false;
+                break;
+            }
+
+            const int yy = std::max(0, static_cast<int>(y[y_offset]) - 16);
+            const int uu = static_cast<int>(u[u_offset]) - 128;
+            const int vv = static_cast<int>(v[v_offset]) - 128;
+            const int r = clamp_u8((298 * yy + 409 * vv + 128) >> 8);
+            const int g = clamp_u8((298 * yy - 100 * uu - 208 * vv + 128) >> 8);
+            const int b = clamp_u8((298 * yy + 516 * uu + 128) >> 8);
+            pixels[output_index++] =
+                static_cast<jint>(
+                    0xff000000u |
+                    (static_cast<uint32_t>(r) << 16) |
+                    (static_cast<uint32_t>(g) << 8) |
+                    static_cast<uint32_t>(b)
+                );
+        }
+    }
+
+    env->ReleaseIntArrayElements(out_pixels, pixels, ok ? 0 : JNI_ABORT);
+    return ok ? JNI_TRUE : JNI_FALSE;
 }
