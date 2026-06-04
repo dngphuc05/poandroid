@@ -30,6 +30,7 @@ import com.pocketmocap.app.tracking.ServerPoseDebugSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
 import com.pocketmocap.app.tracking.authoritativeDistanceMetersOrNull
 import com.pocketmocap.app.tracking.authoritativeHeightMetersOrNull
+import com.pocketmocap.app.tracking.cameraIntrinsicsFromJsonScaled
 import com.pocketmocap.app.tracking.hasCanonicalMetricPose
 import com.pocketmocap.app.tracking.hasV2MetricAuthority
 import com.pocketmocap.app.ui.PhysicalSceneBias
@@ -257,8 +258,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     private val _boneConstraints = BoneConstraintEngine(minConfidence = 0.5f)
     private val _landmarkFallback = LandmarkFallbackEngine()
     private val _observedDisplayFilter = ObservedJointDisplayFilter()
-    private var serverCalibrationWidth = 1920
-    private var serverCalibrationHeight = 1080
+    private var serverCalibrationWidth = 0
+    private var serverCalibrationHeight = 0
     private var autoResumeServerAfterReconnect = false
     private var userInitiatedDisconnect = false
     private var latestServerRotationDegrees = 0
@@ -615,8 +616,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         if (!_hasSmoothedLandmarks) return rawLandmarks
 
                         latestServerRotationDegrees = rotationDegrees
-                        val outboundWidth = if (serverCalibrationWidth > 0) serverCalibrationWidth else imageWidth
-                        val outboundHeight = if (serverCalibrationHeight > 0) serverCalibrationHeight else imageHeight
+                        val outboundWidth = imageWidth.coerceAtLeast(1)
+                        val outboundHeight = imageHeight.coerceAtLeast(1)
                         val prepared = ArrayList<LandmarkData>(33)
                         for (i in 0 until 33) {
                             val raw = rawLandmarks.getOrNull(i) ?: LandmarkData(0f, 0f)
@@ -2667,14 +2668,17 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val json = runCatching {
             JSONObject(PocketMocapBridge.getInstance().getCameraIntrinsicsJson(getApplication()))
         }.getOrNull() ?: return null
-        return CameraIntrinsics(
-            fx = json.optDouble("fx", imageWidth * 1.2).toFloat(),
-            fy = json.optDouble("fy", imageWidth * 1.2).toFloat(),
-            cx = json.optDouble("cx", imageWidth * 0.5).toFloat(),
-            cy = json.optDouble("cy", imageHeight * 0.5).toFloat(),
-            imageWidth = imageWidth,
-            imageHeight = imageHeight,
-        )
+        return cameraIntrinsicsFromJsonScaled(json, imageWidth, imageHeight)
+    }
+
+    private fun currentServerFrameDimensions(): Pair<Int, Int> {
+        if (cameraImageWidth > 0 && cameraImageHeight > 0) {
+            return cameraImageWidth to cameraImageHeight
+        }
+        latestCameraIntrinsics?.let {
+            if (it.imageWidth > 0 && it.imageHeight > 0) return it.imageWidth to it.imageHeight
+        }
+        return 640 to 480
     }
 
     override fun onCleared() {
@@ -2716,7 +2720,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             _uiState.update { it.copy(errorMessage = "Join the PC session code before starting capture") }
             return
         }
-        beginCalibration(1920, 1080)
+        val (width, height) = currentServerFrameDimensions()
+        beginCalibration(width, height)
     }
 
     /** One-tap: connect (if needed) → calibrate → navigate to capture. */
@@ -2805,3 +2810,4 @@ internal fun isServerSceneMetricSource(source: String): Boolean {
         normalized == "roi_fallback" ||
         normalized.startsWith("arcore_floor")
 }
+

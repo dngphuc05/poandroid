@@ -12,6 +12,7 @@ import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
 import com.pocketmocap.app.tracking.SceneMetricSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
+import com.pocketmocap.app.tracking.cameraIntrinsicsFromJsonScaled
 import com.google.mediapipe.framework.image.BitmapImageBuilder
 import com.google.mediapipe.framework.image.ByteBufferExtractor
 import com.google.mediapipe.framework.image.MPImage
@@ -276,15 +277,16 @@ class HybridPosePipeline(
     fun beginCalibration(imageWidth: Int, imageHeight: Int) {
         Log.i(TAG, "beginCalibration: ${imageWidth}x${imageHeight}")
         val json = runCatching { JSONObject(intrinsicsJsonProvider()) }.getOrNull()
-        val fx = json?.optDouble("fx", imageWidth * 1.2) ?: imageWidth * 1.2
-        val fy = json?.optDouble("fy", imageWidth * 1.2) ?: imageWidth * 1.2
-        val cx = json?.optDouble("cx", imageWidth * 0.5) ?: imageWidth * 0.5
-        val cy = json?.optDouble("cy", imageHeight * 0.5) ?: imageHeight * 0.5
+        val intrinsics = cameraIntrinsicsFromJsonScaled(json, imageWidth, imageHeight)
 
-        Log.i(TAG, "Sending calibration: fx=$fx fy=$fy cx=$cx cy=$cy mirror=$mirrorDistance")
+        Log.i(TAG, "Sending calibration: fx=${intrinsics.fx} fy=${intrinsics.fy} cx=${intrinsics.cx} cy=${intrinsics.cy} mirror=$mirrorDistance")
         serverClient.sendCalibration(
-            fx = fx, fy = fy, cx = cx, cy = cy,
-            imageWidth = imageWidth, imageHeight = imageHeight,
+            fx = intrinsics.fx.toDouble(),
+            fy = intrinsics.fy.toDouble(),
+            cx = intrinsics.cx.toDouble(),
+            cy = intrinsics.cy.toDouble(),
+            imageWidth = intrinsics.imageWidth,
+            imageHeight = intrinsics.imageHeight,
             mirrorDistance = mirrorDistance,
         )
         calibrationSent = true
@@ -657,13 +659,11 @@ class HybridPosePipeline(
             .setBaseOptions(baseOptions)
             .setRunningMode(RunningMode.VIDEO)
             .setNumPoses(MAX_TRACKED_POSES)
-            // Lower thresholds: model computes fewer internal classification passes.
-            // 0.3 still reliably detects a single person in frame; 0.5 was conservative.
-            .setMinPoseDetectionConfidence(0.3f)
-            .setMinPosePresenceConfidence(0.3f)
-            // Tracking confidence low → almost never triggers full re-detection.
-            // Re-detection is the expensive path; tracking is cheap interpolation.
-            .setMinTrackingConfidence(0.2f)
+            // Accuracy-first live capture: stale tracked landmarks are worse than a
+            // brief re-detection because they poison depth reconstruction downstream.
+            .setMinPoseDetectionConfidence(0.45f)
+            .setMinPosePresenceConfidence(0.45f)
+            .setMinTrackingConfidence(0.5f)
             .setOutputSegmentationMasks(OUTPUT_SEGMENTATION_MASKS)
             .build()
         return runCatching {
