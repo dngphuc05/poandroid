@@ -370,6 +370,9 @@ class CaptureNodeImplementationTest {
         assertTrue("Socket.IO remains fallback only when DataChannel is not healthy", client.contains("Socket.IO fallback"))
         assertTrue("Missing a burst of pose responses should trigger one recovery frame, not kill WebRTC", client.contains("Socket.IO recovery frame and keeping WebRTC alive"))
         assertFalse("No-response backpressure must not permanently disable WebRTC frame transport", client.contains("disableRtcFrameTransport(\"no_pose_response_after_"))
+        assertTrue("Compact frame JSON should use a fixed-point append helper", client.contains("appendFixed("))
+        assertFalse("Compact frame JSON must not allocate through String.format on every landmark coordinate", client.contains("String.format(Locale.US"))
+        assertFalse("Compact frame JSON must not parse its own hot-path string through JSONObject", client.contains("JSONObject(sb.toString())"))
     }
 
     @Test

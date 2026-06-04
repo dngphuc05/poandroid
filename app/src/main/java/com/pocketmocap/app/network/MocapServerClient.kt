@@ -9,7 +9,6 @@ import io.socket.client.Socket
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URI
-import java.util.Locale
 import java.util.concurrent.atomic.AtomicReference
 
 /**
@@ -540,7 +539,7 @@ class MocapServerClient(
         mlImageJpegQuality: Int?,
         mlImageCropPadRatio: Float?,
     ): String {
-        // Use simple %.4f formatting — avoids 198 BigDecimal heap allocations per frame
+        // Fixed-point append keeps the 30fps pose transport path allocation-light.
         val sb = StringBuilder(landmarks.size * 45 + 60)
         sb.append("{\"fi\":").append(frameIndex)
         sb.append(",\"ts\":").append(timestampUs)
@@ -551,22 +550,21 @@ class MocapServerClient(
         landmarks.forEachIndexed { i, lm ->
             if (i > 0) sb.append(',')
             sb.append('[')
-            sb.append(String.format(Locale.US, "%.4f", lm.x)).append(',')
-            sb.append(String.format(Locale.US, "%.4f", lm.y)).append(',')
-            sb.append(String.format(Locale.US, "%.5f", lm.z)).append(',')
-            sb.append(String.format(Locale.US, "%.5f", lm.xMetric)).append(',')
-            sb.append(String.format(Locale.US, "%.5f", lm.yMetric)).append(',')
-            sb.append(String.format(Locale.US, "%.5f", lm.zMetric)).append(',')
-            sb.append(String.format(Locale.US, "%.4f", lm.visibility)).append(',')
-            sb.append(String.format(Locale.US, "%.4f", lm.presence)).append(',')
-            sb.append(String.format(Locale.US, "%.4f", lm.confidence))
+            sb.appendFixed(lm.x, 4).append(',')
+            sb.appendFixed(lm.y, 4).append(',')
+            sb.appendFixed(lm.z, 5).append(',')
+            sb.appendFixed(lm.xMetric, 5).append(',')
+            sb.appendFixed(lm.yMetric, 5).append(',')
+            sb.appendFixed(lm.zMetric, 5).append(',')
+            sb.appendFixed(lm.visibility, 4).append(',')
+            sb.appendFixed(lm.presence, 4).append(',')
+            sb.appendFixed(lm.confidence, 4)
             sb.append(']')
         }
-        sb.append("]}")
-        val base = JSONObject(sb.toString())
-        worldTracking?.let { base.put("wt", it.toJson()) }
-        sceneMetrics?.let { base.put("sm", it.toJson()) }
-        base.putMlImagePayload(
+        sb.append(']')
+        worldTracking?.let { sb.append(",\"wt\":").append(it.toJson().toString()) }
+        sceneMetrics?.let { sb.append(",\"sm\":").append(it.toJson().toString()) }
+        compactMlImagePayloadJson(
             mlImageBase64,
             mlImageWidth,
             mlImageHeight,
@@ -578,9 +576,67 @@ class MocapServerClient(
             mlImageCropHeight,
             mlImageJpegQuality,
             mlImageCropPadRatio,
-            compactKeys = true,
-        )
-        return base.toString()
+        )?.let { sb.append(",\"mi\":").append(it) }
+        sb.append('}')
+        return sb.toString()
+    }
+
+    private fun compactMlImagePayloadJson(
+        jpegBase64: String?,
+        width: Int?,
+        height: Int?,
+        sourceWidth: Int?,
+        sourceHeight: Int?,
+        cropLeft: Int?,
+        cropTop: Int?,
+        cropWidth: Int?,
+        cropHeight: Int?,
+        jpegQuality: Int?,
+        cropPadRatio: Float?,
+    ): String? {
+        if (jpegBase64.isNullOrBlank()) return null
+        return JSONObject().apply {
+            put("fmt", "jpeg_base64")
+            put("jpg", jpegBase64)
+            width?.let { put("w", it) }
+            height?.let { put("h", it) }
+            sourceWidth?.let { put("sw", it) }
+            sourceHeight?.let { put("sh", it) }
+            cropLeft?.let { put("x", it) }
+            cropTop?.let { put("y", it) }
+            cropWidth?.let { put("cw", it) }
+            cropHeight?.let { put("ch", it) }
+            jpegQuality?.let { put("q", it) }
+            cropPadRatio?.let { put("pad", it.toDouble()) }
+        }.toString()
+    }
+
+    private fun StringBuilder.appendFixed(value: Float, decimals: Int): StringBuilder {
+        val scale = when (decimals) {
+            0 -> 1
+            1 -> 10
+            2 -> 100
+            3 -> 1_000
+            4 -> 10_000
+            else -> 100_000
+        }
+        val clean = if (value.isFinite()) value else 0f
+        var scaled = Math.round(clean * scale).toInt()
+        if (scaled < 0) {
+            append('-')
+            scaled = -scaled
+        }
+        append(scaled / scale)
+        if (decimals <= 0) return this
+        append('.')
+        val fraction = scaled % scale
+        var pad = scale / 10
+        while (pad > 1 && fraction < pad) {
+            append('0')
+            pad /= 10
+        }
+        append(fraction)
+        return this
     }
 
     private fun JSONObject.putMlImagePayload(
