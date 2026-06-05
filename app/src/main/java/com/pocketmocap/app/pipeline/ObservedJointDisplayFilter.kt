@@ -24,6 +24,9 @@ class ObservedJointDisplayFilter(
     private val latencyCompensationFrames: Float = 1.0f,
     private val minPredictionMotion: Float = 0.025f,
     private val maxPredictionStep: Float = 0.06f,
+    private val lowerBodyStillAlpha: Float = 0.26f,
+    private val lowerBodyFastAlpha: Float = 0.82f,
+    private val lowerBodyFastMotionDistance: Float = 0.18f,
 ) {
     private val state = DisplayJointState(jointCount)
 
@@ -66,9 +69,9 @@ class ObservedJointDisplayFilter(
             index = index,
             measuredX = x,
             measuredY = y,
-            frames = latencyCompensationFrames,
+            frames = predictionFramesFor(index),
             minMotion = minPredictionMotion,
-            maxStep = maxPredictionStep,
+            maxStep = predictionStepFor(index),
         )
         val alpha = if (state.hasVisible(index)) {
             adaptiveAlpha(index, predicted.first, predicted.second)
@@ -86,9 +89,21 @@ class ObservedJointDisplayFilter(
         val dx = x - state.x(index)
         val dy = y - state.y(index)
         val distance = sqrt(dx * dx + dy * dy)
+        if (isLowerBody(index)) {
+            val motion = (distance / lowerBodyFastMotionDistance).coerceIn(0f, 1f)
+            return lowerBodyStillAlpha + (lowerBodyFastAlpha - lowerBodyStillAlpha) * motion
+        }
         val motion = (distance / fastMotionDistance).coerceIn(0f, 1f)
         return stillAlpha + (fastAlpha - stillAlpha) * motion
     }
+
+    private fun predictionFramesFor(index: Int): Float =
+        if (isLowerBody(index)) 0f else latencyCompensationFrames
+
+    private fun predictionStepFor(index: Int): Float =
+        if (isLowerBody(index)) 0f else maxPredictionStep
+
+    private fun isLowerBody(index: Int): Boolean = index in 23..32
 }
 
 private class DisplayJointState(private val jointCount: Int) {

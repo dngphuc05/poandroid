@@ -50,6 +50,30 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun lowerBodyNoiseIsNotPredictedPastMeasuredLegRange() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var minOut = Float.POSITIVE_INFINITY
+        var maxOut = Float.NEGATIVE_INFINITY
+
+        repeat(36) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            x[27] = if (frame % 2 == 0) 0.46f else 0.54f
+
+            val out = filter.update(x, y, v)
+            if (frame > 5) {
+                minOut = minOf(minOut, out.x[27])
+                maxOut = maxOf(maxOut, out.x[27])
+            }
+        }
+
+        assertTrue("ankle preview should not overshoot noisy measured leg range", minOut >= 0.46f)
+        assertTrue("ankle preview should not overshoot noisy measured leg range", maxOut <= 0.54f)
+        assertTrue("ankle preview should damp stationary leg wobble", (maxOut - minOut) < 0.06f)
+    }
+
+    @Test
     fun hiddenJointIsNotInventedOrHeldVisible() {
         val filter = ObservedJointDisplayFilter()
         val visible = FloatArray(33) { 0.95f }
