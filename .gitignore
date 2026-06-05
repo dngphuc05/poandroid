@@ -22,3 +22,7 @@ unityLibrary/
 # Keys / secrets
 *.jks
 *.keystore
+
+# Local checkpoints and diagnostics
+checkpoint_*.patch
+checkpoint_*.status.txt
