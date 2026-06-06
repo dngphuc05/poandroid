@@ -51,6 +51,8 @@ class ArCoreFrameCapture(
     companion object {
         private const val TAG = "ArCoreFrameCapture"
         private const val MIN_FRAME_INTERVAL_NS = 16_000_000L
+        private const val DEPTH_SAMPLE_INTERVAL_NS = 200_000_000L
+        private const val DEPTH_REUSE_WINDOW_NS = 600_000_000L
         private const val STARTUP_CAMERA_HEIGHT_PRIOR_M = 1.17f
         private const val MIN_REASONABLE_CAMERA_HEIGHT_M = 0.20f
         private const val MAX_REASONABLE_CAMERA_HEIGHT_M = 2.50f
@@ -75,6 +77,11 @@ class ArCoreFrameCapture(
     @Volatile private var pendingCameraHeightMeters = Float.NaN
     @Volatile private var pendingCameraHeightFrames = 0
     @Volatile private var latestCameraPose: Pose? = null
+    @Volatile private var latestDepthMapSnapshot: DepthMapSnapshot? = null
+    private val depthFrameSampler = DepthFrameSampler(
+        sampleIntervalNs = DEPTH_SAMPLE_INTERVAL_NS,
+        reuseWindowNs = DEPTH_REUSE_WINDOW_NS,
+    )
 
     private data class FloorAnchor(
         val point: FloatArray,
@@ -357,12 +364,16 @@ class ArCoreFrameCapture(
             return
         }
 
-        val depthImage = try {
-            frame.acquireDepthImage16Bits()
-        } catch (_: NotYetAvailableException) {
-            null
-        } catch (e: Exception) {
-            Log.w(TAG, "Depth image unavailable: ${e.message}")
+        val depthImage = if (depthFrameSampler.shouldRequestDepth(timestampNs)) {
+            try {
+                frame.acquireDepthImage16Bits()
+            } catch (_: NotYetAvailableException) {
+                null
+            } catch (e: Exception) {
+                Log.w(TAG, "Depth image unavailable: ${e.message}")
+                null
+            }
+        } else {
             null
         }
 
@@ -375,7 +386,13 @@ class ArCoreFrameCapture(
                 try {
                     val bitmap = yuv420ImageToBitmap(image) ?: return@execute
                     val depthMap = depthImage?.let { extractPortraitDepthMap(it) }
-                    val snapshot = snapshotWithoutDepth.copy(depthMap = depthMap)
+                    if (depthMap != null) {
+                        latestDepthMapSnapshot = depthMap
+                        depthFrameSampler.markDepthSampleSucceeded(timestampNs)
+                    }
+                    val reusableDepthMap = latestDepthMapSnapshot
+                        .takeIf { depthFrameSampler.canReuseDepth(timestampNs) }
+                    val snapshot = snapshotWithoutDepth.copy(depthMap = depthMap ?: reusableDepthMap)
                     onFrame(
                         CapturedCameraFrame(
                             bitmap = bitmap,

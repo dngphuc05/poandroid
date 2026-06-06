@@ -120,6 +120,113 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun handEndpointDoesNotPredictPastMeasuredSwing() {
+        val filter = ObservedJointDisplayFilter(
+            stillAlpha = 1.0f,
+            fastAlpha = 1.0f,
+            latencyCompensationFrames = 1.0f,
+            maxPredictionStep = 0.10f,
+        )
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[15] = 0.45f
+        x[19] = 0.40f
+        filter.update(x, y, v)
+
+        x[15] = 0.35f
+        x[19] = 0.30f
+        val out = filter.update(x, y, v)
+
+        assertTrue("wrist still gets latency compensation", out.x[15] < 0.35f)
+        assertTrue("hand endpoint must not be predicted far beyond measured motion", out.x[19] >= 0.29f)
+        assertTrue("hand endpoint must stay close to measured hand evidence", abs(out.x[19] - 0.30f) < 0.03f)
+    }
+
+    @Test
+    fun weakHandEndpointIsPulledBackTowardForearmDirection() {
+        val filter = ObservedJointDisplayFilter()
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[13] = 0.62f
+        y[13] = 0.50f
+        x[15] = 0.48f
+        y[15] = 0.50f
+        x[19] = 0.43f
+        y[19] = 0.50f
+        filter.update(x, y, v)
+
+        x[13] = 0.62f
+        y[13] = 0.50f
+        x[15] = 0.48f
+        y[15] = 0.50f
+        x[19] = 0.62f
+        y[19] = 0.50f
+        v[19] = 0.36f
+        val out = filter.update(x, y, v)
+
+        assertTrue("weak hand endpoint should not flip to the wrong side of the wrist", out.x[19] < 0.52f)
+    }
+
+    @Test
+    fun highConfidenceHandEndpointFlipIsPulledBackForDisplay() {
+        val filter = ObservedJointDisplayFilter()
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[13] = 0.62f
+        y[13] = 0.50f
+        x[15] = 0.48f
+        y[15] = 0.50f
+        x[19] = 0.43f
+        y[19] = 0.50f
+        filter.update(x, y, v)
+
+        x[19] = 0.55f
+        val out = filter.update(x, y, v)
+
+        assertTrue("confident hand endpoint should not visibly flip ahead of the wrist", out.x[19] < 0.52f)
+    }
+
+    @Test
+    fun handEndpointWobbleIsDampedWithoutFreezingWrist() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var minRawEndpoint = Float.POSITIVE_INFINITY
+        var maxRawEndpoint = Float.NEGATIVE_INFINITY
+        var minOutEndpoint = Float.POSITIVE_INFINITY
+        var maxOutEndpoint = Float.NEGATIVE_INFINITY
+        var finalWrist = 0f
+
+        repeat(34) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            x[13] = 0.62f
+            y[13] = 0.50f
+            x[15] = 0.48f - frame * 0.002f
+            y[15] = 0.50f
+            x[19] = x[15] - if (frame % 2 == 0) 0.040f else 0.085f
+            y[19] = 0.50f
+
+            minRawEndpoint = minOf(minRawEndpoint, x[19])
+            maxRawEndpoint = maxOf(maxRawEndpoint, x[19])
+            val out = filter.update(x, y, v)
+            if (frame > 8) {
+                minOutEndpoint = minOf(minOutEndpoint, out.x[19])
+                maxOutEndpoint = maxOf(maxOutEndpoint, out.x[19])
+            }
+            finalWrist = out.x[15]
+        }
+
+        assertTrue("hand endpoint wobble should be damped", (maxOutEndpoint - minOutEndpoint) < (maxRawEndpoint - minRawEndpoint) * 0.72f)
+        assertTrue("wrist must still follow the real swing", finalWrist < 0.43f)
+    }
+
+    @Test
     fun naturalElbowBendIsPreserved() {
         val filter = ObservedJointDisplayFilter()
         val x = FloatArray(33) { 0.5f }

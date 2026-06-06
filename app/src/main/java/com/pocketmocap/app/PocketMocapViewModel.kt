@@ -19,6 +19,7 @@ import com.pocketmocap.app.calibration.CloudAnchorEngine
 import com.pocketmocap.app.calibration.CloudAnchorResult
 import com.pocketmocap.app.pipeline.BoneConstraintEngine
 import com.pocketmocap.app.pipeline.HybridPosePipeline
+import com.pocketmocap.app.pipeline.HandEndpointStabilizer
 import com.pocketmocap.app.pipeline.LandmarkFallbackEngine
 import com.pocketmocap.app.pipeline.LandmarkKalman2D
 import com.pocketmocap.app.pipeline.ObservedJointDisplayFilter
@@ -353,6 +354,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val cosine = (prevDx * candDx + prevDy * candDy) / (prevLen * candLen)
         return cosine < -0.12f
     }
+
+    private fun isHandEndpoint(index: Int): Boolean = index in 17..22
 
     // ── Server Client ──
     private val serverClient: MocapServerClient = MocapServerClient(getApplication(), object : MocapServerClient.Listener {
@@ -731,7 +734,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 when {
                                     effectiveVis >= VIS_UNCERTAIN -> {
                                         // ── Clearly visible: speed-adaptive EMA with outlier gate ──────
-                                        val maxDelta = if (reappearing) 0.32f else MAX_JOINT_DELTA
+                                        val maxDelta = when {
+                                            reappearing -> 0.32f
+                                            isHandEndpoint(i) -> 0.10f
+                                            else -> MAX_JOINT_DELTA
+                                        }
                                         val safeX = if (dist > maxDelta)
                                             _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
                                         val safeY = if (dist > maxDelta)
@@ -741,9 +748,15 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                         // high ceiling = near-zero lag during genuine fast movements.
                                         val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
                                         // Soft-ramp alpha for fast movements to prevent hard snapping on noise
-                                        val fastMotionBoost = maxOf(0f, dist - 0.04f) * 5.0f
+                                        val fastMotionBoost = if (isHandEndpoint(i)) {
+                                            maxOf(0f, dist - 0.05f) * 2.0f
+                                        } else {
+                                            maxOf(0f, dist - 0.04f) * 5.0f
+                                        }
                                         val baseAlpha = if (reappearing) {
                                             (0.58f + normSpeed * 0.30f).coerceIn(0.58f, 0.88f)
+                                        } else if (isHandEndpoint(i)) {
+                                            (0.22f + normSpeed * 0.50f).coerceIn(0.22f, 0.72f)
                                         } else {
                                             (0.18f + normSpeed * 0.67f).coerceIn(0.18f, 0.85f)
                                         }
@@ -802,6 +815,20 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _completedY,
                             _completedVis,
                         )
+                        HandEndpointStabilizer.stabilizeInPlace(
+                            x = _completedX,
+                            y = _completedY,
+                            visibility = _completedVis,
+                            visibleThreshold = 0.16f,
+                            correctStrongFlips = true,
+                        ) { index, nextX, nextY ->
+                            _smoothedX[index] = nextX
+                            _smoothedY[index] = nextY
+                            _lastReliable2DX[index] = nextX
+                            _lastReliable2DY[index] = nextY
+                            _hasLastReliable2D[index] = true
+                            _kalman[index].setPosition(nextX, nextY)
+                        }
                         val visible = observedDisplayFrame.visibility.count { it >= 0.28f }
                         for (i in 0 until 33) {
                             val hasPrediction = _completedX[i].isFinite() && _completedY[i].isFinite()

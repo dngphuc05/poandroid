@@ -27,8 +27,14 @@ class ObservedJointDisplayFilter(
     private val lowerBodyStillAlpha: Float = 0.26f,
     private val lowerBodyFastAlpha: Float = 0.82f,
     private val lowerBodyFastMotionDistance: Float = 0.18f,
+    private val handEndpointStillAlpha: Float = 0.28f,
+    private val handEndpointFastAlpha: Float = 0.88f,
+    private val handEndpointFastMotionDistance: Float = 0.08f,
 ) {
     private val state = DisplayJointState(jointCount)
+    private val measuredHandX = FloatArray(jointCount)
+    private val measuredHandY = FloatArray(jointCount)
+    private val measuredHandVisibility = FloatArray(jointCount)
 
     fun reset() {
         state.reset()
@@ -42,6 +48,7 @@ class ObservedJointDisplayFilter(
         for (index in 0 until jointCount) {
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
         }
+        stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
 
         return ObservedJointDisplayFrame(outX, outY, outVisibility)
     }
@@ -89,6 +96,10 @@ class ObservedJointDisplayFilter(
         val dx = x - state.x(index)
         val dy = y - state.y(index)
         val distance = sqrt(dx * dx + dy * dy)
+        if (isHandEndpoint(index)) {
+            val motion = (distance / handEndpointFastMotionDistance).coerceIn(0f, 1f)
+            return handEndpointStillAlpha + (handEndpointFastAlpha - handEndpointStillAlpha) * motion
+        }
         if (isLowerBody(index)) {
             val motion = (distance / lowerBodyFastMotionDistance).coerceIn(0f, 1f)
             return lowerBodyStillAlpha + (lowerBodyFastAlpha - lowerBodyStillAlpha) * motion
@@ -98,12 +109,48 @@ class ObservedJointDisplayFilter(
     }
 
     private fun predictionFramesFor(index: Int): Float =
-        if (isLowerBody(index)) 0f else latencyCompensationFrames
+        if (isLowerBody(index) || isHandEndpoint(index)) 0f else latencyCompensationFrames
 
     private fun predictionStepFor(index: Int): Float =
-        if (isLowerBody(index)) 0f else maxPredictionStep
+        if (isLowerBody(index) || isHandEndpoint(index)) 0f else maxPredictionStep
+
+    private fun stabilizeHandEndpoints(
+        rawX: FloatArray,
+        rawY: FloatArray,
+        rawVisibility: FloatArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        HandEndpointStabilizer.stabilizeInPlace(
+            x = outX,
+            y = outY,
+            visibility = outVisibility,
+            visibleThreshold = visibleThreshold,
+            onChanged = state::overwritePosition,
+        )
+        if (rawX.size < jointCount || rawY.size < jointCount || rawVisibility.size < jointCount) return
+
+        rawX.copyInto(measuredHandX, endIndex = jointCount)
+        rawY.copyInto(measuredHandY, endIndex = jointCount)
+        rawVisibility.copyInto(measuredHandVisibility, endIndex = jointCount)
+        HandEndpointStabilizer.stabilizeInPlace(
+            x = measuredHandX,
+            y = measuredHandY,
+            visibility = measuredHandVisibility,
+            visibleThreshold = visibleThreshold,
+            correctStrongFlips = true,
+        ) { index, nextX, nextY ->
+            if (!isHandEndpoint(index)) return@stabilizeInPlace
+            outX[index] = nextX
+            outY[index] = nextY
+            state.overwritePosition(index, nextX, nextY)
+        }
+    }
 
     private fun isLowerBody(index: Int): Boolean = index in 23..32
+
+    private fun isHandEndpoint(index: Int): Boolean = index in 17..22
 }
 
 private class DisplayJointState(private val jointCount: Int) {
@@ -130,6 +177,11 @@ private class DisplayJointState(private val jointCount: Int) {
     fun x(index: Int): Float = x[index]
 
     fun y(index: Int): Float = y[index]
+
+    fun overwritePosition(index: Int, nextX: Float, nextY: Float) {
+        x[index] = nextX
+        y[index] = nextY
+    }
 
     fun writeHidden(index: Int, outX: FloatArray, outY: FloatArray, outVisibility: FloatArray) {
         outX[index] = x[index]
