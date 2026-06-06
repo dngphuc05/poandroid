@@ -352,6 +352,58 @@ private fun CameraHeightControl(
 }
 
 @Composable
+private fun SubjectHeightControl(
+    subjectHeightMeters: Float,
+    onSubjectHeightChange: (Float) -> Unit,
+) {
+    val hasHeight = subjectHeightMeters.isFinite()
+    val displayHeight = if (hasHeight) subjectHeightMeters else 1.83f
+    PocapCard(color = PocapPaperLight, radius = 14.dp, shadow = false) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                PocapEyebrow("actor height")
+                Text(
+                    text = if (hasHeight) {
+                        "Used by the server as the metric body scale."
+                    } else {
+                        "Set once for stable single-cam scale."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = PocapInk2,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+            PocapIconButton(
+                onClick = { onSubjectHeightChange(displayHeight - 0.01f) },
+                tone = PocapPaper,
+            ) {
+                Text("-1", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            }
+            Text(
+                text = if (hasHeight) formatMeters(displayHeight) else "set",
+                style = MaterialTheme.typography.titleSmall,
+                color = PocapInk,
+                fontFamily = PocapMono,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+            )
+            PocapIconButton(
+                onClick = { onSubjectHeightChange(displayHeight + 0.01f) },
+                tone = PocapCyan,
+            ) {
+                Text("+1", color = PocapInk, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.labelSmall)
+            }
+        }
+    }
+}
+
+@Composable
 private fun ScreenEvidenceRecordingChrome(
     recordingSeconds: Int,
     onStopRecording: () -> Unit,
@@ -438,6 +490,7 @@ private fun SetupStepScreen(
     onClearError: () -> Unit,
 ) {
     val step = uiState.calibrationStep
+    val singleCameraMetricReady = !isSingleCamera || uiState.manualSubjectHeightMeters.isFinite()
     SessionStepScaffold(
         stepTitle = if (isSingleCamera) "single-cam setup" else "multi-cam setup",
         headline = if (isSingleCamera) "Single-cam\ncalibration." else "Multi-cam\ncalibration.",
@@ -462,19 +515,17 @@ private fun SetupStepScreen(
         body = {
             CalibrationPayloadRow("session mode", if (isSingleCamera) "single camera live" else "multi camera live")
             CalibrationPayloadRow("phones allowed", if (isSingleCamera) "1" else "multiple")
-            CalibrationPayloadRow(
-                "server receives",
-                if (isSingleCamera)
-                    "intrinsics, lens height, camera extrinsics, 2D landmarks"
-                else
-                    "intrinsics, lens height, sync timing, camera extrinsics, 2D landmarks"
-            )
             if (!isSingleCamera) {
+                CalibrationPayloadRow("server receives", "intrinsics, sync, extrinsics, landmarks")
                 CalibrationPayloadRow("sync usage", "done during setup; later only if phones drift during live capture")
             }
             CameraHeightControl(
                 cameraHeightMeters = uiState.manualCameraHeightMeters,
                 onCameraHeightChange = viewModel::setManualCameraHeightMeters,
+            )
+            SubjectHeightControl(
+                subjectHeightMeters = uiState.manualSubjectHeightMeters,
+                onSubjectHeightChange = viewModel::setManualSubjectHeightMeters,
             )
         },
         footer = {
@@ -491,8 +542,13 @@ private fun SetupStepScreen(
             }
             if (step == CalibrationStep.PENDING) {
                 PocapButton(
-                    label = if (isSingleCamera) "Send camera calibration" else "Send sync calibration",
+                    label = when {
+                        !singleCameraMetricReady -> "Set actor height first"
+                        isSingleCamera -> "Send camera calibration"
+                        else -> "Send sync calibration"
+                    },
                     onClick = onStartCalibration,
+                    enabled = singleCameraMetricReady,
                     modifier = Modifier.fillMaxWidth(),
                     tone = PocapCyan,
                     contentColor = PocapInk,
