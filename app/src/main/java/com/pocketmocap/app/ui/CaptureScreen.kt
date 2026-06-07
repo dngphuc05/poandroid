@@ -490,7 +490,6 @@ private fun SetupStepScreen(
     onClearError: () -> Unit,
 ) {
     val step = uiState.calibrationStep
-    val singleCameraMetricReady = !isSingleCamera || uiState.manualSubjectHeightMeters.isFinite()
     SessionStepScaffold(
         stepTitle = if (isSingleCamera) "single-cam setup" else "multi-cam setup",
         headline = if (isSingleCamera) "Single-cam\ncalibration." else "Multi-cam\ncalibration.",
@@ -523,10 +522,6 @@ private fun SetupStepScreen(
                 cameraHeightMeters = uiState.manualCameraHeightMeters,
                 onCameraHeightChange = viewModel::setManualCameraHeightMeters,
             )
-            SubjectHeightControl(
-                subjectHeightMeters = uiState.manualSubjectHeightMeters,
-                onSubjectHeightChange = viewModel::setManualSubjectHeightMeters,
-            )
         },
         footer = {
             uiState.errorMessage?.let { error ->
@@ -543,12 +538,11 @@ private fun SetupStepScreen(
             if (step == CalibrationStep.PENDING) {
                 PocapButton(
                     label = when {
-                        !singleCameraMetricReady -> "Set actor height first"
                         isSingleCamera -> "Send camera calibration"
                         else -> "Send sync calibration"
                     },
                     onClick = onStartCalibration,
-                    enabled = singleCameraMetricReady,
+                    enabled = true,
                     modifier = Modifier.fillMaxWidth(),
                     tone = PocapCyan,
                     contentColor = PocapInk,

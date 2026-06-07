@@ -291,6 +291,17 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
+    fun singleCameraCalibrationDoesNotRequireOrInjectManualSubjectHeight() {
+        val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
+        val captureScreen = appDir.resolve("src/main/java/com/pocketmocap/app/ui/CaptureScreen.kt").readText()
+
+        assertFalse("Single-cam calibration must not be blocked by manual actor height", captureScreen.contains("Set actor height first"))
+        assertFalse("Single-cam metric readiness must not depend on manualSubjectHeightMeters", captureScreen.contains("manualSubjectHeightMeters.isFinite()"))
+        assertFalse("Phone metrics must not inject a manual subject-height profile into every server frame", viewModel.contains("withManualSubjectHeightProfile()"))
+        assertFalse("Phone metrics must not advertise manual_profile as server height authority", viewModel.contains("profileSubjectHeightSource = \"manual_profile\""))
+    }
+
+    @Test
     fun manualHeightArcoreFloorMetricsAreSentToServer() {
         assertTrue(isServerSceneMetricSource("arcore_floor"))
         assertTrue(isServerSceneMetricSource("arcore_floor_provisional"))

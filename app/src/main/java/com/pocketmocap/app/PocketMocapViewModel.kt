@@ -910,7 +910,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                             it.correctedHeightMeters.isFinite()
                                     )
                             }
-                            ?.let { return it.withManualSubjectHeightProfile() }
+                            ?.let { return it }
                         return worldTracking?.takeIf {
                             it.source == "arcore_floor" &&
                                 it.confidence >= MIN_AR_SCENE_CONFIDENCE_FOR_SERVER &&
@@ -924,7 +924,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 cameraHeightMeters = it.cameraHeightMeters,
                                 floorPitchDegrees = it.floorPitchDegrees,
                                 lateralOffsetMeters = it.lateralOffsetMeters,
-                            ).withManualSubjectHeightProfile()
+                            )
                         }
                     }
 
@@ -1238,7 +1238,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
             learnedHipVectorXNorm = estimate.learnedHipVectorXNorm
             learnedHipVectorYNorm = estimate.learnedHipVectorYNorm
         }
-        val metrics = estimate.toSceneMetricSnapshot().withManualSubjectHeightProfile()
+        val metrics = estimate.toSceneMetricSnapshot()
         val solvedMetrics = if (metrics.source == "arcore_floor") {
             physicalSceneGraph.solve(metrics).also { maybePersistPhysicalSceneBias() }
         } else {
@@ -1373,16 +1373,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         } else if (latestTechnicalSceneMetrics == null) {
             latestSceneMetrics = metrics
         }
-    }
-
-    private fun SceneMetricSnapshot.withManualSubjectHeightProfile(): SceneMetricSnapshot {
-        val subjectHeight = _uiState.value.manualSubjectHeightMeters
-        if (!subjectHeight.isFinite() || subjectHeight !in 1.05f..2.35f) return this
-        return copy(
-            profileSubjectHeightMeters = subjectHeight,
-            profileSubjectHeightConfidence = 0.98f,
-            profileSubjectHeightSource = "manual_profile",
-        )
     }
 
     private fun ageTechnicalSceneMetrics(allowVisibleBodyHold: Boolean = false) {
