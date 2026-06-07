@@ -90,6 +90,7 @@ class HybridPosePipeline(
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
+        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
         private const val ML_JPEG_QUALITY = 92
         private const val ML_CROP_PAD_RATIO = 0.18f
@@ -331,7 +332,8 @@ class HybridPosePipeline(
         val landmarker = ensurePoseLandmarker() ?: return
 
         val bitmap = frame.bitmap
-        val mpImage = BitmapImageBuilder(bitmap).build()
+        val inferenceBitmap = bitmap.scaledForPoseInference()
+        val mpImage = BitmapImageBuilder(inferenceBitmap).build()
         // ARCore owns capture now; let MediaPipe handle any frame rotation metadata.
         // Output landmarks are in the coordinate space of the rotated (display-upright) image.
         val options = ImageProcessingOptions.builder()
@@ -342,18 +344,23 @@ class HybridPosePipeline(
             landmarker.detectForVideo(mpImage, options, frame.timestampUs / 1000L)
         }.getOrElse {
             Log.e(TAG, "MediaPipe detection failed", it)
+            if (inferenceBitmap !== bitmap) inferenceBitmap.recycle()
+            bitmap.recycle()
             return
         }
+        if (inferenceBitmap !== bitmap) inferenceBitmap.recycle()
 
         // Single pass: build UI arrays + LandmarkData list simultaneously (no second 33-joint iteration)
         val poses = result.landmarks()
         if (poses.isEmpty()) {
+            bitmap.recycle()
             listener.onNoPoseDetected()
             return
         }
         val poseIdx = selectBestPose(result) ?: 0
         val lms = poses[poseIdx]
         if (lms.size < JOINT_COUNT) {
+            bitmap.recycle()
             listener.onNoPoseDetected()
             return
         }
@@ -632,6 +639,15 @@ class HybridPosePipeline(
         if (normalized == 0) return this
         val matrix = Matrix().apply { postRotate(normalized.toFloat()) }
         return Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+    }
+
+    private fun Bitmap.scaledForPoseInference(): Bitmap {
+        val longEdge = max(width, height)
+        if (longEdge <= MAX_MEDIAPIPE_INPUT_LONG_EDGE) return this
+        val scale = MAX_MEDIAPIPE_INPUT_LONG_EDGE.toFloat() / longEdge.toFloat()
+        val scaledWidth = max(1, (width * scale).toInt())
+        val scaledHeight = max(1, (height * scale).toInt())
+        return Bitmap.createScaledBitmap(this, scaledWidth, scaledHeight, true)
     }
 
     @Synchronized
