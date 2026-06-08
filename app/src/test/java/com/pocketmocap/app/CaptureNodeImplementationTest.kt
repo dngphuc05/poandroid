@@ -348,7 +348,7 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
-    fun phoneUsesLiveLandmarkerProfileAndDrawsSmoothedVisibleOverlay() {
+    fun phoneUsesLiveLandmarkerProfileAndDrawsObservedLowLatencyOverlay() {
         val gradle = appDir.resolve("build.gradle.kts").readText()
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
@@ -360,13 +360,11 @@ class CaptureNodeImplementationTest {
         assertTrue(gradle.contains("false"))
         assertTrue(pipeline.contains("BuildConfig.POSE_LANDMARKER_MODEL"))
         assertTrue(pipeline.contains("BuildConfig.POSE_SEGMENTATION_MASKS"))
-        assertTrue("Phone live inference should stay below full preview size for cadence", pipeline.contains("MAX_MEDIAPIPE_INPUT_LONG_EDGE = 736"))
+        assertTrue(pipeline.contains("MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640"))
         assertTrue(pipeline.contains("scaledForPoseInference"))
         assertTrue(pipeline.contains("BitmapImageBuilder(inferenceBitmap)"))
         assertTrue(pipeline.contains("if (inferenceBitmap !== bitmap) inferenceBitmap.recycle()"))
         assertTrue(pipeline.contains("estimateVisualTopFromLandmarks"))
-        assertTrue("MediaPipe landmarks should use deterministic display rotation", pipeline.contains("rotateLandmarksToDisplay(_xNorm, _yNorm, frame.rotationDegrees)"))
-        assertFalse("MediaPipe landmarks must not use ARCore preview crop/texture transform", pipeline.contains("mapImageToView(imageX, imageY)"))
         assertFalse("Live capture must not hardcode the slower full landmarker", pipeline.contains("MODEL_ASSET_PATH = \"pose_landmarker_full.task\""))
         assertTrue(viewModel.contains("LandmarkKalman2D(fps = 30f)"))
         assertFalse("Phone smoother must not use 60fps timing when runtime delivery is ~30fps", viewModel.contains("LandmarkKalman2D(fps = 60f)"))
@@ -375,17 +373,10 @@ class CaptureNodeImplementationTest {
         assertFalse("Fast-motion snap must not zero measured velocity", kalman.contains("velocity = (z - position) / dt"))
         assertTrue(viewModel.contains("ObservedJointDisplayFilter"))
         assertTrue(viewModel.contains("_observedDisplayFilter.update(xNorm, yNorm, visibility)"))
-        assertTrue(viewModel.contains("val stableObservedX = observedDisplayFrame.x"))
-        assertTrue(viewModel.contains("stableObservedX.copyInto(_smoothedX)"))
-        assertTrue(viewModel.contains("_boneConstraints.collectFrame(stableObservedX, stableObservedY, stableObservedVis)"))
-        assertTrue(viewModel.contains("val displayX = _smoothedX.copyOf()"))
-        assertTrue(viewModel.contains("val displayY = _smoothedY.copyOf()"))
-        assertTrue(viewModel.contains("val displayVis = _smoothedVis.copyOf()"))
-        assertTrue("Server export must invert the same display rotation used for overlay", viewModel.contains("displayToSensorSpace("))
-        assertFalse("Server export must not use ARCore view crop transform for landmark coordinates", viewModel.contains(".mapViewToImage("))
+        assertTrue(viewModel.contains("val displayX = observedDisplayFrame.x"))
+        assertTrue(viewModel.contains("val displayY = observedDisplayFrame.y"))
+        assertTrue(viewModel.contains("val displayVis = observedDisplayFrame.visibility"))
         assertTrue(viewModel.contains("directLandmarkCallback?.invoke("))
-        assertFalse("Phone overlay must not draw raw observed detector wobble directly", viewModel.contains("val displayX = observedDisplayFrame.x"))
-        assertFalse("Phone overlay must not draw raw observed detector wobble directly", viewModel.contains("val displayY = observedDisplayFrame.y"))
         assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayX = _completedX.copyOf()"))
         assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayY = _completedY.copyOf()"))
     }

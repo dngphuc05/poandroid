@@ -10,7 +10,6 @@ import com.pocketmocap.app.BuildConfig
 import com.pocketmocap.app.CapturedCameraFrame
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
-import com.pocketmocap.app.tracking.ImageToViewTransform
 import com.pocketmocap.app.tracking.SceneMetricSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
 import com.pocketmocap.app.tracking.cameraIntrinsicsFromJsonScaled
@@ -91,10 +90,7 @@ class HybridPosePipeline(
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
-        // Pixel capture currently runs through ARCore CPU images before MediaPipe.
-        // Keeping the input below full preview size is the difference between
-        // ~15fps evidence and a usable live cadence on the target phone path.
-        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 736
+        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
         private const val ML_JPEG_QUALITY = 92
         private const val ML_CROP_PAD_RATIO = 0.18f
@@ -129,7 +125,6 @@ class HybridPosePipeline(
             imageWidth: Int,
             imageHeight: Int,
             rotationDegrees: Int,
-            imageToViewTransform: ImageToViewTransform,
         ): List<LandmarkData>? = null
         /**
          * Supplies the landmark basis for ML image cropping. Prefer observed/smoothed
@@ -379,38 +374,45 @@ class HybridPosePipeline(
         val zWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
 
         _landmarks.clear()
-        val imageToViewTransform = ImageToViewTransform.fallbackForRotation(frame.rotationDegrees)
-        val rotatedWidth = if (frame.rotationDegrees % 180 != 0) bitmap.height else bitmap.width
-        val rotatedHeight = if (frame.rotationDegrees % 180 != 0) bitmap.width else bitmap.height
+        val bw = if (frame.rotationDegrees % 180 != 0) bitmap.height else bitmap.width
+        val bh = if (frame.rotationDegrees % 180 != 0) bitmap.width else bitmap.height
         for (i in 0 until JOINT_COUNT) {
             val p = lms[i]
             val v = readVisibility(p)
             val pres = readPresence(p)
-            val imageX = p.x().coerceIn(0f, 1f)
-            val imageY = p.y().coerceIn(0f, 1f)
-            _xNorm[i] = imageX
-            _yNorm[i] = imageY
+            _xNorm[i] = p.x()
+            _yNorm[i] = p.y()
             _vis[i]   = v
             if (hasWorld) {
                 val w = worldPose!![i]
                 xWorld!![i] = w.x(); yWorld!![i] = w.y(); zWorld!![i] = w.z()
                 _landmarks.add(LandmarkData(
-                    x = imageX * rotatedWidth, y = imageY * rotatedHeight, z = p.z(),
+                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
                     xMetric = w.x(), yMetric = w.y(), zMetric = w.z(),
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             } else {
                 _landmarks.add(LandmarkData(
-                    x = imageX * rotatedWidth, y = imageY * rotatedHeight, z = p.z(),
+                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
                     xMetric = 0f, yMetric = 0f, zMetric = 0f,
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             }
         }
-        // Rotate MediaPipe coordinates into the same display-upright landmark basis
-        // used by the older stable client. ARCore's preview texture transform may
-        // include viewport/crop details and must not drive the landmark math.
-        rotateLandmarksToDisplay(_xNorm, _yNorm, frame.rotationDegrees)
+        // ── Rotate landmark coords from sensor space to display-upright space ─────────
+        // MediaPipe's setRotationDegrees() helps model accuracy but output coords are
+        // always in the ORIGINAL unrotated sensor frame.  We apply a lossless in-place
+        // coord transform (33×2 float ops, ~0μs) to put them in display portrait space.
+        if (frame.rotationDegrees != 0) {
+            for (i in 0 until JOINT_COUNT) {
+                val ox = _xNorm[i]; val oy = _yNorm[i]
+                when (frame.rotationDegrees) {
+                    90  -> { _xNorm[i] = 1f - oy; _yNorm[i] = ox }
+                    180 -> { _xNorm[i] = 1f - ox; _yNorm[i] = 1f - oy }
+                    270 -> { _xNorm[i] = oy;       _yNorm[i] = 1f - ox }
+                }
+            }
+        }
         // Bitmap data fully extracted — release immediately to cut GC pressure
         val visualTopScan = estimateVisualTopFromSegmentation(
             result = result,
@@ -427,8 +429,8 @@ class HybridPosePipeline(
             zWorld,
             xWorld,
             yWorld,
-            rotatedWidth,
-            rotatedHeight,
+            bw,
+            bh,
             frame.worldTracking,
             visualTopScan?.yNorm ?: Float.NaN,
             visualTopScan?.confidence ?: Float.NaN,
@@ -439,7 +441,6 @@ class HybridPosePipeline(
             frame.width,
             frame.height,
             frame.rotationDegrees,
-            imageToViewTransform,
         )
             ?: rawOutboundLandmarks
         val sceneMetrics = listener.prepareServerSceneMetrics(frame.worldTracking)
@@ -534,28 +535,6 @@ class HybridPosePipeline(
             }
         }
         return bestIdx
-    }
-
-    private fun rotateLandmarksToDisplay(xNorm: FloatArray, yNorm: FloatArray, rotationDegrees: Int) {
-        val count = minOf(xNorm.size, yNorm.size, JOINT_COUNT)
-        when (((rotationDegrees % 360) + 360) % 360) {
-            90 -> for (i in 0 until count) {
-                val x = xNorm[i]
-                val y = yNorm[i]
-                xNorm[i] = (1f - y).coerceIn(0f, 1f)
-                yNorm[i] = x.coerceIn(0f, 1f)
-            }
-            180 -> for (i in 0 until count) {
-                xNorm[i] = (1f - xNorm[i]).coerceIn(0f, 1f)
-                yNorm[i] = (1f - yNorm[i]).coerceIn(0f, 1f)
-            }
-            270 -> for (i in 0 until count) {
-                val x = xNorm[i]
-                val y = yNorm[i]
-                xNorm[i] = y.coerceIn(0f, 1f)
-                yNorm[i] = (1f - x).coerceIn(0f, 1f)
-            }
-        }
     }
 
     private fun readVisibility(lm: NormalizedLandmark): Float {

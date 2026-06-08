@@ -26,7 +26,6 @@ import com.pocketmocap.app.pipeline.ObservedJointDisplayFilter
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.BodyTurnTransitionDetector
 import com.pocketmocap.app.tracking.enforceCanonicalLimbEndpoints
-import com.pocketmocap.app.tracking.ImageToViewTransform
 import com.pocketmocap.app.tracking.SceneMetricSnapshot
 import com.pocketmocap.app.tracking.ServerPoseDebugSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
@@ -616,7 +615,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         imageWidth: Int,
                         imageHeight: Int,
                         rotationDegrees: Int,
-                        imageToViewTransform: ImageToViewTransform,
                     ): List<LandmarkData>? {
                         if (!_hasSmoothedLandmarks) return rawLandmarks
 
@@ -693,22 +691,19 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     ) {
                         noPoseFrames = 0
                         val observedDisplayFrame = _observedDisplayFilter.update(xNorm, yNorm, visibility)
-                        val stableObservedX = observedDisplayFrame.x
-                        val stableObservedY = observedDisplayFrame.y
-                        val stableObservedVis = observedDisplayFrame.visibility
                         val state = _uiState.value.pipelineState
                         // Collect raw MediaPipe landmarks for bone-length learning
                         if (state == HybridPosePipeline.PipelineState.BOOTSTRAPPING ||
                             (!_boneConstraints.isReady && state == HybridPosePipeline.PipelineState.CAPTURING)) {
-                            _boneConstraints.collectFrame(stableObservedX, stableObservedY, stableObservedVis)
+                            _boneConstraints.collectFrame(xNorm, yNorm, visibility)
                             if (!_boneConstraints.isReady) _boneConstraints.tryBuild()
                         }
                         if (!_hasSmoothedLandmarks) {
                             // First frame: seed positions AND smoothed visibility from raw MediaPipe
-                            stableObservedX.copyInto(_smoothedX)
-                            stableObservedY.copyInto(_smoothedY)
+                            xNorm.copyInto(_smoothedX)
+                            yNorm.copyInto(_smoothedY)
                             for (i in 0 until 33) {
-                                _smoothedVis[i] = stableObservedVis[i].coerceIn(0f, 1f)
+                                _smoothedVis[i] = visibility[i].coerceIn(0f, 1f)
                                 _lowConfidenceFrames[i] = if (_smoothedVis[i] < VIS_UNCERTAIN) 1 else 0
                                 if (_smoothedVis[i] >= VIS_UNCERTAIN) {
                                     _lastReliable2DX[i] = _smoothedX[i]
@@ -723,18 +718,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             // flicker when vis oscillates near 0.20/0.30/0.50 threshold boundaries.
                             // α=0.25 → time constant ~3.5 frames (58ms fade), eliminates single-frame pops.
                             for (i in 0 until 33) {
-                                _smoothedVis[i] = 0.25f * stableObservedVis[i].coerceIn(0f, 1f) + 0.75f * _smoothedVis[i]
+                                _smoothedVis[i] = 0.25f * visibility[i].coerceIn(0f, 1f) + 0.75f * _smoothedVis[i]
                             }
                             for (i in 0 until 33) {
                                 val vis = _smoothedVis[i]  // smoothed — avoids mid-frame band switching
-                                val rawVis = stableObservedVis[i].coerceIn(0f, 1f)
+                                val rawVis = visibility[i].coerceIn(0f, 1f)
                                 val reappearing = _lowConfidenceFrames[i] >= 2 && rawVis >= VIS_UNCERTAIN
                                 val effectiveVis = if (reappearing) rawVis else vis
                                 if (reappearing) {
                                     _smoothedVis[i] = maxOf(_smoothedVis[i], rawVis)
                                 }
-                                val dx = stableObservedX[i] - _smoothedX[i]
-                                val dy = stableObservedY[i] - _smoothedY[i]
+                                val dx = xNorm[i] - _smoothedX[i]
+                                val dy = yNorm[i] - _smoothedY[i]
                                 val dist = sqrt(dx * dx + dy * dy)
                                 when {
                                     effectiveVis >= VIS_UNCERTAIN -> {
@@ -745,9 +740,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                             else -> MAX_JOINT_DELTA
                                         }
                                         val safeX = if (dist > maxDelta)
-                                            _smoothedX[i] + dx * (maxDelta / dist) else stableObservedX[i]
+                                            _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
                                         val safeY = if (dist > maxDelta)
-                                            _smoothedY[i] + dy * (maxDelta / dist) else stableObservedY[i]
+                                            _smoothedY[i] + dy * (maxDelta / dist) else yNorm[i]
                                         // Saturate at 0.04 (~13px at 320): α=0.18 when still → 0.85 when fast.
                                         // Low floor = heavy smoothing for stationary joints (3× noise reduction),
                                         // high ceiling = near-zero lag during genuine fast movements.
@@ -772,11 +767,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     }
                                     effectiveVis >= VIS_OCCLUDE -> {
                                         // ── Uncertain (0.20–0.50): conservative EMA, reject outliers ────
-                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, stableObservedX[i], stableObservedY[i])) {
+                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, xNorm[i], yNorm[i])) {
                                             val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
                                             val alpha = (0.12f + normSpeed * 0.28f).coerceIn(0.12f, 0.40f)
-                                            _smoothedX[i] = alpha * stableObservedX[i] + (1f - alpha) * _smoothedX[i]
-                                            _smoothedY[i] = alpha * stableObservedY[i] + (1f - alpha) * _smoothedY[i]
+                                            _smoothedX[i] = alpha * xNorm[i] + (1f - alpha) * _smoothedX[i]
+                                            _smoothedY[i] = alpha * yNorm[i] + (1f - alpha) * _smoothedY[i]
                                         } else if (_hasLastReliable2D[i]) {
                                             _smoothedX[i] = _lastReliable2DX[i]
                                             _smoothedY[i] = _lastReliable2DY[i]
@@ -834,7 +829,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _hasLastReliable2D[index] = true
                             _kalman[index].setPosition(nextX, nextY)
                         }
-                        val visible = _smoothedVis.count { it >= 0.28f }
+                        val visible = observedDisplayFrame.visibility.count { it >= 0.28f }
                         for (i in 0 until 33) {
                             val hasPrediction = _completedX[i].isFinite() && _completedY[i].isFinite()
                             _displayFullVis[i] = when {
@@ -843,16 +838,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 else -> 0f
                             }
                         }
-                        val displayX = _smoothedX.copyOf()
-                        val displayY = _smoothedY.copyOf()
-                        val displayVis = _smoothedVis.copyOf()
+                        val displayX = observedDisplayFrame.x
+                        val displayY = observedDisplayFrame.y
+                        val displayVis = observedDisplayFrame.visibility
                         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
                             directLandmarkCallback?.invoke(
                                 displayX,
                                 displayY,
                                 displayVis,
-                                0,
-                                0,
+                                imageWidth,
+                                imageHeight,
                             )
                             // mutableStateOf writes for warning banner, joint count, server fallback
                             poseLandmarksX = displayX
@@ -961,14 +956,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     fun onCameraFrame(frame: CapturedCameraFrame) {
         pipeline?.onCameraFrame(frame)
     }
-
-    private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
-        when (((rotationDegrees % 360) + 360) % 360) {
-            90 -> Pair(y, 1f - x)
-            180 -> Pair(1f - x, 1f - y)
-            270 -> Pair(1f - y, x)
-            else -> Pair(x, y)
-        }
 
     /**
      * Report this phone's ARCore camera extrinsic to the PC lobby (~2 Hz) so the
@@ -1112,6 +1099,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val yaw = Math.atan2(sinyCosp, cosyCosp)
         return floatArrayOf((roll * rad).toFloat(), (pitch * rad).toFloat(), (yaw * rad).toFloat())
     }
+
+    private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
+        when (rotationDegrees) {
+            90  -> Pair(y, 1f - x)
+            180 -> Pair(1f - x, 1f - y)
+            270 -> Pair(1f - y, x)
+            else -> Pair(x, y)
+        }
 
     private fun clearServerPoseArrays() {
         clearDisplayedServerPoseArrays()
@@ -2832,5 +2827,4 @@ internal fun isServerSceneMetricSource(source: String): Boolean {
         normalized == "roi_fallback" ||
         normalized.startsWith("arcore_floor")
 }
-
 
