@@ -155,6 +155,7 @@ class HybridPosePipeline(
     private var mirrorDistance = 1.0f
     private var calibrationSent = false
     private var selectedPoseIndex = 0
+    private var lockedSubject: SubjectPoseLock? = null
     // Send at ~30fps to server — matches camera rate, minimises frame-skip aliasing
     private var lastServerSendMs = 0L
     private var lastMlImageSendFrameIndex = -1
@@ -162,10 +163,6 @@ class HybridPosePipeline(
     private val ML_IMAGE_SEND_INTERVAL_FRAMES = 8
     private val ML_IMAGE_SEND_INTERVAL_MS = 350L
     private val SERVER_SEND_INTERVAL_MS = PipelineTiming.SERVER_SEND_INTERVAL_MS
-
-    // Subject tracking
-    private var lockedCenter: Pair<Float, Float>? = null
-    private var lockedBoundsSize: Pair<Float, Float>? = null
 
     // Dedicated single thread for server I/O — keeps inference thread free after MediaPipe finishes
     private val serverSendExecutor: ExecutorService = Executors.newSingleThreadExecutor()
@@ -357,8 +354,10 @@ class HybridPosePipeline(
             listener.onNoPoseDetected()
             return
         }
-        val poseIdx = selectBestPose(result) ?: 0
+        val selection = selectBestPose(result)
+        val poseIdx = selection?.index ?: 0
         selectedPoseIndex = poseIdx
+        lockedSubject = selection?.lock
         val lms = poses[poseIdx]
         if (lms.size < JOINT_COUNT) {
             bitmap.recycle()
@@ -507,36 +506,61 @@ class HybridPosePipeline(
         bitmap.recycle()
     }
 
-    private fun selectBestPose(result: PoseLandmarkerResult): Int? {
+    private fun selectBestPose(result: PoseLandmarkerResult): SubjectPoseSelection? {
         val poses = result.landmarks()
         if (poses.isEmpty()) return null
-        if (poses.size == 1) return 0
-
-        var bestIdx = 0
-        var bestScore = Float.NEGATIVE_INFINITY
-        for (i in 0 until min(poses.size, MAX_TRACKED_POSES)) {
-            val pose = poses[i]
-            if (pose.size < 25) continue
-
-            var confSum = 0f
-            pose.forEach { confSum += max(readVisibility(it), readPresence(it)) }
-            val avgConf = confSum / pose.size
-
-            // Prefer centered, confident poses
-            val cx = (pose[11].x() + pose[12].x() + pose[23].x() + pose[24].x()) * 0.25f
-            val cy = (pose[11].y() + pose[12].y() + pose[23].y() + pose[24].y()) * 0.25f
-            val centerDist = Math.sqrt(((cx - 0.5) * (cx - 0.5) + (cy - 0.58) * (cy - 0.58)).toDouble()).toFloat()
-
-            var score = avgConf - centerDist * 0.75f
-            if (i == selectedPoseIndex) score += 0.15f
-
-            if (score > bestScore) {
-                bestScore = score
-                bestIdx = i
-            }
+        if (poses.size == 1) {
+            val candidate = poseCandidate(index = 0, pose = poses[0]) ?: return null
+            return SubjectPoseSelector.select(listOf(candidate), selectedPoseIndex, lockedSubject)
         }
-        return bestIdx
+
+        val candidates = ArrayList<SubjectPoseCandidate>(min(poses.size, MAX_TRACKED_POSES))
+        for (i in 0 until min(poses.size, MAX_TRACKED_POSES)) {
+            poseCandidate(index = i, pose = poses[i])?.let(candidates::add)
+        }
+        return SubjectPoseSelector.select(candidates, selectedPoseIndex, lockedSubject)
     }
+
+    private fun poseCandidate(index: Int, pose: List<NormalizedLandmark>): SubjectPoseCandidate? {
+        if (pose.size < 25) return null
+        var confSum = 0f
+        pose.forEach { confSum += max(readVisibility(it), readPresence(it)) }
+        val avgConf = confSum / pose.size
+        val cx = (pose[11].x() + pose[12].x() + pose[23].x() + pose[24].x()) * 0.25f
+        val cy = (pose[11].y() + pose[12].y() + pose[23].y() + pose[24].y()) * 0.25f
+        val bounds = poseBounds(pose)
+        return SubjectPoseCandidate(
+            index = index,
+            confidence = avgConf,
+            centerX = cx,
+            centerY = cy,
+            width = bounds.first,
+            height = bounds.second,
+            visibleCoreCount = visibleCoreCount(pose),
+        )
+    }
+
+    private fun poseBounds(pose: List<NormalizedLandmark>): Pair<Float, Float> {
+        var minX = 1f
+        var minY = 1f
+        var maxX = 0f
+        var maxY = 0f
+        for (i in 0 until min(pose.size, JOINT_COUNT)) {
+            val p = pose[i]
+            if (max(readVisibility(p), readPresence(p)) < 0.18f) continue
+            minX = min(minX, p.x().coerceIn(0f, 1f))
+            minY = min(minY, p.y().coerceIn(0f, 1f))
+            maxX = max(maxX, p.x().coerceIn(0f, 1f))
+            maxY = max(maxY, p.y().coerceIn(0f, 1f))
+        }
+        if (maxX <= minX || maxY <= minY) return Pair(0f, 0f)
+        return Pair(maxX - minX, maxY - minY)
+    }
+
+    private fun visibleCoreCount(pose: List<NormalizedLandmark>): Int =
+        intArrayOf(11, 12, 23, 24).count { index ->
+            index < pose.size && max(readVisibility(pose[index]), readPresence(pose[index])) >= 0.35f
+        }
 
     private fun readVisibility(lm: NormalizedLandmark): Float {
         return runCatching { lm.visibility().orElse(0f) }.getOrDefault(0f)
