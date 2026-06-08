@@ -156,6 +156,80 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun raisedArmPairLabelSwapKeepsElbowAndWristIdentityContinuous() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        y[11] = 0.36f
+        x[12] = 0.58f
+        y[12] = 0.36f
+        x[13] = 0.36f
+        y[13] = 0.50f
+        x[14] = 0.64f
+        y[14] = 0.50f
+        x[15] = 0.34f
+        y[15] = 0.64f
+        x[16] = 0.66f
+        y[16] = 0.64f
+        filter.update(x, y, v)
+
+        x[13] = 0.64f
+        y[13] = 0.22f
+        x[14] = 0.36f
+        y[14] = 0.22f
+        x[15] = 0.66f
+        y[15] = 0.12f
+        x[16] = 0.34f
+        y[16] = 0.12f
+        val out = filter.update(x, y, v)
+
+        assertTrue("left elbow should keep left-arm identity during raised-hand swap", out.x[13] < 0.48f)
+        assertTrue("right elbow should keep right-arm identity during raised-hand swap", out.x[14] > 0.52f)
+        assertTrue("left wrist should keep left-arm identity during raised-hand swap", out.x[15] < 0.50f)
+        assertTrue("right wrist should keep right-arm identity during raised-hand swap", out.x[16] > 0.50f)
+        assertTrue("raised left wrist should still move upward", out.y[15] < 0.34f)
+        assertTrue("raised right wrist should still move upward", out.y[16] < 0.34f)
+    }
+
+    @Test
+    fun coherentBothHandsRaiseDoesNotTriggerArmPairSwap() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[13] = 0.36f
+        y[13] = 0.50f
+        x[14] = 0.64f
+        y[14] = 0.50f
+        x[15] = 0.34f
+        y[15] = 0.64f
+        x[16] = 0.66f
+        y[16] = 0.64f
+        filter.update(x, y, v)
+
+        x[13] = 0.30f
+        y[13] = 0.30f
+        x[14] = 0.70f
+        y[14] = 0.30f
+        x[15] = 0.24f
+        y[15] = 0.18f
+        x[16] = 0.76f
+        y[16] = 0.18f
+        val out = filter.update(x, y, v)
+
+        assertTrue("left elbow should follow a coherent raise", out.x[13] < 0.36f)
+        assertTrue("right elbow should follow a coherent raise", out.x[14] > 0.64f)
+        assertTrue("left wrist should follow a coherent raise", out.x[15] < 0.30f)
+        assertTrue("right wrist should follow a coherent raise", out.x[16] > 0.70f)
+        assertTrue("left wrist should rise without being frozen", out.y[15] < 0.28f)
+        assertTrue("right wrist should rise without being frozen", out.y[16] < 0.28f)
+    }
+
+    @Test
     fun isolatedHandEndpointJumpDuringStillArmChainIsDamped() {
         val filter = ObservedJointDisplayFilter()
         val v = FloatArray(33) { 0.95f }
