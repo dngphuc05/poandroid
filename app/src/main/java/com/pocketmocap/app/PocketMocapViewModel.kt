@@ -26,6 +26,7 @@ import com.pocketmocap.app.pipeline.ObservedJointDisplayFilter
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.BodyTurnTransitionDetector
 import com.pocketmocap.app.tracking.enforceCanonicalLimbEndpoints
+import com.pocketmocap.app.tracking.ImageToViewTransform
 import com.pocketmocap.app.tracking.SceneMetricSnapshot
 import com.pocketmocap.app.tracking.ServerPoseDebugSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
@@ -615,12 +616,16 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         imageWidth: Int,
                         imageHeight: Int,
                         rotationDegrees: Int,
+                        imageToViewTransform: ImageToViewTransform,
                     ): List<LandmarkData>? {
                         if (!_hasSmoothedLandmarks) return rawLandmarks
 
                         latestServerRotationDegrees = rotationDegrees
                         val outboundWidth = imageWidth.coerceAtLeast(1)
                         val outboundHeight = imageHeight.coerceAtLeast(1)
+                        val viewToImage = imageToViewTransform
+                            .takeIf { it.isUsable() }
+                            ?: ImageToViewTransform.fallbackForRotation(rotationDegrees)
                         val prepared = ArrayList<LandmarkData>(33)
                         for (i in 0 until 33) {
                             val raw = rawLandmarks.getOrNull(i) ?: LandmarkData(0f, 0f)
@@ -629,10 +634,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 _lastGoodRelativeZ[i] = raw.z
                                 _hasLastGoodRelativeZ[i] = true
                             }
-                            val (sensorX, sensorY) = displayToSensorSpace(
+                            val (sensorX, sensorY) = viewToImage.mapViewToImage(
                                 _completedX[i].coerceIn(0f, 1f),
                                 _completedY[i].coerceIn(0f, 1f),
-                                rotationDegrees,
                             )
                             val stabilizedZ = when {
                                 rawConfidence >= VIS_OCCLUDE -> raw.z
@@ -846,8 +850,8 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 displayX,
                                 displayY,
                                 displayVis,
-                                imageWidth,
-                                imageHeight,
+                                0,
+                                0,
                             )
                             // mutableStateOf writes for warning banner, joint count, server fallback
                             poseLandmarksX = displayX
@@ -1099,14 +1103,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
         val yaw = Math.atan2(sinyCosp, cosyCosp)
         return floatArrayOf((roll * rad).toFloat(), (pitch * rad).toFloat(), (yaw * rad).toFloat())
     }
-
-    private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
-        when (rotationDegrees) {
-            90  -> Pair(y, 1f - x)
-            180 -> Pair(1f - x, 1f - y)
-            270 -> Pair(1f - y, x)
-            else -> Pair(x, y)
-        }
 
     private fun clearServerPoseArrays() {
         clearDisplayedServerPoseArrays()

@@ -10,6 +10,7 @@ import com.pocketmocap.app.BuildConfig
 import com.pocketmocap.app.CapturedCameraFrame
 import com.pocketmocap.app.network.LandmarkData
 import com.pocketmocap.app.network.MocapServerClient
+import com.pocketmocap.app.tracking.ImageToViewTransform
 import com.pocketmocap.app.tracking.SceneMetricSnapshot
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
 import com.pocketmocap.app.tracking.cameraIntrinsicsFromJsonScaled
@@ -125,6 +126,7 @@ class HybridPosePipeline(
             imageWidth: Int,
             imageHeight: Int,
             rotationDegrees: Int,
+            imageToViewTransform: ImageToViewTransform,
         ): List<LandmarkData>? = null
         /**
          * Supplies the landmark basis for ML image cropping. Prefer observed/smoothed
@@ -374,43 +376,35 @@ class HybridPosePipeline(
         val zWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
 
         _landmarks.clear()
-        val bw = if (frame.rotationDegrees % 180 != 0) bitmap.height else bitmap.width
-        val bh = if (frame.rotationDegrees % 180 != 0) bitmap.width else bitmap.height
+        val imageToViewTransform = frame.imageToViewTransform
+            .takeIf { it.isUsable() }
+            ?: ImageToViewTransform.fallbackForRotation(frame.rotationDegrees)
+        val imageWidth = frame.width.coerceAtLeast(1)
+        val imageHeight = frame.height.coerceAtLeast(1)
         for (i in 0 until JOINT_COUNT) {
             val p = lms[i]
             val v = readVisibility(p)
             val pres = readPresence(p)
-            _xNorm[i] = p.x()
-            _yNorm[i] = p.y()
+            val imageX = p.x().coerceIn(0f, 1f)
+            val imageY = p.y().coerceIn(0f, 1f)
+            val viewPoint = imageToViewTransform.mapImageToView(imageX, imageY)
+            _xNorm[i] = viewPoint.first.coerceIn(0f, 1f)
+            _yNorm[i] = viewPoint.second.coerceIn(0f, 1f)
             _vis[i]   = v
             if (hasWorld) {
                 val w = worldPose!![i]
                 xWorld!![i] = w.x(); yWorld!![i] = w.y(); zWorld!![i] = w.z()
                 _landmarks.add(LandmarkData(
-                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
+                    x = imageX * imageWidth, y = imageY * imageHeight, z = p.z(),
                     xMetric = w.x(), yMetric = w.y(), zMetric = w.z(),
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             } else {
                 _landmarks.add(LandmarkData(
-                    x = p.x() * bw, y = p.y() * bh, z = p.z(),
+                    x = imageX * imageWidth, y = imageY * imageHeight, z = p.z(),
                     xMetric = 0f, yMetric = 0f, zMetric = 0f,
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
-            }
-        }
-        // ── Rotate landmark coords from sensor space to display-upright space ─────────
-        // MediaPipe's setRotationDegrees() helps model accuracy but output coords are
-        // always in the ORIGINAL unrotated sensor frame.  We apply a lossless in-place
-        // coord transform (33×2 float ops, ~0μs) to put them in display portrait space.
-        if (frame.rotationDegrees != 0) {
-            for (i in 0 until JOINT_COUNT) {
-                val ox = _xNorm[i]; val oy = _yNorm[i]
-                when (frame.rotationDegrees) {
-                    90  -> { _xNorm[i] = 1f - oy; _yNorm[i] = ox }
-                    180 -> { _xNorm[i] = 1f - ox; _yNorm[i] = 1f - oy }
-                    270 -> { _xNorm[i] = oy;       _yNorm[i] = 1f - ox }
-                }
             }
         }
         // Bitmap data fully extracted — release immediately to cut GC pressure
@@ -429,8 +423,8 @@ class HybridPosePipeline(
             zWorld,
             xWorld,
             yWorld,
-            bw,
-            bh,
+            imageWidth,
+            imageHeight,
             frame.worldTracking,
             visualTopScan?.yNorm ?: Float.NaN,
             visualTopScan?.confidence ?: Float.NaN,
@@ -441,6 +435,7 @@ class HybridPosePipeline(
             frame.width,
             frame.height,
             frame.rotationDegrees,
+            imageToViewTransform,
         )
             ?: rawOutboundLandmarks
         val sceneMetrics = listener.prepareServerSceneMetrics(frame.worldTracking)

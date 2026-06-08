@@ -141,8 +141,10 @@ fun CaptureScreen(
             x = viewModel.poseLandmarksX,
             y = viewModel.poseLandmarksY,
             visibility = viewModel.poseVisibility,
-            imageWidth = viewModel.cameraImageWidth,
-            imageHeight = viewModel.cameraImageHeight,
+            // Landmarks are already transformed into ARCore view-normalized coordinates.
+            // Passing no image size prevents the overlay from applying a second crop/rotation.
+            imageWidth = 0,
+            imageHeight = 0,
         )
         PocapCornerBrackets()
         PocapCameraScrim()

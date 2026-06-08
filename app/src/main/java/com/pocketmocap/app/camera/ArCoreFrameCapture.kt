@@ -29,6 +29,7 @@ import com.pocketmocap.app.calibration.CloudAnchorEngine
 import com.pocketmocap.app.calibration.CloudAnchorResult
 import com.pocketmocap.app.tracking.CameraIntrinsics
 import com.pocketmocap.app.tracking.DepthMapSnapshot
+import com.pocketmocap.app.tracking.ImageToViewTransform
 import com.pocketmocap.app.tracking.WorldTrackingSnapshot
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -377,8 +378,9 @@ class ArCoreFrameCapture(
             null
         }
 
-        // Build snapshot synchronously on GL thread to safely access ARCore Frame/Camera
+        // Build frame metadata synchronously on GL thread to safely access ARCore Frame/Camera.
         val snapshotWithoutDepth = buildWorldTrackingSnapshot(arSession, frame, image, null)
+        val imageToViewTransform = buildImageToViewTransform(frame)
 
         if (isProcessingImage.compareAndSet(false, true)) {
             lastSentTimestampNs = timestampNs
@@ -400,6 +402,7 @@ class ArCoreFrameCapture(
                             height = bitmap.height,
                             timestampUs = timestampNs / 1000L,
                             rotationDegrees = 90,
+                            imageToViewTransform = imageToViewTransform,
                             worldTracking = snapshot,
                         )
                     )
@@ -413,6 +416,32 @@ class ArCoreFrameCapture(
             image.close()
             depthImage?.close()
         }
+    }
+
+    private fun buildImageToViewTransform(frame: Frame): ImageToViewTransform {
+        val imageCorners = floatArrayOf(
+            0f, 0f,
+            1f, 0f,
+            0f, 1f,
+        )
+        val viewCorners = FloatArray(imageCorners.size)
+        val transform = runCatching {
+            frame.transformCoordinates2d(
+                Coordinates2d.IMAGE_NORMALIZED,
+                imageCorners,
+                Coordinates2d.VIEW_NORMALIZED,
+                viewCorners,
+            )
+            ImageToViewTransform.fromImageCorners(
+                topLeftX = viewCorners[0],
+                topLeftY = viewCorners[1],
+                topRightX = viewCorners[2],
+                topRightY = viewCorners[3],
+                bottomLeftX = viewCorners[4],
+                bottomLeftY = viewCorners[5],
+            )
+        }.getOrNull()
+        return transform?.takeIf { it.isUsable() } ?: ImageToViewTransform.fallbackForRotation(90)
     }
 
     private fun buildWorldTrackingSnapshot(
