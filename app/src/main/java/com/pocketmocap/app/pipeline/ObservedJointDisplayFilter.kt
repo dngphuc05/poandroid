@@ -52,7 +52,6 @@ class ObservedJointDisplayFilter(
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
         }
         correctTorsoPairIdentity(rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctArmPairIdentity(rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
         dampIsolatedDetectorJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         dampIsolatedLimbHingeJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
@@ -134,32 +133,13 @@ class ObservedJointDisplayFilter(
         outY: FloatArray,
         outVisibility: FloatArray,
     ) {
-        correctPairIdentity(11, 12, 0.10f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctPairIdentity(23, 24, 0.10f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-    }
-
-    private fun correctArmPairIdentity(
-        rawX: FloatArray,
-        rawY: FloatArray,
-        rawVisibility: FloatArray,
-        previousX: FloatArray,
-        previousY: FloatArray,
-        previousVisible: BooleanArray,
-        outX: FloatArray,
-        outY: FloatArray,
-        outVisibility: FloatArray,
-    ) {
-        correctPairIdentity(13, 14, 0.46f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctPairIdentity(15, 16, 0.62f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctPairIdentity(17, 18, 0.62f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctPairIdentity(19, 20, 0.62f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
-        correctPairIdentity(21, 22, 0.62f, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        correctPairIdentity(11, 12, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        correctPairIdentity(23, 24, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
     }
 
     private fun correctPairIdentity(
         left: Int,
         right: Int,
-        maxCenterStep: Float,
         rawX: FloatArray,
         rawY: FloatArray,
         rawVisibility: FloatArray,
@@ -178,7 +158,7 @@ class ObservedJointDisplayFilter(
         val previousCenterY = (previousY[left] + previousY[right]) * 0.5f
         val currentCenterX = (rawX[left] + rawX[right]) * 0.5f
         val currentCenterY = (rawY[left] + rawY[right]) * 0.5f
-        if (distance(previousCenterX, previousCenterY, currentCenterX, currentCenterY) > maxCenterStep) return
+        if (distance(previousCenterX, previousCenterY, currentCenterX, currentCenterY) > 0.10f) return
 
         val directCost = distance(previousX[left], previousY[left], rawX[left], rawY[left]) +
             distance(previousX[right], previousY[right], rawX[right], rawY[right])
@@ -190,31 +170,18 @@ class ObservedJointDisplayFilter(
         val correctedLeftY = rawY[right].coerceIn(0f, 1f)
         val correctedRightX = rawX[left].coerceIn(0f, 1f)
         val correctedRightY = rawY[left].coerceIn(0f, 1f)
-        val leftAlpha = identityFollowAlpha(left, previousX[left], previousY[left], correctedLeftX, correctedLeftY)
-        val rightAlpha = identityFollowAlpha(right, previousX[right], previousY[right], correctedRightX, correctedRightY)
-        outX[left] = lerp(previousX[left], correctedLeftX, leftAlpha)
-        outY[left] = lerp(previousY[left], correctedLeftY, leftAlpha)
+        outX[left] = lerp(previousX[left], correctedLeftX, torsoIdentityAlpha(left))
+        outY[left] = lerp(previousY[left], correctedLeftY, torsoIdentityAlpha(left))
         outVisibility[left] = rawVisibility[right].coerceIn(0f, 1f)
-        outX[right] = lerp(previousX[right], correctedRightX, rightAlpha)
-        outY[right] = lerp(previousY[right], correctedRightY, rightAlpha)
+        outX[right] = lerp(previousX[right], correctedRightX, torsoIdentityAlpha(right))
+        outY[right] = lerp(previousY[right], correctedRightY, torsoIdentityAlpha(right))
         outVisibility[right] = rawVisibility[left].coerceIn(0f, 1f)
         state.overwritePosition(left, outX[left], outY[left])
         state.overwritePosition(right, outX[right], outY[right])
     }
 
-    private fun identityFollowAlpha(index: Int, previousX: Float, previousY: Float, targetX: Float, targetY: Float): Float {
-        val step = distance(previousX, previousY, targetX, targetY)
-        if (isHandEndpoint(index)) {
-            val motion = (step / handEndpointFastMotionDistance).coerceIn(0f, 1f)
-            return handEndpointStillAlpha + (handEndpointFastAlpha - handEndpointStillAlpha) * motion
-        }
-        if (isLowerBody(index)) {
-            val motion = (step / lowerBodyFastMotionDistance).coerceIn(0f, 1f)
-            return lowerBodyStillAlpha + (lowerBodyFastAlpha - lowerBodyStillAlpha) * motion
-        }
-        val motion = (step / fastMotionDistance).coerceIn(0f, 1f)
-        return stillAlpha + (fastAlpha - stillAlpha) * motion
-    }
+    private fun torsoIdentityAlpha(index: Int): Float =
+        if (isLowerBody(index)) lowerBodyStillAlpha else stillAlpha
 
     private fun dampIsolatedDetectorJumps(
         previousX: FloatArray,
