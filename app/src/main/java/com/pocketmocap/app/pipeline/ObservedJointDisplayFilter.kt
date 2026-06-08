@@ -51,6 +51,7 @@ class ObservedJointDisplayFilter(
         for (index in 0 until jointCount) {
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
         }
+        correctTorsoPairIdentity(rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
         dampIsolatedDetectorJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         dampIsolatedLimbHingeJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
@@ -120,6 +121,67 @@ class ObservedJointDisplayFilter(
 
     private fun predictionStepFor(index: Int): Float =
         if (isLowerBody(index) || isArmJoint(index) || isHandEndpoint(index)) 0f else maxPredictionStep
+
+    private fun correctTorsoPairIdentity(
+        rawX: FloatArray,
+        rawY: FloatArray,
+        rawVisibility: FloatArray,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        correctPairIdentity(11, 12, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        correctPairIdentity(23, 24, rawX, rawY, rawVisibility, previousX, previousY, previousVisible, outX, outY, outVisibility)
+    }
+
+    private fun correctPairIdentity(
+        left: Int,
+        right: Int,
+        rawX: FloatArray,
+        rawY: FloatArray,
+        rawVisibility: FloatArray,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!previousVisible.getOrElse(left) { false } || !previousVisible.getOrElse(right) { false }) return
+        if (!isVisibleMeasurement(rawVisibility.getOrElse(left) { 0f }, rawX.getOrElse(left) { Float.NaN }, rawY.getOrElse(left) { Float.NaN })) return
+        if (!isVisibleMeasurement(rawVisibility.getOrElse(right) { 0f }, rawX.getOrElse(right) { Float.NaN }, rawY.getOrElse(right) { Float.NaN })) return
+
+        val previousCenterX = (previousX[left] + previousX[right]) * 0.5f
+        val previousCenterY = (previousY[left] + previousY[right]) * 0.5f
+        val currentCenterX = (rawX[left] + rawX[right]) * 0.5f
+        val currentCenterY = (rawY[left] + rawY[right]) * 0.5f
+        if (distance(previousCenterX, previousCenterY, currentCenterX, currentCenterY) > 0.10f) return
+
+        val directCost = distance(previousX[left], previousY[left], rawX[left], rawY[left]) +
+            distance(previousX[right], previousY[right], rawX[right], rawY[right])
+        val swappedCost = distance(previousX[left], previousY[left], rawX[right], rawY[right]) +
+            distance(previousX[right], previousY[right], rawX[left], rawY[left])
+        if (swappedCost + 0.020f >= directCost) return
+
+        val correctedLeftX = rawX[right].coerceIn(0f, 1f)
+        val correctedLeftY = rawY[right].coerceIn(0f, 1f)
+        val correctedRightX = rawX[left].coerceIn(0f, 1f)
+        val correctedRightY = rawY[left].coerceIn(0f, 1f)
+        outX[left] = lerp(previousX[left], correctedLeftX, torsoIdentityAlpha(left))
+        outY[left] = lerp(previousY[left], correctedLeftY, torsoIdentityAlpha(left))
+        outVisibility[left] = rawVisibility[right].coerceIn(0f, 1f)
+        outX[right] = lerp(previousX[right], correctedRightX, torsoIdentityAlpha(right))
+        outY[right] = lerp(previousY[right], correctedRightY, torsoIdentityAlpha(right))
+        outVisibility[right] = rawVisibility[left].coerceIn(0f, 1f)
+        state.overwritePosition(left, outX[left], outY[left])
+        state.overwritePosition(right, outX[right], outY[right])
+    }
+
+    private fun torsoIdentityAlpha(index: Int): Float =
+        if (isLowerBody(index)) lowerBodyStillAlpha else stillAlpha
 
     private fun dampIsolatedDetectorJumps(
         previousX: FloatArray,

@@ -97,6 +97,65 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun torsoPairLabelSwapDuringStillPoseIsCorrected() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        x[12] = 0.58f
+        x[23] = 0.45f
+        x[24] = 0.55f
+        y[11] = 0.34f
+        y[12] = 0.34f
+        y[23] = 0.54f
+        y[24] = 0.54f
+        filter.update(x, y, v)
+
+        x[11] = 0.58f
+        x[12] = 0.42f
+        x[23] = 0.55f
+        x[24] = 0.45f
+        val out = filter.update(x, y, v)
+
+        assertTrue("left shoulder identity should stay continuous", out.x[11] < 0.48f)
+        assertTrue("right shoulder identity should stay continuous", out.x[12] > 0.52f)
+        assertTrue("left hip identity should stay continuous", out.x[23] < 0.49f)
+        assertTrue("right hip identity should stay continuous", out.x[24] > 0.51f)
+    }
+
+    @Test
+    fun coherentTorsoTranslationDoesNotTriggerPairSwap() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        x[12] = 0.58f
+        x[23] = 0.45f
+        x[24] = 0.55f
+        y[11] = 0.34f
+        y[12] = 0.34f
+        y[23] = 0.54f
+        y[24] = 0.54f
+        filter.update(x, y, v)
+
+        x[11] = 0.50f
+        x[12] = 0.66f
+        x[23] = 0.53f
+        x[24] = 0.63f
+        val out = filter.update(x, y, v)
+
+        assertTrue("translated left shoulder should follow the body", out.x[11] > 0.47f)
+        assertTrue("translated right shoulder should follow the body", out.x[12] > 0.62f)
+        assertTrue("translated left hip should move in the body direction", out.x[23] > 0.46f)
+        assertTrue("translated right hip should move in the body direction", out.x[24] > 0.56f)
+        assertTrue("translated hip identity should remain ordered", out.x[23] < out.x[24])
+    }
+
+    @Test
     fun isolatedHandEndpointJumpDuringStillArmChainIsDamped() {
         val filter = ObservedJointDisplayFilter()
         val v = FloatArray(33) { 0.95f }
