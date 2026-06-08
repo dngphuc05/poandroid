@@ -376,37 +376,38 @@ class HybridPosePipeline(
         val zWorld = if (hasWorld) FloatArray(JOINT_COUNT) else null
 
         _landmarks.clear()
-        val imageToViewTransform = frame.imageToViewTransform
-            .takeIf { it.isUsable() }
-            ?: ImageToViewTransform.fallbackForRotation(frame.rotationDegrees)
-        val imageWidth = frame.width.coerceAtLeast(1)
-        val imageHeight = frame.height.coerceAtLeast(1)
+        val imageToViewTransform = ImageToViewTransform.fallbackForRotation(frame.rotationDegrees)
+        val rotatedWidth = if (frame.rotationDegrees % 180 != 0) bitmap.height else bitmap.width
+        val rotatedHeight = if (frame.rotationDegrees % 180 != 0) bitmap.width else bitmap.height
         for (i in 0 until JOINT_COUNT) {
             val p = lms[i]
             val v = readVisibility(p)
             val pres = readPresence(p)
             val imageX = p.x().coerceIn(0f, 1f)
             val imageY = p.y().coerceIn(0f, 1f)
-            val viewPoint = imageToViewTransform.mapImageToView(imageX, imageY)
-            _xNorm[i] = viewPoint.first.coerceIn(0f, 1f)
-            _yNorm[i] = viewPoint.second.coerceIn(0f, 1f)
+            _xNorm[i] = imageX
+            _yNorm[i] = imageY
             _vis[i]   = v
             if (hasWorld) {
                 val w = worldPose!![i]
                 xWorld!![i] = w.x(); yWorld!![i] = w.y(); zWorld!![i] = w.z()
                 _landmarks.add(LandmarkData(
-                    x = imageX * imageWidth, y = imageY * imageHeight, z = p.z(),
+                    x = imageX * rotatedWidth, y = imageY * rotatedHeight, z = p.z(),
                     xMetric = w.x(), yMetric = w.y(), zMetric = w.z(),
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             } else {
                 _landmarks.add(LandmarkData(
-                    x = imageX * imageWidth, y = imageY * imageHeight, z = p.z(),
+                    x = imageX * rotatedWidth, y = imageY * rotatedHeight, z = p.z(),
                     xMetric = 0f, yMetric = 0f, zMetric = 0f,
                     visibility = v, presence = pres, confidence = min(v, pres),
                 ))
             }
         }
+        // Rotate MediaPipe coordinates into the same display-upright landmark basis
+        // used by the older stable client. ARCore's preview texture transform may
+        // include viewport/crop details and must not drive the landmark math.
+        rotateLandmarksToDisplay(_xNorm, _yNorm, frame.rotationDegrees)
         // Bitmap data fully extracted — release immediately to cut GC pressure
         val visualTopScan = estimateVisualTopFromSegmentation(
             result = result,
@@ -423,8 +424,8 @@ class HybridPosePipeline(
             zWorld,
             xWorld,
             yWorld,
-            imageWidth,
-            imageHeight,
+            rotatedWidth,
+            rotatedHeight,
             frame.worldTracking,
             visualTopScan?.yNorm ?: Float.NaN,
             visualTopScan?.confidence ?: Float.NaN,
@@ -530,6 +531,28 @@ class HybridPosePipeline(
             }
         }
         return bestIdx
+    }
+
+    private fun rotateLandmarksToDisplay(xNorm: FloatArray, yNorm: FloatArray, rotationDegrees: Int) {
+        val count = minOf(xNorm.size, yNorm.size, JOINT_COUNT)
+        when (((rotationDegrees % 360) + 360) % 360) {
+            90 -> for (i in 0 until count) {
+                val x = xNorm[i]
+                val y = yNorm[i]
+                xNorm[i] = (1f - y).coerceIn(0f, 1f)
+                yNorm[i] = x.coerceIn(0f, 1f)
+            }
+            180 -> for (i in 0 until count) {
+                xNorm[i] = (1f - xNorm[i]).coerceIn(0f, 1f)
+                yNorm[i] = (1f - yNorm[i]).coerceIn(0f, 1f)
+            }
+            270 -> for (i in 0 until count) {
+                val x = xNorm[i]
+                val y = yNorm[i]
+                xNorm[i] = y.coerceIn(0f, 1f)
+                yNorm[i] = (1f - x).coerceIn(0f, 1f)
+            }
+        }
     }
 
     private fun readVisibility(lm: NormalizedLandmark): Float {

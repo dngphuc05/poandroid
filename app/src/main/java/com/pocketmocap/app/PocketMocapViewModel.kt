@@ -623,9 +623,6 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                         latestServerRotationDegrees = rotationDegrees
                         val outboundWidth = imageWidth.coerceAtLeast(1)
                         val outboundHeight = imageHeight.coerceAtLeast(1)
-                        val viewToImage = imageToViewTransform
-                            .takeIf { it.isUsable() }
-                            ?: ImageToViewTransform.fallbackForRotation(rotationDegrees)
                         val prepared = ArrayList<LandmarkData>(33)
                         for (i in 0 until 33) {
                             val raw = rawLandmarks.getOrNull(i) ?: LandmarkData(0f, 0f)
@@ -634,9 +631,10 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 _lastGoodRelativeZ[i] = raw.z
                                 _hasLastGoodRelativeZ[i] = true
                             }
-                            val (sensorX, sensorY) = viewToImage.mapViewToImage(
+                            val (sensorX, sensorY) = displayToSensorSpace(
                                 _completedX[i].coerceIn(0f, 1f),
                                 _completedY[i].coerceIn(0f, 1f),
+                                rotationDegrees,
                             )
                             val stabilizedZ = when {
                                 rawConfidence >= VIS_OCCLUDE -> raw.z
@@ -963,6 +961,14 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
     fun onCameraFrame(frame: CapturedCameraFrame) {
         pipeline?.onCameraFrame(frame)
     }
+
+    private fun displayToSensorSpace(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> =
+        when (((rotationDegrees % 360) + 360) % 360) {
+            90 -> Pair(y, 1f - x)
+            180 -> Pair(1f - x, 1f - y)
+            270 -> Pair(1f - y, x)
+            else -> Pair(x, y)
+        }
 
     /**
      * Report this phone's ARCore camera extrinsic to the PC lobby (~2 Hz) so the
