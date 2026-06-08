@@ -27,8 +27,8 @@ class ObservedJointDisplayFilter(
     private val lowerBodyStillAlpha: Float = 0.26f,
     private val lowerBodyFastAlpha: Float = 0.82f,
     private val lowerBodyFastMotionDistance: Float = 0.18f,
-    private val handEndpointStillAlpha: Float = 0.28f,
-    private val handEndpointFastAlpha: Float = 0.88f,
+    private val handEndpointStillAlpha: Float = 0.36f,
+    private val handEndpointFastAlpha: Float = 0.92f,
     private val handEndpointFastMotionDistance: Float = 0.08f,
 ) {
     private val state = DisplayJointState(jointCount)
@@ -296,12 +296,20 @@ class ObservedJointDisplayFilter(
         val endpointStep = distance(previousX[endpoint], previousY[endpoint], outX[endpoint], outY[endpoint])
         if (endpointStep < 0.032f) return
 
-        val nextX = lerp(previousX[endpoint], outX[endpoint], 0.20f)
-        val nextY = lerp(previousY[endpoint], outY[endpoint], 0.20f)
+        val followAlpha = handEndpointFollowAlpha(endpointStep)
+        val nextX = lerp(previousX[endpoint], outX[endpoint], followAlpha)
+        val nextY = lerp(previousY[endpoint], outY[endpoint], followAlpha)
         outX[endpoint] = nextX
         outY[endpoint] = nextY
         state.overwritePosition(endpoint, nextX, nextY)
     }
+
+    private fun handEndpointFollowAlpha(endpointStep: Float): Float =
+        when {
+            endpointStep > 0.090f -> 0.20f
+            endpointStep > 0.060f -> 0.34f
+            else -> 0.90f
+        }
 
     private fun stabilizeFootEndpoints(
         outX: FloatArray,

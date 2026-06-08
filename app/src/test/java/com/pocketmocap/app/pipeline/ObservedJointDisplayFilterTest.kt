@@ -499,6 +499,71 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun smallPersistentHandEndpointMotionStillMatchesMeasuredPose() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var finalEndpoint = 0f
+
+        repeat(12) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            val t = frame / 11f
+            x[13] = 0.62f
+            y[13] = 0.50f
+            x[15] = 0.48f
+            y[15] = 0.50f
+            x[19] = 0.44f - 0.055f * t
+            y[19] = 0.50f
+
+            finalEndpoint = filter.update(x, y, v).x[19]
+        }
+
+        assertTrue("small real endpoint motion should not be over-damped", finalEndpoint < 0.405f)
+    }
+
+    @Test
+    fun singleSmallHandEndpointCorrectionStillFollowsCurrentFrame() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[13] = 0.62f
+        y[13] = 0.50f
+        x[15] = 0.48f
+        y[15] = 0.50f
+        x[19] = 0.44f
+        y[19] = 0.50f
+        filter.update(x, y, v)
+
+        x[19] = 0.40f
+        val out = filter.update(x, y, v)
+
+        assertTrue("small hand correction should stay close to the current frame", out.x[19] < 0.415f)
+    }
+
+    @Test
+    fun fastArmSwingKeepsEndpointCloseToMeasuredEvidence() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[13] = 0.62f
+        x[15] = 0.50f
+        x[19] = 0.43f
+        filter.update(x, y, v)
+
+        x[13] = 0.42f
+        x[15] = 0.28f
+        x[19] = 0.18f
+        val out = filter.update(x, y, v)
+
+        assertTrue("fast arm swing should keep wrist close to the current frame", abs(out.x[15] - 0.28f) < 0.045f)
+        assertTrue("fast arm swing should keep hand endpoint close to the current frame", abs(out.x[19] - 0.18f) < 0.055f)
+    }
+
+    @Test
     fun naturalElbowBendIsPreserved() {
         val filter = ObservedJointDisplayFilter()
         val x = FloatArray(33) { 0.5f }
