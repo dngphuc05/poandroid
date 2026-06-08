@@ -17,6 +17,8 @@ android {
         versionName = "2.0.3-capture-stability"
         buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_lite.task\"")
         buildConfigField("int", "POSE_MAX_TRACKED", "1")
+        buildConfigField("int", "POSE_INPUT_LONG_EDGE", "640")
+        buildConfigField("Float", "POSE_MIN_TRACKING_CONFIDENCE", "0.50f")
         buildConfigField("Boolean", "POSE_SEGMENTATION_MASKS", "false")
 
         externalNativeBuild {
@@ -41,8 +43,10 @@ android {
             applicationIdSuffix = ".v2lab"
             versionNameSuffix = "-v2lab"
             buildConfigField("String", "PIPELINE_PROFILE", "\"v2a\"")
-            buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_heavy.task\"")
-            buildConfigField("int", "POSE_MAX_TRACKED", "2")
+            buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_full.task\"")
+            buildConfigField("int", "POSE_MAX_TRACKED", "1")
+            buildConfigField("int", "POSE_INPUT_LONG_EDGE", "960")
+            buildConfigField("Float", "POSE_MIN_TRACKING_CONFIDENCE", "0.82f")
         }
     }
 

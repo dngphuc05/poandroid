@@ -90,7 +90,8 @@ class HybridPosePipeline(
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private val MAX_TRACKED_POSES: Int = BuildConfig.POSE_MAX_TRACKED.coerceIn(1, 2)
         private const val JOINT_COUNT = 33
-        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640
+        private val MAX_MEDIAPIPE_INPUT_LONG_EDGE: Int = BuildConfig.POSE_INPUT_LONG_EDGE.coerceIn(480, 1280)
+        private val MIN_TRACKING_CONFIDENCE: Float = BuildConfig.POSE_MIN_TRACKING_CONFIDENCE.coerceIn(0.30f, 0.95f)
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
         private const val ML_JPEG_QUALITY = 92
         private const val ML_CROP_PAD_RATIO = 0.18f
@@ -704,7 +705,7 @@ class HybridPosePipeline(
             // brief re-detection because they poison depth reconstruction downstream.
             .setMinPoseDetectionConfidence(0.45f)
             .setMinPosePresenceConfidence(0.45f)
-            .setMinTrackingConfidence(0.5f)
+            .setMinTrackingConfidence(MIN_TRACKING_CONFIDENCE)
             .setOutputSegmentationMasks(OUTPUT_SEGMENTATION_MASKS)
             .build()
         return runCatching {
