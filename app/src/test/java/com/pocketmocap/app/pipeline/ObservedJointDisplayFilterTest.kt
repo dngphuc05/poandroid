@@ -442,6 +442,63 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun aggressiveHandEndpointFlutterIsSuppressedWhenArmChainIsStable() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var minRawEndpoint = Float.POSITIVE_INFINITY
+        var maxRawEndpoint = Float.NEGATIVE_INFINITY
+        var minOutEndpoint = Float.POSITIVE_INFINITY
+        var maxOutEndpoint = Float.NEGATIVE_INFINITY
+
+        repeat(44) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            x[13] = 0.62f
+            y[13] = 0.50f
+            x[15] = 0.48f
+            y[15] = 0.50f
+            x[19] = if (frame % 2 == 0) 0.39f else 0.50f
+            y[19] = 0.50f
+
+            minRawEndpoint = minOf(minRawEndpoint, x[19])
+            maxRawEndpoint = maxOf(maxRawEndpoint, x[19])
+            val out = filter.update(x, y, v)
+            if (frame > 10) {
+                minOutEndpoint = minOf(minOutEndpoint, out.x[19])
+                maxOutEndpoint = maxOf(maxOutEndpoint, out.x[19])
+            }
+        }
+
+        assertTrue(
+            "finger endpoint flutter should be strongly reduced when elbow/wrist are stable",
+            (maxOutEndpoint - minOutEndpoint) < (maxRawEndpoint - minRawEndpoint) * 0.40f,
+        )
+    }
+
+    @Test
+    fun realWristDrivenHandSwingStillFollowsMeasuredMotion() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var finalEndpoint = 0f
+
+        repeat(18) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            val t = frame / 17f
+            x[13] = 0.60f - 0.12f * t
+            y[13] = 0.50f
+            x[15] = 0.48f - 0.20f * t
+            y[15] = 0.50f
+            x[19] = 0.42f - 0.22f * t
+            y[19] = 0.50f
+
+            finalEndpoint = filter.update(x, y, v).x[19]
+        }
+
+        assertTrue("endpoint should still follow a coherent wrist-driven swing", finalEndpoint < 0.25f)
+    }
+
+    @Test
     fun naturalElbowBendIsPreserved() {
         val filter = ObservedJointDisplayFilter()
         val x = FloatArray(33) { 0.5f }

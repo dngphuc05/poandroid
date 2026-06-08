@@ -54,6 +54,7 @@ class ObservedJointDisplayFilter(
         dampIsolatedDetectorJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         dampIsolatedLimbHingeJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
+        dampIsolatedHandEndpointJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeFootEndpoints(outX, outY, outVisibility)
 
         return ObservedJointDisplayFrame(outX, outY, outVisibility)
@@ -259,6 +260,47 @@ class ObservedJointDisplayFilter(
             outY[index] = nextY
             state.overwritePosition(index, nextX, nextY)
         }
+    }
+
+    private fun dampIsolatedHandEndpointJumps(
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        dampHandEndpoint(17, 13, 15, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHandEndpoint(19, 13, 15, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHandEndpoint(21, 13, 15, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHandEndpoint(18, 14, 16, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHandEndpoint(20, 14, 16, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHandEndpoint(22, 14, 16, previousX, previousY, previousVisible, outX, outY, outVisibility)
+    }
+
+    private fun dampHandEndpoint(
+        endpoint: Int,
+        elbow: Int,
+        wrist: Int,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!previousVisible.getOrElse(endpoint) { false } || outVisibility.getOrElse(endpoint) { 0f } < visibleThreshold) return
+        if (!anchorStayedStable(elbow, previousX, previousY, previousVisible, outX, outY, outVisibility)) return
+        if (!anchorStayedStable(wrist, previousX, previousY, previousVisible, outX, outY, outVisibility)) return
+
+        val endpointStep = distance(previousX[endpoint], previousY[endpoint], outX[endpoint], outY[endpoint])
+        if (endpointStep < 0.032f) return
+
+        val nextX = lerp(previousX[endpoint], outX[endpoint], 0.20f)
+        val nextY = lerp(previousY[endpoint], outY[endpoint], 0.20f)
+        outX[endpoint] = nextX
+        outY[endpoint] = nextY
+        state.overwritePosition(endpoint, nextX, nextY)
     }
 
     private fun stabilizeFootEndpoints(
