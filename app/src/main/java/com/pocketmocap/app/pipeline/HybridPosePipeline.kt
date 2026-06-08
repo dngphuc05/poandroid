@@ -88,7 +88,7 @@ class HybridPosePipeline(
         private const val TAG = "HybridPosePipeline"
         private val MODEL_ASSET_PATH: String = BuildConfig.POSE_LANDMARKER_MODEL
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
-        private const val MAX_TRACKED_POSES = 1
+        private val MAX_TRACKED_POSES: Int = BuildConfig.POSE_MAX_TRACKED.coerceIn(1, 2)
         private const val JOINT_COUNT = 33
         private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
@@ -358,6 +358,7 @@ class HybridPosePipeline(
             return
         }
         val poseIdx = selectBestPose(result) ?: 0
+        selectedPoseIndex = poseIdx
         val lms = poses[poseIdx]
         if (lms.size < JOINT_COUNT) {
             bitmap.recycle()

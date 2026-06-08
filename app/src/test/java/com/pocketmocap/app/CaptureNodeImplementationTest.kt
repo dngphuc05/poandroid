@@ -356,10 +356,13 @@ class CaptureNodeImplementationTest {
 
         assertTrue(gradle.contains("POSE_LANDMARKER_MODEL"))
         assertTrue(gradle.contains("pose_landmarker_lite.task"))
-        assertTrue(gradle.contains("pose_landmarker_full.task"))
+        assertTrue(gradle.contains("pose_landmarker_heavy.task"))
+        assertTrue(gradle.contains("POSE_MAX_TRACKED"))
         assertTrue(gradle.contains("POSE_SEGMENTATION_MASKS"))
         assertTrue(gradle.contains("false"))
         assertTrue(pipeline.contains("BuildConfig.POSE_LANDMARKER_MODEL"))
+        assertTrue(pipeline.contains("BuildConfig.POSE_MAX_TRACKED.coerceIn(1, 2)"))
+        assertTrue(pipeline.contains("selectedPoseIndex = poseIdx"))
         assertTrue(pipeline.contains("BuildConfig.POSE_SEGMENTATION_MASKS"))
         assertTrue(pipeline.contains("MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640"))
         assertTrue(pipeline.contains("scaledForPoseInference"))
@@ -413,7 +416,8 @@ class CaptureNodeImplementationTest {
         assertTrue(gradle.contains("applicationIdSuffix = \".v2lab\""))
         assertTrue(gradle.contains("versionCode = 20260608"))
         assertTrue(gradle.contains("buildConfigField(\"String\", \"PIPELINE_PROFILE\", \"\\\"v2a\\\"\")"))
-        assertTrue(gradle.contains("buildConfigField(\"String\", \"POSE_LANDMARKER_MODEL\", \"\\\"pose_landmarker_full.task\\\"\")"))
+        assertTrue(gradle.contains("buildConfigField(\"String\", \"POSE_LANDMARKER_MODEL\", \"\\\"pose_landmarker_heavy.task\\\"\")"))
+        assertTrue(gradle.contains("buildConfigField(\"int\", \"POSE_MAX_TRACKED\", \"2\")"))
         assertTrue(label.contains("Pocap V2 Lab"))
     }
 
