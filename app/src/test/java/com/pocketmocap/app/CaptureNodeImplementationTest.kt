@@ -402,14 +402,15 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
-    fun v2LabFlavorCanInstallBesideStablePhoneApp() {
+    fun v2LabFlavorCanInstallBesideStableAndPriorLabPhoneApps() {
         val gradle = appDir.resolve("build.gradle.kts").readText()
         val label = appDir.resolve("src/v2Lab/res/values/strings.xml").readText()
 
         assertTrue(gradle.contains("flavorDimensions += \"pipeline\""))
         assertTrue(gradle.contains("create(\"stable\")"))
         assertTrue(gradle.contains("create(\"v2Lab\")"))
-        assertTrue(gradle.contains("applicationIdSuffix = \".v2\""))
+        assertTrue(gradle.contains("applicationIdSuffix = \".v2lab\""))
+        assertTrue(gradle.contains("versionCode = 20260608"))
         assertTrue(gradle.contains("buildConfigField(\"String\", \"PIPELINE_PROFILE\", \"\\\"v2a\\\"\")"))
         assertTrue(label.contains("Pocap V2 Lab"))
     }

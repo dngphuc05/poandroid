@@ -13,8 +13,8 @@ android {
         applicationId = "com.pocketmocap.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "2.0.2-single-preset"
+        versionCode = 20260608
+        versionName = "2.0.3-capture-stability"
         buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_lite.task\"")
         buildConfigField("Boolean", "POSE_SEGMENTATION_MASKS", "false")
 
@@ -37,7 +37,7 @@ android {
         }
         create("v2Lab") {
             dimension = "pipeline"
-            applicationIdSuffix = ".v2"
+            applicationIdSuffix = ".v2lab"
             versionNameSuffix = "-v2lab"
             buildConfigField("String", "PIPELINE_PROFILE", "\"v2a\"")
             buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_lite.task\"")
