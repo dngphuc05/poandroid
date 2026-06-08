@@ -171,6 +171,77 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun isolatedShoulderJumpIsDampedWhenTorsoIsOtherwiseStill() {
+        val filter = ObservedJointDisplayFilter()
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[11] = 0.42f
+        x[12] = 0.58f
+        x[23] = 0.45f
+        x[24] = 0.55f
+        filter.update(x, y, v)
+
+        x[11] = 0.66f
+        val out = filter.update(x, y, v)
+
+        assertTrue(
+            "one-frame shoulder detector jump should not drag the overlay away from the still torso",
+            out.x[11] < 0.48f,
+        )
+    }
+
+    @Test
+    fun coherentTorsoMotionStillFollowsTheBody() {
+        val filter = ObservedJointDisplayFilter()
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[11] = 0.42f
+        x[12] = 0.58f
+        x[23] = 0.45f
+        x[24] = 0.55f
+        filter.update(x, y, v)
+
+        x[11] += 0.12f
+        x[12] += 0.12f
+        x[23] += 0.12f
+        x[24] += 0.12f
+        val out = filter.update(x, y, v)
+
+        assertTrue("coherent torso movement should still follow without freezing: x11=${out.x[11]}", out.x[11] > 0.50f)
+        assertTrue("coherent torso movement should still follow without freezing: x24=${out.x[24]}", out.x[24] > 0.60f)
+    }
+
+    @Test
+    fun isolatedHandEndpointJumpIsDampedWhenArmChainIsStill() {
+        val filter = ObservedJointDisplayFilter()
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[12] = 0.58f
+        y[12] = 0.34f
+        x[14] = 0.62f
+        y[14] = 0.48f
+        x[16] = 0.64f
+        y[16] = 0.62f
+        x[20] = 0.66f
+        y[20] = 0.64f
+        filter.update(x, y, v)
+
+        x[20] = 0.36f
+        val out = filter.update(x, y, v)
+
+        assertTrue(
+            "hand endpoint should not snap across the body when the wrist and forearm stayed still: x20=${out.x[20]}",
+            out.x[20] > 0.58f,
+        )
+    }
+
+    @Test
     fun handEndpointDoesNotPredictPastMeasuredSwing() {
         val filter = ObservedJointDisplayFilter(
             stillAlpha = 1.0f,

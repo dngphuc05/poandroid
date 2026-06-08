@@ -30,20 +30,35 @@ class ObservedJointDisplayFilter(
     private val handEndpointStillAlpha: Float = 0.28f,
     private val handEndpointFastAlpha: Float = 0.88f,
     private val handEndpointFastMotionDistance: Float = 0.08f,
+    private val isolatedJumpAlpha: Float = 0.10f,
 ) {
     private val state = DisplayJointState(jointCount)
     private val measuredHandX = FloatArray(jointCount)
     private val measuredHandY = FloatArray(jointCount)
     private val measuredHandVisibility = FloatArray(jointCount)
+    private val previousX = FloatArray(jointCount)
+    private val previousY = FloatArray(jointCount)
+    private val previousVisible = BooleanArray(jointCount)
+    private val isolatedEndpointJump = BooleanArray(jointCount)
 
     fun reset() {
         state.reset()
+        previousX.fill(0f)
+        previousY.fill(0f)
+        previousVisible.fill(false)
+        isolatedEndpointJump.fill(false)
     }
 
     fun update(rawX: FloatArray, rawY: FloatArray, rawVisibility: FloatArray): ObservedJointDisplayFrame {
         val outX = FloatArray(jointCount)
         val outY = FloatArray(jointCount)
         val outVisibility = FloatArray(jointCount)
+        for (index in 0 until jointCount) {
+            previousVisible[index] = state.hasVisible(index)
+            previousX[index] = state.x(index)
+            previousY[index] = state.y(index)
+            isolatedEndpointJump[index] = false
+        }
 
         for (index in 0 until jointCount) {
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
@@ -72,15 +87,21 @@ class ObservedJointDisplayFilter(
 
         val x = measuredX.coerceIn(0f, 1f)
         val y = measuredY.coerceIn(0f, 1f)
+        val isolatedJump = previousVisible[index] && isIsolatedDetectorJump(index, x, y, rawX, rawY, rawVisibility)
+        if (isolatedJump && isHandEndpoint(index)) {
+            isolatedEndpointJump[index] = true
+        }
         val predicted = state.predictObserved(
             index = index,
             measuredX = x,
             measuredY = y,
-            frames = predictionFramesFor(index),
+            frames = if (isolatedJump) 0f else predictionFramesFor(index),
             minMotion = minPredictionMotion,
             maxStep = predictionStepFor(index),
         )
-        val alpha = if (state.hasVisible(index)) {
+        val alpha = if (isolatedJump) {
+            isolatedJumpAlpha
+        } else if (state.hasVisible(index)) {
             adaptiveAlpha(index, predicted.first, predicted.second)
         } else {
             fastAlpha
@@ -114,6 +135,58 @@ class ObservedJointDisplayFilter(
     private fun predictionStepFor(index: Int): Float =
         if (isLowerBody(index) || isHandEndpoint(index)) 0f else maxPredictionStep
 
+    private fun isIsolatedDetectorJump(
+        index: Int,
+        x: Float,
+        y: Float,
+        rawX: FloatArray,
+        rawY: FloatArray,
+        rawVisibility: FloatArray,
+    ): Boolean {
+        val jump = previousDistanceTo(index, x, y)
+        if (isTorsoCore(index)) {
+            if (jump < 0.055f) return false
+            val peerMotion = torsoPeerMotion(index, rawX, rawY, rawVisibility)
+            return peerMotion < 0.036f
+        }
+        if (isHandEndpoint(index)) {
+            if (jump < 0.065f) return false
+            val parent = handEndpointParent(index)
+            if (parent < 0 || !previousVisible[parent]) return false
+            if (!isVisibleMeasurement(
+                    rawVisibility.getOrElse(parent) { 0f },
+                    rawX.getOrElse(parent) { Float.NaN },
+                    rawY.getOrElse(parent) { Float.NaN },
+                )
+            ) {
+                return false
+            }
+            val parentMotion = previousDistanceTo(
+                parent,
+                rawX[parent].coerceIn(0f, 1f),
+                rawY[parent].coerceIn(0f, 1f),
+            )
+            return parentMotion < 0.035f
+        }
+        return false
+    }
+
+    private fun torsoPeerMotion(index: Int, rawX: FloatArray, rawY: FloatArray, rawVisibility: FloatArray): Float {
+        val peers = intArrayOf(11, 12, 23, 24)
+        var sum = 0f
+        var count = 0
+        for (peer in peers) {
+            if (peer == index || !previousVisible[peer]) continue
+            val vx = rawX.getOrElse(peer) { Float.NaN }
+            val vy = rawY.getOrElse(peer) { Float.NaN }
+            val vv = rawVisibility.getOrElse(peer) { 0f }
+            if (!isVisibleMeasurement(vv, vx, vy)) continue
+            sum += previousDistanceTo(peer, vx.coerceIn(0f, 1f), vy.coerceIn(0f, 1f))
+            count += 1
+        }
+        return if (count == 0) Float.POSITIVE_INFINITY else sum / count.toFloat()
+    }
+
     private fun stabilizeHandEndpoints(
         rawX: FloatArray,
         rawY: FloatArray,
@@ -134,6 +207,12 @@ class ObservedJointDisplayFilter(
         rawX.copyInto(measuredHandX, endIndex = jointCount)
         rawY.copyInto(measuredHandY, endIndex = jointCount)
         rawVisibility.copyInto(measuredHandVisibility, endIndex = jointCount)
+        for (index in 0 until jointCount) {
+            if (!isolatedEndpointJump[index]) continue
+            measuredHandX[index] = outX[index]
+            measuredHandY[index] = outY[index]
+            measuredHandVisibility[index] = minOf(measuredHandVisibility[index], visibleThreshold)
+        }
         HandEndpointStabilizer.stabilizeInPlace(
             x = measuredHandX,
             y = measuredHandY,
@@ -151,6 +230,21 @@ class ObservedJointDisplayFilter(
     private fun isLowerBody(index: Int): Boolean = index in 23..32
 
     private fun isHandEndpoint(index: Int): Boolean = index in 17..22
+
+    private fun isTorsoCore(index: Int): Boolean = index == 11 || index == 12 || index == 23 || index == 24
+
+    private fun previousDistanceTo(index: Int, nextX: Float, nextY: Float): Float {
+        val dx = nextX - previousX[index]
+        val dy = nextY - previousY[index]
+        return sqrt(dx * dx + dy * dy)
+    }
+
+    private fun handEndpointParent(index: Int): Int =
+        when (index) {
+            17, 19, 21 -> 15
+            18, 20, 22 -> 16
+            else -> -1
+        }
 }
 
 private class DisplayJointState(private val jointCount: Int) {
@@ -177,6 +271,12 @@ private class DisplayJointState(private val jointCount: Int) {
     fun x(index: Int): Float = x[index]
 
     fun y(index: Int): Float = y[index]
+
+    fun distanceTo(index: Int, nextX: Float, nextY: Float): Float {
+        val dx = nextX - x[index]
+        val dy = nextY - y[index]
+        return sqrt(dx * dx + dy * dy)
+    }
 
     fun overwritePosition(index: Int, nextX: Float, nextY: Float) {
         x[index] = nextX
