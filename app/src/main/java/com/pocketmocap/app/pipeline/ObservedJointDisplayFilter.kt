@@ -1,5 +1,6 @@
 package com.pocketmocap.app.pipeline
 
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 data class ObservedJointDisplayFrame(
@@ -56,6 +57,7 @@ class ObservedJointDisplayFilter(
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
         dampIsolatedHandEndpointJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeFootEndpoints(outX, outY, outVisibility)
+        freezeTransientTorsoPairFlips(rawX, rawY, previousX, previousY, previousVisible, outX, outY, outVisibility)
 
         return ObservedJointDisplayFrame(outX, outY, outVisibility)
     }
@@ -323,6 +325,109 @@ class ObservedJointDisplayFilter(
             visibleThreshold = visibleThreshold,
             onChanged = state::overwritePosition,
         )
+    }
+
+    private fun freezeTransientTorsoPairFlips(
+        rawX: FloatArray,
+        rawY: FloatArray,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        freezeTransientPairFlip(
+            left = 11,
+            right = 12,
+            descendants = intArrayOf(13, 14, 15, 16, 17, 18, 19, 20, 21, 22),
+            rawX = rawX,
+            rawY = rawY,
+            previousX = previousX,
+            previousY = previousY,
+            previousVisible = previousVisible,
+            outX = outX,
+            outY = outY,
+            outVisibility = outVisibility,
+        )
+        freezeTransientPairFlip(
+            left = 23,
+            right = 24,
+            descendants = intArrayOf(25, 26, 27, 28, 29, 30, 31, 32),
+            rawX = rawX,
+            rawY = rawY,
+            previousX = previousX,
+            previousY = previousY,
+            previousVisible = previousVisible,
+            outX = outX,
+            outY = outY,
+            outVisibility = outVisibility,
+        )
+    }
+
+    private fun freezeTransientPairFlip(
+        left: Int,
+        right: Int,
+        descendants: IntArray,
+        rawX: FloatArray,
+        rawY: FloatArray,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!pairVisible(left, right, previousVisible, outVisibility)) return
+        val previousSign = previousX[right] - previousX[left]
+        val rawLeftX = rawX.getOrElse(left) { outX[left] }
+        val rawRightX = rawX.getOrElse(right) { outX[right] }
+        val rawLeftY = rawY.getOrElse(left) { outY[left] }
+        val rawRightY = rawY.getOrElse(right) { outY[right] }
+        if (!rawLeftX.isFinite() || !rawRightX.isFinite() || !rawLeftY.isFinite() || !rawRightY.isFinite()) return
+        val currentSign = rawRightX - rawLeftX
+        if (previousSign == 0f || currentSign == 0f || previousSign * currentSign > 0f) return
+
+        val previousCenterX = (previousX[left] + previousX[right]) * 0.5f
+        val previousCenterY = (previousY[left] + previousY[right]) * 0.5f
+        val currentCenterX = (rawLeftX + rawRightX) * 0.5f
+        val currentCenterY = (rawLeftY + rawRightY) * 0.5f
+        val centerStep = distance(previousCenterX, previousCenterY, currentCenterX, currentCenterY)
+        val previousWidth = abs(previousSign)
+        val currentWidth = abs(currentSign)
+        val widthDelta = abs(currentWidth - previousWidth)
+        if (centerStep > 0.030f || widthDelta > 0.075f) return
+
+        freezeJoint(left, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        freezeJoint(right, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        descendants.forEach { freezeJoint(it, previousX, previousY, previousVisible, outX, outY, outVisibility) }
+    }
+
+    private fun pairVisible(
+        left: Int,
+        right: Int,
+        previousVisible: BooleanArray,
+        outVisibility: FloatArray,
+    ): Boolean =
+        previousVisible.getOrElse(left) { false } &&
+            previousVisible.getOrElse(right) { false } &&
+            outVisibility.getOrElse(left) { 0f } >= visibleThreshold &&
+            outVisibility.getOrElse(right) { 0f } >= visibleThreshold
+
+    private fun freezeJoint(
+        index: Int,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!previousVisible.getOrElse(index) { false }) return
+        outX[index] = previousX[index]
+        outY[index] = previousY[index]
+        outVisibility[index] = maxOf(outVisibility.getOrElse(index) { 0f }, visibleThreshold)
+        state.overwritePosition(index, previousX[index], previousY[index])
     }
 
     private fun isLowerBody(index: Int): Boolean = index in 23..32
