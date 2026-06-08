@@ -52,7 +52,9 @@ class ObservedJointDisplayFilter(
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
         }
         dampIsolatedDetectorJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampIsolatedLimbHingeJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
+        stabilizeFootEndpoints(outX, outY, outVisibility)
 
         return ObservedJointDisplayFrame(outX, outY, outVisibility)
     }
@@ -158,6 +160,64 @@ class ObservedJointDisplayFilter(
         state.overwritePosition(index, nextX, nextY)
     }
 
+    private fun dampIsolatedLimbHingeJumps(
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        dampHingeJoint(13, 11, 15, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHingeJoint(14, 12, 16, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHingeJoint(25, 23, 27, previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampHingeJoint(26, 24, 28, previousX, previousY, previousVisible, outX, outY, outVisibility)
+    }
+
+    private fun dampHingeJoint(
+        hinge: Int,
+        parent: Int,
+        child: Int,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!previousVisible.getOrElse(hinge) { false } || outVisibility.getOrElse(hinge) { 0f } < visibleThreshold) return
+        if (!anchorStayedStable(parent, previousX, previousY, previousVisible, outX, outY, outVisibility)) return
+        if (!anchorStayedStable(child, previousX, previousY, previousVisible, outX, outY, outVisibility)) return
+
+        val hingeStep = distance(previousX[hinge], previousY[hinge], outX[hinge], outY[hinge])
+        if (hingeStep < isolatedHingeJumpDistance(hinge)) return
+
+        val nextX = lerp(previousX[hinge], outX[hinge], 0.34f)
+        val nextY = lerp(previousY[hinge], outY[hinge], 0.34f)
+        outX[hinge] = nextX
+        outY[hinge] = nextY
+        state.overwritePosition(hinge, nextX, nextY)
+    }
+
+    private fun anchorStayedStable(
+        index: Int,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ): Boolean =
+        previousVisible.getOrElse(index) { false } &&
+            outVisibility.getOrElse(index) { 0f } >= visibleThreshold &&
+            distance(previousX[index], previousY[index], outX[index], outY[index]) < stableAnchorDistance(index)
+
+    private fun stableAnchorDistance(index: Int): Float =
+        if (isLowerBody(index)) 0.035f else 0.028f
+
+    private fun isolatedHingeJumpDistance(index: Int): Float =
+        if (isLowerBody(index)) 0.085f else 0.070f
+
     private fun distance(ax: Float, ay: Float, bx: Float, by: Float): Float {
         val dx = bx - ax
         val dy = by - ay
@@ -199,6 +259,20 @@ class ObservedJointDisplayFilter(
             outY[index] = nextY
             state.overwritePosition(index, nextX, nextY)
         }
+    }
+
+    private fun stabilizeFootEndpoints(
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        FootEndpointStabilizer.stabilizeInPlace(
+            x = outX,
+            y = outY,
+            visibility = outVisibility,
+            visibleThreshold = visibleThreshold,
+            onChanged = state::overwritePosition,
+        )
     }
 
     private fun isLowerBody(index: Int): Boolean = index in 23..32

@@ -145,6 +145,120 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun isolatedElbowJumpDuringStableArmChainIsDamped() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        y[11] = 0.34f
+        x[13] = 0.34f
+        y[13] = 0.50f
+        x[15] = 0.30f
+        y[15] = 0.64f
+        filter.update(x, y, v)
+
+        x[13] = 0.52f
+        val out = filter.update(x, y, v)
+
+        assertTrue("isolated elbow jump should not invent a new arm angle", out.x[13] < 0.42f)
+        assertTrue("stable wrist should stay attached to measured evidence", abs(out.x[15] - 0.30f) < 0.03f)
+    }
+
+    @Test
+    fun coherentElbowMovementStillFollowsArm() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        y[11] = 0.34f
+        x[13] = 0.34f
+        y[13] = 0.50f
+        x[15] = 0.30f
+        y[15] = 0.64f
+        filter.update(x, y, v)
+
+        x[11] = 0.38f
+        x[13] = 0.26f
+        x[15] = 0.18f
+        val out = filter.update(x, y, v)
+
+        assertTrue("coherent arm swing should not be frozen by hinge damping", out.x[13] < 0.30f)
+        assertTrue("coherent wrist swing should still follow", out.x[15] < 0.23f)
+    }
+
+    @Test
+    fun isolatedKneeJumpDuringStableLegChainIsDamped() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[23] = 0.44f
+        y[23] = 0.52f
+        x[25] = 0.42f
+        y[25] = 0.66f
+        x[27] = 0.40f
+        y[27] = 0.80f
+        filter.update(x, y, v)
+
+        x[25] = 0.58f
+        val out = filter.update(x, y, v)
+
+        assertTrue("isolated knee jump should not invent a new leg angle", out.x[25] < 0.50f)
+        assertTrue("stable ankle should stay attached to measured evidence", abs(out.x[27] - 0.40f) < 0.03f)
+    }
+
+    @Test
+    fun footEndpointsDoNotStretchAwayFromAnkle() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[25] = 0.42f
+        y[25] = 0.64f
+        x[27] = 0.42f
+        y[27] = 0.78f
+        x[31] = 0.45f
+        y[31] = 0.82f
+        filter.update(x, y, v)
+
+        x[31] = 0.78f
+        y[31] = 0.88f
+        val out = filter.update(x, y, v)
+
+        assertTrue("toe endpoint should be capped near the ankle/shin scale", out.x[31] < 0.58f)
+        assertTrue("ankle should not be pulled by bad toe evidence", abs(out.x[27] - 0.42f) < 0.03f)
+    }
+
+    @Test
+    fun weakFootEndpointFlipIsPulledBackTowardLegChain() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[25] = 0.42f
+        y[25] = 0.64f
+        x[27] = 0.42f
+        y[27] = 0.78f
+        x[31] = 0.43f
+        y[31] = 0.84f
+        filter.update(x, y, v)
+
+        x[31] = 0.42f
+        y[31] = 0.61f
+        v[31] = 0.36f
+        val out = filter.update(x, y, v)
+
+        assertTrue("weak toe endpoint should not visibly flip above the ankle", out.y[31] > 0.70f)
+    }
+
+    @Test
     fun hiddenJointIsNotInventedOrHeldVisible() {
         val filter = ObservedJointDisplayFilter()
         val visible = FloatArray(33) { 0.95f }
