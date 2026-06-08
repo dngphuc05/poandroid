@@ -21,7 +21,7 @@ class ObservedJointDisplayFilter(
     private val stillAlpha: Float = 0.40f,
     private val fastAlpha: Float = 0.96f,
     private val fastMotionDistance: Float = 0.12f,
-    private val latencyCompensationFrames: Float = 1.0f,
+    private val latencyCompensationFrames: Float = 0.0f,
     private val minPredictionMotion: Float = 0.025f,
     private val maxPredictionStep: Float = 0.06f,
     private val lowerBodyStillAlpha: Float = 0.26f,

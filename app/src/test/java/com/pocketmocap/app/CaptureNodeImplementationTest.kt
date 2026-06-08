@@ -360,7 +360,7 @@ class CaptureNodeImplementationTest {
         assertTrue(gradle.contains("false"))
         assertTrue(pipeline.contains("BuildConfig.POSE_LANDMARKER_MODEL"))
         assertTrue(pipeline.contains("BuildConfig.POSE_SEGMENTATION_MASKS"))
-        assertTrue(pipeline.contains("MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640"))
+        assertTrue(pipeline.contains("MAX_MEDIAPIPE_INPUT_LONG_EDGE = 960"))
         assertTrue(pipeline.contains("scaledForPoseInference"))
         assertTrue(pipeline.contains("BitmapImageBuilder(inferenceBitmap)"))
         assertTrue(pipeline.contains("if (inferenceBitmap !== bitmap) inferenceBitmap.recycle()"))

@@ -120,6 +120,57 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun defaultOverlayDoesNotLeadCurrentCameraFrame() {
+        val filter = ObservedJointDisplayFilter(
+            stillAlpha = 1.0f,
+            fastAlpha = 1.0f,
+        )
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[15] = 0.20f
+        filter.update(x, y, v)
+
+        x[15] = 0.30f
+        val out = filter.update(x, y, v)
+
+        assertTrue(
+            "default phone overlay should stay attached to the analyzed camera frame instead of predicting beyond it",
+            out.x[15] <= 0.315f,
+        )
+    }
+
+    @Test
+    fun moderateStillPoseDetectorNoiseIsDampedWithoutOvershoot() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        var minRaw = Float.POSITIVE_INFINITY
+        var maxRaw = Float.NEGATIVE_INFINITY
+        var minOut = Float.POSITIVE_INFINITY
+        var maxOut = Float.NEGATIVE_INFINITY
+
+        repeat(42) { frame ->
+            val x = FloatArray(33) { 0.5f }
+            val y = FloatArray(33) { 0.5f }
+            val jitter = if (frame % 2 == 0) -0.026f else 0.026f
+            x[11] = 0.50f + jitter
+            minRaw = minOf(minRaw, x[11])
+            maxRaw = maxOf(maxRaw, x[11])
+
+            val out = filter.update(x, y, v)
+            if (frame > 8) {
+                minOut = minOf(minOut, out.x[11])
+                maxOut = maxOf(maxOut, out.x[11])
+            }
+        }
+
+        assertTrue("still shoulder overlay must not overshoot noisy detector evidence", minOut >= minRaw)
+        assertTrue("still shoulder overlay must not overshoot noisy detector evidence", maxOut <= maxRaw)
+        assertTrue("still shoulder overlay should damp moderate detector wobble", (maxOut - minOut) < 0.034f)
+    }
+
+    @Test
     fun handEndpointDoesNotPredictPastMeasuredSwing() {
         val filter = ObservedJointDisplayFilter(
             stillAlpha = 1.0f,

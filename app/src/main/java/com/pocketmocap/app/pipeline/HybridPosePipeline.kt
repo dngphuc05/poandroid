@@ -90,7 +90,7 @@ class HybridPosePipeline(
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
-        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 640
+        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 960
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
         private const val ML_JPEG_QUALITY = 92
         private const val ML_CROP_PAD_RATIO = 0.18f
