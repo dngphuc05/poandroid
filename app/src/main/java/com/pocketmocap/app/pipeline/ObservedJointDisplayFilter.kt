@@ -113,10 +113,10 @@ class ObservedJointDisplayFilter(
     }
 
     private fun predictionFramesFor(index: Int): Float =
-        if (isLowerBody(index) || isHandEndpoint(index)) 0f else latencyCompensationFrames
+        if (isLowerBody(index) || isArmJoint(index) || isHandEndpoint(index)) 0f else latencyCompensationFrames
 
     private fun predictionStepFor(index: Int): Float =
-        if (isLowerBody(index) || isHandEndpoint(index)) 0f else maxPredictionStep
+        if (isLowerBody(index) || isArmJoint(index) || isHandEndpoint(index)) 0f else maxPredictionStep
 
     private fun dampIsolatedDetectorJumps(
         previousX: FloatArray,
@@ -202,6 +202,8 @@ class ObservedJointDisplayFilter(
     }
 
     private fun isLowerBody(index: Int): Boolean = index in 23..32
+
+    private fun isArmJoint(index: Int): Boolean = index in 13..16
 
     private fun isHandEndpoint(index: Int): Boolean = index in 17..22
 }

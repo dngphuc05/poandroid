@@ -166,7 +166,7 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
-    fun visibleMotionIsPredictedForwardToReducePreviewOverlayLag() {
+    fun faceMotionCanUseBoundedPredictionToReducePreviewOverlayLag() {
         val filter = ObservedJointDisplayFilter(
             stillAlpha = 1.0f,
             fastAlpha = 1.0f,
@@ -177,21 +177,21 @@ class ObservedJointDisplayFilterTest {
         val y = FloatArray(33) { 0.5f }
         val v = FloatArray(33) { 0.95f }
 
-        x[15] = 0.20f
+        x[0] = 0.20f
         filter.update(x, y, v)
 
-        x[15] = 0.30f
+        x[0] = 0.30f
         val out = filter.update(x, y, v)
 
         assertTrue(
-            "visible overlay should lead the stale analyzed frame by roughly one frame",
-            out.x[15] > 0.35f,
+            "non-limb overlay can lead the stale analyzed frame by roughly one frame",
+            out.x[0] > 0.35f,
         )
-        assertTrue("prediction must stay bounded", out.x[15] <= 0.40f)
+        assertTrue("prediction must stay bounded", out.x[0] <= 0.40f)
     }
 
     @Test
-    fun handEndpointDoesNotPredictPastMeasuredSwing() {
+    fun armAndHandEndpointDoNotPredictPastMeasuredSwing() {
         val filter = ObservedJointDisplayFilter(
             stillAlpha = 1.0f,
             fastAlpha = 1.0f,
@@ -202,17 +202,47 @@ class ObservedJointDisplayFilterTest {
         val y = FloatArray(33) { 0.5f }
         val v = FloatArray(33) { 0.95f }
 
+        x[13] = 0.50f
         x[15] = 0.45f
         x[19] = 0.40f
         filter.update(x, y, v)
 
+        x[13] = 0.42f
         x[15] = 0.35f
         x[19] = 0.30f
         val out = filter.update(x, y, v)
 
-        assertTrue("wrist still gets latency compensation", out.x[15] < 0.35f)
+        assertTrue("elbow must not be predicted past measured motion", out.x[13] >= 0.415f)
+        assertTrue("wrist must not be predicted past measured motion", out.x[15] >= 0.345f)
         assertTrue("hand endpoint must not be predicted far beyond measured motion", out.x[19] >= 0.29f)
         assertTrue("hand endpoint must stay close to measured hand evidence", abs(out.x[19] - 0.30f) < 0.03f)
+    }
+
+    @Test
+    fun armDirectionReversalDoesNotOvershootOppositeSide() {
+        val filter = ObservedJointDisplayFilter(
+            stillAlpha = 1.0f,
+            fastAlpha = 1.0f,
+            latencyCompensationFrames = 1.0f,
+            maxPredictionStep = 0.10f,
+        )
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+        val v = FloatArray(33) { 0.95f }
+
+        x[13] = 0.55f
+        x[15] = 0.62f
+        x[19] = 0.68f
+        filter.update(x, y, v)
+
+        x[13] = 0.48f
+        x[15] = 0.42f
+        x[19] = 0.36f
+        val out = filter.update(x, y, v)
+
+        assertTrue("elbow should not overshoot beyond the measured reversal", out.x[13] >= 0.475f)
+        assertTrue("wrist should not overshoot beyond the measured reversal", out.x[15] >= 0.415f)
+        assertTrue("hand endpoint should not swing farther than the measured hand", out.x[19] >= 0.35f)
     }
 
     @Test
