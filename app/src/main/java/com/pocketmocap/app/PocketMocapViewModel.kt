@@ -836,7 +836,7 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             _hasLastReliable2D[index] = true
                             _kalman[index].setPosition(nextX, nextY)
                         }
-                        val visible = observedDisplayFrame.visibility.count { it >= 0.28f }
+                        val visible = _smoothedVis.count { it >= 0.28f }
                         for (i in 0 until 33) {
                             val hasPrediction = _completedX[i].isFinite() && _completedY[i].isFinite()
                             _displayFullVis[i] = when {
@@ -845,9 +845,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                 else -> 0f
                             }
                         }
-                        val displayX = observedDisplayFrame.x
-                        val displayY = observedDisplayFrame.y
-                        val displayVis = observedDisplayFrame.visibility
+                        val displayX = _smoothedX.copyOf()
+                        val displayY = _smoothedY.copyOf()
+                        val displayVis = _smoothedVis.copyOf()
                         viewModelScope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
                             directLandmarkCallback?.invoke(
                                 displayX,

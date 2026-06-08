@@ -348,7 +348,7 @@ class CaptureNodeImplementationTest {
     }
 
     @Test
-    fun phoneUsesLiveLandmarkerProfileAndDrawsObservedLowLatencyOverlay() {
+    fun phoneUsesLiveLandmarkerProfileAndDrawsSmoothedVisibleOverlay() {
         val gradle = appDir.resolve("build.gradle.kts").readText()
         val viewModel = appDir.resolve("src/main/java/com/pocketmocap/app/PocketMocapViewModel.kt").readText()
         val pipeline = appDir.resolve("src/main/java/com/pocketmocap/app/pipeline/HybridPosePipeline.kt").readText()
@@ -376,10 +376,12 @@ class CaptureNodeImplementationTest {
         assertTrue(viewModel.contains("val stableObservedX = observedDisplayFrame.x"))
         assertTrue(viewModel.contains("stableObservedX.copyInto(_smoothedX)"))
         assertTrue(viewModel.contains("_boneConstraints.collectFrame(stableObservedX, stableObservedY, stableObservedVis)"))
-        assertTrue(viewModel.contains("val displayX = observedDisplayFrame.x"))
-        assertTrue(viewModel.contains("val displayY = observedDisplayFrame.y"))
-        assertTrue(viewModel.contains("val displayVis = observedDisplayFrame.visibility"))
+        assertTrue(viewModel.contains("val displayX = _smoothedX.copyOf()"))
+        assertTrue(viewModel.contains("val displayY = _smoothedY.copyOf()"))
+        assertTrue(viewModel.contains("val displayVis = _smoothedVis.copyOf()"))
         assertTrue(viewModel.contains("directLandmarkCallback?.invoke("))
+        assertFalse("Phone overlay must not draw raw observed detector wobble directly", viewModel.contains("val displayX = observedDisplayFrame.x"))
+        assertFalse("Phone overlay must not draw raw observed detector wobble directly", viewModel.contains("val displayY = observedDisplayFrame.y"))
         assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayX = _completedX.copyOf()"))
         assertFalse("Phone evidence overlay must not draw completed hidden joints over a newer camera frame", viewModel.contains("val displayY = _completedY.copyOf()"))
     }
