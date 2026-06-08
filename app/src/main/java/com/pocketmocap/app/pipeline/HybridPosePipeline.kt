@@ -91,7 +91,10 @@ class HybridPosePipeline(
         private val OUTPUT_SEGMENTATION_MASKS: Boolean = BuildConfig.POSE_SEGMENTATION_MASKS
         private const val MAX_TRACKED_POSES = 1
         private const val JOINT_COUNT = 33
-        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 960
+        // Pixel capture currently runs through ARCore CPU images before MediaPipe.
+        // Keeping the input below full preview size is the difference between
+        // ~15fps evidence and a usable live cadence on the target phone path.
+        private const val MAX_MEDIAPIPE_INPUT_LONG_EDGE = 736
         private const val ML_TRANSPORT_IMAGE_SIZE = 320
         private const val ML_JPEG_QUALITY = 92
         private const val ML_CROP_PAD_RATIO = 0.18f
