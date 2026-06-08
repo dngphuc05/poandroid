@@ -564,6 +564,38 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun raisedVisibleArmStaysAttachedToMeasuredWristAndFingers() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.40f
+        y[11] = 0.36f
+        x[13] = 0.34f
+        y[13] = 0.50f
+        x[15] = 0.31f
+        y[15] = 0.63f
+        x[19] = 0.28f
+        y[19] = 0.64f
+        filter.update(x, y, v)
+
+        x[13] = 0.30f
+        y[13] = 0.24f
+        x[15] = 0.24f
+        y[15] = 0.14f
+        x[19] = 0.21f
+        y[19] = 0.11f
+        val out = filter.update(x, y, v)
+
+        assertTrue("raised elbow should not be held near the old lowered arm", abs(out.y[13] - 0.24f) < 0.06f)
+        assertTrue("raised wrist should stay attached to measured hand evidence", abs(out.x[15] - 0.24f) < 0.05f)
+        assertTrue("raised wrist should stay attached vertically", abs(out.y[15] - 0.14f) < 0.05f)
+        assertTrue("raised finger endpoint should not be pulled toward the head/torso", abs(out.x[19] - 0.21f) < 0.06f)
+        assertTrue("raised finger endpoint should remain above the wrist", out.y[19] <= out.y[15] + 0.04f)
+    }
+
+    @Test
     fun naturalElbowBendIsPreserved() {
         val filter = ObservedJointDisplayFilter()
         val x = FloatArray(33) { 0.5f }

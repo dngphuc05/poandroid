@@ -356,6 +356,7 @@ class CaptureNodeImplementationTest {
 
         assertTrue(gradle.contains("POSE_LANDMARKER_MODEL"))
         assertTrue(gradle.contains("pose_landmarker_lite.task"))
+        assertTrue(gradle.contains("pose_landmarker_full.task"))
         assertTrue(gradle.contains("POSE_SEGMENTATION_MASKS"))
         assertTrue(gradle.contains("false"))
         assertTrue(pipeline.contains("BuildConfig.POSE_LANDMARKER_MODEL"))
@@ -365,7 +366,7 @@ class CaptureNodeImplementationTest {
         assertTrue(pipeline.contains("BitmapImageBuilder(inferenceBitmap)"))
         assertTrue(pipeline.contains("if (inferenceBitmap !== bitmap) inferenceBitmap.recycle()"))
         assertTrue(pipeline.contains("estimateVisualTopFromLandmarks"))
-        assertFalse("Live capture must not hardcode the slower full landmarker", pipeline.contains("MODEL_ASSET_PATH = \"pose_landmarker_full.task\""))
+        assertFalse("Live capture must not hardcode a model path outside BuildConfig", pipeline.contains("MODEL_ASSET_PATH = \"pose_landmarker_full.task\""))
         assertTrue(viewModel.contains("LandmarkKalman2D(fps = 30f)"))
         assertFalse("Phone smoother must not use 60fps timing when runtime delivery is ~30fps", viewModel.contains("LandmarkKalman2D(fps = 60f)"))
         assertTrue(kalman.contains("class LandmarkKalman2D(fps: Float = 30f"))
@@ -412,6 +413,7 @@ class CaptureNodeImplementationTest {
         assertTrue(gradle.contains("applicationIdSuffix = \".v2lab\""))
         assertTrue(gradle.contains("versionCode = 20260608"))
         assertTrue(gradle.contains("buildConfigField(\"String\", \"PIPELINE_PROFILE\", \"\\\"v2a\\\"\")"))
+        assertTrue(gradle.contains("buildConfigField(\"String\", \"POSE_LANDMARKER_MODEL\", \"\\\"pose_landmarker_full.task\\\"\")"))
         assertTrue(label.contains("Pocap V2 Lab"))
     }
 

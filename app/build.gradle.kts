@@ -40,7 +40,7 @@ android {
             applicationIdSuffix = ".v2lab"
             versionNameSuffix = "-v2lab"
             buildConfigField("String", "PIPELINE_PROFILE", "\"v2a\"")
-            buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_lite.task\"")
+            buildConfigField("String", "POSE_LANDMARKER_MODEL", "\"pose_landmarker_full.task\"")
         }
     }
 
