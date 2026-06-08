@@ -691,19 +691,22 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                     ) {
                         noPoseFrames = 0
                         val observedDisplayFrame = _observedDisplayFilter.update(xNorm, yNorm, visibility)
+                        val stableObservedX = observedDisplayFrame.x
+                        val stableObservedY = observedDisplayFrame.y
+                        val stableObservedVis = observedDisplayFrame.visibility
                         val state = _uiState.value.pipelineState
-                        // Collect raw MediaPipe landmarks for bone-length learning
+                        // Learn from detector-jump-stabilized evidence, not one-frame MediaPipe outliers.
                         if (state == HybridPosePipeline.PipelineState.BOOTSTRAPPING ||
                             (!_boneConstraints.isReady && state == HybridPosePipeline.PipelineState.CAPTURING)) {
-                            _boneConstraints.collectFrame(xNorm, yNorm, visibility)
+                            _boneConstraints.collectFrame(stableObservedX, stableObservedY, stableObservedVis)
                             if (!_boneConstraints.isReady) _boneConstraints.tryBuild()
                         }
                         if (!_hasSmoothedLandmarks) {
-                            // First frame: seed positions AND smoothed visibility from raw MediaPipe
-                            xNorm.copyInto(_smoothedX)
-                            yNorm.copyInto(_smoothedY)
+                            // First frame: seed positions AND smoothed visibility from stabilized visible evidence.
+                            stableObservedX.copyInto(_smoothedX)
+                            stableObservedY.copyInto(_smoothedY)
                             for (i in 0 until 33) {
-                                _smoothedVis[i] = visibility[i].coerceIn(0f, 1f)
+                                _smoothedVis[i] = stableObservedVis[i].coerceIn(0f, 1f)
                                 _lowConfidenceFrames[i] = if (_smoothedVis[i] < VIS_UNCERTAIN) 1 else 0
                                 if (_smoothedVis[i] >= VIS_UNCERTAIN) {
                                     _lastReliable2DX[i] = _smoothedX[i]
@@ -718,18 +721,18 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                             // flicker when vis oscillates near 0.20/0.30/0.50 threshold boundaries.
                             // α=0.25 → time constant ~3.5 frames (58ms fade), eliminates single-frame pops.
                             for (i in 0 until 33) {
-                                _smoothedVis[i] = 0.25f * visibility[i].coerceIn(0f, 1f) + 0.75f * _smoothedVis[i]
+                                _smoothedVis[i] = 0.25f * stableObservedVis[i].coerceIn(0f, 1f) + 0.75f * _smoothedVis[i]
                             }
                             for (i in 0 until 33) {
                                 val vis = _smoothedVis[i]  // smoothed — avoids mid-frame band switching
-                                val rawVis = visibility[i].coerceIn(0f, 1f)
+                                val rawVis = stableObservedVis[i].coerceIn(0f, 1f)
                                 val reappearing = _lowConfidenceFrames[i] >= 2 && rawVis >= VIS_UNCERTAIN
                                 val effectiveVis = if (reappearing) rawVis else vis
                                 if (reappearing) {
                                     _smoothedVis[i] = maxOf(_smoothedVis[i], rawVis)
                                 }
-                                val dx = xNorm[i] - _smoothedX[i]
-                                val dy = yNorm[i] - _smoothedY[i]
+                                val dx = stableObservedX[i] - _smoothedX[i]
+                                val dy = stableObservedY[i] - _smoothedY[i]
                                 val dist = sqrt(dx * dx + dy * dy)
                                 when {
                                     effectiveVis >= VIS_UNCERTAIN -> {
@@ -740,9 +743,9 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                             else -> MAX_JOINT_DELTA
                                         }
                                         val safeX = if (dist > maxDelta)
-                                            _smoothedX[i] + dx * (maxDelta / dist) else xNorm[i]
+                                            _smoothedX[i] + dx * (maxDelta / dist) else stableObservedX[i]
                                         val safeY = if (dist > maxDelta)
-                                            _smoothedY[i] + dy * (maxDelta / dist) else yNorm[i]
+                                            _smoothedY[i] + dy * (maxDelta / dist) else stableObservedY[i]
                                         // Saturate at 0.04 (~13px at 320): α=0.18 when still → 0.85 when fast.
                                         // Low floor = heavy smoothing for stationary joints (3× noise reduction),
                                         // high ceiling = near-zero lag during genuine fast movements.
@@ -767,11 +770,11 @@ class PocketMocapViewModel(application: Application) : AndroidViewModel(applicat
                                     }
                                     effectiveVis >= VIS_OCCLUDE -> {
                                         // ── Uncertain (0.20–0.50): conservative EMA, reject outliers ────
-                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, xNorm[i], yNorm[i])) {
+                                        if (dist < MAX_JOINT_DELTA && !wouldFlipLimb(i, stableObservedX[i], stableObservedY[i])) {
                                             val normSpeed = (dist / 0.04f).coerceIn(0f, 1f)
                                             val alpha = (0.12f + normSpeed * 0.28f).coerceIn(0.12f, 0.40f)
-                                            _smoothedX[i] = alpha * xNorm[i] + (1f - alpha) * _smoothedX[i]
-                                            _smoothedY[i] = alpha * yNorm[i] + (1f - alpha) * _smoothedY[i]
+                                            _smoothedX[i] = alpha * stableObservedX[i] + (1f - alpha) * _smoothedX[i]
+                                            _smoothedY[i] = alpha * stableObservedY[i] + (1f - alpha) * _smoothedY[i]
                                         } else if (_hasLastReliable2D[i]) {
                                             _smoothedX[i] = _lastReliable2DX[i]
                                             _smoothedY[i] = _lastReliable2DY[i]

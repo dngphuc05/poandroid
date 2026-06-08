@@ -44,10 +44,14 @@ class ObservedJointDisplayFilter(
         val outX = FloatArray(jointCount)
         val outY = FloatArray(jointCount)
         val outVisibility = FloatArray(jointCount)
+        val previousX = state.xSnapshot()
+        val previousY = state.ySnapshot()
+        val previousVisible = state.visibleSnapshot()
 
         for (index in 0 until jointCount) {
             updateJoint(index, rawX, rawY, rawVisibility, outX, outY, outVisibility)
         }
+        dampIsolatedDetectorJumps(previousX, previousY, previousVisible, outX, outY, outVisibility)
         stabilizeHandEndpoints(rawX, rawY, rawVisibility, outX, outY, outVisibility)
 
         return ObservedJointDisplayFrame(outX, outY, outVisibility)
@@ -114,6 +118,55 @@ class ObservedJointDisplayFilter(
     private fun predictionStepFor(index: Int): Float =
         if (isLowerBody(index) || isHandEndpoint(index)) 0f else maxPredictionStep
 
+    private fun dampIsolatedDetectorJumps(
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        dampCoreJoint(11, intArrayOf(12, 23, 24), previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampCoreJoint(12, intArrayOf(11, 23, 24), previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampCoreJoint(23, intArrayOf(11, 12, 24), previousX, previousY, previousVisible, outX, outY, outVisibility)
+        dampCoreJoint(24, intArrayOf(11, 12, 23), previousX, previousY, previousVisible, outX, outY, outVisibility)
+    }
+
+    private fun dampCoreJoint(
+        index: Int,
+        neighbors: IntArray,
+        previousX: FloatArray,
+        previousY: FloatArray,
+        previousVisible: BooleanArray,
+        outX: FloatArray,
+        outY: FloatArray,
+        outVisibility: FloatArray,
+    ) {
+        if (!previousVisible.getOrElse(index) { false } || outVisibility.getOrElse(index) { 0f } < visibleThreshold) return
+        val jointStep = distance(previousX[index], previousY[index], outX[index], outY[index])
+        if (jointStep < 0.035f) return
+        val stableNeighbors = neighbors.count { neighbor ->
+            previousVisible.getOrElse(neighbor) { false } &&
+                outVisibility.getOrElse(neighbor) { 0f } >= visibleThreshold &&
+                distance(previousX[neighbor], previousY[neighbor], outX[neighbor], outY[neighbor]) < 0.018f
+        }
+        if (stableNeighbors < 2) return
+        val nextX = lerp(previousX[index], outX[index], 0.22f)
+        val nextY = lerp(previousY[index], outY[index], 0.22f)
+        outX[index] = nextX
+        outY[index] = nextY
+        state.overwritePosition(index, nextX, nextY)
+    }
+
+    private fun distance(ax: Float, ay: Float, bx: Float, by: Float): Float {
+        val dx = bx - ax
+        val dy = by - ay
+        return sqrt(dx * dx + dy * dy)
+    }
+
+    private fun lerp(from: Float, to: Float, alpha: Float): Float =
+        from + (to - from) * alpha.coerceIn(0f, 1f)
+
     private fun stabilizeHandEndpoints(
         rawX: FloatArray,
         rawY: FloatArray,
@@ -177,6 +230,13 @@ private class DisplayJointState(private val jointCount: Int) {
     fun x(index: Int): Float = x[index]
 
     fun y(index: Int): Float = y[index]
+
+    fun xSnapshot(): FloatArray = x.copyOf()
+
+    fun ySnapshot(): FloatArray = y.copyOf()
+
+    fun visibleSnapshot(): BooleanArray =
+        BooleanArray(jointCount) { index -> hasPosition[index] && visibility[index] > 0f }
 
     fun overwritePosition(index: Int, nextX: Float, nextY: Float) {
         x[index] = nextX

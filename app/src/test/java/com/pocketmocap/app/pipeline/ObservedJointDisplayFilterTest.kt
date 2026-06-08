@@ -50,6 +50,77 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
+    fun isolatedShoulderJumpDuringStillTorsoIsDamped() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        y[11] = 0.35f
+        x[12] = 0.58f
+        y[12] = 0.35f
+        x[23] = 0.45f
+        y[23] = 0.55f
+        x[24] = 0.55f
+        y[24] = 0.55f
+        filter.update(x, y, v)
+
+        x[11] = 0.24f
+        val out = filter.update(x, y, v)
+
+        assertTrue("single-frame shoulder detector jump should be damped", out.x[11] > 0.34f)
+        assertTrue("other shoulder should remain stable", abs(out.x[12] - 0.58f) < 0.02f)
+    }
+
+    @Test
+    fun coherentTorsoMovementStillFollowsBody() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.42f
+        x[12] = 0.58f
+        x[23] = 0.45f
+        x[24] = 0.55f
+        filter.update(x, y, v)
+
+        x[11] = 0.34f
+        x[12] = 0.50f
+        x[23] = 0.37f
+        x[24] = 0.47f
+        val out = filter.update(x, y, v)
+
+        assertTrue("coherent torso shift should not be frozen", out.x[11] < 0.39f)
+        assertTrue("coherent hip shift should not be frozen", out.x[23] < 0.42f)
+    }
+
+    @Test
+    fun isolatedHandEndpointJumpDuringStillArmChainIsDamped() {
+        val filter = ObservedJointDisplayFilter()
+        val v = FloatArray(33) { 0.95f }
+        val x = FloatArray(33) { 0.5f }
+        val y = FloatArray(33) { 0.5f }
+
+        x[11] = 0.40f
+        y[11] = 0.35f
+        x[13] = 0.35f
+        y[13] = 0.48f
+        x[15] = 0.32f
+        y[15] = 0.62f
+        x[19] = 0.28f
+        y[19] = 0.62f
+        filter.update(x, y, v)
+
+        x[19] = 0.62f
+        val out = filter.update(x, y, v)
+
+        assertTrue("isolated hand endpoint detector jump should be damped", out.x[19] < 0.44f)
+        assertTrue("elbow should remain near the stable arm chain", abs(out.x[13] - 0.35f) < 0.03f)
+    }
+
+    @Test
     fun lowerBodyNoiseIsNotPredictedPastMeasuredLegRange() {
         val filter = ObservedJointDisplayFilter()
         val v = FloatArray(33) { 0.95f }
