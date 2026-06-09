@@ -89,14 +89,27 @@ Handraise pose PC reconstructed 3D skeleton.
 
 Handraise pose PC constructed XY/XZ/YZ review view.
 
-## Build
-```powershell
-cd D:\pocket-mocap\poandroid
-.\gradlew.bat :app:assembleV2LabDebug
-```
-
 ## Test
 ```powershell
 cd D:\pocket-mocap\poandroid
 .\gradlew.bat :app:testV2LabDebugUnitTest
 ```
+
+## Build APK
+```powershell
+cd D:\pocket-mocap\poandroid
+.\gradlew.bat :app:assembleV2LabDebug
+```
+
+The debug APK is written to `app/build/outputs/apk/v2Lab/debug/app-v2Lab-debug.apk`.
+
+## APK Usage Flow
+1. Download the Android APK from the project release assets or copy the built APK to the phone.
+2. Open the APK on the Android device and allow installation from the selected source if Android asks.
+3. Open Pocap Android after installation and grant the required camera/network permissions.
+4. On the PC, open Pocap/POPC, create a session, and keep the session QR code or join details visible.
+5. On the phone, scan the QR code from the PC session screen, or fill in the PC address/session code manually if scanning is unavailable.
+6. Confirm the phone appears as a joined device in POPC and that the phone shows connected/capture-ready state.
+7. For multi-phone capture, repeat the join process on each additional Android phone and verify every device card in POPC.
+8. Follow calibration prompts when ChArUco calibration is required, then wait for POPC to mark calibration/readiness acceptable.
+9. Start capture from POPC, perform the motion, stop capture, and review the reconstructed outputs on the PC.
