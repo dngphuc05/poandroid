@@ -14,50 +14,80 @@ The Android app runs phone-side capture, pose landmark detection, capture review
 ## Capture Evidence
 Source capture: `cap_20260609_145233_301076_003` from session `301076`.
 
-Each section shows the same pose as three reconstruction views:
-- **XY front x/y:** front body silhouette and left/right layout.
-- **XZ floor x/z:** depth and floor-plane body orientation.
-- **YZ side y/z:** upright body line, depth branch, and limb straightness.
+Each pose section shows three different evidence types from `capture_evidence`:
+- normal phone capture image;
+- PC reconstructed 3D skeleton image;
+- PC constructed view image with XY, XZ, and YZ review panels.
 
 ## Capture Evidence: T pose
 
-| XY front x/y | XZ floor x/z | YZ side y/z |
-| --- | --- | --- |
-| ![T pose XY view](docs/capture_evidence/t_pose_xy_view.png) | ![T pose XZ view](docs/capture_evidence/t_pose_xz_view.png) | ![T pose YZ view](docs/capture_evidence/t_pose_yz_view.png) |
+![T pose normal capture](docs/capture_evidence/T%20pose.jpg)
 
-Standing T-pose evidence. The front view checks arm spread and shoulder alignment, the floor view checks depth symmetry, and the side view checks upright posture.
+T pose 2D phone capture.
 
-## Capture Evidence: A pose (back view)
+![T pose 3D reconstruction](docs/capture_evidence/T%20pose3d.png)
 
-| XY front x/y | XZ floor x/z | YZ side y/z |
-| --- | --- | --- |
-| ![A pose (back view) XY view](docs/capture_evidence/a_pose_xy_view.png) | ![A pose (back view) XZ view](docs/capture_evidence/a_pose_xz_view.png) | ![A pose (back view) YZ view](docs/capture_evidence/a_pose_yz_view.png) |
+T pose PC reconstructed 3D skeleton.
 
-Relaxed A-pose evidence from the back. The views verify arms hang downward, legs remain straight, and the torso stays upright through depth.
+![T pose constructed view](docs/capture_evidence/T%20poseview.png)
+
+T pose PC constructed XY/XZ/YZ review view.
+
+## Capture Evidence: A pose
+
+![A pose normal capture](docs/capture_evidence/A%20pose.jpg)
+
+A pose 2D phone capture.
+
+![A pose 3D reconstruction](docs/capture_evidence/A%20pose3d.png)
+
+A pose PC reconstructed 3D skeleton.
+
+![A pose constructed view](docs/capture_evidence/A%20poseview.png)
+
+A pose PC constructed XY/XZ/YZ review view.
 
 ## Capture Evidence: 45 deg left
 
-| XY front x/y | XZ floor x/z | YZ side y/z |
-| --- | --- | --- |
-| ![45 deg left XY view](docs/capture_evidence/45_deg_left_xy_view.png) | ![45 deg left XZ view](docs/capture_evidence/45_deg_left_xz_view.png) | ![45 deg left YZ view](docs/capture_evidence/45_deg_left_yz_view.png) |
+![45 deg left normal capture](docs/capture_evidence/45deg_left.jpg)
 
-Left-turn evidence. The views show front silhouette, floor-plane rotation, and side-plane body line for the same capture frame family.
+45 degree left 2D phone capture.
+
+![45 deg left 3D reconstruction](docs/capture_evidence/45deg_left3d.png)
+
+45 degree left PC reconstructed 3D skeleton.
+
+![45 deg left constructed view](docs/capture_evidence/45deg_leftview.png)
+
+45 degree left PC constructed XY/XZ/YZ review view.
 
 ## Capture Evidence: 45 deg right
 
-| XY front x/y | XZ floor x/z | YZ side y/z |
-| --- | --- | --- |
-| ![45 deg right XY view](docs/capture_evidence/45_deg_right_xy_view.png) | ![45 deg right XZ view](docs/capture_evidence/45_deg_right_xz_view.png) | ![45 deg right YZ view](docs/capture_evidence/45_deg_right_yz_view.png) |
+![45 deg right normal capture](docs/capture_evidence/45deg_right.jpg)
 
-Right-turn evidence. The views verify that yaw is represented as body rotation without collapsing shoulders, hips, or legs.
+45 degree right 2D phone capture.
+
+![45 deg right 3D reconstruction](docs/capture_evidence/45deg_right3d.png)
+
+45 degree right PC reconstructed 3D skeleton.
+
+![45 deg right constructed view](docs/capture_evidence/45deg_rightview.png)
+
+45 degree right PC constructed XY/XZ/YZ review view.
 
 ## Capture Evidence: Handraise pose
 
-| XY front x/y | XZ floor x/z | YZ side y/z |
-| --- | --- | --- |
-| ![Handraise pose XY view](docs/capture_evidence/handraise_pose_xy_view.png) | ![Handraise pose XZ view](docs/capture_evidence/handraise_pose_xz_view.png) | ![Handraise pose YZ view](docs/capture_evidence/handraise_pose_yz_view.png) |
+![Handraise pose normal capture](docs/capture_evidence/Handraise_pose.jpg)
 
-Raised-hand evidence. The views check hand height, head-relative depth, and torso stability while the arm is lifted.
+Handraise pose 2D phone capture.
+
+![Handraise pose 3D reconstruction](docs/capture_evidence/Handraise_pose3d.png)
+
+Handraise pose PC reconstructed 3D skeleton.
+
+![Handraise pose constructed view](docs/capture_evidence/Handraise_poseview.png)
+
+Handraise pose PC constructed XY/XZ/YZ review view.
 
 ## Build
 ```powershell
