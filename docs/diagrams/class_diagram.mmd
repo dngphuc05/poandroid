@@ -1,77 +1,193 @@
 classDiagram
-  class CaptureScreen {
-    +startSession()
-    +stopSession()
-    +renderOverlay()
-  }
-  class HybridPosePipeline {
-    +processCameraFrame()
-    +selectSubject()
-    +emitLandmarks()
-  }
-  class SubjectPoseSelector {
-    +scoreCandidate()
-    +updateLock()
-  }
-  class EvidencePacketizer {
-    +buildFramePacket()
-    +attachCameraMetadata()
-  }
-  class SessionSyncClient {
-    +joinSession()
-    +sendFramePacket()
-    +receiveControl()
-  }
-  class OperatorDashboard {
-    +createSession()
-    +monitorPhones()
-    +reviewCapture()
-  }
-  class CaptureIngestServer {
-    +receiveFramePacket()
-    +routeBySession()
-  }
-  class FrameSynchronizer {
-    +alignFrames()
-    +detectDrops()
-  }
-  class CharucoCalibrationService {
-    +solveIntrinsic()
-    +solveExtrinsic()
-    +storeProfile()
-  }
-  class PipelineOrchestrator {
-    +processFrame()
-    +applyMetricScale()
-    +emitCanonicalPose()
-  }
-  class CanonicalSkeletonSolver {
-    +stabilizeLengths()
-    +applyBodyConstraints()
-    +repairStraightLimbs()
-  }
-  class SevenModelEvidenceStack {
-    +evaluatePoseEvidence()
-    +evaluateMetricEvidence()
-    +runTemporalModel()
-  }
-  class ArtifactWriter {
-    +writeReplayBundle()
-    +writeMetricsCsv()
-    +writeMp4Review()
+  direction LR
+
+  namespace poandroid_phone_capture {
+    class CaptureScreen {
+      +startCapture(sessionId)
+      +stopCapture()
+      +renderLiveOverlay()
+      +showCalibrationPrompt()
+      +showSyncStatus()
+    }
+    class CameraFrameSource {
+      +openCamera()
+      +readFrame()
+      +readRotation()
+      +readTimestamp()
+    }
+    class DeviceCameraProfile {
+      +imageWidth
+      +imageHeight
+      +rotationDegrees
+      +intrinsicsHint
+      +deviceId
+    }
+    class PhoneSevenModelEvidenceStack {
+      +detectPoseLandmarks(frame)
+      +detectHandLandmarks(frame)
+      +detectFaceLandmarks(frame)
+      +estimateSegmentation(frame)
+      +estimateDepthMetricHints(frame)
+      +filterTemporalMotion(landmarks)
+      +buildPoseSupportEvidence()
+    }
+    class SubjectPoseSelector {
+      +scoreCandidate(candidate)
+      +updateSubjectLock()
+      +selectTrackedSubject()
+    }
+    class OverlayEvidenceFilter {
+      +stabilizeVisibleLandmarks()
+      +guardEndpoints()
+      +applyConfidenceGates()
+    }
+    class EvidenceFramePacket {
+      +frameIndex
+      +timestampUs
+      +deviceId
+      +imageSize
+      +landmarks2d
+      +confidence
+      +sceneEvidence
+      +cameraMetadata
+    }
+    class EvidencePacketBuilder {
+      +buildFramePacket()
+      +attachCameraMetadata()
+      +attachSceneEvidence()
+      +attachModelConfidences()
+    }
+    class PhoneSessionSyncClient {
+      +joinSession(sessionCode)
+      +sendHeartbeat()
+      +sampleClockOffset()
+      +sendFramePacket(packet)
+      +receiveCaptureControl()
+    }
+    class LocalCaptureCache {
+      +writeFrameDebug()
+      +writeReplayFragment()
+      +recoverPendingPackets()
+    }
   }
 
-  CaptureScreen --> HybridPosePipeline
-  HybridPosePipeline --> SubjectPoseSelector
-  HybridPosePipeline --> EvidencePacketizer
-  EvidencePacketizer --> SessionSyncClient
-  SessionSyncClient --> CaptureIngestServer
-  OperatorDashboard --> CaptureIngestServer
-  CaptureIngestServer --> FrameSynchronizer
-  FrameSynchronizer --> PipelineOrchestrator
-  CharucoCalibrationService --> PipelineOrchestrator
-  SevenModelEvidenceStack --> PipelineOrchestrator
-  PipelineOrchestrator --> CanonicalSkeletonSolver
-  PipelineOrchestrator --> ArtifactWriter
-  OperatorDashboard --> CharucoCalibrationService
-  OperatorDashboard --> ArtifactWriter
+  namespace popc_pc_reconstruction {
+    class OperatorDashboard {
+      +createSession()
+      +registerPhone()
+      +startSinglePhoneMode()
+      +startMultiPhoneMode()
+      +startCalibrationWorkflow()
+      +reviewCaptureEvidence()
+    }
+    class CaptureIngestServer {
+      +acceptHttpControl()
+      +acceptWebSocketFrames()
+      +routePacketBySession()
+      +trackDeviceHealth()
+    }
+    class DeviceRegistry {
+      +registerDevice(deviceId)
+      +updateHeartbeat()
+      +resolveDeviceProfile()
+    }
+    class FrameSynchronizer {
+      +estimateClockOffset()
+      +alignFrameSets()
+      +detectDropouts()
+      +emitSynchronizedFrames()
+    }
+    class CharucoCalibrationService {
+      +collectBoardObservations()
+      +solveIntrinsicCalibration()
+      +solveExtrinsicCalibration()
+      +validateReprojectionError()
+      +storeCalibrationProfile()
+    }
+    class CalibrationProfile {
+      +cameraMatrix
+      +distortionCoefficients
+      +extrinsicTransforms
+      +boardId
+      +qualityMetrics
+    }
+    class EvidenceStore {
+      +writeRawPackets()
+      +writeReplayBundle()
+      +loadReplayBundle()
+      +storeAcceptedSceneMetrics()
+    }
+    class PCSevenModelEvidenceStack {
+      +validatePoseEvidence()
+      +evaluateMetricWitnesses()
+      +runDepthEvidenceModel()
+      +runTemporalModel()
+      +runPoseLifter()
+      +scoreCanonicalSupport()
+    }
+    class PipelineOrchestrator {
+      +processFrameSet()
+      +triangulate3D()
+      +applyMetricScale()
+      +applyHeightDistanceTargets()
+      +emitCanonicalPose()
+    }
+    class CanonicalSkeletonSolver {
+      +stabilizeSegmentLengths()
+      +applyBodyScale()
+      +applyTorsoGuards()
+      +repairStraightLimbs()
+      +limitJitter()
+    }
+    class MetricsValidator {
+      +measureReprojectionRmse()
+      +measureJointAngles()
+      +measureTemporalJitter()
+      +measureDropout()
+      +writeQualitySummary()
+    }
+    class ReviewRenderer {
+      +renderNormalEvidence()
+      +render3DReconstruction()
+      +renderConstructedView()
+      +exportMp4Review()
+    }
+    class ArtifactWriter {
+      +writeCsv()
+      +writeJson()
+      +writeImages()
+      +writeReadmeEvidence()
+      +writeMp4()
+    }
+  }
+
+  CaptureScreen --> CameraFrameSource : requests frames
+  CameraFrameSource --> DeviceCameraProfile : supplies image metadata
+  CameraFrameSource --> PhoneSevenModelEvidenceStack : frame stream
+  PhoneSevenModelEvidenceStack --> SubjectPoseSelector : pose candidates
+  SubjectPoseSelector --> OverlayEvidenceFilter : selected landmarks
+  OverlayEvidenceFilter --> EvidencePacketBuilder : filtered evidence
+  DeviceCameraProfile --> EvidencePacketBuilder : camera metadata
+  EvidencePacketBuilder --> EvidenceFramePacket : creates
+  EvidenceFramePacket --> PhoneSessionSyncClient : queued packet
+  PhoneSessionSyncClient --> LocalCaptureCache : local replay copy
+  CaptureScreen --> PhoneSessionSyncClient : session control
+
+  PhoneSessionSyncClient --> CaptureIngestServer : HTTP/WebSocket packets
+  CaptureIngestServer --> DeviceRegistry : device id + heartbeat
+  CaptureIngestServer --> FrameSynchronizer : packet stream
+  CaptureIngestServer --> EvidenceStore : raw packet archive
+  OperatorDashboard --> CaptureIngestServer : session commands
+  OperatorDashboard --> CharucoCalibrationService : calibration workflow
+  CharucoCalibrationService --> CalibrationProfile : creates/updates
+  CalibrationProfile --> FrameSynchronizer : extrinsic transforms
+  CalibrationProfile --> PipelineOrchestrator : intrinsics + extrinsics
+  FrameSynchronizer --> PCSevenModelEvidenceStack : synchronized frames
+  EvidenceStore --> PCSevenModelEvidenceStack : replay frames
+  PCSevenModelEvidenceStack --> PipelineOrchestrator : validated evidence
+  PipelineOrchestrator --> CanonicalSkeletonSolver : metric 3D joints
+  CanonicalSkeletonSolver --> MetricsValidator : canonical skeleton
+  CanonicalSkeletonSolver --> ReviewRenderer : canonical skeleton
+  MetricsValidator --> ArtifactWriter : quality metrics
+  ReviewRenderer --> ArtifactWriter : normal/3D/view images + MP4
+  ArtifactWriter --> EvidenceStore : capture artifacts
