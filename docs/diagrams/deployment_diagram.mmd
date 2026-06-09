@@ -1,36 +1,130 @@
 flowchart TB
-  subgraph PhoneA["Android phone A"]
-    AApp["poandroid APK"]
-    ACamera["Camera + IMU"]
-    AML["On-device ML evidence stack"]
-    ACache["Capture cache"]
-    ACamera --> AML --> AApp --> ACache
+  %% Deployment diagram aligned with the detailed component-and-connector view.
+  %% It shows runtime placement, machine boundaries, external connectors, and persisted artifacts.
+
+  subgraph FIELD["Physical capture space"]
+    SUBJECT["Capture subject\nbody motion visible to phone cameras"]
+    CHARUCO["Physical ChArUco board\nintrinsic and extrinsic calibration target"]
+    LIGHTING["Room conditions\nlighting, background, floor visibility"]
   end
 
-  subgraph PhoneB["Android phone B..N optional"]
-    BApp["poandroid APK"]
-    BCamera["Camera + IMU"]
-    BML["On-device ML evidence stack"]
-    BCamera --> BML --> BApp
+  subgraph PHONE_A_DEVICE["Android phone A"]
+    direction TB
+    A_ANDROID["Android OS\nCamera2, sensors, media projection"]
+    A_APK["poandroid APK\nphone capture node"]
+    A_UI["Capture screen\nlink, join, calibration, live overlay, REC"]
+    A_CAMERA["Camera/IMU interface\nCPU frame, timestamp_us, rotation"]
+    A_PROFILE["Device profile\ncamera id, resolution, rotation,\nheight hint, intrinsics hint"]
+    A_PHONE_MODELS["Phone evidence stack\npose, hand, face, segmentation,\ndepth/metric hints, temporal filters,\npose support"]
+    A_SUBJECT["Subject selection/tracking\nbody lock, confidence gates,\nbackground rejection"]
+    A_FILTERS["Display/evidence filters\nlandmark smoothing, endpoint guards,\ntorso identity guards"]
+    A_PACKET["Frame packet builder\n33 landmarks, confidences,\nscene evidence, frame index"]
+    A_SYNC["Phone sync client\nHTTP control, WebSocket stream,\nclock samples, heartbeat"]
+    A_CACHE[("Local phone cache\nscreen MP4, replay fragments,\ndiagnostics")]
+
+    A_ANDROID --> A_APK
+    A_APK --> A_UI
+    A_APK --> A_CAMERA
+    A_CAMERA --> A_PROFILE
+    A_CAMERA --> A_PHONE_MODELS
+    A_PHONE_MODELS --> A_SUBJECT
+    A_SUBJECT --> A_FILTERS
+    A_FILTERS --> A_PACKET
+    A_PROFILE --> A_PACKET
+    A_PACKET --> A_SYNC
+    A_PACKET --> A_CACHE
+    A_UI --> A_SYNC
   end
 
-  subgraph PC["Windows PC workstation"]
-    Electron["popc Electron operator app"]
-    Server["Python reconstruction server"]
-    Calib["ChArUco intrinsic/extrinsic calibration module"]
-    Models["PC seven-model ML stack"]
-    Renderer["Replay renderer / MP4 exporter"]
-    Disk[("Pocap session storage")]
-    Electron <--> Server
-    Server --> Calib
-    Server --> Models
-    Server --> Renderer
-    Server --> Disk
-    Renderer --> Disk
+  subgraph PHONE_N_DEVICE["Android phone B..N optional multi-phone nodes"]
+    direction TB
+    N_APK["poandroid APK"]
+    N_CAMERA["Camera/IMU interface"]
+    N_MODELS["Phone evidence stack"]
+    N_PACKET["Frame packet builder"]
+    N_SYNC["Phone sync client"]
+
+    N_APK --> N_CAMERA --> N_MODELS --> N_PACKET --> N_SYNC
   end
 
-  PhoneA -->|single-phone stream| Server
-  PhoneA -->|multi-phone synchronized stream| Server
-  PhoneB -->|multi-phone synchronized stream| Server
-  Server -->|session state, health, capture control| PhoneA
-  Server -->|session state, health, capture control| PhoneB
+  subgraph LAN["Local Wi-Fi / LAN"]
+    HTTP["HTTP control\nhealth, link, session join,\nstart/stop, calibration prompts"]
+    WS["WebSocket / Socket.IO frame stream\nframe packets, clock samples,\nheartbeats, capture events"]
+  end
+
+  subgraph PC_DEVICE["Windows laptop / PC workstation"]
+    direction TB
+
+    subgraph POPC_APP["popc Electron app"]
+      ELECTRON_MAIN["Electron main process\nserver lifecycle, packaged paths,\nartifact directory bridge"]
+      RENDERER["React renderer\noperator dashboard, session overview,\nserver panel, review UI"]
+      ASSET_UI["Avatar/environment and evidence views\nnormal image, 3D image, constructed views"]
+    end
+
+    subgraph PYTHON_SERVER["Bundled Python server on localhost:8090"]
+      ROUTER["Session router + capture ingest\nHTTP/WebSocket endpoints,\nlobby/device registry"]
+      SYNC_HUB["Synchronization hub\nclock offset, frame ordering,\ndropout detection, aligned frame sets"]
+      CALIB["Calibration workflow\nChArUco observation collection,\noperator quality review"]
+      INTRINSIC["ChArUco intrinsic calibration\ncamera matrix, distortion,\nper-phone profile"]
+      EXTRINSIC["ChArUco extrinsic calibration\nphone-to-session transform,\nmulti-phone alignment"]
+      STORE["Evidence store\nraw packets, accepted scene metrics,\nreplay bundles"]
+      PC_MODELS["Seven-model PC evidence stack\nlandmark evidence, depth/scale,\ncontact/floor, reliability,\ncalibration quality, retarget quality,\ntemporal occlusion lifter"]
+      RECON["3D reconstruction orchestrator\nDLT/triangulation, metric scale,\nheight/distance targets, constraints"]
+      CANON["Canonical skeleton solver\nbody scale, segment memory,\ntorso/limb guards, floor support"]
+      METRICS["Metrics and validation\nheight, angles, jitter, floor contact,\nreprojection, dropout"]
+      REVIEW["Review renderer\nnormal capture, 3D view,\nXY/XZ/YZ constructed view, MP4"]
+      ARTIFACTS["Artifact writer\nCSV, JSON, images, README evidence,\nreview videos"]
+
+      ROUTER --> SYNC_HUB
+      ROUTER --> STORE
+      SYNC_HUB --> PC_MODELS
+      STORE --> PC_MODELS
+      CALIB --> INTRINSIC
+      CALIB --> EXTRINSIC
+      INTRINSIC --> ROUTER
+      INTRINSIC --> RECON
+      EXTRINSIC --> SYNC_HUB
+      EXTRINSIC --> RECON
+      PC_MODELS --> RECON
+      RECON --> CANON
+      CANON --> METRICS
+      CANON --> REVIEW
+      METRICS --> ARTIFACTS
+      REVIEW --> ARTIFACTS
+      STORE --> ARTIFACTS
+    end
+
+    MODEL_DIR[("Packaged model directory\nV2 student agents,\npose lifter, metric evidence assets")]
+    SESSION_DIR[("User session storage\nDocuments/Pocap/sessions\nsessions, captures, replay bundles")]
+    REPORT_DIR[("Report evidence directory\nREADME images, Mermaid diagrams,\nanalysis exports")]
+
+    ELECTRON_MAIN --> PYTHON_SERVER
+    RENDERER <--> ROUTER
+    RENDERER <--> METRICS
+    ASSET_UI <--> REVIEW
+    MODEL_DIR --> PC_MODELS
+    MODEL_DIR --> RECON
+    STORE --> SESSION_DIR
+    ARTIFACTS --> SESSION_DIR
+    ARTIFACTS --> REPORT_DIR
+  end
+
+  SUBJECT --> A_CAMERA
+  SUBJECT --> N_CAMERA
+  LIGHTING --> A_CAMERA
+  LIGHTING --> N_CAMERA
+  CHARUCO --> A_CAMERA
+  CHARUCO --> N_CAMERA
+  CHARUCO --> CALIB
+
+  A_SYNC --> HTTP
+  A_SYNC --> WS
+  N_SYNC --> HTTP
+  N_SYNC --> WS
+  HTTP --> ROUTER
+  WS --> ROUTER
+  ROUTER --> HTTP
+  ROUTER --> WS
+
+  SESSION_DIR --> CONSUMER["Report / evaluation consumers\noperator review, thesis figures,\nregression replay loop"]
+  REPORT_DIR --> CONSUMER

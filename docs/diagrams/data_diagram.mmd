@@ -1,79 +1,303 @@
 erDiagram
   SESSION ||--o{ CAPTURE : contains
-  SESSION ||--o{ PHONE_NODE : joins
-  PHONE_NODE ||--o{ FRAME_PACKET : sends
-  CAPTURE ||--o{ FRAME_PACKET : records
-  FRAME_PACKET ||--o{ LANDMARK_2D : contains
-  CAPTURE ||--o{ RECONSTRUCTION_FRAME : produces
-  RECONSTRUCTION_FRAME ||--o{ JOINT_3D : contains
-  CAPTURE ||--o{ METRIC_SAMPLE : measures
+  SESSION ||--o{ PHONE_NODE : registers
+  SESSION ||--o{ SESSION_EVENT : records
+  SESSION ||--o{ CALIBRATION_PROFILE : owns
+  SESSION ||--o{ REPLAY_BUNDLE : produces
+  PHONE_NODE ||--|| DEVICE_PROFILE : reports
+  PHONE_NODE ||--o{ SYNC_SAMPLE : sends
+  PHONE_NODE ||--o{ FRAME_PACKET : streams
+  PHONE_NODE ||--o{ CALIBRATION_OBSERVATION : captures
+  DEVICE_PROFILE ||--o{ FRAME_PACKET : annotates
+  CALIBRATION_BOARD ||--o{ CALIBRATION_OBSERVATION : appears_in
+  CALIBRATION_OBSERVATION }o--|| CALIBRATION_PROFILE : solves
+  CALIBRATION_PROFILE ||--o{ FRAME_PACKET : calibrates
+  CALIBRATION_PROFILE ||--o{ SYNCHRONIZED_FRAME_SET : transforms
+  CAPTURE ||--o{ FRAME_PACKET : records_when_active
+  CAPTURE ||--o{ SYNCHRONIZED_FRAME_SET : reconstructs_from
   CAPTURE ||--o{ ARTIFACT : exports
-  CALIBRATION_PROFILE ||--o{ PHONE_NODE : applies_to
-  CALIBRATION_PROFILE ||--o{ CAPTURE : used_by
+  CAPTURE ||--o{ CAPTURE_SUMMARY : summarizes
+  FRAME_PACKET ||--o{ LANDMARK_2D : contains
+  FRAME_PACKET ||--o{ PHONE_MODEL_EVIDENCE : carries
+  FRAME_PACKET ||--o{ SCENE_EVIDENCE : carries
+  FRAME_PACKET }o--|| SYNCHRONIZED_FRAME_SET : aligned_into
+  SYNCHRONIZED_FRAME_SET ||--o{ PC_MODEL_EVIDENCE : evaluated_by
+  SYNCHRONIZED_FRAME_SET ||--o{ RECONSTRUCTION_FRAME : produces
+  RECONSTRUCTION_FRAME ||--o{ JOINT_3D : contains
+  RECONSTRUCTION_FRAME ||--o{ METRIC_SAMPLE : measures
+  RECONSTRUCTION_FRAME ||--o{ VALIDATION_SAMPLE : validates
+  RECONSTRUCTION_FRAME ||--o{ MODEL_DECISION : explains
+  MODEL_REGISTRY ||--o{ PHONE_MODEL_EVIDENCE : identifies
+  MODEL_REGISTRY ||--o{ PC_MODEL_EVIDENCE : identifies
+  MODEL_REGISTRY ||--o{ MODEL_DECISION : identifies
+  REPLAY_BUNDLE ||--o{ FRAME_PACKET : replays
+  REPLAY_BUNDLE ||--o{ RECONSTRUCTION_FRAME : replays
+  REPLAY_BUNDLE ||--o{ ARTIFACT : references
+  SESSION_FOLDER ||--o{ SESSION : stores
+  SESSION_FOLDER ||--o{ ARTIFACT : stores
 
   SESSION {
-    string session_code
-    datetime started_at
+    string session_code PK
     string mode "single_phone | multi_phone"
-    string operator_notes
-  }
-  PHONE_NODE {
-    string device_id
-    string subsystem "poandroid"
-    string camera_profile_id
-    string sync_status
-  }
-  CAPTURE {
-    string capture_id
-    string session_code
+    string state "draft | online | stopped | saved"
+    datetime created_at
     datetime started_at
-    string status
+    datetime stopped_at
+    string operator_notes
+    string selected_calibration_profile_id
   }
+
+  PHONE_NODE {
+    string device_id PK
+    string session_code FK
+    string role "single | host | secondary"
+    string connection_status
+    string sync_status
+    string calibration_status
+    int latest_frame_index
+    float latest_rtt_ms
+    datetime last_seen_at
+  }
+
+  DEVICE_PROFILE {
+    string device_id PK
+    string app_build
+    string phone_model
+    int image_width
+    int image_height
+    int rotation_degrees
+    string camera_facing
+    float camera_height_m
+    string intrinsics_hint_status
+  }
+
+  SYNC_SAMPLE {
+    string sync_sample_id PK
+    string device_id FK
+    int phone_timestamp_us
+    int pc_received_timestamp_us
+    float estimated_offset_ms
+    float rtt_ms
+    string quality
+  }
+
+  CALIBRATION_BOARD {
+    string board_id PK
+    string board_type "charuco"
+    int squares_x
+    int squares_y
+    float square_length_m
+    float marker_length_m
+  }
+
+  CALIBRATION_OBSERVATION {
+    string observation_id PK
+    string device_id FK
+    string capture_id FK
+    string board_id FK
+    int frame_index
+    int detected_corner_count
+    float reprojection_rmse_px
+    string observation_status
+  }
+
+  CALIBRATION_PROFILE {
+    string profile_id PK
+    string session_code FK
+    string device_id FK
+    string intrinsic_status
+    string extrinsic_status
+    string camera_matrix_json
+    string distortion_json
+    string extrinsic_transform_json
+    float reprojection_rmse_px
+    float calibration_quality
+  }
+
+  CAPTURE {
+    string capture_id PK
+    string session_code FK
+    string status "idle | recording | stopped | exported"
+    datetime started_at
+    datetime stopped_at
+    int recorded_frame_count
+    int reconstruction_frame_count
+    string calibration_profile_id FK
+  }
+
   FRAME_PACKET {
+    string packet_id PK
+    string capture_id FK
+    string session_code FK
+    string device_id FK
     int frame_index
     int timestamp_us
-    string device_id
-    float image_width
-    float image_height
-    string scene_evidence_status
+    int image_width
+    int image_height
+    int rotation_degrees
+    string packet_schema
+    string transport "websocket"
   }
+
   LANDMARK_2D {
+    string packet_id FK
     int joint_index
     float x
     float y
+    float z_rel
     float visibility
     float presence
     float confidence
+    string source "phone_filtered | raw_model"
   }
+
+  PHONE_MODEL_EVIDENCE {
+    string packet_id FK
+    string model_id FK
+    string evidence_type "pose | hand | face | segmentation | depth | temporal | support"
+    float confidence
+    float latency_ms
+    string status
+    string payload_ref
+  }
+
+  SCENE_EVIDENCE {
+    string packet_id FK
+    float camera_height_m
+    float floor_confidence
+    float subject_bbox_x
+    float subject_bbox_y
+    float subject_bbox_w
+    float subject_bbox_h
+    string scene_status
+  }
+
+  SYNCHRONIZED_FRAME_SET {
+    string frame_set_id PK
+    string capture_id FK
+    int canonical_frame_index
+    int device_count
+    float max_timestamp_skew_ms
+    string dropout_status
+    string calibration_profile_id FK
+  }
+
+  MODEL_REGISTRY {
+    string model_id PK
+    string subsystem "phone | pc"
+    string model_name
+    string model_role
+    string model_version
+    string runtime "mediapipe | torch | onnx"
+  }
+
+  PC_MODEL_EVIDENCE {
+    string frame_set_id FK
+    string model_id FK
+    string agent_name "landmark | depth_scale | contact_floor | reliability | calibration | retarget | temporal"
+    string status
+    float confidence
+    float latency_ms
+    string output_ref
+  }
+
   RECONSTRUCTION_FRAME {
+    string reconstruction_id PK
+    string frame_set_id FK
     int frame_index
     string reconstruction_status
+    string source "triangulation | constrained | held_previous"
     float height_m
+    float root_x_m
+    float root_y_m
+    float root_z_m
     float reprojection_rmse_px
-    float jitter_m
+    float end_to_end_latency_ms
   }
+
   JOINT_3D {
+    string reconstruction_id FK
     int joint_index
     float x_m
     float y_m
     float z_m
     float confidence
+    int contributing_view_count
+    float reprojection_error_px
   }
+
+  MODEL_DECISION {
+    string reconstruction_id FK
+    string model_id FK
+    string decision_type "accept | clamp | hold | repair | reject"
+    string joint_group
+    float before_value
+    float after_value
+    string reason
+  }
+
   METRIC_SAMPLE {
-    int frame_index
+    string reconstruction_id FK
+    float body_height_m
+    float limb_length_spread
     float elbow_angle_deg
     float knee_angle_deg
-    float torso_z_bend_m
-    float limb_length_spread
+    float torso_bend_m
+    float foot_floor_distance_m
   }
-  CALIBRATION_PROFILE {
-    string profile_id
-    string intrinsic_status
-    string extrinsic_status
-    string charuco_board_id
+
+  VALIDATION_SAMPLE {
+    string reconstruction_id FK
+    float jitter_m
+    float root_step_m
+    float bone_step_m
+    float dropout_rate
+    string validation_status
   }
+
+  REPLAY_BUNDLE {
+    string replay_bundle_id PK
+    string session_code FK
+    string capture_id FK
+    string raw_packets_path
+    string reconstruction_path
+    string metrics_path
+    string created_by
+  }
+
+  CAPTURE_SUMMARY {
+    string capture_id PK
+    float median_height_m
+    float p95_jitter_m
+    float p95_root_step_m
+    float p95_bone_spread
+    int held_frame_count
+    string north_star_status
+  }
+
   ARTIFACT {
+    string artifact_id PK
+    string capture_id FK
     string path
-    string type "csv | json | mp4 | image | readme"
+    string type "csv | json | mp4 | normal_image | reconstruction_image | view_image | readme | diagram"
     string source_subsystem
+    string description
+  }
+
+  SESSION_EVENT {
+    string event_id PK
+    string session_code FK
+    datetime timestamp
+    string event_type
+    string actor "operator | phone | server"
+    string payload_ref
+  }
+
+  SESSION_FOLDER {
+    string folder_id PK
+    string root_path
+    string session_code
+    string capture_path
+    string evidence_path
+    string replay_path
   }
