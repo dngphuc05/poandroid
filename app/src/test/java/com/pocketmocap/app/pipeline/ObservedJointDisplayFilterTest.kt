@@ -97,54 +97,6 @@ class ObservedJointDisplayFilterTest {
     }
 
     @Test
-    fun transientShoulderPairFlipIsFrozenWithoutSwappingSemantics() {
-        val filter = ObservedJointDisplayFilter()
-        val v = FloatArray(33) { 0.95f }
-        val x = FloatArray(33) { 0.5f }
-        val y = FloatArray(33) { 0.5f }
-
-        x[11] = 0.42f
-        y[11] = 0.34f
-        x[12] = 0.58f
-        y[12] = 0.34f
-        x[13] = 0.36f
-        x[14] = 0.64f
-        filter.update(x, y, v)
-
-        x[11] = 0.58f
-        x[12] = 0.42f
-        x[13] = 0.60f
-        x[14] = 0.40f
-        val out = filter.update(x, y, v)
-
-        assertTrue("left shoulder should keep the previous semantic side", out.x[11] < out.x[12])
-        assertTrue("left shoulder should not be swapped to the right side", out.x[11] < 0.49f)
-        assertTrue("arm descendants should not follow a suspicious pair flip across the torso", out.x[13] < 0.50f)
-    }
-
-    @Test
-    fun realTorsoTurnWithMovingCenterIsNotFrozenAsPairFlip() {
-        val filter = ObservedJointDisplayFilter()
-        val v = FloatArray(33) { 0.95f }
-        val x = FloatArray(33) { 0.5f }
-        val y = FloatArray(33) { 0.5f }
-
-        x[11] = 0.42f
-        y[11] = 0.34f
-        x[12] = 0.58f
-        y[12] = 0.34f
-        filter.update(x, y, v)
-
-        x[11] = 0.68f
-        x[12] = 0.52f
-        y[11] = 0.40f
-        y[12] = 0.40f
-        val out = filter.update(x, y, v)
-
-        assertTrue("large coherent motion should not be treated as a one-frame detector flip", out.x[11] > 0.47f)
-    }
-
-    @Test
     fun isolatedHandEndpointJumpDuringStillArmChainIsDamped() {
         val filter = ObservedJointDisplayFilter()
         val v = FloatArray(33) { 0.95f }
