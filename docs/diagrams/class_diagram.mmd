@@ -1,0 +1,77 @@
+classDiagram
+  class CaptureScreen {
+    +startSession()
+    +stopSession()
+    +renderOverlay()
+  }
+  class HybridPosePipeline {
+    +processCameraFrame()
+    +selectSubject()
+    +emitLandmarks()
+  }
+  class SubjectPoseSelector {
+    +scoreCandidate()
+    +updateLock()
+  }
+  class EvidencePacketizer {
+    +buildFramePacket()
+    +attachCameraMetadata()
+  }
+  class SessionSyncClient {
+    +joinSession()
+    +sendFramePacket()
+    +receiveControl()
+  }
+  class OperatorDashboard {
+    +createSession()
+    +monitorPhones()
+    +reviewCapture()
+  }
+  class CaptureIngestServer {
+    +receiveFramePacket()
+    +routeBySession()
+  }
+  class FrameSynchronizer {
+    +alignFrames()
+    +detectDrops()
+  }
+  class CharucoCalibrationService {
+    +solveIntrinsic()
+    +solveExtrinsic()
+    +storeProfile()
+  }
+  class PipelineOrchestrator {
+    +processFrame()
+    +applyMetricScale()
+    +emitCanonicalPose()
+  }
+  class CanonicalSkeletonSolver {
+    +stabilizeLengths()
+    +applyBodyConstraints()
+    +repairStraightLimbs()
+  }
+  class SevenModelEvidenceStack {
+    +evaluatePoseEvidence()
+    +evaluateMetricEvidence()
+    +runTemporalModel()
+  }
+  class ArtifactWriter {
+    +writeReplayBundle()
+    +writeMetricsCsv()
+    +writeMp4Review()
+  }
+
+  CaptureScreen --> HybridPosePipeline
+  HybridPosePipeline --> SubjectPoseSelector
+  HybridPosePipeline --> EvidencePacketizer
+  EvidencePacketizer --> SessionSyncClient
+  SessionSyncClient --> CaptureIngestServer
+  OperatorDashboard --> CaptureIngestServer
+  CaptureIngestServer --> FrameSynchronizer
+  FrameSynchronizer --> PipelineOrchestrator
+  CharucoCalibrationService --> PipelineOrchestrator
+  SevenModelEvidenceStack --> PipelineOrchestrator
+  PipelineOrchestrator --> CanonicalSkeletonSolver
+  PipelineOrchestrator --> ArtifactWriter
+  OperatorDashboard --> CharucoCalibrationService
+  OperatorDashboard --> ArtifactWriter

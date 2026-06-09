@@ -1,43 +1,54 @@
 # Pocket Mocap Android (poandroid)
 
-Pocket Mocap Android is capture-node subsystem for Pocket Mocap. It runs on Android phones, estimates local 2D body evidence, records camera/session metadata, and streams synchronized frames to Pocket Mocap PC server for canonical 3D reconstruction.
+Pocket Mocap Android is the phone capture subsystem. It records camera-frame pose evidence, session metadata, and synchronized landmark packets for the PC reconstruction subsystem.
 
-## Role In System
-- Single-phone mode: one phone streams landmarks and scene metrics; PC server estimates metric 3D pose with learned priors and temporal guards.
-- Multi-phone mode: several phones join one session; PC server syncs frames and reconstructs 3D from multi-view geometry.
-- Android remains capture source; PC remains session controller and canonical solver.
+## System Role
+- **Single phone mode:** one Android phone records 2D landmarks, camera metadata, scene evidence, and timestamps for one PC session.
+- **Multi-phone mode:** multiple Android phones join the same PC session and send synchronized evidence streams for stronger 3D reconstruction.
+- **Subsystem boundary:** `poandroid` owns capture and evidence transport; `popc` owns calibration, reconstruction, validation, replay, and artifact export.
+- **ML stack:** both subsystems are organized around the seven-model evidence stack: pose landmarking, hand landmarking, face landmarking, object/person segmentation, depth/metric evidence, temporal motion filtering, and pose-lifter/canonical reconstruction support.
 
-## Core Capabilities
-- MediaPipe-style 2D pose evidence capture.
-- Camera frame, timestamp, and device telemetry packaging.
-- Session join by PC-issued code.
-- Capture readiness and quality feedback.
-- Single-subject tracking and overlay stabilization.
-- Manual subject-height profile plumbing.
-- Seven ML model families available in full pipeline through phone/server handoff.
+## Capabilities
+The Android app runs phone-side capture, pose landmark detection, capture review, synchronization, evidence packaging, and transport. It supports single-phone capture and multi-phone capture where several Android devices join one PC session.
 
-## Capture Instance: Pose Evidence
-Metrics shown below are simulation/report metrics, not ground-truth lab measurements: `height=1.79m`, `bone_spread=0.012`, `reprojection_rmse=3.8px`, `temporal_jitter_p95=0.016m`.
+## Capture Evidence: Session 301076
+Source session: `C:\Users\Asus\Documents\Pocap\sessions\301076`.
+Source capture: `cap_20260609_145233_301076_003`.
+
+Each pose subsection uses exactly three real capture-evidence views from the same pose family:
+1. phone camera evidence;
+2. phone 2D landmark evidence;
+3. PC reconstructed 3D evidence.
 
 ### T pose
-![T pose 3D evidence](../capture_evidence/T%20pose3d.png)
-![T pose Python simulation](docs/pose_simulations/t_pose_simulation.png)
 
-### A pose
-![A pose 3D evidence](../capture_evidence/A%20pose3d.png)
-![A pose Python simulation](docs/pose_simulations/a_pose_simulation.png)
+![T pose phone camera](docs/capture_evidence/T%20pose.jpg)
+![T pose phone landmarks](docs/capture_evidence/t_pose_2d_landmarks.png)
+![T pose PC reconstruction](docs/capture_evidence/T%20pose3d.png)
+
+### A pose (back view)
+
+![A pose (back view) phone camera](docs/capture_evidence/A%20pose.jpg)
+![A pose (back view) phone landmarks](docs/capture_evidence/a_pose_2d_landmarks.png)
+![A pose (back view) PC reconstruction](docs/capture_evidence/A%20pose3d.png)
 
 ### 45 deg left
-![45 deg left 3D evidence](../capture_evidence/45deg_left3d.png)
-![45 deg left Python simulation](docs/pose_simulations/45_deg_left_simulation.png)
+
+![45 deg left phone camera](docs/capture_evidence/45deg_left.jpg)
+![45 deg left phone landmarks](docs/capture_evidence/45_deg_left_2d_landmarks.png)
+![45 deg left PC reconstruction](docs/capture_evidence/45deg_left3d.png)
 
 ### 45 deg right
-![45 deg right 3D evidence](../capture_evidence/45deg_right3d.png)
-![45 deg right Python simulation](docs/pose_simulations/45_deg_right_simulation.png)
+
+![45 deg right phone camera](docs/capture_evidence/45deg_right.jpg)
+![45 deg right phone landmarks](docs/capture_evidence/45_deg_right_2d_landmarks.png)
+![45 deg right PC reconstruction](docs/capture_evidence/45deg_right3d.png)
 
 ### Handraise pose
-![Handraise pose 3D evidence](../capture_evidence/Handraise_pose3d.png)
-![Handraise pose Python simulation](docs/pose_simulations/handraise_pose_simulation.png)
+
+![Handraise pose phone camera](docs/capture_evidence/Handraise_pose.jpg)
+![Handraise pose phone landmarks](docs/capture_evidence/handraise_pose_2d_landmarks.png)
+![Handraise pose PC reconstruction](docs/capture_evidence/Handraise_pose3d.png)
 
 ## Build
 ```powershell

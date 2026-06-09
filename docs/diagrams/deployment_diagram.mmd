@@ -1,0 +1,36 @@
+flowchart TB
+  subgraph PhoneA["Android phone A"]
+    AApp["poandroid APK"]
+    ACamera["Camera + IMU"]
+    AML["On-device ML evidence stack"]
+    ACache["Capture cache"]
+    ACamera --> AML --> AApp --> ACache
+  end
+
+  subgraph PhoneB["Android phone B..N optional"]
+    BApp["poandroid APK"]
+    BCamera["Camera + IMU"]
+    BML["On-device ML evidence stack"]
+    BCamera --> BML --> BApp
+  end
+
+  subgraph PC["Windows PC workstation"]
+    Electron["popc Electron operator app"]
+    Server["Python reconstruction server"]
+    Calib["ChArUco intrinsic/extrinsic calibration module"]
+    Models["PC seven-model ML stack"]
+    Renderer["Replay renderer / MP4 exporter"]
+    Disk[("Pocap session storage")]
+    Electron <--> Server
+    Server --> Calib
+    Server --> Models
+    Server --> Renderer
+    Server --> Disk
+    Renderer --> Disk
+  end
+
+  PhoneA -->|single-phone stream| Server
+  PhoneA -->|multi-phone synchronized stream| Server
+  PhoneB -->|multi-phone synchronized stream| Server
+  Server -->|session state, health, capture control| PhoneA
+  Server -->|session state, health, capture control| PhoneB

@@ -1,0 +1,40 @@
+flowchart TB
+  subgraph POA["poandroid phone capture subsystem"]
+    Cam["Camera input"]
+    CaptureUI["Capture UI and operator prompts"]
+    Landmark["Seven-model phone evidence stack\npose, hands, face, segmentation, depth/metric evidence, temporal filter, pose support"]
+    Packetizer["Evidence packetizer\nlandmarks + confidences + camera metadata + timestamps"]
+    SyncClient["Session sync client\nsingle-phone or multi-phone join"]
+    LocalStore["Local capture cache"]
+    Cam --> Landmark
+    CaptureUI --> SyncClient
+    Landmark --> Packetizer
+    Packetizer --> SyncClient
+    Packetizer --> LocalStore
+  end
+
+  subgraph POPC["popc PC reconstruction subsystem"]
+    Operator["Operator dashboard"]
+    Ingest["Capture ingest and session router"]
+    Sync["Frame synchronization\nphone clock + frame ids"]
+    Intrinsic["ChArUco intrinsic calibration"]
+    Extrinsic["ChArUco extrinsic calibration"]
+    ML["Seven-model PC evidence stack\npose evidence validation, depth/metric witnesses, temporal model, pose lifter, canonical solver support"]
+    Reconstruct["3D reconstruction pipeline\ntriangulation, metric scale, body constraints"]
+    Canonical["Canonical skeleton solver\nheight, distance, limb lengths, straight-limb and torso guards"]
+    Review["Replay renderer and metrics review"]
+    Artifact["Artifact writer\nCSV, JSON, MP4, evidence images"]
+    Operator --> Ingest
+    Ingest --> Sync
+    Intrinsic --> Reconstruct
+    Extrinsic --> Reconstruct
+    Sync --> ML
+    ML --> Reconstruct
+    Reconstruct --> Canonical
+    Canonical --> Review
+    Review --> Artifact
+  end
+
+  SyncClient -->|HTTP/WebSocket evidence stream| Ingest
+  Operator -->|capture commands| SyncClient
+  Artifact -->|session folders| Session[("Pocap sessions")]

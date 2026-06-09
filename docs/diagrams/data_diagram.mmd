@@ -1,0 +1,79 @@
+erDiagram
+  SESSION ||--o{ CAPTURE : contains
+  SESSION ||--o{ PHONE_NODE : joins
+  PHONE_NODE ||--o{ FRAME_PACKET : sends
+  CAPTURE ||--o{ FRAME_PACKET : records
+  FRAME_PACKET ||--o{ LANDMARK_2D : contains
+  CAPTURE ||--o{ RECONSTRUCTION_FRAME : produces
+  RECONSTRUCTION_FRAME ||--o{ JOINT_3D : contains
+  CAPTURE ||--o{ METRIC_SAMPLE : measures
+  CAPTURE ||--o{ ARTIFACT : exports
+  CALIBRATION_PROFILE ||--o{ PHONE_NODE : applies_to
+  CALIBRATION_PROFILE ||--o{ CAPTURE : used_by
+
+  SESSION {
+    string session_code
+    datetime started_at
+    string mode "single_phone | multi_phone"
+    string operator_notes
+  }
+  PHONE_NODE {
+    string device_id
+    string subsystem "poandroid"
+    string camera_profile_id
+    string sync_status
+  }
+  CAPTURE {
+    string capture_id
+    string session_code
+    datetime started_at
+    string status
+  }
+  FRAME_PACKET {
+    int frame_index
+    int timestamp_us
+    string device_id
+    float image_width
+    float image_height
+    string scene_evidence_status
+  }
+  LANDMARK_2D {
+    int joint_index
+    float x
+    float y
+    float visibility
+    float presence
+    float confidence
+  }
+  RECONSTRUCTION_FRAME {
+    int frame_index
+    string reconstruction_status
+    float height_m
+    float reprojection_rmse_px
+    float jitter_m
+  }
+  JOINT_3D {
+    int joint_index
+    float x_m
+    float y_m
+    float z_m
+    float confidence
+  }
+  METRIC_SAMPLE {
+    int frame_index
+    float elbow_angle_deg
+    float knee_angle_deg
+    float torso_z_bend_m
+    float limb_length_spread
+  }
+  CALIBRATION_PROFILE {
+    string profile_id
+    string intrinsic_status
+    string extrinsic_status
+    string charuco_board_id
+  }
+  ARTIFACT {
+    string path
+    string type "csv | json | mp4 | image | readme"
+    string source_subsystem
+  }

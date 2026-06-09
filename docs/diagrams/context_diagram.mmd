@@ -1,0 +1,20 @@
+flowchart LR
+  Actor["Motion Capture Operator / Subject"]
+  Phone1["Android Phone\npoandroid capture node"]
+  PhoneN["Additional Android Phones\npoandroid capture nodes"]
+  PC["PC Workstation\npopc operator + reconstruction"]
+  Storage["Session Artifact Storage\nPocap sessions + capture evidence"]
+  Calib["ChArUco Calibration Target"]
+  Reports["README / Report / Diagram Assets"]
+
+  Actor -->|starts capture, performs poses| Phone1
+  Actor -->|optional multi-phone capture| PhoneN
+  Actor -->|operates reconstruction and review| PC
+  Calib -->|intrinsic/extrinsic observations| Phone1
+  Calib -->|intrinsic/extrinsic observations| PhoneN
+  Phone1 -->|2D landmarks, camera metadata, scene evidence, timestamps| PC
+  PhoneN -->|synchronized landmark streams| PC
+  PC -->|canonical 3D skeletons, metrics, replay bundles| Storage
+  Storage -->|evidence images, CSV, MP4, metrics| Reports
+  PC -->|review feedback and session control| Phone1
+  PC -->|session join/control| PhoneN
