@@ -1,40 +1,87 @@
-flowchart TB
+flowchart LR
+  %% Component-and-connector diagram for Pocket Mocap.
+  %% Two subsystems are shown explicitly: poandroid capture nodes and popc PC reconstruction.
+
+  subgraph MODE["Capture modes"]
+    Single["Single-phone mode\none active poandroid node"]
+    Multi["Multi-phone mode\n2..N poandroid nodes in one session"]
+  end
+
   subgraph POA["poandroid phone capture subsystem"]
-    Cam["Camera input"]
-    CaptureUI["Capture UI and operator prompts"]
-    Landmark["Seven-model phone evidence stack\npose, hands, face, segmentation, depth/metric evidence, temporal filter, pose support"]
-    Packetizer["Evidence packetizer\nlandmarks + confidences + camera metadata + timestamps"]
-    SyncClient["Session sync client\nsingle-phone or multi-phone join"]
-    LocalStore["Local capture cache"]
-    Cam --> Landmark
-    CaptureUI --> SyncClient
-    Landmark --> Packetizer
-    Packetizer --> SyncClient
-    Packetizer --> LocalStore
+    direction TB
+    CamHAL["Camera/IMU interface\npreview frames, orientation, timestamps"]
+    CaptureUI["Capture screen + operator prompts\nstart/stop, overlay, session state"]
+    DeviceProfile["Device profile + camera metadata\nresolution, rotation, intrinsics hints"]
+    PhoneML["Seven-model phone evidence stack\npose landmarks, hand landmarks, face landmarks, segmentation, depth/metric hints, temporal filter, pose support"]
+    SubjectLock["Subject selection and tracking\nconfidence, body center, bounds lock"]
+    OverlayFilter["Display/evidence filters\njitter guards, endpoint guards, confidence gates"]
+    FrameBuilder["Frame packet builder\nlandmarks, confidences, frame id, timestamp, image size, scene evidence"]
+    PhoneSync["Phone sync client\njoin session, clock offset, frame sequencing"]
+    PhoneCache["Local capture cache\nreplay bundle fragments, diagnostics"]
+
+    CamHAL -->|camera frame + timestamp| PhoneML
+    CamHAL -->|orientation + image size| DeviceProfile
+    DeviceProfile -->|metadata| FrameBuilder
+    CaptureUI -->|capture state| PhoneSync
+    CaptureUI -->|overlay request| OverlayFilter
+    PhoneML -->|candidate landmarks + confidences| SubjectLock
+    SubjectLock -->|selected subject landmarks| OverlayFilter
+    OverlayFilter -->|filtered evidence frame| FrameBuilder
+    FrameBuilder -->|packet queue| PhoneSync
+    FrameBuilder -->|local diagnostic copy| PhoneCache
   end
 
-  subgraph POPC["popc PC reconstruction subsystem"]
-    Operator["Operator dashboard"]
-    Ingest["Capture ingest and session router"]
-    Sync["Frame synchronization\nphone clock + frame ids"]
-    Intrinsic["ChArUco intrinsic calibration"]
-    Extrinsic["ChArUco extrinsic calibration"]
-    ML["Seven-model PC evidence stack\npose evidence validation, depth/metric witnesses, temporal model, pose lifter, canonical solver support"]
-    Reconstruct["3D reconstruction pipeline\ntriangulation, metric scale, body constraints"]
-    Canonical["Canonical skeleton solver\nheight, distance, limb lengths, straight-limb and torso guards"]
-    Review["Replay renderer and metrics review"]
-    Artifact["Artifact writer\nCSV, JSON, MP4, evidence images"]
-    Operator --> Ingest
-    Ingest --> Sync
-    Intrinsic --> Reconstruct
-    Extrinsic --> Reconstruct
-    Sync --> ML
-    ML --> Reconstruct
-    Reconstruct --> Canonical
-    Canonical --> Review
-    Review --> Artifact
+  subgraph POPC["popc PC operator, calibration, reconstruction subsystem"]
+    direction TB
+    Operator["Operator dashboard\nsession control, device status, review"]
+    SessionRouter["Session router + capture ingest\nHTTP/WebSocket endpoints, device registry"]
+    SyncHub["Synchronization hub\nclock offset, frame ids, dropout handling, stream alignment"]
+    CalibUI["Calibration workflow\nChArUco board capture and quality review"]
+    Intrinsic["ChArUco intrinsic calibration\nfocal length, principal point, distortion profile"]
+    Extrinsic["ChArUco extrinsic calibration\nphone-to-session transforms, multi-phone alignment"]
+    EvidenceStore["Evidence store\nraw packets, accepted scene metrics, replay bundle"]
+    PCML["Seven-model PC evidence stack\npose evidence validation, metric/depth witnesses, temporal model, pose lifter, canonical support"]
+    Recon["3D reconstruction orchestrator\ntriangulation, metric scale, distance/height targets, constraints"]
+    Canonical["Canonical skeleton solver\nsegment memory, body scale, torso/limb guards, straight-limb repair"]
+    Metrics["Metrics and validation\nangles, jitter, reprojection, confidence, dropout"]
+    Review["Review renderer\nnormal, 3D, and constructed XY/XZ/YZ views"]
+    Artifact["Artifact writer\nCSV, JSON, MP4, images, README evidence"]
+    SessionDisk[("Pocap session storage")]
+
+    Operator -->|create/join session| SessionRouter
+    Operator -->|calibration commands| CalibUI
+    CalibUI -->|ChArUco image observations| Intrinsic
+    CalibUI -->|board pose observations| Extrinsic
+    Intrinsic -->|camera intrinsics profile| SessionRouter
+    Intrinsic -->|camera matrix + distortion| Recon
+    Extrinsic -->|phone/session transforms| SyncHub
+    Extrinsic -->|multi-phone geometry| Recon
+    SessionRouter -->|raw frame packets| SyncHub
+    SessionRouter -->|raw packet archive| EvidenceStore
+    SyncHub -->|aligned frame sets| PCML
+    EvidenceStore -->|replay input| PCML
+    PCML -->|validated evidence + witnesses| Recon
+    Recon -->|metric 3D joints| Canonical
+    Canonical -->|canonical skeleton frames| Metrics
+    Canonical -->|canonical skeleton frames| Review
+    Metrics -->|quality report| Artifact
+    Review -->|normal/3D/view images + MP4| Artifact
+    Artifact -->|capture folder outputs| SessionDisk
+    EvidenceStore -->|replay bundle| SessionDisk
   end
 
-  SyncClient -->|HTTP/WebSocket evidence stream| Ingest
-  Operator -->|capture commands| SyncClient
-  Artifact -->|session folders| Session[("Pocap sessions")]
+  subgraph CONNECTORS["External connectors"]
+    WiFi["LAN transport\nHTTP control + WebSocket frame stream"]
+    Charuco["Physical ChArUco board\ncalibration target"]
+    Files["Evidence/report consumers\nREADME, report, analysis review"]
+  end
+
+  Single -->|selects one node| PhoneSync
+  Multi -->|registers multiple nodes| PhoneSync
+  PhoneSync -->|join, heartbeat, clock samples| WiFi
+  WiFi -->|session control responses| PhoneSync
+  WiFi -->|evidence packets by device id| SessionRouter
+  Operator -->|start/stop/calibration prompts| WiFi
+  Charuco -->|board visible in phone frames| CamHAL
+  Charuco -->|corner detections used by| CalibUI
+  SessionDisk -->|capture evidence and diagrams| Files
